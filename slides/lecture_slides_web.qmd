@@ -8,4 +8,4 @@ format:
     height: 700
 ---
 
-{{< include ../00_intro/intro.qmd >}}
+{{< include ../01_combinatorics/combinatorics.qmd >}}

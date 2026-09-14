@@ -1,0 +1,490 @@
+## From Interval Estimation to Hypothesis Testing
+
+While a confidence interval provides a range of plausible values for a parameter, research often demands answering a specific question: is the parameter equal to a particular value? 
+
+
+::: {.callout-tip}
+
+Hypothesis Testing is a decision-making framework used to evaluate specific claims.
+
+:::
+
+### Comparative Examples from Class Survey
+
+| Topic | Estimation | Hypothesis Testing |
+| :--- | :--- | :--- |
+|**Heights** | What is the average height of girls taking this class? | Is the average height of girls taking this class equal to $167$ cm? |
+| **Demographics** | What is the average number of children per family in Kazakhstan? | Is the average number of children per family in Kazakhstan greater than $2.1$ (the replacement rate needed to maintain a stable population size)? |
+| **Emigration** | What percentage of students is willing to emigrate from Kzakhstan? | Are girls more willing to emigrate than boys? |
+| **Study hours** | How much on average students study for this class? | Do girls study more than boys? |
+| **Class difficulty** | How much on average a unit increase in perceived class difficulty affect study hours? | Is there an effect of class difficulty on study hours? |
+
+
+::: {.callout-note}
+### Definition: The Research Question
+Estimation asks: "What is the best/reasonable guess for $\mu$?" 
+Hypothesis testing asks: "Is the data consistent with a specific value $\mu_0$?"
+:::
+
+::: {.callout-tip}
+### Hint
+Notice that Hypothesis Testing usually involves a benchmark (167 cm, 2.1 children, not more likely, study the same amount of time, there is no effect). This benchmark is what we call our **Null Hypothesis** ($H_0$).
+:::
+
+## Hypothesis Testing about $\mu$ when $\sigma$ is Known
+
+
+::: {.callout-tip}
+## Example
+
+ Is the average height of girls taking this class equal to $167$ cm?
+
+:::
+
+
+### Step 1: Formulate Hypotheses
+
+1. **The Null Hypothesis ($H_0$)**: The Null Hypothesis represents the status quo, the "boring" result, or the assumption that there is no effect or no difference. 
+   * Mathematical Constraint: $H_0$ **must always contain an equality sign** ($=$, $\leq$, or $\geq$).
+   * Intuition: It is the benchmark we are trying to provide evidence against.
+2. **The Alternative Hypothesis ($H_1$)**: The Alternative Hypothesis represents the research claim, the "interesting" result, theoretical prediction,or the assumption that there is an effect or a difference.
+   * Mathematical Constraint: $H_1$ never contains an equality sign. It uses inequalities ($\neq$, $>$, or $<$).
+   * Intuition: If we find enough evidence to "reject" the Null, we "favor" the Alternative.
+  
+
+::: {.callout-tip}
+## Example: two-sided test about $\mu$ with known $\sigma$
+$$H_0:\mu=167$$
+
+$$H_1:\mu \neq 167$$
+:::
+
+### Step 2: Compute the Test Statistic ($z$)
+
+The test statistic measures the "distance" between our sample result and the null hypothesis in terms of standard errors. When $\sigma$ is known we use the $z$-statistic (z-score):
+
+$$z = \frac{\bar{x} - \mu_0}{\sigma/\sqrt{n}}$$
+
+::: {.callout-note}
+### Definition: The z-Statistic
+The $z$-statistic identifies how many standard errors the observed $\bar{x}$ is from the hypothesized $\mu_0$. Under $H_0$, by CLT it is distributed as $N(0, 1)$.
+:::
+
+::: {.callout-tip}
+## Example
+From our sample $\bar{x} = 165.9$ cm, $\sigma = 8.65$ cm, and $n=185$, so we compute:
+$$z = \frac{165.9 - 167}{8.65/\sqrt{185}} \approx -1.73$$
+:::
+
+### Step 3: Choose The Significance Level ($\alpha$)
+
+1. We begin by assuming the Null Hypothesis ($H_0$) is true. This allows us to define exactly what the distribution of $\bar{x}$ or $z$ should look like.
+2. Then we can compute how likely is it to get our sample under above assumption, that is to get the value of test statistic at least as extreme as the one we just calculated from our sample. This probability is called the **p-value**. 
+   * Small p-value: "If the null were true, this sample would be a near-impossible miracle.
+   * Large p-value: "This sample is exactly what we’d expect to see under the null."
+  
+::: {.callout-note}
+### Definition: The P-Value
+The p-value is the probability, computed assuming $H_0$ is true, that the test statistic would take a value as extreme as or more extreme (relative to $H_0$) than that actually observed.
+:::
+
+::: {.callout-tip}
+## Example
+For our data with $z \approx -1.73$, the p-value is given by $2\Phi(-1.73)$, approximately $0.0837$. This means that if the true average height of girls taking this class were $167$ cm, we would get a sample mean as extreme as $165.9$ cm only about 8.37% of the time.
+:::
+
+1. The **significance level** ($\alpha$) is your pre-determined threshold for how much "luck" or "surprise" you are willing to tolerate before you stop believing the null. If $\alpha = 0.05$, you are saying: "I will only blame 'random chance' for results that happen more than 5% of the time."
+
+| Significance Level ($\alpha$) | Interpretation |
+| :--- | :--- |
+| **0.10** | 10% risk of a false alarm. Moderate evidence required. |
+| **0.05** | 5% risk of a false alarm. The standard "benchmark." |
+| **0.01** | 1% risk of a false alarm. Very strong evidence required. |
+
+::: {.callout-important}
+### Key Result: The Evidence Gauge
+A larger absolute test statistic $|z|$ implies that the observed data is increasingly inconsistent with the Null Hypothesis.
+:::
+
+### Step 4: Make a Decision
+
+After calculating the p-value, we compare it to our significance level ($\alpha$) to reach a conclusion.
+
+| Condition | Logical Intuition | Statistical Verdict |
+| :--- | :--- | :--- |
+| **$p < \alpha$** | The result is too rare to be a coincidence. | There is a sufficient evidence to **reject $H_0$ in favor of $H_1$** |
+| **$p \geq \alpha$** | The result is common enough to be random noise. | There is no sufficient evidence to reject $H_0$, that is we **fail to Reject $H_0$** |
+
+::: {.callout-tip}
+## Example
+For our data, since $p \approx 0.0837$, we fail to reject the null hypothesis at the 5% significance level (and, of course, at 1%). But if we were using a more lenient threshold of $\alpha = 0.10$, we would reject the null hypothesis.
+:::
+
+### Summary: The Duality of CI and HT
+
+The interactive graph reveals that a Confidence Interval and a Two-Sided Hypothesis Test are two sides of the same coin.
+
+```{ojs}
+//| echo: false
+
+// 1. Unique Variable Names (v6 - σ as SD)
+viewof lec_mu_final = Inputs.range([163.0, 169.0], {value: 165.0, step: 0.01, label: "Hypothesized μ"})
+
+// 2. Statistical Constants
+lec_sigma_final = 8.65
+lec_n_final = 185
+lec_se_final = lec_sigma_final / Math.sqrt(lec_n_final) // ~0.636
+lec_x_obs_final = 165.9
+lec_dist_final = Math.abs(lec_x_obs_final - lec_mu_final)
+
+// CI Calculations (centered at x_bar = 165.9)
+lec_ci90_f = [lec_x_obs_final - 1.645 * lec_se_final, lec_x_obs_final + 1.645 * lec_se_final]
+lec_ci95_f = [lec_x_obs_final - 1.960 * lec_se_final, lec_x_obs_final + 1.960 * lec_se_final]
+lec_ci99_f = [lec_x_obs_final - 2.576 * lec_se_final, lec_x_obs_final + 2.576 * lec_se_final]
+
+// Normal PDF Function
+function norm_pdf_f(x, m, s) {
+  return (1 / (s * Math.sqrt(2 * Math.PI))) * Math.exp(-0.5 * Math.pow((x - m) / s, 2));
+}
+
+// Normal CDF Approximation
+function normalCDF_f(x) {
+  const t = 1 / (1 + 0.2316419 * Math.abs(x));
+  const d = 0.3989423 * Math.exp(-x * x / 2);
+  const p = d * t * (0.3193815 + t * (-0.3565638 + t * (1.7814779 + t * (-1.821256 + t * 1.330274))));
+  return x > 0 ? 1 - p : p;
+}
+
+// Calculate P-Value
+lec_z_f = lec_dist_final / lec_se_final;
+lec_p_val_f = 2 * (1 - normalCDF_f(lec_z_f));
+
+// Generate Curve
+lec_range_f = d3.range(lec_mu_final - 4 * lec_se_final, lec_mu_final + 4 * lec_se_final, 0.01)
+lec_curve_f = lec_range_f.map(x => ({x: x, y: norm_pdf_f(x, lec_mu_final, lec_se_final)}))
+
+// Define Tails
+lec_left_tail_f = lec_curve_f.filter(d => d.x <= (lec_mu_final - lec_dist_final))
+lec_right_tail_f = lec_curve_f.filter(d => d.x >= (lec_mu_final + lec_dist_final))
+
+// 3. Render Plot
+Plot.plot({
+  grid: true,
+  y: {domain: [-0.3, 0.8], label: "Density"},
+  x: {label: "Sample Mean (x̄)"},
+  marks: [
+    // Main PDF curve
+    Plot.line(lec_curve_f, {x: "x", y: "y", stroke: "#444", strokeWidth: 2}),
+    
+    // Shaded Tails
+    Plot.areaY(lec_left_tail_f, {x: "x", y: "y", fill: "firebrick", fillOpacity: 0.4}),
+    Plot.areaY(lec_right_tail_f, {x: "x", y: "y", fill: "firebrick", fillOpacity: 0.4}),
+    
+    // Nested CI Segments on X-axis
+    Plot.ruleY([-0.08], {x1: lec_ci99_f[0], x2: lec_ci99_f[1], stroke: "#fde725", strokeWidth: 6}),
+    Plot.ruleY([-0.14], {x1: lec_ci95_f[0], x2: lec_ci95_f[1], stroke: "#21918c", strokeWidth: 6}),
+    Plot.ruleY([-0.20], {x1: lec_ci90_f[0], x2: lec_ci90_f[1], stroke: "#440154", strokeWidth: 6}),
+
+    // Legend
+    Plot.dot([{x: 168.0, y: 0.7}], {x: "x", y: "y", fill: "#440154", r: 5}),
+    Plot.text([{x: 168.1, y: 0.7}], {x: "x", y: "y", text: d => "90% CI", textAnchor: "start"}),
+    Plot.dot([{x: 168.0, y: 0.64}], {x: "x", y: "y", fill: "#21918c", r: 5}),
+    Plot.text([{x: 168.1, y: 0.64}], {x: "x", y: "y", text: d => "95% CI", textAnchor: "start"}),
+    Plot.dot([{x: 168.0, y: 0.58}], {x: "x", y: "y", fill: "#fde725", r: 5}),
+    Plot.text([{x: 168.1, y: 0.58}], {x: "x", y: "y", text: d => "99% CI", textAnchor: "start"}),
+
+    // P-Value Indicator
+    Plot.text([0], {
+      x: lec_mu_final, 
+      y: 0.75, 
+      text: d => `Shaded Area (P-value): ${lec_p_val_f.toFixed(4)}`, 
+      fontWeight: "bold",
+      fill: "firebrick",
+      fontSize: 14
+    }),
+
+    // Observed Mean (Fixed at 165.9)
+    Plot.ruleX([lec_x_obs_final], {stroke: "black", strokeWidth: 3}),
+    Plot.text([lec_x_obs_final], {x: lec_x_obs_final, y: 0.4, text: d => "x̄ = 165.9", textAnchor: "start", dx: 5}),
+    
+    // Hypothesized Mean (Slider)
+    Plot.ruleX([lec_mu_final], {stroke: "steelblue", strokeDasharray: "4,4"}),
+    Plot.text([lec_mu_final], {x: lec_mu_final, y: 0.05, text: d => `μ = ${lec_mu_final.toFixed(2)}`, fill: "steelblue", dy: 20})
+  ]
+})
+```
+
+## Two-Sided vs One-Sided Tests when $\sigma$ is Known
+
+The structure of the hypothesis test changes based on whether the research question is directional or non-directional.
+
+| Feature | Two-Sided (Non-Directional) | One-Sided (Directional) |
+| :--- | :--- | :--- |
+| **Question** | Is there *any* difference? | Is there an *increase* or *decrease*? |
+| **Alternative ($H_1$)** | $H_1: \mu \neq \mu_0$ | $H_1: \mu > \mu_0$ or $H_1: \mu < \mu_0$ |
+| **Rejection Region** | Two tails (each $\alpha/2$) | One tail (full $\alpha$) |
+| **P-value** | $2 \times P(Z > |z|)$ | Area in the specific tail |
+
+::: {.callout-note}
+### Definition: Tail Areas
+In a **two-sided test**, the significance level $\alpha$ is split between the lower and upper tails. In a **one-sided test**, the entire $\alpha$ is placed in the tail specified by the alternative hypothesis.
+:::
+
+::: {.callout-important}
+### Key Result: Sensitivity
+One-sided tests are more "powerful" at detecting an effect in the hypothesized direction because the critical value is closer to the mean. However, they completely ignore effects in the opposite direction.
+:::
+
+### Example: One-Sided vs. Two-Sided
+
+Claim: The average height is **less than 167 cm**.
+Data: $n=185$, $\bar{x}=165.9$, $\sigma=8.65$ ($SE \approx 0.636$).
+
+### Step 1: Hypotheses
+$$
+\begin{aligned}
+H_0: \mu &\geq 167 \\
+H_1: \mu &< 167
+\end{aligned}
+$$
+
+Note that if we can reject the Null of $\mu=167$ in favor of $\mu < 167$, we would also reject any hypothesis with $\mu > 167$. So, we can replace the inequality in $H_0$ with an equality without loss of generality.
+
+$$
+\begin{aligned}
+H_0: \mu & = 167 \\
+H_1: \mu &< 167
+\end{aligned}
+$$
+
+### Step 2: Test Statistic
+$$z = \frac{165.9 - 167}{0.636} = -1.73$$
+
+### Step 3: Decision Comparison ($\alpha = 0.05$)
+
+| Metric | One-Sided (Lower) | Two-Sided |
+| :--- | :--- | :--- |
+| **Critical Value** | $-1.645$ | $\pm 1.96$ |
+| **P-value** | $0.0418$ | $0.0836$ |
+| **Verdict** | **Reject $H_0$** | **Fail to Reject $H_0$** |
+
+::: {.callout-note}
+### Why the difference?
+The one-sided test makes **it easier to reject the null hypothesis in the specific direction of $H_1$**.  
+:::
+
+This graph illustrates the one-sided test for $H_1: \mu < 167$. The shaded area is the probability of seeing a result as low as $165.9$ given the hypothesized $\mu$.
+
+```{ojs}
+//| echo: false
+
+// 1. Parameters (v7 - One Sided)
+viewof lec_mu_one = Inputs.range([164.0, 168.5], {value: 167.0, step: 0.01, label: "Hypothesized μ₀"})
+
+lec_sigma_one = 8.65
+lec_n_one = 185
+lec_se_one = lec_sigma_one / Math.sqrt(lec_n_one) // ~0.636
+lec_x_obs_one = 165.9
+
+// One-Sided P-value: P(X < 165.9 | mu)
+function normalCDF_one(x) {
+  const t = 1 / (1 + 0.2316419 * Math.abs(x));
+  const d = 0.3989423 * Math.exp(-x * x / 2);
+  const p = d * t * (0.3193815 + t * (-0.3565638 + t * (1.7814779 + t * (-1.821256 + t * 1.330274))));
+  return x > 0 ? 1 - p : p;
+}
+
+lec_z_one = (lec_x_obs_one - lec_mu_one) / lec_se_one;
+lec_p_val_one = normalCDF_one(lec_z_one);
+
+// One-sided critical bounds centered at x_obs
+// 90% (z=1.282), 95% (z=1.645), 99% (z=2.326)
+lec_bound90 = lec_x_obs_one + 1.282 * lec_se_one
+lec_bound95 = lec_x_obs_one + 1.645 * lec_se_one
+lec_bound99 = lec_x_obs_one + 2.326 * lec_se_one
+
+// Normal PDF Function
+function norm_pdf_one(x, m, s) {
+  return (1 / (s * Math.sqrt(2 * Math.PI))) * Math.exp(-0.5 * Math.pow((x - m) / s, 2));
+}
+
+// Generate Curve
+lec_range_one = d3.range(lec_mu_one - 4 * lec_se_one, lec_mu_one + 4 * lec_se_one, 0.01)
+lec_curve_one = lec_range_one.map(x => ({x: x, y: norm_pdf_one(x, lec_mu_one, lec_se_one)}))
+
+// Define Only the Left Tail (since H1 is "less than")
+lec_left_tail_one = lec_curve_one.filter(d => d.x <= lec_x_obs_one)
+
+// 3. Render Plot
+Plot.plot({
+  grid: true,
+  y: {domain: [-0.3, 0.8], label: "Density"},
+  x: {label: "Sample Mean (x̄)"},
+  marks: [
+    Plot.line(lec_curve_one, {x: "x", y: "y", stroke: "#444", strokeWidth: 2}),
+    
+    // Single Shaded Tail
+    Plot.areaY(lec_left_tail_one, {x: "x", y: "y", fill: "firebrick", fillOpacity: 0.4}),
+    
+    // One-sided Threshold bars
+    Plot.ruleY([-0.08], {x1: 164, x2: lec_bound99, stroke: "#fde725", strokeWidth: 6}),
+    Plot.ruleY([-0.14], {x1: 164, x2: lec_bound95, stroke: "#21918c", strokeWidth: 6}),
+    Plot.ruleY([-0.20], {x1: 164, x2: lec_bound90, stroke: "#440154", strokeWidth: 6}),
+
+    // Legend
+    Plot.dot([{x: 168.0, y: 0.7}], {x: "x", y: "y", fill: "#440154", r: 5}),
+    Plot.text([{x: 168.1, y: 0.7}], {x: "x", y: "y", text: d => "α = 0.10 Threshold", textAnchor: "start"}),
+    Plot.dot([{x: 168.0, y: 0.64}], {x: "x", y: "y", fill: "#21918c", r: 5}),
+    Plot.text([{x: 168.1, y: 0.64}], {x: "x", y: "y", text: d => "α = 0.05 Threshold", textAnchor: "start"}),
+    Plot.dot([{x: 168.0, y: 0.58}], {x: "x", y: "y", fill: "#fde725", r: 5}),
+    Plot.text([{x: 168.1, y: 0.58}], {x: "x", y: "y", text: d => "α = 0.01 Threshold", textAnchor: "start"}),
+
+    // P-Value Indicator
+    Plot.text([0], {
+      x: lec_mu_one, 
+      y: 0.75, 
+      text: d => `One-Sided Shaded Area (P-value): ${lec_p_val_one.toFixed(4)}`, 
+      fontWeight: "bold",
+      fill: "firebrick",
+      fontSize: 14
+    }),
+
+    // Observed Mean (Fixed at 165.9)
+    Plot.ruleX([lec_x_obs_one], {stroke: "black", strokeWidth: 3}),
+    Plot.text([lec_x_obs_one], {x: lec_x_obs_one, y: 0.4, text: d => "x̄ = 165.9", textAnchor: "start", dx: 5}),
+    
+    // Hypothesized Mean (Slider)
+    Plot.ruleX([lec_mu_one], {stroke: "steelblue", strokeDasharray: "4,4"}),
+    Plot.text([lec_mu_one], {x: lec_mu_one, y: 0.05, text: d => `μ₀ = ${lec_mu_one.toFixed(2)}`, fill: "steelblue", dy: 20})
+  ]
+})
+```
+
+## Inference about $\mu$ when $\sigma$ is Unknown
+
+Previously, we assumed that the population standard deviation ($\sigma$) was known, which allowed us to use the $z$-statistic. However, in most real-world scenarios, $\sigma$ is unknown and must be estimated from the sample data. 
+
+
+::: {.callout-note}
+## Definition: t-Statistic
+$$t = \frac{\bar{x} - \mu_0}{s / \sqrt{n}},$$
+where $s$ is the sample standard deviation. 
+:::
+
+
+::: {.callout-important}
+## Distribution of the t-Statistic
+
+If we draw a random sample of size $n$ from a **normal population** with mean $\mu$, the quantity:
+
+$$t = \frac{\bar{X} - \mu}{s / \sqrt{n}}$$
+
+follows the **Student's $t$-distribution** with $n-1$ degrees of freedom (df).
+
+:::
+
+::: {.callout-note}
+### Definition: Degrees of Freedom ($df$)
+The degrees of freedom ($n-1$) represent the number of independent pieces of information in our sample used to estimate the standard deviation. The smaller the $df$, the "flatter" the curve and the thicker the tails.
+:::
+
+
+Move the slider to see how the shape of the Student's $t$-distribution (solid red line) changes with the degrees of freedom ($df$) relative to the fixed Standard Normal distribution (dashed black line).
+
+```{ojs}
+//| echo: false
+
+// 1. Slider for Degrees of Freedom
+viewof lec_df_zoom = Inputs.range([1, 50], {value: 3, step: 1, label: "Degrees of Freedom (df)"})
+
+// 2. Plotting Ranges (keeping a bit of buffer in calculations)
+lec_range_zoom = d3.range(-4, 4.01, 0.01)
+
+// Student's t PDF Function
+function gamma_z(z) {
+    const g = 7;
+    const C = [0.99999999999980993, 676.5203681218851, -1259.1392167224028, 771.32342877765313, -176.61502916214059, 12.507347037867045, -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7];
+    if (z < 0.5) return Math.PI / (Math.sin(Math.PI * z) * gamma_z(1 - z));
+    else {
+        z -= 1;
+        let x = C[0];
+        for (let i = 1; i < g + 2; i++) x += C[i] / (z + i);
+        let t = z + g + 0.5;
+        return Math.sqrt(2 * Math.PI) * Math.pow(t, (z + 0.5)) * Math.exp(-t) * x;
+    }
+}
+
+function t_pdf_zoom(x, df) {
+    const term1 = gamma_z((df + 1) / 2) / (Math.sqrt(df * Math.PI) * gamma_z(df / 2));
+    const term2 = Math.pow(1 + (x * x) / df, - (df + 1) / 2);
+    return term1 * term2;
+}
+
+// Standard Normal PDF Function
+function norm_pdf_zoom(x) {
+    return (1 / Math.sqrt(2 * Math.PI)) * Math.exp(-0.5 * x * x);
+}
+
+// Generate data
+lec_curve_t_z = lec_range_zoom.map(x => ({x: x, y: t_pdf_zoom(x, lec_df_zoom)}))
+lec_curve_z_z = lec_range_zoom.map(x => ({x: x, y: norm_pdf_zoom(x)}))
+
+// 3. Render Plot
+Plot.plot({
+  grid: true,
+  y: {domain: [0, 0.45], label: "Probability Density"},
+  x: {domain: [-3, 3], label: "t-statistic / z-score"},
+  marks: [
+    // Standard Normal
+    Plot.line(lec_curve_z_z, {
+        x: "x", 
+        y: "y", 
+        stroke: "black", 
+        strokeWidth: 2, 
+        strokeDasharray: "4,4"
+    }),
+
+    // Student's t
+    Plot.line(lec_curve_t_z, {
+        x: "x", 
+        y: "y", 
+        stroke: "firebrick", 
+        strokeWidth: 2.5
+    }),
+
+    // Legend moved inward to fit the [-3, 3] range
+    Plot.dot([{x: 1.2, y: 0.41}], {x: "x", y: "y", stroke: "black", strokeDasharray: "4,4", strokeWidth: 2}),
+    Plot.text([{x: 1.3, y: 0.41}], {x: "x", y: "y", text: d => "Standard Normal (Z)", textAnchor: "start"}),
+    
+    Plot.dot([{x: 1.2, y: 0.38}], {x: "x", y: "y", stroke: "firebrick", strokeWidth: 2}),
+    Plot.text([{x: 1.3, y: 0.38}], {x: "x", y: "y", text: d => `Student's t (df=${lec_df_zoom})`, textAnchor: "start", fontWeight: "bold", fill: "firebrick"})
+  ]
+})
+```
+
+### Characteristics of the t-Distribution
+
+| Feature | Standard Normal ($z$) | Student's $t$ |
+| :--- | :--- | :--- |
+| **Shape** | Bell-shaped, symmetric | Bell-shaped, symmetric |
+| **Tails** | Thin | **Thicker (Heavier)** |
+| **Spread** | Constant | Varies based on $df = n - 1$ |
+| **Convergence** | The "ideal" | Approaches Normal as $n \to \infty$ |
+
+
+
+::: {.callout-important}
+### Key Result: The Cost of Uncertainty
+Because the $t$-distribution has thicker tails, the **critical values** for a $t$-test are always larger than those for a $z$-test (at the same $\alpha$). This means:
+
+* p-values will be larger for the same test statistic (harder to reject $H_0$).
+* Confidence intervals will be wider (more uncertainty).
+* As $n$ increases, the $t$-distribution converges to the standard normal, hence the critical values and p-values become similar to those of a $z$-test.
+:::
+
+
+::: {.callout-tip}
+
+Learn by yourself how to use t-distribution tables at the end of the book.
+
+:::

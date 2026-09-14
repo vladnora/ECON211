@@ -1,0 +1,1443 @@
+```{=html}
+<style>
+.lottery-box {
+  border: 2px solid #999;
+  padding: 0.7em 0.9em;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+.lottery-box h3 { margin-top: 0; }
+.lottery-box p:last-child { margin-top: auto; margin-bottom: 0; }
+.lottery-a { border-color: #0072B2; margin-right: 0.6em; }
+.lottery-b { border-color: #E69F00; margin-left: 0.6em; }
+.lottery-a h3 { color: #0072B2; }
+.lottery-b h3 { color: #E69F00; }
+.reveal .columns { display: flex; align-items: stretch; }
+</style>
+```
+
+## Contents {.smaller}
+
+::: {.columns}
+
+::: {.column width="55%"}
+**Main topics**
+
+1. [Why the pmf and cdf are not enough](#expectation-of-a-random-variable)
+2. [The two lotteries](#choosing-a-lottery)
+3. [Playing the lottery many times](#many-plays)
+4. [From sample average to expectation](#regroup-slide)
+5. [Definition of $E[X]$](#expectation-definition)
+6. [Bernoulli and Binomial](#bernoulli-variable)
+7. [Deriving $E[X]$ for a Binomial](#deriving-ex-for-binomial-r.v.)
+8. [Linearity of expectation](#linearity-of-expectation)
+9. [Applications of linearity](#app-lin)
+10. [Indicators: Binomial and Hypergeometric](#binomial-expectation-second-derivation)
+11. [Geometric distribution](#geometric-random-variable)
+12. [Coupon collector](#coupon-collector-problem)
+:::
+
+::: {.column width="45%"}
+**Interactive illustrations**
+
+- [pmf comparison, A vs B](#pmf-compare)
+- [cdf comparison, A vs B](#cdf-compare)
+- [Lottery simulator](#simulate)
+- [Regrouping the sample average](#regroup-slide)
+- [Geometric pmf across $p$](#geom-pmf)
+
+::: {style="font-size:0.8em;color:#666;margin-top:1.2em;"}
+Press **M** or the menu button, bottom left, to jump anywhere. **ESC** shows every slide at once.
+:::
+:::
+
+:::
+
+
+## Expectation of a Random Variable
+
+A random variable $X$ is **fully described** by
+
+- its pmf $p_X(x) = P(X = x)$, or
+- its cdf $F_X(x) = P(X \le x)$
+
+Either one lets you answer *any* probability question about $X$.
+
+. . .
+
+**But**: a pmf and a cdf are *functions* — a whole table or curve.
+
+- Hard to think about functions
+- Hard to compare: which of two functions is "bigger"?
+
+Often we need a *simpler summary* that lets us compare.
+
+
+## Choosing a lottery
+
+You must pick **one** lottery and play it:
+
+::: {.columns}
+
+::: {.column width="47%" .lottery-box .lottery-a}
+### Lottery A
+Roll a fair die.
+
+You are paid **the score**, in dollars.
+
+$\$1, \$2, \dots, \$6$
+:::
+
+::: {.column width="47%" .lottery-box .lottery-b}
+### Lottery B
+Toss a fair coin **6 times**.
+
+You are paid **the number of heads**, in dollars.
+
+$\$0, \$1, \dots, \$6$
+:::
+
+:::
+
+. . .
+
+You will play the chosen lottery **many times**. Which one do you take?
+
+---
+
+**Why the choice is not simple?**
+
+Payment is random, so "A pays more" is not a statement that is simply true or false.
+
+. . .
+
+This is the *generic* decision problem under uncertainty:
+
+- Which major to choose, when AI is reshaping which skills the labour market pays for?
+- Which business to start? Where to invest savings?
+- Which job offer: stable salary, or equity in a startup?
+
+In each case you compare **distributions of outcomes**, not just numbers.
+
+. . .
+
+Let us first try the tools we already have.
+
+---
+
+**Step 1: payoffs as random variables**
+
+Let $X$ = payment from A, $Y$ = payment from B.
+
+::: {.columns}
+
+::: {.column width="47%" .lottery-box .lottery-a}
+### Lottery A
+$$X \sim \text{DUniform}\{1,\dots,6\}$$
+
+$$p_X(k) = \tfrac16$$
+
+$$k = 1,\dots,6$$
+:::
+
+::: {.column width="47%" .lottery-box .lottery-b}
+### Lottery B
+$$Y \sim \text{Binomial}(6,\tfrac12)$$
+
+$$p_Y(k) = \binom{6}{k}\left(\tfrac12\right)^{6}$$
+
+$$k = 0,\dots,6$$
+:::
+
+:::
+
+Let's compare $p_X$ with $p_Y$ and $F_X$ with $F_Y$.
+
+## Comparing pmfs of payoffs {#pmf-compare}
+
+
+```{=html}
+<div id="pmf-chart" style="font-family:inherit;">
+  <div style="margin-bottom:.6em;">
+    <button id="pmf-a">show A: die roll</button>
+    <button id="pmf-b">show B: 6 coin tosses</button>
+    <button id="pmf-reset">clear</button>
+  </div>
+  <div id="pmf-svg"></div>
+</div>
+
+<script>
+(function () {
+  var A_COL = "#0072B2", B_COL = "#E69F00";
+  var pX = [0, 1/6, 1/6, 1/6, 1/6, 1/6, 1/6];
+  var pY = [1, 6, 15, 20, 15, 6, 1].map(function (c) { return c / 64; });
+
+  var W = 820, H = 380, L = 70, R = 20, T = 24, B = 56;
+  var pw = W - L - R, ph = H - T - B, ymax = 0.35;
+  var slot = pw / 7, bw = 34;
+  var ys = function (v) { return T + ph - (v / ymax) * ph; };
+  var xc = function (k) { return L + slot * (k + 0.5); };
+
+  var showA = false, showB = false;
+
+  var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg" ' +
+          'style="width:100%;height:auto;font-family:inherit;font-size:15px;">';
+
+  [0, 0.1, 0.2, 0.3].forEach(function (v) {
+    s += '<line x1="' + L + '" y1="' + ys(v) + '" x2="' + (W - R) + '" y2="' + ys(v) + '" stroke="#e8e8e8"/>';
+    s += '<text x="' + (L - 10) + '" y="' + (ys(v) + 5) + '" text-anchor="end" fill="#555">' + v.toFixed(1) + '</text>';
+  });
+
+  s += '<g id="pmf-ref" style="opacity:0;transition:opacity .4s;">';
+  s += '<line x1="' + L + '" y1="' + ys(1/6) + '" x2="' + (W - R) + '" y2="' + ys(1/6) +
+       '" stroke="' + A_COL + '" stroke-dasharray="5 5" opacity="0.5"/>';
+  s += '<text x="' + (W - R) + '" y="' + (ys(1/6) - 7) + '" text-anchor="end" fill="' + A_COL +
+       '" font-size="13">1/6</text></g>';
+
+  for (var k = 0; k <= 6; k++) {
+    if (pX[k] > 0) {
+      s += '<rect class="bar-a" data-y="' + ys(pX[k]) + '" data-h="' + (ph - ys(pX[k]) + T) + '" ' +
+           'x="' + (xc(k) - bw - 2) + '" y="' + (T + ph) + '" width="' + bw + '" height="0" fill="' + A_COL + '" ' +
+           'style="transition:y .5s ease,height .5s ease;"/>';
+    }
+    s += '<rect class="bar-b" data-y="' + ys(pY[k]) + '" data-h="' + (ph - ys(pY[k]) + T) + '" ' +
+         'x="' + (xc(k) + 2) + '" y="' + (T + ph) + '" width="' + bw + '" height="0" fill="' + B_COL + '" ' +
+         'style="transition:y .5s ease,height .5s ease;"/>';
+    s += '<text x="' + xc(k) + '" y="' + (T + ph + 24) + '" text-anchor="middle" fill="#333">' + k + '</text>';
+  }
+
+  s += '<line x1="' + L + '" y1="' + T + '" x2="' + L + '" y2="' + (T + ph) + '" stroke="#999"/>';
+  s += '<line x1="' + L + '" y1="' + (T + ph) + '" x2="' + (W - R) + '" y2="' + (T + ph) + '" stroke="#999"/>';
+  s += '<text x="' + (L + pw / 2) + '" y="' + (H - 12) + '" text-anchor="middle" fill="#333">payment, $</text>';
+  s += '<text x="18" y="' + (T + ph / 2) + '" text-anchor="middle" fill="#333" transform="rotate(-90 18 ' +
+       (T + ph / 2) + ')">probability</text>';
+
+  s += '<g id="pmf-leg-a" style="opacity:0;transition:opacity .4s;">';
+  s += '<rect x="' + (L + 20) + '" y="' + T + '" width="16" height="16" fill="' + A_COL + '"/>';
+  s += '<text x="' + (L + 44) + '" y="' + (T + 13) + '" fill="#333">A: die roll</text></g>';
+  s += '<g id="pmf-leg-b" style="opacity:0;transition:opacity .4s;">';
+  s += '<rect x="' + (L + 150) + '" y="' + T + '" width="16" height="16" fill="' + B_COL + '"/>';
+  s += '<text x="' + (L + 174) + '" y="' + (T + 13) + '" fill="#333">B: 6 coin tosses</text></g>';
+
+  s += '</svg>';
+  document.getElementById("pmf-svg").innerHTML = s;
+
+  var root = document.getElementById("pmf-chart");
+
+  function apply(cls, on) {
+    var bars = root.querySelectorAll("." + cls);
+    for (var i = 0; i < bars.length; i++) {
+      var r = bars[i];
+      r.setAttribute("y", on ? r.getAttribute("data-y") : (T + ph));
+      r.setAttribute("height", on ? r.getAttribute("data-h") : 0);
+    }
+  }
+
+  function render() {
+    apply("bar-a", showA);
+    apply("bar-b", showB);
+    document.getElementById("pmf-leg-a").style.opacity = showA ? "1" : "0";
+    document.getElementById("pmf-leg-b").style.opacity = showB ? "1" : "0";
+    document.getElementById("pmf-ref").style.opacity = showA ? "1" : "0";
+    document.getElementById("pmf-a").textContent = (showA ? "hide" : "show") + " A: die roll";
+    document.getElementById("pmf-b").textContent = (showB ? "hide" : "show") + " B: 6 coin tosses";
+  }
+
+  document.getElementById("pmf-a").onclick = function () { showA = !showA; render(); };
+  document.getElementById("pmf-b").onclick = function () { showB = !showB; render(); };
+  document.getElementById("pmf-reset").onclick = function () { showA = false; showB = false; render(); };
+
+  render();
+})();
+</script>
+```
+
+---
+
+**What the pmfs say**
+
+- **A is flat**: every prize $1..6$ equally likely.
+- **B is concentrated**: $P(Y \in \{2,3,4\}) = \tfrac{50}{64} \approx 0.78$; $\;P(Y \in \{0,6\}) = \tfrac{2}{64} \approx 0.03$.
+- Only A can pay the top prize with decent chance: $P(X \ge 5) = \tfrac13$ vs. $P(Y \ge 5) = \tfrac{7}{64} \approx 0.11$.
+- Only B can pay **nothing**, but rarely: $P(Y = 0) = \tfrac1{64}$.
+
+. . .
+
+Both have upsides **and** downsides. No verdict yet.
+
+## Comparing cdfs of payoffs {#cdf-compare}
+
+
+```{=html}
+<div id="cdf-chart" style="font-family:inherit;">
+  <div style="margin-bottom:.6em;">
+    <button id="cdf-a">show A: die roll</button>
+    <button id="cdf-b">show B: 6 coin tosses</button>
+    <button id="cdf-cross" disabled>mark the crossing</button>
+    <button id="cdf-reset">clear</button>
+  </div>
+  <div id="cdf-svg"></div>
+</div>
+
+<script>
+(function () {
+  var A_COL = "#0072B2", B_COL = "#E69F00";
+  var pX = [0, 1/6, 1/6, 1/6, 1/6, 1/6, 1/6];
+  var pY = [1, 6, 15, 20, 15, 6, 1].map(function (c) { return c / 64; });
+  var FX = [], FY = [], a = 0, b = 0;
+  for (var i = 0; i <= 6; i++) { a += pX[i]; b += pY[i]; FX.push(a); FY.push(b); }
+
+  var W = 820, H = 400, L = 70, R = 30, T = 24, B = 56;
+  var pw = W - L - R, ph = H - T - B;
+  var xs = function (x) { return L + pw * (x + 0.6) / 7.6; };
+  var ys = function (v) { return T + ph - v * ph; };
+
+  // horizontal treads only: gaps at the jumps, so the graph reads as a step function
+  function treads(F) {
+    var d = "M " + xs(-0.6) + " " + ys(0) + " L " + xs(0) + " " + ys(0);
+    for (var k = 0; k <= 6; k++) {
+      d += " M " + xs(k) + " " + ys(F[k]) + " L " + xs(k + 1) + " " + ys(F[k]);
+    }
+    return d;
+  }
+
+  function marks(F, p, col, cls) {
+    var g = "", prev = 0;
+    for (var k = 0; k <= 6; k++) {
+      if (p[k] > 0) {
+        g += '<line x1="' + xs(k) + '" y1="' + ys(prev) + '" x2="' + xs(k) + '" y2="' + ys(F[k]) +
+             '" stroke="' + col + '" stroke-width="1.5" stroke-dasharray="3 4" opacity="0.4"/>';
+        g += '<circle cx="' + xs(k) + '" cy="' + ys(prev) + '" r="4.5" fill="#fff" stroke="' + col +
+             '" stroke-width="2"/>';
+      }
+      g += '<circle cx="' + xs(k) + '" cy="' + ys(F[k]) + '" r="4.5" fill="' + col + '"/>';
+      prev = F[k];
+    }
+    return '<g class="' + cls + '" style="opacity:0;transition:opacity .3s .55s;">' + g + '</g>';
+  }
+
+  var showA = false, showB = false, showX = false;
+
+  var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg" ' +
+          'style="width:100%;height:auto;font-family:inherit;font-size:15px;">';
+
+  [0, 0.25, 0.5, 0.75, 1].forEach(function (v) {
+    s += '<line x1="' + L + '" y1="' + ys(v) + '" x2="' + (W - R) + '" y2="' + ys(v) + '" stroke="#e8e8e8"/>';
+    s += '<text x="' + (L - 10) + '" y="' + (ys(v) + 5) + '" text-anchor="end" fill="#555">' + v.toFixed(2) + '</text>';
+  });
+
+  s += '<g id="cdf-cross-g" style="opacity:0;transition:opacity .4s;">';
+  s += '<rect x="' + xs(1) + '" y="' + T + '" width="' + (xs(2) - xs(1)) + '" height="' + ph +
+       '" fill="#000" opacity="0.06"/>';
+  s += '<text x="' + ((xs(1) + xs(2)) / 2) + '" y="' + (T + ph - 8) +
+       '" text-anchor="middle" fill="#666" font-size="13">they cross here</text></g>';
+
+  s += '<path id="cdf-path-a" d="' + treads(FX) + '" fill="none" stroke="' + A_COL +
+       '" stroke-width="3" stroke-linecap="butt"/>';
+  s += '<path id="cdf-path-b" d="' + treads(FY) + '" fill="none" stroke="' + B_COL +
+       '" stroke-width="3" stroke-linecap="butt"/>';
+
+  s += marks(FX, pX, A_COL, "mk-a");
+  s += marks(FY, pY, B_COL, "mk-b");
+
+  for (var k = 0; k <= 6; k++) {
+    s += '<text x="' + xs(k) + '" y="' + (T + ph + 24) + '" text-anchor="middle" fill="#333">' + k + '</text>';
+  }
+
+  s += '<line x1="' + L + '" y1="' + T + '" x2="' + L + '" y2="' + (T + ph) + '" stroke="#999"/>';
+  s += '<line x1="' + L + '" y1="' + (T + ph) + '" x2="' + (W - R) + '" y2="' + (T + ph) + '" stroke="#999"/>';
+  s += '<text x="' + (L + pw / 2) + '" y="' + (H - 12) + '" text-anchor="middle" fill="#333">payment, $</text>';
+  s += '<text x="18" y="' + (T + ph / 2) + '" text-anchor="middle" fill="#333" transform="rotate(-90 18 ' +
+       (T + ph / 2) + ')">P(pay &#8804; x)</text>';
+
+  s += '<g id="cdf-leg-a" style="opacity:0;transition:opacity .4s;">';
+  s += '<rect x="' + (L + 20) + '" y="' + (T + ph - 44) + '" width="16" height="16" fill="' + A_COL + '"/>';
+  s += '<text x="' + (L + 44) + '" y="' + (T + ph - 31) + '" fill="#333">A: die roll</text></g>';
+  s += '<g id="cdf-leg-b" style="opacity:0;transition:opacity .4s;">';
+  s += '<rect x="' + (L + 20) + '" y="' + (T + ph - 22) + '" width="16" height="16" fill="' + B_COL + '"/>';
+  s += '<text x="' + (L + 44) + '" y="' + (T + ph - 9) + '" fill="#333">B: 6 coin tosses</text></g>';
+
+  s += '</svg>';
+  document.getElementById("cdf-svg").innerHTML = s;
+
+  var root = document.getElementById("cdf-chart");
+
+  function setupPath(id) {
+    var p = document.getElementById(id);
+    var len = p.getTotalLength();
+    p.style.strokeDasharray = len;
+    p.style.strokeDashoffset = len;
+    p.style.transition = "stroke-dashoffset .9s ease";
+    p.dataset.len = len;
+    return p;
+  }
+  var pa = setupPath("cdf-path-a"), pb = setupPath("cdf-path-b");
+
+  function apply(path, cls, on) {
+    path.style.strokeDashoffset = on ? 0 : path.dataset.len;
+    var g = root.querySelector("." + cls);
+    g.style.opacity = on ? "1" : "0";
+  }
+
+  function render() {
+    apply(pa, "mk-a", showA);
+    apply(pb, "mk-b", showB);
+    document.getElementById("cdf-leg-a").style.opacity = showA ? "1" : "0";
+    document.getElementById("cdf-leg-b").style.opacity = showB ? "1" : "0";
+    document.getElementById("cdf-cross-g").style.opacity = (showX && showA && showB) ? "1" : "0";
+    document.getElementById("cdf-cross").disabled = !(showA && showB);
+    document.getElementById("cdf-a").textContent = (showA ? "hide" : "show") + " A: die roll";
+    document.getElementById("cdf-b").textContent = (showB ? "hide" : "show") + " B: 6 coin tosses";
+  }
+
+  document.getElementById("cdf-a").onclick = function () { showA = !showA; render(); };
+  document.getElementById("cdf-b").onclick = function () { showB = !showB; render(); };
+  document.getElementById("cdf-cross").onclick = function () { showX = !showX; render(); };
+  document.getElementById("cdf-reset").onclick = function () { showA = showB = showX = false; render(); };
+
+  render();
+})();
+</script>
+```
+
+---
+
+**What the cdfs say**
+
+- If one cdf were **everywhere below** the other, that lottery would be better for *anyone* who prefers more money. Why?
+- Here the curves **cross**: $F_X(1) > F_Y(1)$ but $F_X(x) < F_Y(x)$ for $x = 2,\dots,5$.
+- Reading: B protects you against very low pay ($P(\text{pay} \le 1)$ is $.109$ vs $.167$); A gives you the high pay more often.
+
+. . .
+
+**No unanimous ranking.** The choice looks like a matter of taste — attitude to risk.
+
+## Playing the chosen lottery many times {#many-plays}
+
+. . .
+
+That suggests a different criterion -- play $n$ times and compare **total** or, equivalently, **average** payoffs:
+
+$$\text{total } = \sum_{i=1}^{n} \text{payoff}_i, \qquad \text{average } = \bar{x}_n=\frac1n \sum_{i=1}^{n} \text{payoff}_i$$
+
+Whichever lottery makes the **larger pile of money** after many plays is the one to take.
+
+## Simulating both lotteries {#simulate}
+
+```{=html}
+<div id="lotsim" style="font-family:inherit;">
+  <div style="display:flex;gap:.6em;align-items:center;flex-wrap:wrap;margin-bottom:.5em;">
+    <button class="ls-btn" data-n="1">Play 1 round</button>
+    <button class="ls-btn" data-n="10">Play 10</button>
+    <button class="ls-btn" data-n="100">Play 100</button>
+    <button class="ls-btn" data-n="1000">Play 1000</button>
+    <button id="ls-reset">Reset</button>
+    <label style="margin-left:auto;font-size:.8em;">
+      <input type="radio" name="ls-mode" value="avg" checked> average per round
+    </label>
+    <label style="font-size:.8em;">
+      <input type="radio" name="ls-mode" value="tot"> total money
+    </label>
+  </div>
+
+  <div id="ls-ticker" style="min-height:52px;margin-bottom:.4em;font-size:.9em;"></div>
+
+  <canvas id="ls-canvas" width="900" height="360" style="width:100%;max-width:900px;"></canvas>
+  <div id="ls-readout" style="font-size:.85em;margin-top:.3em;"></div>
+</div>
+
+<script>
+(function () {
+  const A_COL = "#0072B2", B_COL = "#E69F00";
+  const cv = document.getElementById("lotsim");
+  const canvas = document.getElementById("ls-canvas");
+  const ctx = canvas.getContext("2d");
+  const readout = document.getElementById("ls-readout");
+  const ticker = document.getElementById("ls-ticker");
+  const SHOW = 12;
+  let n = 0, sumA = 0, sumB = 0, pathA = [], pathB = [], lastA = [], lastB = [];
+
+  const die = () => 1 + Math.floor(6 * Math.random());
+  const coins = () => { let h = 0; for (let i = 0; i < 6; i++) h += Math.random() < 0.5 ? 1 : 0; return h; };
+  const mode = () => cv.querySelector('input[name="ls-mode"]:checked').value;
+
+  function play(rounds) {
+    for (let i = 0; i < rounds; i++) {
+      const x = die(), y = coins();
+      sumA += x; sumB += y; n++;
+      pathA.push(sumA); pathB.push(sumB);
+      lastA.push(x); lastB.push(y);
+      if (lastA.length > SHOW) { lastA.shift(); lastB.shift(); }
+    }
+    draw();
+  }
+
+  function reset() {
+    n = 0; sumA = 0; sumB = 0; pathA = []; pathB = []; lastA = []; lastB = []; draw();
+  }
+
+  function drawTicker() {
+    if (n === 0) { ticker.innerHTML = '<span style="color:#888;">no rounds played yet</span>'; return; }
+    let cells = "";
+    for (let i = 0; i < lastA.length; i++) {
+      const x = lastA[i], y = lastB[i];
+      const round = n - lastA.length + i + 1;
+      const aw = x > y, bw = y > x;
+      cells +=
+        '<div style="text-align:center;min-width:44px;">' +
+          '<div style="font-size:.72em;color:#aaa;">' + round + '</div>' +
+          '<div style="color:' + A_COL + ';font-weight:' + (aw ? 700 : 400) +
+            ';opacity:' + (aw ? 1 : 0.55) + ';">' + x + '</div>' +
+          '<div style="color:' + B_COL + ';font-weight:' + (bw ? 700 : 400) +
+            ';opacity:' + (bw ? 1 : 0.55) + ';">' + y + '</div>' +
+          '<div style="font-size:.7em;color:#999;">' + (x === y ? "tie" : (aw ? "A" : "B")) + '</div>' +
+        '</div>';
+    }
+    const wins = lastA.filter((x, i) => x > lastB[i]).length;
+    const ties = lastA.filter((x, i) => x === lastB[i]).length;
+    ticker.innerHTML =
+      '<div style="display:flex;gap:.55em;align-items:flex-end;flex-wrap:wrap;">' +
+      '<div style="font-size:.72em;color:#777;line-height:1.5;text-align:right;min-width:64px;">' +
+        'round<br><span style="color:' + A_COL + ';">A pays</span>' +
+        '<br><span style="color:' + B_COL + ';">B pays</span><br>higher</div>' +
+      cells +
+      '<div style="font-size:.75em;color:#666;margin-left:.6em;">last ' + lastA.length +
+        ' rounds:<br>A higher ' + wins + ', B higher ' + (lastA.length - wins - ties) +
+        ', tied ' + ties + '</div></div>';
+  }
+
+  function series(path) {
+    return mode() === "tot" ? path : path.map((s, i) => s / (i + 1));
+  }
+
+  function draw() {
+    const W = canvas.width, H = canvas.height, L = 60, R = 20, T = 20, B = 40;
+    ctx.clearRect(0, 0, W, H);
+    ctx.font = "13px sans-serif";
+
+    const sA = series(pathA), sB = series(pathB);
+    let ymin = 0, ymax = 1;
+    if (n > 0) {
+      const all = sA.concat(sB);
+      ymax = Math.max(...all); ymin = Math.min(...all);
+      if (mode() === "avg") { ymin = Math.min(ymin, 2.5); ymax = Math.max(ymax, 4.0); }
+      else { ymin = 0; }
+      const pad = 0.08 * (ymax - ymin || 1); ymin -= pad; ymax += pad;
+    }
+    const xs = i => L + (W - L - R) * (n <= 1 ? 0.5 : i / (n - 1));
+    const ys = v => H - B - (H - T - B) * (v - ymin) / (ymax - ymin || 1);
+
+    ctx.strokeStyle = "#999"; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(L, T); ctx.lineTo(L, H - B); ctx.lineTo(W - R, H - B); ctx.stroke();
+    ctx.fillStyle = "#555";
+    for (let t = 0; t <= 4; t++) {
+      const v = ymin + t * (ymax - ymin) / 4;
+      ctx.fillText(v.toFixed(mode() === "avg" ? 2 : 0), 6, ys(v) + 4);
+      ctx.strokeStyle = "#eee"; ctx.beginPath(); ctx.moveTo(L, ys(v)); ctx.lineTo(W - R, ys(v)); ctx.stroke();
+    }
+    ctx.fillStyle = "#555";
+    ctx.fillText("rounds played: " + n, L, H - 12);
+    ctx.fillText(mode() === "avg" ? "$ per round" : "$ total", 6, T - 6);
+
+    const line = (s, col) => {
+      if (s.length === 0) return;
+      ctx.strokeStyle = col; ctx.lineWidth = 2.5; ctx.beginPath();
+      s.forEach((v, i) => i ? ctx.lineTo(xs(i), ys(v)) : ctx.moveTo(xs(i), ys(v)));
+      ctx.stroke();
+    };
+    line(sA, A_COL); line(sB, B_COL);
+
+    ctx.fillStyle = A_COL; ctx.fillRect(L + 10, T + 4, 14, 4);
+    ctx.fillStyle = "#333"; ctx.fillText("A: die", L + 30, T + 11);
+    ctx.fillStyle = B_COL; ctx.fillRect(L + 90, T + 4, 14, 4);
+    ctx.fillStyle = "#333"; ctx.fillText("B: 6 coins", L + 110, T + 11);
+
+    readout.innerHTML = n === 0 ? "Press a button to start." :
+      "<b>A</b>: total $" + sumA + ", average $" + (sumA / n).toFixed(3) +
+      " &nbsp;|&nbsp; <b>B</b>: total $" + sumB + ", average $" + (sumB / n).toFixed(3) +
+      " &nbsp;|&nbsp; A − B = $" + (sumA - sumB);
+
+    drawTicker();
+  }
+
+  cv.querySelectorAll(".ls-btn").forEach(b => b.onclick = () => play(+b.dataset.n));
+  document.getElementById("ls-reset").onclick = reset;
+  cv.querySelectorAll('input[name="ls-mode"]').forEach(r => r.onchange = draw);
+  draw();
+})();
+</script>
+```
+---
+
+**What the simulation shows**
+
+:::{.incremental}
+- After a **handful** of rounds either lottery can be ahead — noise dominates.
+- After a few **hundred** rounds the ranking stops flipping: **A pulls ahead**, and the gap in totals keeps growing, roughly linearly.
+- The **average per round** does not wander forever. It settles:
+  - A settles near $\$3.5$
+  - B settles near $\$3$
+- That long-run average is the **expectation**. 
+:::
+
+## From sample average to expectation {#regroup-slide}
+
+```{=html}
+<div id="regroup" style="font-family:inherit;">
+  <div style="margin-bottom:.6em;">
+    <button id="rg-back">◂ back</button>
+    <button id="rg-next">next ▸</button>
+    <span id="rg-caption" style="color:#666;margin-left:1em;"></span>
+  </div>
+  <div id="rg-stage" style="position:relative;height:470px;font-size:1.05em;"></div>
+</div>
+```
+
+::: {#rg-f1 style="visibility:hidden;"}
+$$\bar{x} \;=\; \frac{1}{n}\sum_{i=1}^{n} x_i$$
+:::
+
+::: {#rg-f2 style="visibility:hidden;"}
+$$\bar{x} \;=\; \color{#0072B2}{1}\frac{\color{#0072B2}{n_1}}{n} + \color{#56B4E9}{2}\frac{\color{#56B4E9}{n_2}}{n} + \color{#009E73}{3}\frac{\color{#009E73}{n_3}}{n} + \color{#E69F00}{4}\frac{\color{#E69F00}{n_4}}{n} + \color{#D55E00}{5}\frac{\color{#D55E00}{n_5}}{n} + \color{#CC79A7}{6}\frac{\color{#CC79A7}{n_6}}{n} \;=\; \sum_{k=1}^{6} k\,\frac{n_k}{n}$$
+:::
+
+::: {#rg-note style="visibility:hidden;color:#666;"}
+$n_k/n$ is the **relative frequency** of $k$ — the share of the $n$ draws that came out $k$. The six shares are non-negative and sum to $1$.
+:::
+
+```{=html}
+<script>
+(function () {
+  var COL = ["", "#0072B2", "#56B4E9", "#009E73", "#E69F00", "#D55E00", "#CC79A7"];
+  var DRAWS = [3, 5, 1, 6, 3, 2, 4, 4, 6];
+  var MAXC = 2;
+
+  var TOPY = 52;
+  var COLX = 40, STEP = 40;
+  var GROUPX = 260, ITEMW = 40, ROWH = 56;
+  var DOTX = GROUPX + MAXC * ITEMW + 16;
+  var LABX = DOTX + 62;
+
+  var stageBox = document.getElementById("rg-stage");
+  var f1 = document.getElementById("rg-f1");
+  var f2 = document.getElementById("rg-f2");
+  var note = document.getElementById("rg-note");
+  var cap = document.getElementById("rg-caption");
+  var stage = 1, nodes = [], dots = null, tail = null;
+
+  var CAPS = {
+    1: "",
+    2: "the outcomes, in the order they occurred",
+    3: "the same outcomes, sorted by value",
+    4: "n\u2096 counts the draws equal to k",
+    5: "the average, regrouped by value"
+  };
+
+  function build() {
+    stageBox.innerHTML = ""; nodes = [];
+
+    var head = document.createElement("div");
+    head.textContent = "Throw a die n times.";
+    head.style.cssText = "position:absolute;left:" + (COLX - 12) + "px;top:0;color:#333;font-weight:600;";
+    stageBox.appendChild(head);
+
+    for (var i = 0; i < DRAWS.length; i++) {
+      var el = document.createElement("div");
+      el.textContent = DRAWS[i];
+      el.style.cssText = "position:absolute;width:" + ITEMW + "px;height:" + STEP + "px;" +
+        "line-height:" + STEP + "px;text-align:center;" +
+        "font-weight:600;opacity:0;color:" + COL[DRAWS[i]] + ";" +
+        "transition:opacity .3s ease " + (i * 130) + "ms, left .8s ease, top .8s ease;" +
+        "left:" + COLX + "px;top:" + (TOPY + i * STEP) + "px;";
+      stageBox.appendChild(el);
+      nodes.push(el);
+    }
+
+    dots = document.createElement("div");
+    dots.innerHTML = "&#8942;";
+    dots.style.cssText = "position:absolute;width:" + ITEMW + "px;text-align:center;color:#888;" +
+      "opacity:0;transition:opacity .4s ease " + (DRAWS.length * 130) + "ms;" +
+      "left:" + COLX + "px;top:" + (TOPY + DRAWS.length * STEP + 6) + "px;";
+    stageBox.appendChild(dots);
+
+    tail = document.createElement("div");
+    tail.textContent = "n draws in total";
+    tail.style.cssText = "position:absolute;color:#555;font-size:.8em;opacity:0;white-space:nowrap;" +
+      "transition:opacity .4s ease " + (DRAWS.length * 130 + 200) + "ms;" +
+      "left:" + (COLX - 12) + "px;top:" + (TOPY + DRAWS.length * STEP + 42) + "px;";
+    stageBox.appendChild(tail);
+
+    for (var k = 1; k <= 6; k++) {
+      var row = document.createElement("div");
+      row.id = "rg-row-" + k;
+      row.innerHTML = "&#8943;";
+      row.style.cssText = "position:absolute;height:" + STEP + "px;line-height:" + STEP + "px;" +
+        "opacity:0;transition:opacity .4s;color:#888;" +
+        "top:" + (TOPY + (k - 1) * ROWH) + "px;left:" + DOTX + "px;";
+      stageBox.appendChild(row);
+
+      var cnt = document.createElement("div");
+      cnt.id = "rg-cnt-" + k;
+      cnt.innerHTML = '<span style="color:' + COL[k] + ';font-weight:600;">n<sub>' + k +
+        "</sub></span> draws equal " +
+        '<span style="color:' + COL[k] + ';font-weight:600;">' + k + "</span>";
+      cnt.style.cssText = "position:absolute;height:" + STEP + "px;line-height:" + STEP + "px;" +
+        "opacity:0;transition:opacity .4s;color:#555;" +
+        "font-size:.85em;white-space:nowrap;top:" + (TOPY + (k - 1) * ROWH) +
+        "px;left:" + LABX + "px;";
+      stageBox.appendChild(cnt);
+    }
+  }
+
+  function render() {
+    var seen = [0, 0, 0, 0, 0, 0, 0];
+    for (var i = 0; i < DRAWS.length; i++) {
+      var d = DRAWS[i];
+      nodes[i].style.opacity = (stage >= 2) ? "1" : "0";
+      if (stage >= 3) {
+        nodes[i].style.left = (GROUPX + seen[d] * ITEMW) + "px";
+        nodes[i].style.top = (TOPY + (d - 1) * ROWH) + "px";
+        seen[d]++;
+      } else {
+        nodes[i].style.left = COLX + "px";
+        nodes[i].style.top = (TOPY + i * STEP) + "px";
+      }
+    }
+    dots.style.opacity = (stage === 2) ? "1" : "0";
+    tail.style.opacity = (stage === 2) ? "1" : "0";
+    for (var k = 1; k <= 6; k++) {
+      document.getElementById("rg-row-" + k).style.opacity = (stage >= 3) ? "1" : "0";
+      document.getElementById("rg-cnt-" + k).style.opacity = (stage >= 4) ? "1" : "0";
+    }
+    f1.style.visibility = (stage >= 2) ? "visible" : "hidden";
+    f2.style.visibility = (stage >= 5) ? "visible" : "hidden";
+    note.style.visibility = (stage >= 5) ? "visible" : "hidden";
+    cap.textContent = CAPS[stage];
+    document.getElementById("rg-back").disabled = (stage === 1);
+    document.getElementById("rg-next").disabled = (stage === 5);
+  }
+
+  document.getElementById("rg-next").onclick = function () { if (stage < 5) stage++; render(); };
+  document.getElementById("rg-back").onclick = function () { if (stage > 1) stage--; render(); };
+
+  build(); render();
+})();
+</script>
+```
+
+---
+
+**As $n$ grows**
+
+$$\text{average}=\bar x_n \;=\; \frac1n\sum_{i=1}^n x_i \;=\; \sum_{k=1}^{6} k\cdot\frac{n_k}{n}$$
+
+An **identity** — true for every sample, every die, fair or loaded. No probability used.
+
+. . .
+
+But we know what happens to the frequencies:
+
+$$\frac{n_k}{n} \;\longrightarrow\; p(k) = \tfrac16$$
+
+. . .
+
+$$E[X] \;=\; \sum_k k\cdot p(k) \;=\; \tfrac16(1+2+3+4+5+6) \;=\; 3.5$$
+
+## Expectation: definition
+
+For a discrete random variable $X$ with pmf $p_X$, the **expectation** (or expected value, or mean) is
+
+$$E[X] \;=\; \sum_{x} x \cdot p_X(x)$$
+
+the sum running over all values $x$ in the support of $X$.
+
+. . .
+
+- Notation: $E[X]$, $EX$, or $\mu_X$. 
+- It is a **number**, not a random variable — fixed once $p_X$ is fixed.
+- $E[X]$ need not be a value $X$ can take. The die pays $\$3.50$ on average and never pays $\$3.50$.
+
+---
+
+**Why probabilities are the right weights**
+
+Repeat the experiment $n$ times. The average is:
+
+$$\bar{x}_n \;=\; \frac1n \sum_{i=1}^n x_i \;=\; \sum_x x \cdot \frac{n_x}{n}$$
+
+. . .
+
+Each value a r.v. can take is weighted by the **fraction of draws** that produced it. Those fractions approach probabilities:
+
+$$\frac{n_x}{n} \;\longrightarrow\; p_X(x) \qquad \text{as } n \to \infty$$
+
+. . .
+
+Substituting gives the definition of $E[X]$. 
+
+**$E[X]$ is the sample average you would see if you could run the experiment forever.**
+
+## Bernoulli variable
+
+$X \sim \text{Bernoulli}(p)$: pays $1$ with probability $p$, pays $0$ otherwise.
+
+$$E[X] \;=\; 0 \cdot (1-p) \;+\; 1 \cdot p \;=\; p$$
+
+. . .
+
+- A fair coin: $E[X] = 1/2$.
+- The expectation of an indicator **is** the probability of the event it indicates.
+
+## Heads in two tosses 
+
+$X$ = number of heads in $2$ fair tosses. We worked out the pmf earlier:
+
+| $k$ | 0 | 1 | 2 |
+|---|---|---|---|
+| $p_X(k)$ | $1/4$ | $1/2$ | $1/4$ |
+
+. . .
+
+$$E[X] \;=\; 0 \cdot \tfrac14 \;+\; 1 \cdot \tfrac12 \;+\; 2 \cdot \tfrac14 \;=\; \tfrac12 + \tfrac12 \;=\; 1$$
+
+. . .
+
+Three values, three products, one sum. Perfectly manageable.
+
+## Expectation of Lottery B
+
+$Y \sim \text{Binomial}(6, \tfrac12)$, so by definition
+
+$$E[Y] \;=\; \sum_{k=0}^{6} k \cdot \binom{6}{k}\left(\tfrac12\right)^{k}\left(\tfrac12\right)^{6-k}$$
+
+. . .
+
+Seven terms, each with a binomial coefficient. Doable by hand, but unpleasant — and hopeless for $n = 100$.
+
+. . .
+
+**Strategy**: solve the general problem once, for $\text{Binomial}(n,p)$, then substitute $n=6$, $p=1/2$.
+
+This is the usual trade: a bit more abstraction now, no arithmetic later.
+
+## Deriving $E[X]$ for Binomial r.v. {.smaller}
+
+Write $q = 1-p$. Straight from the definition:
+
+$$E[X] \;=\; \sum_{k=0}^{n} k \binom{n}{k} p^k q^{n-k}$$
+
+. . .
+
+**Step 1.** The $k=0$ term is $0$, so drop it:
+
+$$E[X] \;=\; \sum_{k=1}^{n} k \binom{n}{k} p^k q^{n-k}$$
+
+. . .
+
+**Step 2.** The obstacle is the loose factor $k$ multiplying $\binom{n}{k}$. Absorb it using
+
+$$k \binom{n}{k} \;=\; n \binom{n-1}{k-1}$$
+
+. . .
+
+$$E[X] \;=\; \sum_{k=1}^{n} n \binom{n-1}{k-1} p^k q^{n-k}$$
+
+--- 
+
+**Story proof for identity.** From $n$ people, form a committee of $k$ with one of them as chair. Count two ways:
+
+- Pick the committee first: $\binom{n}{k}$ ways, then the chair from within it: $k$ ways.
+- Pick the chair first: $n$ ways, then the other $k-1$ members from the remaining $n-1$: $\binom{n-1}{k-1}$ ways.
+
+. . .
+
+Same set of outcomes, two orders of choosing $\;\Rightarrow\;$ the counts agree.
+
+---
+
+**Finishing the derivation**
+
+::: {style="font-size: 0.75em;"}
+
+**Step 3.** Pull out $n$ and one factor of $p$, since $p^k = p \cdot p^{k-1}$:
+
+$$E[X] \;=\; np \sum_{k=1}^{n} \binom{n-1}{k-1} p^{k-1} q^{n-k}$$
+
+
+**Step 4.** Substitute $j = k-1$. Then $k=1 \Rightarrow j=0$, $\;k=n \Rightarrow j=n-1$, and $n-k = (n-1)-j$:
+
+$$E[X] \;=\; np \sum_{j=0}^{n-1} \binom{n-1}{j} p^{j} q^{(n-1)-j}$$
+
+
+**Step 5.** That sum is the probabilities of Binomial distribution $\text{Bin}(n-1,p)$, hence the sum is just 1:
+
+$$E[X] \;=\; np \cdot 1 \;=\; np$$
+
+:::
+
+---
+
+$$\boxed{\;X \sim \text{Binomial}(n,p) \;\Longrightarrow\; E[X] = np\;}$$
+
+. . .
+
+Sanity checks:
+
+- $n=1$: gives $p$, matching the Bernoulli warm-up.
+- $n=2$, $p=\tfrac12$: gives $1$, matching the two-toss warm-up.
+- $p=0$ gives $0$; $p=1$ gives $n$. Both right.
+- $E[X] \le n$ always, as it must be — you cannot average more heads than tosses.
+
+. . .
+
+A **second derivation**, three lines and no algebra, comes once we have linearity of expectation.
+
+---
+
+**The intuition behind $np$**
+
+- $n$ trials, each succeeding with probability $p$.
+
+- Each trial contributes, **on average**, $p$ successes — that was the Bernoulli warm-up.
+
+- $n$ trials contribute $n$ times that.
+
+. . .
+
+$$E[X] \;=\; \underset{n \text{ terms}}{\underline{p + p + \cdots + p}} \;=\; np$$
+
+. . .
+
+- 10 tosses of a fair coin: $5$ heads. 
+- 100 rolls of a die, counting sixes: $100 \cdot \tfrac16 \approx 16.7$.
+
+## Back to the two lotteries
+
+$$E[X] \;=\; \sum_{k=1}^{6} k \cdot \tfrac16 \;=\; \tfrac{1+2+3+4+5+6}{6} \;=\; \tfrac{21}{6} \;=\; 3.5$$
+
+$$E[Y] \;=\; np \;=\; 6 \cdot \tfrac12 \;=\; 3$$
+
+. . .
+
+**Lottery A** wins by $\$0.50$ per round.
+
+---
+
+**A caveat worth stating**
+
+The question was posed as *many repetitions*, and that is what justified ranking by the long-run average.
+
+. . .
+
+But in practice we can lean on $E[\cdot]$ even when the experiment happens **once**:
+
+- You choose a major once.
+- You start one business.
+- You accept one job offer.
+
+
+## Linearity of expectation
+
+For any random variables $X, Y$ and constants $a, b$:
+
+$$E[aX + b] \;=\; a\,E[X] + b$$
+
+$$E[X + Y] \;=\; E[X] + E[Y]$$
+
+and combining them, $E[aX + bY] = a\,E[X] + b\,E[Y]$.
+
+. . .
+
+No need for any **assumption whatsoever** about how $X$ and $Y$ relate. Independent, dependent, one a function of the other — **linearity always holds**.
+
+. . .
+
+::: {.callout-caution appearance="minimal"}
+Linearity is about **sums**. In general $E[XY] \neq E[X]\,E[Y]$, and $E[g(X)] \neq g(E[X])$.
+:::
+
+---
+
+**Why linearity holds: the sample-average view**
+
+Run the experiment $n$ times, recording **both** variables each time:
+
+| draw $i$ | $x_i$ | $y_i$ | $x_i + y_i$ |
+|---|---|---|---|
+| 1 | 4 | 2 | 6 |
+| 2 | 1 | 3 | 4 |
+| 3 | 6 | 3 | 9 |
+| $\vdots$ | $\vdots$ | $\vdots$ | $\vdots$ |
+| $n$ | 2 | 5 | 7 |
+
+. . .
+
+Average the last column. Sums can be reordered, so
+
+$$\frac1n\sum_{i=1}^n (x_i + y_i) \;=\; \frac1n\sum_{i=1}^n x_i \;+\; \frac1n\sum_{i=1}^n y_i$$
+
+---
+
+$$\underbrace{\frac1n\sum_i (x_i + y_i)}_{\to\, E[X+Y]} \;=\; \underbrace{\frac1n\sum_i x_i}_{\to\, E[X]} \;+\; \underbrace{\frac1n\sum_i y_i}_{\to\, E[Y]}$$
+
+Each average converges to its expectation. Hence $E[X+Y] = E[X] + E[Y]$.
+
+. . .
+
+Same argument for scaling and shifting:
+
+$$\frac1n\sum_i (a x_i + b) \;=\; a\cdot\frac1n\sum_i x_i \;+\; b \;\longrightarrow\; a\,E[X] + b$$
+
+## Applications of linearity {#app-lin}
+
+**Application 1: the die lottery pays $\$10$ per point**
+
+- Roll a die, get $\$10 \times$ score. 
+- Call the payment $W$.
+
+$W$ is a **different random variable** from $X$. It has its own pmf and expectation.
+
+. . .
+
+**The long way: derive the pmf of $W$**
+
+Support is $10, 20, \dots, 60$, and $P(W = 10k) = P(X = k) = \tfrac16$:
+
+. . .
+
+$$E[W] \;=\; 10\cdot\tfrac16 + 20\cdot\tfrac16 + 30\cdot\tfrac16 + 40\cdot\tfrac16 + 50\cdot\tfrac16 + 60\cdot\tfrac16 \;=\; \tfrac{210}{6} \;=\; 35$$
+
+. . .
+
+**The short way: use linearity directly**
+
+$W = 10X$, so linearity gives
+
+$$E[W] \;=\; 10\,E[X] \;=\; 10 \times 3.5 \;=\; 35$$
+
+---
+
+
+**Application 2: play both lotteries**
+
+- Roll the die *and* toss the six coins.
+- Collect both payments: $S = X + Y$.
+
+$S$ is a **new random variable**. Support: $1, 2, \dots, 12$.
+
+. . .
+
+**The long way starts with the pmf of $S$**
+
+Each value of $s$ can arise from several splits between the die and the coins. We must find them all, and multiply — this is where **independence** enters.
+
+---
+
+**Building $p_S$ by hand**
+
+**$S = 1$.** Only one way: the die shows $1$ and the coins give $0$ heads.
+
+. . .
+
+$$p_S(1) \;=\; P(X=1)\,P(Y=0) \;=\; \tfrac16 \cdot \tfrac1{64} \;=\; \tfrac{1}{384}$$
+
+. . .
+
+**$S = 2$.** Two ways now: $(X,Y) = (1,1)$ or $(2,0)$.
+
+. . .
+
+$$p_S(2) \;=\; \underbrace{\tfrac16\cdot\tfrac{6}{64}}_{(1,1)} \;+\; \underbrace{\tfrac16\cdot\tfrac{1}{64}}_{(2,0)} \;=\; \tfrac{6+1}{384} \;=\; \tfrac{7}{384}$$
+
+. . .
+
+The number of splits keeps growing. 
+
+---
+
+**Question: find $p_S(7)$**
+
+. . .
+
+Every die face works, since $Y = 7-k$ lands in $\{1,\dots,6\}$ for each $k$:
+
+$$p_S(7) \;=\; \frac{1}{384}\left[\binom66 + \binom65 + \binom64 + \binom63 + \binom62 + \binom61\right]
+\;=\; \frac{1+6+15+20+15+6}{384} \;=\; \frac{63}{384}$$
+
+. . .
+
+The most likely total — and the only one every die face can reach.
+
+---
+
+**The full pmf, after twelve such calculations**
+
+```{=html}
+<svg viewBox="0 0 820 340" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;font-family:inherit;font-size:14px;">
+
+  <line x1="70" y1="284" x2="800" y2="284" stroke="#e8e8e8"/>
+  <line x1="70" y1="212" x2="800" y2="212" stroke="#e8e8e8"/>
+  <line x1="70" y1="140" x2="800" y2="140" stroke="#e8e8e8"/>
+  <line x1="70" y1="67"  x2="800" y2="67"  stroke="#e8e8e8"/>
+  <text x="60" y="289" text-anchor="end" fill="#555">0.00</text>
+  <text x="60" y="217" text-anchor="end" fill="#555">0.05</text>
+  <text x="60" y="145" text-anchor="end" fill="#555">0.10</text>
+  <text x="60" y="72"  text-anchor="end" fill="#555">0.15</text>
+
+  <rect x="80"  y="280" width="40" height="4"   fill="#009E73"/>
+  <rect x="141" y="258" width="40" height="26"  fill="#009E73"/>
+  <rect x="202" y="201" width="40" height="83"  fill="#009E73"/>
+  <rect x="263" y="126" width="40" height="158" fill="#009E73"/>
+  <rect x="324" y="70"  width="40" height="214" fill="#009E73"/>
+  <rect x="385" y="47"  width="40" height="237" fill="#009E73"/>
+  <rect x="445" y="47"  width="40" height="237" fill="#009E73"/>
+  <rect x="506" y="70"  width="40" height="214" fill="#009E73"/>
+  <rect x="567" y="126" width="40" height="158" fill="#009E73"/>
+  <rect x="628" y="201" width="40" height="83"  fill="#009E73"/>
+  <rect x="689" y="258" width="40" height="26"  fill="#009E73"/>
+  <rect x="750" y="280" width="40" height="4"   fill="#009E73"/>
+
+  <line x1="435" y1="30" x2="435" y2="284" stroke="#D55E00" stroke-width="2" stroke-dasharray="6 5"/>
+  <text x="443" y="26" fill="#D55E00">E[S] = 6.5</text>
+
+  <line x1="70" y1="30" x2="70" y2="284" stroke="#999"/>
+  <line x1="70" y1="284" x2="800" y2="284" stroke="#999"/>
+  <text x="100" y="308" text-anchor="middle" fill="#333">1</text>
+  <text x="161" y="308" text-anchor="middle" fill="#333">2</text>
+  <text x="222" y="308" text-anchor="middle" fill="#333">3</text>
+  <text x="283" y="308" text-anchor="middle" fill="#333">4</text>
+  <text x="344" y="308" text-anchor="middle" fill="#333">5</text>
+  <text x="405" y="308" text-anchor="middle" fill="#333">6</text>
+  <text x="465" y="308" text-anchor="middle" fill="#333">7</text>
+  <text x="526" y="308" text-anchor="middle" fill="#333">8</text>
+  <text x="587" y="308" text-anchor="middle" fill="#333">9</text>
+  <text x="648" y="308" text-anchor="middle" fill="#333">10</text>
+  <text x="709" y="308" text-anchor="middle" fill="#333">11</text>
+  <text x="770" y="308" text-anchor="middle" fill="#333">12</text>
+  <text x="435" y="332" text-anchor="middle" fill="#333">s, total payment in $</text>
+  <text x="18" y="157" text-anchor="middle" fill="#333" transform="rotate(-90 18 157)">P(S = s)</text>
+
+</svg>
+```
+
+. . .
+
+Finally, the expectation is:
+
+::: {style="font-size: 0.8em;"}
+$$E[S] \;=\; \sum_{s=1}^{12} s\,p_S(s) \;=\; 6.5$$
+:::
+
+---
+
+**The short way**
+
+$$E[S] \;=\; E[X] + E[Y] \;=\; 3.5 + 3 \;=\; 6.5$$
+
+. . .
+
+Same answer. One line.
+
+. . .
+
+We never needed $p_S$ at all — and linearity would have worked even if the die and the coins were somehow rigged to move together.
+
+---
+
+**Application 3: both lotteries, both at $\$10$ per point**
+
+- Total payment is $T = 10X + 10Y$.
+
+. . .
+
+**The short way, and the only way we will use**
+
+$$E[T] \;=\; 10\,E[X] + 10\,E[Y] \;=\; 10(3.5) + 10(3) \;=\; 65$$
+
+. . .
+
+The long way needs the pmf of $T$: the same twelve-point convolution, rescaled. We will not do it.
+
+
+## Binomial expectation, second derivation {.smaller}
+
+$X \sim \text{Binomial}(n,p)$ counts successes in $n$ trials. Write it as a sum of indicators:
+
+$$I_j = \begin{cases} 1 & \text{trial } j \text{ succeeds} \\ 0 & \text{otherwise}\end{cases} \qquad\qquad X = I_1 + I_2 + \cdots + I_n$$
+
+. . .
+
+Each $I_j \sim \text{Bernoulli}(p)$, so $E[I_j] = p$ from our warm-up.
+
+. . .
+
+$$E[X] \;=\; E[I_1 + \cdots + I_n] \;=\; E[I_1] + \cdots + E[I_n] \;=\; \underbrace{p + \cdots + p}_{n} \;=\; np$$
+
+. . .
+
+Three lines. No factorials, no combinatorial identity, no binomial theorem.
+
+The earlier algebraic derivation took four slides. Same answer.
+
+## Hypergeometric: the same trick {.smaller}
+
+**Hypergeometric.** A deck of $N = 52$ cards contains $K = 13$ hearts. Draw $n = 5$ **without replacement**. Let $X$ = number of hearts drawn.
+
+$$p_X(k) \;=\; \frac{\binom{13}{k}\binom{39}{5-k}}{\binom{52}{5}}$$
+
+Summing $k\,p_X(k)$ over this is genuinely unpleasant.
+
+. . .
+
+**Indicators again.** Let $I_j = 1$ if the $j$-th card drawn is a heart. Then $X = I_1 + \cdots + I_5$.
+
+. . .
+
+By symmetry every card is equally likely to land in position $j$, so $E[I_j] = \tfrac{13}{52} = \tfrac14$ for **every** $j$ — not just the first.
+
+$$E[X] \;=\; 5 \times \tfrac14 \;=\; 1.25$$
+
+---
+
+So in general, for $X \sim \text{Hypergeometric}(N,K,n)$:
+
+$$E[X] \;=\; n\,\frac{K}{N}$$
+
+Identical in form to the binomial $np$ — sampling without replacement changes the **spread**, not the mean.
+
+
+## Geometric random variable
+
+**The story.** 
+
+- Repeat independent Bernoulli($p$) trials — same $p$ every time — until the first success occurs, then stop.
+- Let $X$ = the number of **failures** before that first success.
+
+Then $X \sim \text{Geom}(p)$.
+
+. . .
+
+**Example**
+
+- Roll a fair die repeatedly until a $6$ appears, then stop.
+- Let $X$ = the **number of rolls made before 6 appeared**, not counting the last roll.
+- $X \sim \text{Geom}(1/6)$.
+
+---
+
+**Deriving the pmf of $\text{Geom}(p)$**
+
+. . .
+
+Support: $X \in \{0, 1, 2, \dots\}$. No upper bound — the failures could run on arbitrarily long.
+
+. . .
+
+**The pmf.** $X = k$ means: $k$ failures, then a success. Independence lets us multiply:
+
+$$p_X(k) \;=\; \underbrace{(1-p)\cdots(1-p)}_{k \text{ failures}} \cdot p \;=\; (1-p)^k\,p, \qquad k = 0,1,2,\dots$$
+
+---
+
+
+**Checking it is a pmf**
+
+Write $q = 1-p$. Terms are non-negative, and they sum to one:
+
+. . .
+
+$$\sum_{k=0}^{\infty} q^{k}p \;=\; p\sum_{k=0}^{\infty} q^{k} \;=\; \frac{p}{1-q} \;=\; \frac{p}{p} \;=\; 1$$
+
+. . .
+
+A geometric series — hence the name.
+
+. . .
+
+::: {.callout-caution appearance="minimal"}
+The other convention counts **trials**, including the successful one: support $1,2,3,\dots$, pmf $q^{k-1}p$, and a mean one larger. That is called First Success distribution. Do not confuse the two!
+:::
+
+## The geometric pmf across $p$ {#geom-pmf}
+
+```{=html}
+<div id="geo-chart" style="font-family:inherit;">
+  <div style="margin-bottom:.6em;">
+    <button id="geo-1">show p = 1/6</button>
+    <button id="geo-2">show p = 1/3</button>
+    <button id="geo-3">show p = 1/2</button>
+    <button id="geo-reset">clear</button>
+  </div>
+  <div id="geo-svg"></div>
+</div>
+
+<script>
+(function () {
+  var SETS = [
+    { id: "1", p: 1/6, col: "#0072B2", lab: "p = 1/6" },
+    { id: "2", p: 1/3, col: "#009E73", lab: "p = 1/3" },
+    { id: "3", p: 1/2, col: "#E69F00", lab: "p = 1/2" }
+  ];
+  var KMAX = 11;
+
+  var W = 820, H = 360, L = 70, R = 30, T = 30, B = 76;
+  var pw = W - L - R, ph = H - T - B, ymax = 0.55;
+  var slot = pw / (KMAX + 1), bw = 17;
+  var ys = function (v) { return T + ph - (v / ymax) * ph; };
+  var xc = function (k) { return L + slot * (k + 0.5); };
+
+  var on = { "1": false, "2": false, "3": false };
+
+  var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg" ' +
+          'style="width:100%;height:auto;font-family:inherit;font-size:14px;">';
+
+  [0, 0.1, 0.2, 0.3, 0.4, 0.5].forEach(function (v) {
+    s += '<line x1="' + L + '" y1="' + ys(v) + '" x2="' + (W - R) + '" y2="' + ys(v) + '" stroke="#e8e8e8"/>';
+    s += '<text x="' + (L - 10) + '" y="' + (ys(v) + 5) + '" text-anchor="end" fill="#555">' + v.toFixed(1) + '</text>';
+  });
+
+  for (var k = 0; k <= KMAX; k++) {
+    for (var j = 0; j < SETS.length; j++) {
+      var st = SETS[j];
+      var prob = Math.pow(1 - st.p, k) * st.p;
+      var x = xc(k) - 1.5 * bw + j * bw;
+      s += '<rect class="gbar-' + st.id + '" data-y="' + ys(prob) + '" data-h="' + (T + ph - ys(prob)) + '" ' +
+           'x="' + x + '" y="' + (T + ph) + '" width="' + (bw - 2) + '" height="0" fill="' + st.col + '" ' +
+           'style="transition:y .5s ease,height .5s ease;"/>';
+    }
+    s += '<text x="' + xc(k) + '" y="' + (T + ph + 22) + '" text-anchor="middle" fill="#333">' + k + '</text>';
+  }
+
+  s += '<line x1="' + L + '" y1="' + T + '" x2="' + L + '" y2="' + (T + ph) + '" stroke="#999"/>';
+  s += '<line x1="' + L + '" y1="' + (T + ph) + '" x2="' + (W - R) + '" y2="' + (T + ph) + '" stroke="#999"/>';
+  s += '<text x="' + (L + pw / 2) + '" y="' + (T + ph + 48) +
+       '" text-anchor="middle" fill="#333">k, failures before the first success</text>';
+  s += '<text x="18" y="' + (T + ph / 2) + '" text-anchor="middle" fill="#333" transform="rotate(-90 18 ' +
+       (T + ph / 2) + ')">P(X = k)</text>';
+
+  for (var j = 0; j < SETS.length; j++) {
+    var st = SETS[j], lx = W - 250 + j * 90;
+    s += '<g id="geo-leg-' + st.id + '" style="opacity:0;transition:opacity .4s;">';
+    s += '<rect x="' + lx + '" y="' + (T + 4) + '" width="14" height="14" fill="' + st.col + '"/>';
+    s += '<text x="' + (lx + 20) + '" y="' + (T + 16) + '" fill="#333">' + st.lab + '</text></g>';
+  }
+
+  s += '</svg>';
+  document.getElementById("geo-svg").innerHTML = s;
+
+  var root = document.getElementById("geo-chart");
+
+  function render() {
+    for (var j = 0; j < SETS.length; j++) {
+      var st = SETS[j], show = on[st.id];
+      var bars = root.querySelectorAll(".gbar-" + st.id);
+      for (var i = 0; i < bars.length; i++) {
+        bars[i].setAttribute("y", show ? bars[i].getAttribute("data-y") : (T + ph));
+        bars[i].setAttribute("height", show ? bars[i].getAttribute("data-h") : 0);
+      }
+      document.getElementById("geo-leg-" + st.id).style.opacity = show ? "1" : "0";
+      document.getElementById("geo-" + st.id).textContent = (show ? "hide " : "show ") + st.lab;
+    }
+  }
+
+  for (var j = 0; j < SETS.length; j++) {
+    (function (id) {
+      document.getElementById("geo-" + id).onclick = function () { on[id] = !on[id]; render(); };
+    })(SETS[j].id);
+  }
+  document.getElementById("geo-reset").onclick = function () {
+    on["1"] = on["2"] = on["3"] = false; render();
+  };
+
+  render();
+})();
+</script>
+```
+
+Always **decreasing** — $k=0$ is the single most likely outcome, for every $p$. Larger $p$ means a steeper decay and a shorter wait; the tail for $p = 1/6$ is still visibly fat at $k = 11$.
+
+## Expectation of the geometric {.smaller}
+
+$$E[X] \;=\; \sum_{k=0}^{\infty} k\,q^{k}p \;=\; pq\underbrace{\sum_{k=1}^{\infty} k\,q^{k-1}}_{\textstyle S}$$
+
+The $k=0$ term contributes nothing, so the sum may start at $k=1$.
+
+. . .
+
+**The trick: multiply by $q$ and subtract.**
+
+$$S \;=\; 1 + 2q + 3q^2 + 4q^3 + \cdots$$
+$$qS \;=\; \phantom{1 +\;} q + 2q^2 + 3q^3 + \cdots$$
+
+. . .
+
+Subtracting, each coefficient drops by one:
+
+$$S - qS \;=\; 1 + q + q^2 + q^3 + \cdots \;=\; \frac{1}{1-q}$$
+
+. . .
+
+$$S(1-q) = \frac{1}{1-q} \quad\Longrightarrow\quad S = \frac{1}{(1-q)^2} = \frac{1}{p^2}$$
+
+$$E[X] \;=\; pq \cdot \frac{1}{p^2} \;=\; \frac{q}{p}$$
+
+---
+
+**Geometric mean: check and intuition**
+
+$$\boxed{\;X \sim \text{Geom}(p) \;\Longrightarrow\; E[X] = \tfrac{q}{p}\;}$$
+
+- Waiting for a six: $p = \tfrac16$, so $E[X] = \tfrac{5/6}{1/6} = 5$ **wasted rolls** — six rolls in total.
+- Waiting for heads: $E[X] = 1$ wasted toss — two tosses in total.
+
+. . .
+
+**Intuition.** One success arrives per $1/p$ trials on average, and one of those trials is the success itself.
+
+. . .
+
+::: {.callout-caution appearance="minimal"}
+The mode is $k=0$ for every $p$: immediate success is the single most likely outcome, even at $p = 1/6$, where the mean is $5$.
+:::
+
+
+## Coupon collector problem {.smaller}
+
+Roll a die until you have seen **all six faces**.
+
+- Let $T$ = total rolls needed.
+- Find $E[T]$.
+
+. . .
+
+Direct attack: the pmf of $T$ involves inclusion–exclusion over which faces are missing. Not appealing.
+
+. . .
+
+**Decompose by milestones.** Split the wait into stretches between *new* faces:
+
+$$T \;=\; T_1 + T_2 + T_3 + T_4 + T_5 + T_6$$
+
+where $T_i$ = rolls taken to find the $i$-th distinct face, once $i-1$ are already collected.
+
+- For example, $T_1$ is how many rolls needed to get 1 distinct face. Of course, $T_1=1$.
+- $T_2$ is how many rolls needed to get 2nd distinct face. This is truly random. 
+- While holding $i-1$ faces, a roll is "new" with probability $p_i = \dfrac{6-(i-1)}{6}$.
+- The **wasted** rolls are $G_i \sim \text{Geom}(p_i)$, and $T_i = 1 + G_i$:
+
+$$E[T_i] \;=\; 1 + \frac{q_i}{p_i} \;=\; \frac{1}{p_i} \;=\; \frac{6}{7-i}$$
+
+## Coupon collector: the answer {.smaller}
+
+$$E[T] \;=\; \sum_{i=1}^{6} \frac{6}{7-i} \;=\; \frac66 + \frac65 + \frac64 + \frac63 + \frac62 + \frac61$$
+
+$$=\; 1 + 1.2 + 1.5 + 2 + 3 + 6 \;=\; 14.7$$
+
+. . .
+
+**Read the terms.** The first face is free ($1$ roll). The last face alone costs $6$ rolls on average — more than the first four combined.
+
+. . .
+
+That asymmetry is the whole phenomenon: collecting is fast early and agonising at the end, because the target keeps shrinking.

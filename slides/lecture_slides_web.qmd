@@ -1,0 +1,11 @@
+---
+format:
+  revealjs:
+    theme: simple
+    slide-number: true
+    embed-resources: true
+    width: 1050
+    height: 700
+---
+
+{{< include ../00_intro/intro.qmd >}}

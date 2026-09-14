@@ -1,32 +1,150 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
-## Conditional probability
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
 
-How do we account for (new) information?
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-::: {.incremental}
-- What are my chances to pass this course?
-  - given that I am a math major?
-  - given that I am retaking it?
-  - given that I am Aries?
-- What is the probability that a worker makes over 1 mln KZT per month?
-  - given she works in Astana?
-  - given she is in Finace?
-  - given she is NU graduate?
-:::
 
----
+<title>conditional</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
 
-**Example: Two-children family**
 
-A family has two children.
+<script src="conditional_files/libs/clipboard/clipboard.min.js"></script>
+<script src="conditional_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="conditional_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="conditional_files/libs/quarto-html/popper.min.js"></script>
+<script src="conditional_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="conditional_files/libs/quarto-html/anchor.min.js"></script>
+<link href="conditional_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="conditional_files/libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="conditional_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="conditional_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="conditional_files/libs/bootstrap/bootstrap-138a6193a3bd40baf1e627da441a4734.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 
-- What is the probability that it has [at least one boy]{style="color: red;"} (event A)?
-  
-- What is the probability that it has at least one boy, **given** that it has [at least one girl]{style="color: red;"} (event B)?
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
----
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
-```{=html}
+</head>
+
+<body class="fullcontent quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+
+
+
+<section id="contents" class="level2">
+<h2 class="anchored" data-anchor-id="contents">Contents</h2>
+<div class="incremental">
+<ul class="incremental">
+<li><strong>Introducing Conditional Probability</strong>
+<ul class="incremental">
+<li>Motivation: accounting for new information</li>
+<li>Two-children family example; formal definition</li>
+</ul></li>
+<li><strong>Two Dice Example</strong>
+<ul class="incremental">
+<li><span class="math inline">\(P(A\mid B)\)</span> vs.&nbsp;<span class="math inline">\(P(B\mid A)\)</span> — why they differ</li>
+</ul></li>
+<li><strong>Bayes’ Rule</strong></li>
+<li><strong>Law of Total Probability</strong>
+<ul class="incremental">
+<li>Proof (n=2); Two Bins example</li>
+<li>Bayes’ Rule + LOTP combined: Testing for a Disease</li>
+</ul></li>
+<li><strong>Independence</strong>
+<ul class="incremental">
+<li>Definition; Two Cards example (non-independence)</li>
+<li>When independence is a reasonable assumption</li>
+</ul></li>
+<li><strong>The Monty Hall Problem</strong>
+<ul class="incremental">
+<li>Solving via LOTP; generalization to 1000 doors</li>
+</ul></li>
+<li><strong>Simpson’s Paradox</strong>
+<ul class="incremental">
+<li>COVID-19 case fatality rates (China vs.&nbsp;Italy)</li>
+</ul></li>
+<li><strong>Conditioning as a Tool: Sequential Battle</strong>
+<ul class="incremental">
+<li>Brute-force (geometric series) vs.&nbsp;conditioning (system of equations)</li>
+</ul></li>
+</ul>
+</div>
+</section>
+<section id="conditional-probability" class="level2">
+<h2 class="anchored" data-anchor-id="conditional-probability">Conditional probability</h2>
+<p>How do we account for (new) information?</p>
+<div class="incremental">
+<ul class="incremental">
+<li>What are my chances to pass this course?
+<ul class="incremental">
+<li>given that I am a math major?</li>
+<li>given that I am retaking it?</li>
+<li>given that I am Aries?</li>
+</ul></li>
+<li>What is the probability that a worker makes over 1 mln KZT per month?
+<ul class="incremental">
+<li>given she works in Astana?</li>
+<li>given she is in Finace?</li>
+<li>given she is NU graduate?</li>
+</ul></li>
+</ul>
+</div>
+<hr>
+<p><strong>Example: Two-children family</strong></p>
+<p>A family has two children.</p>
+<ul>
+<li><p>What is the probability that it has <span style="color: red;">at least one boy</span> (event A)?</p></li>
+<li><p>What is the probability that it has at least one boy, <strong>given</strong> that it has <span style="color: red;">at least one girl</span> (event B)?</p></li>
+</ul>
+<hr>
 <div class="fam2c-widget" style="background:#fbfbfb;border:2px solid #333333;border-radius:14px;padding:20px;max-width:720px;margin:0 auto;font-family:'Helvetica Neue',Arial,sans-serif;">
   <canvas id="fam2c-canvas" width="700" height="460" style="display:block;margin:0 auto;background:#ffffff;border-radius:8px;max-width:100%;height:auto;"></canvas>
   <div id="fam2c-info" style="text-align:center;font-size:16px;font-weight:700;margin-top:14px;color:#222222;min-height:44px;line-height:1.4;"></div>
@@ -221,148 +339,127 @@ A family has two children.
   draw(); updateInfo(); updateButtons();
 })();
 </script>
-```
-
----
-
-Hence, we get:
-
-::: {.incremental}
-- $P(A)=750/1000=0.75$
-- $P(\text{A given B})=500/750$
-- The second probability is called **conditional probability of A given B**.
-- Here even B is the new information we condition upon.
-:::
-
----
-
-::: {.callout-note}
-## Definition
-
-For events $A$ and $B$ with $P(B) > 0$, the **conditional probability of $A$ given $B$** is
-$$
+<hr>
+<p>Hence, we get:</p>
+<div class="incremental">
+<ul class="incremental">
+<li><span class="math inline">\(P(A)=750/1000=0.75\)</span></li>
+<li><span class="math inline">\(P(\text{A given B})=500/750\)</span></li>
+<li>The second probability is called <strong>conditional probability of A given B</strong>.</li>
+<li>Here even B is the new information we condition upon.</li>
+</ul>
+</div>
+<hr>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Definition
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>For events <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span> with <span class="math inline">\(P(B) &gt; 0\)</span>, the <strong>conditional probability of <span class="math inline">\(A\)</span> given <span class="math inline">\(B\)</span></strong> is <span class="math display">\[
 P(A \mid B) = \frac{P(A \cap B)}{P(B)}.
-$$
-:::
-
-::: {.fragment}
-- $A$: the event whose probability we're updating
-- $B$: the evidence — what we observe / treat as given
-- Requires $P(B) > 0$: can't condition on an impossible event
-- $P(A)$ is called a **prior** probability.
-- $P(A|B)$ is called a **posterior** probability.
-:::
-
----
-
-::: {.fragment}
-Matches what we just found:
-$$
+\]</span></p>
+</div>
+</div>
+<div class="fragment">
+<ul>
+<li><span class="math inline">\(A\)</span>: the event whose probability we’re updating</li>
+<li><span class="math inline">\(B\)</span>: the evidence — what we observe / treat as given</li>
+<li>Requires <span class="math inline">\(P(B) &gt; 0\)</span>: can’t condition on an impossible event</li>
+<li><span class="math inline">\(P(A)\)</span> is called a <strong>prior</strong> probability.</li>
+<li><span class="math inline">\(P(A|B)\)</span> is called a <strong>posterior</strong> probability.</li>
+</ul>
+</div>
+<hr>
+<div class="fragment">
+<p>Matches what we just found: <span class="math display">\[
 P(A \mid B) = \frac{500/1000}{750/1000} = \frac{500}{750}
-$$
-:::
-
----
-
-![Figure to always keep in mind when thinking about conditional probability](../conditional.png)
-
----
-
-**Example: two dice**
-
-Roll two fair dice. Let
-
-- $A$ = at least one die shows 6
-- $B$ = the sum is 8
-
-Find $P(A\mid B)$ and $P(B\mid A)$, interpret.
-
----
-
-Start from the definition:
-
-$$P(A \mid B) = \frac{P(A \cap B)}{P(B)}.$$
-$$P(B \mid A) = \frac{P(A \cap B)}{P(A)}.$$
-
-::: {.fragment}
-We use the definition we need:
-
-- $|S|$
-- $|A \cap B|$
-- $|B|$ and $|A|$
-:::
-
----
-
-::: {.fragment}
-Sample space: $S = \{(i,j) : i,j \in \{1,\dots,6\}\}$, 36 equally likely outcomes.
-:::
-
----
-
-**Listing $A$**
-
-$$A = \{(1,6),(2,6),(3,6),(4,6),(5,6),\dots\}$$
-
-::: {.fragment}
-$$|A| = 11 \qquad P(A) = \frac{11}{36}$$
-:::
-
-::: {.fragment}
-How to count quickly? 
-:::
-
----
-
-**Listing $B$**
-
-$$B = \{(2,6),(3,5),(4,4),(5,3),(6,2)\}$$
-
-::: {.fragment}
-$$|B| = 5 \qquad P(B) = \frac{5}{36}$$
-:::
-
----
-
-**Finding $A \cap B$**
-
-Scan $B$'s five outcomes for the ones that also have a 6:
-
-$$B = \{\color{#2980b9}{(2,6)},(3,5),(4,4),(5,3),\color{#2980b9}{(6,2)}\}$$
-
-::: {.fragment}
-$$A \cap B = \{(2,6),(6,2)\} \qquad |A\cap B| = 2 \qquad P(A\cap B) = \frac{2}{36}$$
-:::
-
----
-
-**$P(A \mid B)$: given the sum is 8**
-
-$$P(A\mid B) = \frac{P(A\cap B)}{P(B)} = \frac{2/36}{5/36} = \frac{2}{5}$$
-
-::: {.fragment}
-Same thing directly: restrict to $B$'s 5 equally likely outcomes, 2 of them are also in $A$ $\to \dfrac{2}{5}$.
-:::
-
----
-
-**$P(B \mid A)$: given at least one 6**
-
-$$P(B\mid A) = \frac{P(A\cap B)}{P(A)} = \frac{2/36}{11/36} = \frac{2}{11}$$
-
-::: {.fragment}
-Restrict to $A$'s 11 equally likely outcomes, 2 of them also sum to 8 $\to \dfrac{2}{11}$.
-:::
-
-::: {.fragment}
-::: {.callout-warning}
-$P(A\mid B) \neq P(B\mid A)$ generally. Which event you condition on determines which sample space you restrict to.
-:::
-:::
-
----
-
-```{=html}
+\]</span></p>
+</div>
+<hr>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../conditional.png" class="img-fluid figure-img"></p>
+<figcaption>Figure to always keep in mind when thinking about conditional probability</figcaption>
+</figure>
+</div>
+<hr>
+<p><strong>Example: two dice</strong></p>
+<p>Roll two fair dice. Let</p>
+<ul>
+<li><span class="math inline">\(A\)</span> = at least one die shows 6</li>
+<li><span class="math inline">\(B\)</span> = the sum is 8</li>
+</ul>
+<p>Find <span class="math inline">\(P(A\mid B)\)</span> and <span class="math inline">\(P(B\mid A)\)</span>, interpret.</p>
+<hr>
+<p>Start from the definition:</p>
+<p><span class="math display">\[P(A \mid B) = \frac{P(A \cap B)}{P(B)}.\]</span> <span class="math display">\[P(B \mid A) = \frac{P(A \cap B)}{P(A)}.\]</span></p>
+<div class="fragment">
+<p>We use the definition we need:</p>
+<ul>
+<li><span class="math inline">\(|S|\)</span></li>
+<li><span class="math inline">\(|A \cap B|\)</span></li>
+<li><span class="math inline">\(|B|\)</span> and <span class="math inline">\(|A|\)</span></li>
+</ul>
+</div>
+<hr>
+<div class="fragment">
+<p>Sample space: <span class="math inline">\(S = \{(i,j) : i,j \in \{1,\dots,6\}\}\)</span>, 36 equally likely outcomes.</p>
+</div>
+<hr>
+<p><strong>Listing <span class="math inline">\(A\)</span></strong></p>
+<p><span class="math display">\[A = \{(1,6),(2,6),(3,6),(4,6),(5,6),\dots\}\]</span></p>
+<div class="fragment">
+<p><span class="math display">\[|A| = 11 \qquad P(A) = \frac{11}{36}\]</span></p>
+</div>
+<div class="fragment">
+<p>How to count quickly?</p>
+</div>
+<hr>
+<p><strong>Listing <span class="math inline">\(B\)</span></strong></p>
+<p><span class="math display">\[B = \{(2,6),(3,5),(4,4),(5,3),(6,2)\}\]</span></p>
+<div class="fragment">
+<p><span class="math display">\[|B| = 5 \qquad P(B) = \frac{5}{36}\]</span></p>
+</div>
+<hr>
+<p><strong>Finding <span class="math inline">\(A \cap B\)</span></strong></p>
+<p>Scan <span class="math inline">\(B\)</span>’s five outcomes for the ones that also have a 6:</p>
+<p><span class="math display">\[B = \{\color{#2980b9}{(2,6)},(3,5),(4,4),(5,3),\color{#2980b9}{(6,2)}\}\]</span></p>
+<div class="fragment">
+<p><span class="math display">\[A \cap B = \{(2,6),(6,2)\} \qquad |A\cap B| = 2 \qquad P(A\cap B) = \frac{2}{36}\]</span></p>
+</div>
+<hr>
+<p><strong><span class="math inline">\(P(A \mid B)\)</span>: given the sum is 8</strong></p>
+<p><span class="math display">\[P(A\mid B) = \frac{P(A\cap B)}{P(B)} = \frac{2/36}{5/36} = \frac{2}{5}\]</span></p>
+<div class="fragment">
+<p>Same thing directly: restrict to <span class="math inline">\(B\)</span>’s 5 equally likely outcomes, 2 of them are also in <span class="math inline">\(A\)</span> <span class="math inline">\(\to \dfrac{2}{5}\)</span>.</p>
+</div>
+<hr>
+<p><strong><span class="math inline">\(P(B \mid A)\)</span>: given at least one 6</strong></p>
+<p><span class="math display">\[P(B\mid A) = \frac{P(A\cap B)}{P(A)} = \frac{2/36}{11/36} = \frac{2}{11}\]</span></p>
+<div class="fragment">
+<p>Restrict to <span class="math inline">\(A\)</span>’s 11 equally likely outcomes, 2 of them also sum to 8 <span class="math inline">\(\to \dfrac{2}{11}\)</span>.</p>
+</div>
+<div class="fragment">
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><span class="math inline">\(P(A\mid B) \neq P(B\mid A)\)</span> generally. Which event you condition on determines which sample space you restrict to.</p>
+</div>
+</div>
+</div>
+<hr>
 <div class="dice2-widget" style="background:#fbfbfb;border:2px solid #333333;border-radius:14px;padding:20px;max-width:640px;margin:0 auto;font-family:'Helvetica Neue',Arial,sans-serif;">
   <canvas id="dice2-canvas" width="560" height="560" style="display:block;margin:0 auto;background:#ffffff;border-radius:8px;max-width:100%;height:auto;"></canvas>
   <div id="dice2-info" style="text-align:center;font-size:16px;font-weight:700;margin-top:14px;color:#222222;min-height:44px;line-height:1.4;"></div>
@@ -507,153 +604,136 @@ $P(A\mid B) \neq P(B\mid A)$ generally. Which event you condition on determines 
   draw(); updateInfo(); updateButtons();
 })();
 </script>
-```
-
----
-
-**Another example $P(A|B)\neq P(B|A)$.
-**
-
-::: {.incremental}
-- Imagine a fire alarm so sensetive that it goes off often
-- If there is a fire, alarm rings
-- But also often rings when there is no fire
-- Here $P(F|A)$ can be low, but $P(A|F)$ is high
-- Cook up the numbers to demonstrate? What must be the condition for this to be true?
-:::
-
----
-
-## Bayes' rule
-
-::: {.callout-note}
-## Theorem
-
-For events $A, B$ with $P(A), P(B) > 0$:
-$$
+<hr>
+<p><strong>Another example <span class="math inline">\(P(A|B)\neq P(B|A)\)</span>. </strong></p>
+<div class="incremental">
+<ul class="incremental">
+<li>Imagine a fire alarm so sensetive that it goes off often</li>
+<li>If there is a fire, alarm rings</li>
+<li>But also often rings when there is no fire</li>
+<li>Here <span class="math inline">\(P(F|A)\)</span> can be low, but <span class="math inline">\(P(A|F)\)</span> is high</li>
+<li>Cook up the numbers to demonstrate? What must be the condition for this to be true?</li>
+</ul>
+</div>
+<hr>
+</section>
+<section id="bayes-rule" class="level2">
+<h2 class="anchored" data-anchor-id="bayes-rule">Bayes’ rule</h2>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Theorem
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>For events <span class="math inline">\(A, B\)</span> with <span class="math inline">\(P(A), P(B) &gt; 0\)</span>: <span class="math display">\[
 P(A \mid B) = \frac{P(B \mid A)\, P(A)}{P(B)}
-$$
-:::
-
-::: {.fragment}
-**Derivation.** Apply the definition of conditional probability twice to the same intersection:
-$$
+\]</span></p>
+</div>
+</div>
+<div class="fragment">
+<p><strong>Derivation.</strong> Apply the definition of conditional probability twice to the same intersection: <span class="math display">\[
 P(A \cap B) = P(A \mid B)\,P(B) = P(B \mid A)\,P(A)
-$$
-:::
-
-::: {.fragment}
-Divide through by $P(B)$ or $P(A$):
-:::
-
-::: {.fragment}
-Bayes' rule connects two conditional probabilities. Hence, useful when you know one, not the other.
-:::
-
----
-
-## Law of Total Probability
-
-::: {.callout-note}
-## Theorem
-
-Let $A_1, \dots, A_n$ be a **partition** of the sample space $S$ (disjoint events with $A_1\cup\cdots\cup A_n = S$), each with $P(A_i) > 0$. Then for any event $B$:
-$$
+\]</span></p>
+</div>
+<div class="fragment">
+<p>Divide through by <span class="math inline">\(P(B)\)</span> or <span class="math inline">\(P(A\)</span>):</p>
+</div>
+<div class="fragment">
+<p>Bayes’ rule connects two conditional probabilities. Hence, useful when you know one, not the other.</p>
+</div>
+<hr>
+</section>
+<section id="law-of-total-probability" class="level2">
+<h2 class="anchored" data-anchor-id="law-of-total-probability">Law of Total Probability</h2>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Theorem
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Let <span class="math inline">\(A_1, \dots, A_n\)</span> be a <strong>partition</strong> of the sample space <span class="math inline">\(S\)</span> (disjoint events with <span class="math inline">\(A_1\cup\cdots\cup A_n = S\)</span>), each with <span class="math inline">\(P(A_i) &gt; 0\)</span>. Then for any event <span class="math inline">\(B\)</span>: <span class="math display">\[
 P(B) = \sum_{i=1}^n P(B \mid A_i)\,P(A_i)
-$$
-:::
-
-::: {.fragment}
-**Idea:** $P(B)$ is given by the weighted average of $B$'s conditional probabilities given $A_i$s, where weights are probabilities of corresponding partitioning sets. 
-:::
-
-::: {.fragment}
-Often paired with Bayes' rule: LOTP builds the denominator $P(B)$ that Bayes' rule needs.
-:::
-
----
-
-**Proof of LOTP ($n=2$)**
-
-Partition: $A_1$ and $A_2 = A_1^c$, so $A_1\cap A_2=\varnothing$ and $A_1\cup A_2 = S$.
-
-::: {.fragment}
-**Step 1 — express $B$ as a union of its pieces inside each $A_i$.**
-
-Since $A_1\cup A_2 = S \supseteq B$, every outcome in $B$ lies in exactly one of $A_1$ or $A_2$:
-$$
+\]</span></p>
+</div>
+</div>
+<div class="fragment">
+<p><strong>Idea:</strong> <span class="math inline">\(P(B)\)</span> is given by the weighted average of <span class="math inline">\(B\)</span>’s conditional probabilities given <span class="math inline">\(A_i\)</span>s, where weights are probabilities of corresponding partitioning sets.</p>
+</div>
+<div class="fragment">
+<p>Often paired with Bayes’ rule: LOTP builds the denominator <span class="math inline">\(P(B)\)</span> that Bayes’ rule needs.</p>
+</div>
+<hr>
+<p><strong>Proof of LOTP (<span class="math inline">\(n=2\)</span>)</strong></p>
+<p>Partition: <span class="math inline">\(A_1\)</span> and <span class="math inline">\(A_2 = A_1^c\)</span>, so <span class="math inline">\(A_1\cap A_2=\varnothing\)</span> and <span class="math inline">\(A_1\cup A_2 = S\)</span>.</p>
+<div class="fragment">
+<p><strong>Step 1 — express <span class="math inline">\(B\)</span> as a union of its pieces inside each <span class="math inline">\(A_i\)</span>.</strong></p>
+<p>Since <span class="math inline">\(A_1\cup A_2 = S \supseteq B\)</span>, every outcome in <span class="math inline">\(B\)</span> lies in exactly one of <span class="math inline">\(A_1\)</span> or <span class="math inline">\(A_2\)</span>: <span class="math display">\[
 B = (B \cap A_1) \cup (B \cap A_2)
-$$
-:::
-
-::: {.fragment}
-$B\cap A_1$ and $B\cap A_2$ are **disjoint** (since $A_1\cap A_2=\varnothing$), so by the second axiom of probability:
-$$
+\]</span></p>
+</div>
+<div class="fragment">
+<p><span class="math inline">\(B\cap A_1\)</span> and <span class="math inline">\(B\cap A_2\)</span> are <strong>disjoint</strong> (since <span class="math inline">\(A_1\cap A_2=\varnothing\)</span>), so by the second axiom of probability: <span class="math display">\[
 P(B) = P(B\cap A_1) + P(B\cap A_2)
-$$
-:::
-
-::: {.fragment}
-**Step 2 — use**, $P(B\cap A_i) = P(B\mid A_i)\,P(A_i)$:
-$$
+\]</span></p>
+</div>
+<div class="fragment">
+<p><strong>Step 2 — use</strong>, <span class="math inline">\(P(B\cap A_i) = P(B\mid A_i)\,P(A_i)\)</span>: <span class="math display">\[
 P(B) = P(B\mid A_1)P(A_1) + P(B\mid A_2)P(A_2)
-$$
-:::
-
----
-
-$B$ splits along the $A_1/A_2$ boundary into two disjoint pieces:
-
-::: {.fragment}
-```{=html}
+\]</span></p>
+</div>
+<hr>
+<p><span class="math inline">\(B\)</span> splits along the <span class="math inline">\(A_1/A_2\)</span> boundary into two disjoint pieces:</p>
+<div class="fragment">
 <div style="text-align:center;">
-<svg viewBox="0 0 600 340" width="600" height="340" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;height:auto;font-family:'Helvetica Neue',Arial,sans-serif;">
-  <rect x="20" y="20" width="560" height="280" fill="#ffffff" stroke="#333333" stroke-width="2"/>
-  <line x1="300" y1="20" x2="300" y2="300" stroke="#333333" stroke-width="2" stroke-dasharray="6,5"/>
+<svg viewbox="0 0 600 340" width="600" height="340" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;height:auto;font-family:'Helvetica Neue',Arial,sans-serif;">
+  <rect x="20" y="20" width="560" height="280" fill="#ffffff" stroke="#333333" stroke-width="2"></rect>
+  <line x1="300" y1="20" x2="300" y2="300" stroke="#333333" stroke-width="2" stroke-dasharray="6,5"></line>
   <defs>
-    <clipPath id="leftHalf"><rect x="20" y="20" width="280" height="280"/></clipPath>
-    <clipPath id="rightHalf"><rect x="300" y="20" width="280" height="280"/></clipPath>
+    <clippath id="leftHalf"><rect x="20" y="20" width="280" height="280"></rect></clippath>
+    <clippath id="rightHalf"><rect x="300" y="20" width="280" height="280"></rect></clippath>
   </defs>
-  <ellipse cx="300" cy="160" rx="170" ry="105" fill="#2980b9" opacity="0.35" clip-path="url(#leftHalf)"/>
-  <ellipse cx="300" cy="160" rx="170" ry="105" fill="#f39c12" opacity="0.35" clip-path="url(#rightHalf)"/>
-  <ellipse cx="300" cy="160" rx="170" ry="105" fill="none" stroke="#222222" stroke-width="2.5"/>
-  <text x="45" y="50" font-size="20" font-weight="700" fill="#2980b9">A&#8321;</text>
-  <text x="535" y="50" font-size="20" font-weight="700" fill="#f39c12" text-anchor="end">A&#8322;</text>
+  <ellipse cx="300" cy="160" rx="170" ry="105" fill="#2980b9" opacity="0.35" clip-path="url(#leftHalf)"></ellipse>
+  <ellipse cx="300" cy="160" rx="170" ry="105" fill="#f39c12" opacity="0.35" clip-path="url(#rightHalf)"></ellipse>
+  <ellipse cx="300" cy="160" rx="170" ry="105" fill="none" stroke="#222222" stroke-width="2.5"></ellipse>
+  <text x="45" y="50" font-size="20" font-weight="700" fill="#2980b9">A₁</text>
+  <text x="535" y="50" font-size="20" font-weight="700" fill="#f39c12" text-anchor="end">A₂</text>
   <text x="300" y="45" font-size="18" font-weight="700" fill="#222222" text-anchor="middle">B</text>
-  <text x="215" y="170" font-size="16" font-weight="600" fill="#1a5276" text-anchor="middle">B &#8745; A&#8321;</text>
-  <text x="385" y="170" font-size="16" font-weight="600" fill="#9c640c" text-anchor="middle">B &#8745; A&#8322;</text>
+  <text x="215" y="170" font-size="16" font-weight="600" fill="#1a5276" text-anchor="middle">B ∩ A₁</text>
+  <text x="385" y="170" font-size="16" font-weight="600" fill="#9c640c" text-anchor="middle">B ∩ A₂</text>
   <text x="30" y="290" font-size="14" fill="#555555">S</text>
 </svg>
 </div>
-```
-:::
-
-::: {.fragment}
-
-- Dashed line = the $A_1/A_2$ partition boundary. 
-- The two shaded lobes of $B$ are disjoint by construction, so their probabilities add: $P(B) = P(B\cap A_1)+P(B\cap A_2)$, and each equals $P(B\mid A_i)P(A_i)$ by the definition of conditional probability.
-:::
-
----
-
-**Example: Two Bins**
-
-- **Bin 1:** 2 red balls, 1 blue ball
-- **Bin 2:** 2 red balls, 2 blue balls
-
-::: {.fragment}
-Pick one of the two bins **uniformly at random**, then draw **one ball uniformly at random** from the chosen bin.
-:::
-
-::: {.fragment}
-
-- What is the probability that the ball drawn is **blue**?
-- Given that the ball is blue, what is the probability that Bin 1 was chosen?
-:::
-
----
-
-```{=html}
+</div>
+<div class="fragment">
+<ul>
+<li>Dashed line = the <span class="math inline">\(A_1/A_2\)</span> partition boundary.</li>
+<li>The two shaded lobes of <span class="math inline">\(B\)</span> are disjoint by construction, so their probabilities add: <span class="math inline">\(P(B) = P(B\cap A_1)+P(B\cap A_2)\)</span>, and each equals <span class="math inline">\(P(B\mid A_i)P(A_i)\)</span> by the definition of conditional probability.</li>
+</ul>
+</div>
+<hr>
+<p><strong>Example: Two Bins</strong></p>
+<ul>
+<li><strong>Bin 1:</strong> 2 red balls, 1 blue ball</li>
+<li><strong>Bin 2:</strong> 2 red balls, 2 blue balls</li>
+</ul>
+<div class="fragment">
+<p>Pick one of the two bins <strong>uniformly at random</strong>, then draw <strong>one ball uniformly at random</strong> from the chosen bin.</p>
+</div>
+<div class="fragment">
+<ul>
+<li>What is the probability that the ball drawn is <strong>blue</strong>?</li>
+<li>Given that the ball is blue, what is the probability that Bin 1 was chosen?</li>
+</ul>
+</div>
+<hr>
 <div class="binx-widget" style="background:#fbfbfb;border:2px solid #333333;border-radius:14px;padding:20px;max-width:460px;margin:0 auto;font-family:'Helvetica Neue',Arial,sans-serif;">
 
   <div style="display:flex;justify-content:center;gap:30px;">
@@ -794,48 +874,34 @@ Pick one of the two bins **uniformly at random**, then draw **one ball uniformly
   phase0();
 })();
 </script>
-```
-
----
-
-**Probability of blue ball**
-We know conditional probabilities of drawing a blue ball given which bin was chosen, and the probabilities of choosing each bin. 
-
-- Let $A_1$ = "Bin 1 chosen", 
-- Let $A_2$ = "Bin 2 chosen", and 
-- $B$ = "ball drawn is blue". We are given:
-
-::: {.fragment}
-**Bin choice probabilities:**
-$$P(A_1) = P(A_2) = \frac12$$
-:::
-
-::: {.fragment}
-**Conditional probabilities:**
-$$P(B\mid A_1) = \frac13, \qquad P(B\mid A_2) = \frac{2}{4} = \frac12$$
-:::
-
----
-
-**Apply LOTP:**
-
-::: {.fragment}
-$$
+<hr>
+<p><strong>Probability of blue ball</strong> We know conditional probabilities of drawing a blue ball given which bin was chosen, and the probabilities of choosing each bin.</p>
+<ul>
+<li>Let <span class="math inline">\(A_1\)</span> = “Bin 1 chosen”,</li>
+<li>Let <span class="math inline">\(A_2\)</span> = “Bin 2 chosen”, and</li>
+<li><span class="math inline">\(B\)</span> = “ball drawn is blue”. We are given:</li>
+</ul>
+<div class="fragment">
+<p><strong>Bin choice probabilities:</strong> <span class="math display">\[P(A_1) = P(A_2) = \frac12\]</span></p>
+</div>
+<div class="fragment">
+<p><strong>Conditional probabilities:</strong> <span class="math display">\[P(B\mid A_1) = \frac13, \qquad P(B\mid A_2) = \frac{2}{4} = \frac12\]</span></p>
+</div>
+<hr>
+<p><strong>Apply LOTP:</strong></p>
+<div class="fragment">
+<p><span class="math display">\[
 \begin{aligned}
-P(B) &= P(B\mid A_1)P(A_1) + P(B\mid A_2)P(A_2) \\
-     &= \frac13\cdot\frac12 + \frac12\cdot\frac12 \\
-     &= \frac{5}{12} \approx 0.417
+P(B) &amp;= P(B\mid A_1)P(A_1) + P(B\mid A_2)P(A_2) \\
+     &amp;= \frac13\cdot\frac12 + \frac12\cdot\frac12 \\
+     &amp;= \frac{5}{12} \approx 0.417
 \end{aligned}
-$$
+\]</span></p>
+</div>
+<hr>
 
-:::
 
----
 
-```{=html}
-<!DOCTYPE html>
-<html>
-<head>
 <meta charset="utf-8">
 <title>LOTP vertical tree — dot animation</title>
 <style>
@@ -861,11 +927,11 @@ $$
   .bg-node { fill: #ffffff; stroke: #AEB4BA; stroke-width: 1.6; }
   .bg-label { font-size: 13px; fill: #9AA0A6; }
 </style>
-</head>
-<body>
+
+
 
 <div id="lotp-wrap">
-  <svg id="lotp-svg" viewBox="0 0 900 1040">
+  <svg id="lotp-svg" viewbox="0 0 900 1040">
     <g id="bg-group"></g>
     <g id="dots-group"></g>
     <text id="title" class="lotp-title" x="450" y="34" text-anchor="middle"></text>
@@ -873,8 +939,7 @@ $$
 
     <g id="labels-group"></g>
 
-    <rect id="formula-bg" class="fade" x="0" y="0" width="0" height="0" rx="10"
-          fill="#EAF1F8" stroke="#2E5C8A" stroke-width="1.4" opacity="0"></rect>
+    <rect id="formula-bg" class="fade" x="0" y="0" width="0" height="0" rx="10" fill="#EAF1F8" stroke="#2E5C8A" stroke-width="1.4" opacity="0"></rect>
     <text id="formula" class="lotp-formula fade" x="450" y="978" text-anchor="middle" opacity="0"></text>
   </svg>
 </div>
@@ -1152,184 +1217,162 @@ $$
 })();
 </script>
 
-</body>
-</html>
-```
 
----
 
-**Conditional probability of Bin 1 given blue**
-We know one conditional probability, $P(B\mid A_1)$, and want to find reverse $P(A_1\mid B)$.
-
-$$
+<hr>
+<p><strong>Conditional probability of Bin 1 given blue</strong> We know one conditional probability, <span class="math inline">\(P(B\mid A_1)\)</span>, and want to find reverse <span class="math inline">\(P(A_1\mid B)\)</span>.</p>
+<p><span class="math display">\[
 P(A_1 \mid B) = \dfrac{P(B\mid A_1)\,P(A_1)}{P(B)}
-$$
-
-::: {.fragment}
-- $P(B\mid A_1)=\dfrac13$
-- $P(A_1)=\dfrac12$
-- $P(B)=\dfrac{5}{12}$
-:::
-
-::: {.fragment}
-$$
+\]</span></p>
+<div class="fragment">
+<ul>
+<li><span class="math inline">\(P(B\mid A_1)=\dfrac13\)</span></li>
+<li><span class="math inline">\(P(A_1)=\dfrac12\)</span></li>
+<li><span class="math inline">\(P(B)=\dfrac{5}{12}\)</span></li>
+</ul>
+</div>
+<div class="fragment">
+<p><span class="math display">\[
 \color{red}{= \dfrac{\frac13\cdot\frac12}{\frac{5}{12}} \approx 0.4}
-$$
-:::
-
----
-
-After observing a blue ball, the prior $P(A_1)=0.5$ dropped to posterior $P(A_1\mid B)=0.4$.
-
-:::{.incremental}
- - Hence, seeing a blue ball is evidence *against* Bin 1. Why?
- - Bin 1 has a smaller share of blue balls than Bin 2 does.
- - **Question:** Can you guess how things change upon observing a red ball instead? Explain intuition and do the computations.
- - **Question:** Imagine drawing two balls instead, with replacement (draw once, put back, draw again). 
-   - What is the probability that both are blue?
-   - Given both are blue, what is the probability that Bin 1 was chosen?
-:::
-
----
-
-## Testing for a Disease
-
-::: {.fragment}
-A patient is tested for some disease. Let:
-
-- $D$ = the event the patient **has** the disease
-- $D^c$ = the event the patient does not have the disease
-- $T$ = the event the test comes back **positive**
-- $T^c$ = the event the test comes back **negative**
-:::
-
-::: {.incremental}
-- The test is a **noisy signal** about $D$ — it doesn't perfectly reveal the truth, and it can be wrong in two different ways. 
-- **Which ways?**
-:::
-
----
-
-**Two Ways a Test Can Be Wrong**
-
-::: {.fragment}
-**False positive:** test says positive, but the patient doesn't have the disease — event $T \cap D^c$.
-:::
-
-::: {.fragment}
-**False negative:** test says negative, but the patient does have the disease — event $T^c \cap D$.
-:::
-
-::: {.fragment}
-|              | $D$ (disease) | $D^c$ (no disease) |
-|:------------:|:---:|:---:|
-| $T$ (test +)  | correct | **false positive** |
-| $T^c$ (test −) | **false negative** | correct |
-:::
-
----
-
-**Test Accuracy: Sensitivity & Specificity**
-
-Avoiding each type of mistake is exactly what the two standard accuracy measures capture:
-
-- **Sensitivity** (true positive rate): $P(T \mid D)$ — chance of testing positive *given* disease
-- **Specificity** (true negative rate): $P(T^c \mid D^c)$ — chance of testing negative *given* no disease
-
-
-::: {.fragment}
-**Example:** COVID-19 rapid antigen test, symptomatic patients (Cochrane meta-analysis, ~150,000 samples):
-$$
+\]</span></p>
+</div>
+<hr>
+<p>After observing a blue ball, the prior <span class="math inline">\(P(A_1)=0.5\)</span> dropped to posterior <span class="math inline">\(P(A_1\mid B)=0.4\)</span>.</p>
+<div class="incremental">
+<ul class="incremental">
+<li>Hence, seeing a blue ball is evidence <em>against</em> Bin 1. Why?</li>
+<li>Bin 1 has a smaller share of blue balls than Bin 2 does.</li>
+<li><strong>Question:</strong> Can you guess how things change upon observing a red ball instead? Explain intuition and do the computations.</li>
+<li><strong>Question:</strong> Imagine drawing two balls instead, with replacement (draw once, put back, draw again).
+<ul class="incremental">
+<li>What is the probability that both are blue?</li>
+<li>Given both are blue, what is the probability that Bin 1 was chosen?</li>
+</ul></li>
+</ul>
+</div>
+<hr>
+</section>
+<section id="testing-for-a-disease" class="level2">
+<h2 class="anchored" data-anchor-id="testing-for-a-disease">Testing for a Disease</h2>
+<div class="fragment">
+<p>A patient is tested for some disease. Let:</p>
+<ul>
+<li><span class="math inline">\(D\)</span> = the event the patient <strong>has</strong> the disease</li>
+<li><span class="math inline">\(D^c\)</span> = the event the patient does not have the disease</li>
+<li><span class="math inline">\(T\)</span> = the event the test comes back <strong>positive</strong></li>
+<li><span class="math inline">\(T^c\)</span> = the event the test comes back <strong>negative</strong></li>
+</ul>
+</div>
+<div class="incremental">
+<ul class="incremental">
+<li>The test is a <strong>noisy signal</strong> about <span class="math inline">\(D\)</span> — it doesn’t perfectly reveal the truth, and it can be wrong in two different ways.</li>
+<li><strong>Which ways?</strong></li>
+</ul>
+</div>
+<hr>
+<p><strong>Two Ways a Test Can Be Wrong</strong></p>
+<div class="fragment">
+<p><strong>False positive:</strong> test says positive, but the patient doesn’t have the disease — event <span class="math inline">\(T \cap D^c\)</span>.</p>
+</div>
+<div class="fragment">
+<p><strong>False negative:</strong> test says negative, but the patient does have the disease — event <span class="math inline">\(T^c \cap D\)</span>.</p>
+</div>
+<div class="fragment">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: center;"></th>
+<th style="text-align: center;"><span class="math inline">\(D\)</span> (disease)</th>
+<th style="text-align: center;"><span class="math inline">\(D^c\)</span> (no disease)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><span class="math inline">\(T\)</span> (test +)</td>
+<td style="text-align: center;">correct</td>
+<td style="text-align: center;"><strong>false positive</strong></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><span class="math inline">\(T^c\)</span> (test −)</td>
+<td style="text-align: center;"><strong>false negative</strong></td>
+<td style="text-align: center;">correct</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+<p><strong>Test Accuracy: Sensitivity &amp; Specificity</strong></p>
+<p>Avoiding each type of mistake is exactly what the two standard accuracy measures capture:</p>
+<ul>
+<li><strong>Sensitivity</strong> (true positive rate): <span class="math inline">\(P(T \mid D)\)</span> — chance of testing positive <em>given</em> disease</li>
+<li><strong>Specificity</strong> (true negative rate): <span class="math inline">\(P(T^c \mid D^c)\)</span> — chance of testing negative <em>given</em> no disease</li>
+</ul>
+<div class="fragment">
+<p><strong>Example:</strong> COVID-19 rapid antigen test, symptomatic patients (Cochrane meta-analysis, ~150,000 samples): <span class="math display">\[
 \text{Sensitivity} \approx 0.73 \ (73.0\%), \qquad \text{Specificity} \approx 0.99 \ (99.1\%)
-$$
-:::
-
-::: {.fragment}
-**Accuracy is two numbers, not one!**
-:::
-
----
-
-Sensitivity and specificity answer: *given the true disease status, what does the test say?*
-
-::: {.fragment}
-But a patient taking the test doesn't know their true status — they only see the **test result**. What they actually want is the reverse:
-:::
-
-::: {.fragment}
-**Given a positive test result, what is the probability of actually having the disease?**
-$$
+\]</span></p>
+</div>
+<div class="fragment">
+<p><strong>Accuracy is two numbers, not one!</strong></p>
+</div>
+<hr>
+<p>Sensitivity and specificity answer: <em>given the true disease status, what does the test say?</em></p>
+<div class="fragment">
+<p>But a patient taking the test doesn’t know their true status — they only see the <strong>test result</strong>. What they actually want is the reverse:</p>
+</div>
+<div class="fragment">
+<p><strong>Given a positive test result, what is the probability of actually having the disease?</strong> <span class="math display">\[
 P(D \mid T) = \, ?
-$$
-:::
-
-::: {.fragment}
-This is *not* the sensitivity — $P(D\mid T) \neq P(T\mid D)$. We need to flip the conditioning.
-:::
-
----
-
-::: {.fragment}
-**Step 1.** Apply Bayes' rule:
-$$
+\]</span></p>
+</div>
+<div class="fragment">
+<p>This is <em>not</em> the sensitivity — <span class="math inline">\(P(D\mid T) \neq P(T\mid D)\)</span>. We need to flip the conditioning.</p>
+</div>
+<hr>
+<div class="fragment">
+<p><strong>Step 1.</strong> Apply Bayes’ rule: <span class="math display">\[
 P(D\mid T) = \frac{P(T\mid D)\,P(D)}{P(T)}
-$$
-:::
-
-::: {.fragment}
-**Step 2.** To find $P(T)$, expand it with LOTP, partitioning on $D, D^c$:
-$$
+\]</span></p>
+</div>
+<div class="fragment">
+<p><strong>Step 2.</strong> To find <span class="math inline">\(P(T)\)</span>, expand it with LOTP, partitioning on <span class="math inline">\(D, D^c\)</span>: <span class="math display">\[
 P(T) = P(T\mid D)P(D) + P(T\mid D^c)P(D^c)
-$$
-:::
-
-::: {.fragment}
-Note $P(T\mid D^c) = 1-\text{specificity}$ (the false-positive rate). 
-:::
-
----
-
-**Step 3.** Combine:
-$$
+\]</span></p>
+</div>
+<div class="fragment">
+<p>Note <span class="math inline">\(P(T\mid D^c) = 1-\text{specificity}\)</span> (the false-positive rate).</p>
+</div>
+<hr>
+<p><strong>Step 3.</strong> Combine: <span class="math display">\[
 P(D\mid T) = \frac{\text{sensitivity}\cdot P(D)}{\text{sensitivity}\cdot P(D) + (1-\text{specificity})\cdot P(D^c)}
-$$
-
-::: {.fragment}
-Three ingredients: sensitivity, specificity, and $P(D)$ — the disease's **prevalence**. Same formula for any test, any disease.
-:::
-
----
-
-**Numerical Example**
-
-::: {.fragment}
-Take $P(D) = 0.01$, sensitivity $= 0.73$, specificity $= 0.99$:
-:::
-
-::: {.fragment}
-$$
+\]</span></p>
+<div class="fragment">
+<p>Three ingredients: sensitivity, specificity, and <span class="math inline">\(P(D)\)</span> — the disease’s <strong>prevalence</strong>. Same formula for any test, any disease.</p>
+</div>
+<hr>
+<p><strong>Numerical Example</strong></p>
+<div class="fragment">
+<p>Take <span class="math inline">\(P(D) = 0.01\)</span>, sensitivity <span class="math inline">\(= 0.73\)</span>, specificity <span class="math inline">\(= 0.99\)</span>:</p>
+</div>
+<div class="fragment">
+<p><span class="math display">\[
 \begin{align*}
-P(D\mid T) &= \frac{0.73 \times 0.01}{0.73\times 0.01 + 0.01\times 0.99} \\[6pt]
-&= \frac{0.0073}{0.0073+0.0099} \\[6pt]
-&= \frac{0.0073}{0.0172} \\[6pt]
-&\approx 0.424
+P(D\mid T) &amp;= \frac{0.73 \times 0.01}{0.73\times 0.01 + 0.01\times 0.99} \\[6pt]
+&amp;= \frac{0.0073}{0.0073+0.0099} \\[6pt]
+&amp;= \frac{0.0073}{0.0172} \\[6pt]
+&amp;\approx 0.424
 \end{align*}
-$$
-:::
-
-::: {.fragment}
-Even with a positive test, there's only about a **42%** chance of actually having COVID.
-:::
-
----
-
-
-```{=html}
+\]</span></p>
+</div>
+<div class="fragment">
+<p>Even with a positive test, there’s only about a <strong>42%</strong> chance of actually having COVID.</p>
+</div>
+<hr>
 <div id="bayes-demo" style="font-family: -apple-system, Helvetica, Arial, sans-serif; max-width: 620px; margin: 0 auto;">
 
   <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; margin-bottom:1.25rem;">
     <div>
-      <label style="font-size:13px; color:#555; display:block; margin-bottom:4px;">Prior &pi; = P(disease)</label>
+      <label style="font-size:13px; color:#555; display:block; margin-bottom:4px;">Prior π = P(disease)</label>
       <input type="range" min="1" max="50" value="1" step="1" id="prior" style="width:100%;">
       <div style="font-size:14px; font-weight:600;" id="prior-out">1%</div>
     </div>
@@ -1348,7 +1391,7 @@ Even with a positive test, there's only about a **42%** chance of actually havin
   <div style="display:flex; gap:24px; margin-bottom:1.25rem; flex-wrap:wrap;">
     <div>
       <label style="font-size:14px; font-weight:600; display:flex; align-items:center; gap:6px;">
-        <input type="checkbox" id="g-diseased"> diseased (&pi;)
+        <input type="checkbox" id="g-diseased"> diseased (π)
       </label>
       <div style="margin-left:22px; margin-top:4px; display:flex; flex-direction:column; gap:4px;">
         <label style="font-size:13px; color:#555; display:flex; align-items:center; gap:6px;">
@@ -1361,7 +1404,7 @@ Even with a positive test, there's only about a **42%** chance of actually havin
     </div>
     <div>
       <label style="font-size:14px; font-weight:600; display:flex; align-items:center; gap:6px;">
-        <input type="checkbox" id="g-healthy"> healthy (1-&pi;)
+        <input type="checkbox" id="g-healthy"> healthy (1-π)
       </label>
       <div style="margin-left:22px; margin-top:4px; display:flex; flex-direction:column; gap:4px;">
         <label style="font-size:13px; color:#555; display:flex; align-items:center; gap:6px;">
@@ -1493,156 +1536,140 @@ Even with a positive test, there's only about a **42%** chance of actually havin
   update();
 })();
 </script>
-```
-
----
-
-## Independence
-
-::: {.fragment}
-**Flip a fair coin 100 times, get 100 heads.** What's the probability the next flip is heads?
-:::
-
-::: {.fragment}
-**Two bins, draw a ball.** Ball turns out blue. Does that change your belief about which bin was chosen?
-:::
-
-::: {.fragment}
-**COVID test.** Result comes back positive. Does that change your belief about having the disease?
-:::
-
-::: {.fragment}
-Events are **independent** if knowing one does not change our estimate of the probability of the other.
-:::
-
----
-
-
-::: {.callout-note}
-## Definition
-
-Events $A$ and $B$ are **independent** if
-$$
+<hr>
+</section>
+<section id="independence" class="level2">
+<h2 class="anchored" data-anchor-id="independence">Independence</h2>
+<div class="fragment">
+<p><strong>Flip a fair coin 100 times, get 100 heads.</strong> What’s the probability the next flip is heads?</p>
+</div>
+<div class="fragment">
+<p><strong>Two bins, draw a ball.</strong> Ball turns out blue. Does that change your belief about which bin was chosen?</p>
+</div>
+<div class="fragment">
+<p><strong>COVID test.</strong> Result comes back positive. Does that change your belief about having the disease?</p>
+</div>
+<div class="fragment">
+<p>Events are <strong>independent</strong> if knowing one does not change our estimate of the probability of the other.</p>
+</div>
+<hr>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Definition
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Events <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span> are <strong>independent</strong> if <span class="math display">\[
 P(A \cap B) = P(A)\,P(B)
-$$
-
-If $P(A)>0$ and $P(B)>0$, this is equivalent to each of:
-$$
+\]</span></p>
+<p>If <span class="math inline">\(P(A)&gt;0\)</span> and <span class="math inline">\(P(B)&gt;0\)</span>, this is equivalent to each of: <span class="math display">\[
 P(A \mid B) = P(A) \qquad \Longleftrightarrow \qquad P(B \mid A) = P(B)
-$$
-:::
-
-::: {.fragment}
-- Multiply Probabilities
-- Posterior = Prior (new information does not affect our estimates)
-:::
-
----
-
-**Two Cards**
-
-Draw two cards without replacement from a standard 52-card deck. 
-
-- Let $A$ = "first card is an ace", 
-- Let $B$ = "second card is an ace". 
-- Independent?
-
-::: {.fragment}
-Intuition: 
-
-**No**, because if first is an Ace, then there are one fewer aces left in the pile, so second does not have the same probability.
-:::
-
-::: {.fragment}
-To formally check this use the definition.
-:::
-
-
----
-
-We check if $P(A\cap B)=P(A)P(B)$. By naive definition:
-
-::: {.fragment}
-$$
+\]</span></p>
+</div>
+</div>
+<div class="fragment">
+<ul>
+<li>Multiply Probabilities</li>
+<li>Posterior = Prior (new information does not affect our estimates)</li>
+</ul>
+</div>
+<hr>
+<p><strong>Two Cards</strong></p>
+<p>Draw two cards without replacement from a standard 52-card deck.</p>
+<ul>
+<li>Let <span class="math inline">\(A\)</span> = “first card is an ace”,</li>
+<li>Let <span class="math inline">\(B\)</span> = “second card is an ace”.</li>
+<li>Independent?</li>
+</ul>
+<div class="fragment">
+<p>Intuition:</p>
+<p><strong>No</strong>, because if first is an Ace, then there are one fewer aces left in the pile, so second does not have the same probability.</p>
+</div>
+<div class="fragment">
+<p>To formally check this use the definition.</p>
+</div>
+<hr>
+<p>We check if <span class="math inline">\(P(A\cap B)=P(A)P(B)\)</span>. By naive definition:</p>
+<div class="fragment">
+<p><span class="math display">\[
 P(A) = \frac{4}{52}
-$$
-:::
-
-::: {.fragment}
-By symmetry, every position in the deck is equally likely to hold any given card, so $P(B) = P(A)$.
-:::
-
-::: {.fragment}
-Now for the right hand side:
-$$
+\]</span></p>
+</div>
+<div class="fragment">
+<p>By symmetry, every position in the deck is equally likely to hold any given card, so <span class="math inline">\(P(B) = P(A)\)</span>.</p>
+</div>
+<div class="fragment">
+<p>Now for the right hand side: <span class="math display">\[
 P(A \cap B) = \frac{\binom{4}{2}}{\binom{52}{2}} = \frac{4\times 3}{52\times 51}
-$$
-:::
-
-::: {.fragment}
-Not independent since: 
-$$
-\frac{4 \times 3}{52 \times 51} \neq (\frac{4}{52})^2 
-$$
-:::
-
----
-
-**Question:** check that the independence definition using the conditional probability also does not hold:
-
-$$
+\]</span></p>
+</div>
+<div class="fragment">
+<p>Not independent since: <span class="math display">\[
+\frac{4 \times 3}{52 \times 51} \neq (\frac{4}{52})^2
+\]</span></p>
+</div>
+<hr>
+<p><strong>Question:</strong> check that the independence definition using the conditional probability also does not hold:</p>
+<p><span class="math display">\[
 P(A \mid B) \neq \frac{P(A \cap B)}{P(B)}
-$$
-
----
-
-Independence is useful as **a simplifying assumption**:
-
-:::{.incremental}
-- Fair **coin flips** are assumed independent: there is no any physical reason for one flip to affect the next.
-- **Sexes of children** are often assumed independent: in reality a child was more likely to be of the same sex as its preceding sibling, but the effect is small enough to be ignored in most models.
-:::
-
-:::{.incremental}
-But it is not always a good assumption:
-
-- **Possibility of biased coin**: what if there is a chance that a coin I flip is biased? Then the flips are not independent!
-- **Hot Hand**: do basketball players really have "hot streaks," or is a made shot independent of the shots before it? Empirical question.
-:::
-
----
-
-**Question:** During a single contact a virus is transmitted from an infected to a healthy person with probability $p>0$. Assume that the transmissions are independent across contacts.
-
-:::{.incremental}
-- What is the probability of getting infected after 3 contacts with infected individuals?
-- What is the probability of getting infected after 3 contacts, where each contact is with an individual who is infected with probability $q>0$, independently, and transmission occurs with probability $p$ if the contact individual is infected?
-- Suppose that after 3 contacts, each of whom is infected with probability $q>0$ independently, Alice is not infected. Given that Alice is not infected, what is the  probability that neither of Alice's contacts was infected?
-:::
-
----
-
-## The Monty Hall Problem
-
-::: {.fragment}
-**Setup.** Three doors. One hides a car, two hide goats. You pick a door. The host — who **knows** what's behind every door — opens one of the *other two*, always revealing a goat, and offers you the chance to switch to the remaining closed door.
-:::
-
-::: {.fragment}
-**Question.** Should you switch?
-:::
-
-::: {.callout-note .fragment}
-**Precise assumptions** (these matter — see below):
-
-- The car is placed uniformly at random among the 3 doors.
-- The host always opens a door you didn't pick, and it always has a goat.
-- The host always offers the switch, regardless of what you initially chose.
-:::
-
----
-
-```{=html}
+\]</span></p>
+<hr>
+<p>Independence is useful as <strong>a simplifying assumption</strong>:</p>
+<div class="incremental">
+<ul class="incremental">
+<li>Fair <strong>coin flips</strong> are assumed independent: there is no any physical reason for one flip to affect the next.</li>
+<li><strong>Sexes of children</strong> are often assumed independent: in reality a child was more likely to be of the same sex as its preceding sibling, but the effect is small enough to be ignored in most models.</li>
+</ul>
+</div>
+<div class="incremental">
+<p>But it is not always a good assumption:</p>
+<ul class="incremental">
+<li><strong>Possibility of biased coin</strong>: what if there is a chance that a coin I flip is biased? Then the flips are not independent!</li>
+<li><strong>Hot Hand</strong>: do basketball players really have “hot streaks,” or is a made shot independent of the shots before it? Empirical question.</li>
+</ul>
+</div>
+<hr>
+<p><strong>Question:</strong> During a single contact a virus is transmitted from an infected to a healthy person with probability <span class="math inline">\(p&gt;0\)</span>. Assume that the transmissions are independent across contacts.</p>
+<div class="incremental">
+<ul class="incremental">
+<li>What is the probability of getting infected after 3 contacts with infected individuals?</li>
+<li>What is the probability of getting infected after 3 contacts, where each contact is with an individual who is infected with probability <span class="math inline">\(q&gt;0\)</span>, independently, and transmission occurs with probability <span class="math inline">\(p\)</span> if the contact individual is infected?</li>
+<li>Suppose that after 3 contacts, each of whom is infected with probability <span class="math inline">\(q&gt;0\)</span> independently, Alice is not infected. Given that Alice is not infected, what is the probability that neither of Alice’s contacts was infected?</li>
+</ul>
+</div>
+<hr>
+</section>
+<section id="the-monty-hall-problem" class="level2">
+<h2 class="anchored" data-anchor-id="the-monty-hall-problem">The Monty Hall Problem</h2>
+<div class="fragment">
+<p><strong>Setup.</strong> Three doors. One hides a car, two hide goats. You pick a door. The host — who <strong>knows</strong> what’s behind every door — opens one of the <em>other two</em>, always revealing a goat, and offers you the chance to switch to the remaining closed door.</p>
+</div>
+<div class="fragment">
+<p><strong>Question.</strong> Should you switch?</p>
+</div>
+<div class="fragment callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Precise assumptions</strong> (these matter — see below):</p>
+<ul>
+<li>The car is placed uniformly at random among the 3 doors.</li>
+<li>The host always opens a door you didn’t pick, and it always has a goat.</li>
+<li>The host always offers the switch, regardless of what you initially chose.</li>
+</ul>
+</div>
+</div>
+<hr>
 <div id="mh-root" style="max-width:680px;margin:0 auto;font-family:sans-serif;">
 
   <div id="mh-status" style="text-align:center;font-size:18px;margin-bottom:20px;min-height:28px;color:#222;">
@@ -1679,36 +1706,38 @@ But it is not always a good assumption:
       <span style="font-size:15px;font-weight:bold;color:#222;">Results</span>
       <button id="mh-reset" style="font-size:12px;color:#888;background:none;border:1px solid #ccc;border-radius:4px;padding:3px 8px;cursor:pointer;">Reset stats</button>
     </div>
-    <table style="width:100%;border-collapse:collapse;font-size:14px;color:#222;">
-      <thead>
-        <tr style="border-bottom:1px solid #ccc;">
-          <th style="text-align:left;padding:4px;">Strategy</th>
-          <th style="text-align:right;padding:4px;">Games</th>
-          <th style="text-align:right;padding:4px;">Wins</th>
-          <th style="text-align:right;padding:4px;">Win rate</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td style="padding:4px;">Switched</td>
-          <td id="mh-switch-n" style="text-align:right;padding:4px;">0</td>
-          <td id="mh-switch-w" style="text-align:right;padding:4px;">0</td>
-          <td id="mh-switch-r" style="text-align:right;padding:4px;">–</td>
-        </tr>
-        <tr>
-          <td style="padding:4px;">Kept</td>
-          <td id="mh-keep-n" style="text-align:right;padding:4px;">0</td>
-          <td id="mh-keep-w" style="text-align:right;padding:4px;">0</td>
-          <td id="mh-keep-r" style="text-align:right;padding:4px;">–</td>
-        </tr>
-        <tr style="border-top:1px solid #ccc;font-weight:bold;">
-          <td style="padding:4px;">Total</td>
-          <td id="mh-total-n" style="text-align:right;padding:4px;">0</td>
-          <td id="mh-total-w" style="text-align:right;padding:4px;">0</td>
-          <td id="mh-total-r" style="text-align:right;padding:4px;">–</td>
-        </tr>
-      </tbody>
-    </table>
+    
+<table class="caption-top table">
+<thead>
+<tr class="header" style="border-bottom:1px solid #ccc;">
+<th data-quarto-table-cell-role="th" style="text-align: left; padding: 4px;">Strategy</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; padding: 4px;">Games</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; padding: 4px;">Wins</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; padding: 4px;">Win rate</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="padding: 4px">Switched</td>
+<td id="mh-switch-n" style="text-align: right; padding: 4px;">0</td>
+<td id="mh-switch-w" style="text-align: right; padding: 4px;">0</td>
+<td id="mh-switch-r" style="text-align: right; padding: 4px;">–</td>
+</tr>
+<tr class="even">
+<td style="padding: 4px">Kept</td>
+<td id="mh-keep-n" style="text-align: right; padding: 4px;">0</td>
+<td id="mh-keep-w" style="text-align: right; padding: 4px;">0</td>
+<td id="mh-keep-r" style="text-align: right; padding: 4px;">–</td>
+</tr>
+<tr class="odd" style="border-top:1px solid #ccc;font-weight:bold;">
+<td style="padding: 4px">Total</td>
+<td id="mh-total-n" style="text-align: right; padding: 4px;">0</td>
+<td id="mh-total-w" style="text-align: right; padding: 4px;">0</td>
+<td id="mh-total-r" style="text-align: right; padding: 4px;">–</td>
+</tr>
+</tbody>
+</table>
+
     <div id="mh-log" style="margin-top:12px;font-size:12px;color:#666;max-height:90px;overflow-y:auto;"></div>
   </div>
 
@@ -1916,148 +1945,129 @@ But it is not always a good assumption:
   updateStats();
 })();
 </script>
-```
-
----
-
-**Switching wins the car with probability $2/3$**, while keeping wins with probability $1/3$.
-
-
----
-
-**Brief History**
-
-::: {.incremental}
-- The problem is named after **Monty Hall**, longtime host of the game show *Let's Make a Deal* — though the idealized "always reveal a goat, always offer a switch" rule isn't quite how the real show worked. Hall himself later noted he had freedom to *not* offer the switch, using it as a psychological tool against contestants who seemed to have guessed right.
-- The puzzle exploded into public view when **Marilyn vos Savant** answered a reader's letter in her *Parade* magazine column (Sept. 9, 1990): switch, and you double your odds.
-- The reaction: an estimated **10,000+ letters**, many from PhDs and professional mathematicians, confidently telling her she was wrong.
-:::
-
----
-
-**Solving It: Law of Total Probability**
-
-WLOG say you pick **Door 1**. Let
-
-- $W$ = you win the car *by switching*
-- $A_i$ = car is hidden behind Door $i$
-
-::: {.fragment}
-$\{A_1, A_2, A_3\}$ partitions the sample space, with $P(A_i) = 1/3$ each. By LOTP:
-$$
+<hr>
+<p><strong>Switching wins the car with probability <span class="math inline">\(2/3\)</span></strong>, while keeping wins with probability <span class="math inline">\(1/3\)</span>.</p>
+<hr>
+<p><strong>Brief History</strong></p>
+<div class="incremental">
+<ul class="incremental">
+<li>The problem is named after <strong>Monty Hall</strong>, longtime host of the game show <em>Let’s Make a Deal</em> — though the idealized “always reveal a goat, always offer a switch” rule isn’t quite how the real show worked. Hall himself later noted he had freedom to <em>not</em> offer the switch, using it as a psychological tool against contestants who seemed to have guessed right.</li>
+<li>The puzzle exploded into public view when <strong>Marilyn vos Savant</strong> answered a reader’s letter in her <em>Parade</em> magazine column (Sept.&nbsp;9, 1990): switch, and you double your odds.</li>
+<li>The reaction: an estimated <strong>10,000+ letters</strong>, many from PhDs and professional mathematicians, confidently telling her she was wrong.</li>
+</ul>
+</div>
+<hr>
+<p><strong>Solving It: Law of Total Probability</strong></p>
+<p>WLOG say you pick <strong>Door 1</strong>. Let</p>
+<ul>
+<li><span class="math inline">\(W\)</span> = you win the car <em>by switching</em></li>
+<li><span class="math inline">\(A_i\)</span> = car is hidden behind Door <span class="math inline">\(i\)</span></li>
+</ul>
+<div class="fragment">
+<p><span class="math inline">\(\{A_1, A_2, A_3\}\)</span> partitions the sample space, with <span class="math inline">\(P(A_i) = 1/3\)</span> each. By LOTP: <span class="math display">\[
 P(W) = \sum_{i=1}^{3} P(W\mid A_i)\,P(A_i)
-$$
-:::
-
----
-
-Now lets compute $P(W\mid A_i)$ for each $i$:
-
-::: {.fragment}
-- **$A_1$** (you were already right): the host opens one of the two goat doors; switching moves you *off* the car. $P(W\mid A_1) = 0$.
-:::
-
-::: {.fragment}
-- **$A_2$** (car is behind Door 2): the host can't open Door 1 (your pick) or Door 2 (has the car) — he's forced to open Door 3. Switching takes you to Door 2. $P(W\mid A_2) = 1$.
-:::
-
-::: {.fragment}
-- **$A_3$** (car is behind Door 3): symmetric argument — the host is forced to open Door 2, and switching takes you to Door 3. $P(W\mid A_3) = 1$.
-:::
-
-::: {.fragment}
-$$
+\]</span></p>
+</div>
+<hr>
+<p>Now lets compute <span class="math inline">\(P(W\mid A_i)\)</span> for each <span class="math inline">\(i\)</span>:</p>
+<div class="fragment">
+<ul>
+<li><strong><span class="math inline">\(A_1\)</span></strong> (you were already right): the host opens one of the two goat doors; switching moves you <em>off</em> the car. <span class="math inline">\(P(W\mid A_1) = 0\)</span>.</li>
+</ul>
+</div>
+<div class="fragment">
+<ul>
+<li><strong><span class="math inline">\(A_2\)</span></strong> (car is behind Door 2): the host can’t open Door 1 (your pick) or Door 2 (has the car) — he’s forced to open Door 3. Switching takes you to Door 2. <span class="math inline">\(P(W\mid A_2) = 1\)</span>.</li>
+</ul>
+</div>
+<div class="fragment">
+<ul>
+<li><strong><span class="math inline">\(A_3\)</span></strong> (car is behind Door 3): symmetric argument — the host is forced to open Door 2, and switching takes you to Door 3. <span class="math inline">\(P(W\mid A_3) = 1\)</span>.</li>
+</ul>
+</div>
+<div class="fragment">
+<p><span class="math display">\[
 P(W) = 0\cdot\frac13 \;+\; 1\cdot\frac13 \;+\; 1\cdot\frac13 \;=\; \boxed{\frac23}
-$$
-:::
-
---- 
-
-**Same Question, 1000 Doors**
-
-You pick **1 door out of 1000**. The host — who knows where the car is — opens **998** of the other 999 doors, every single one revealing a goat, leaving exactly one other door closed. Switch?
-
-::: {.fragment}
-Same argument, same partition. Let $A_i$ = car is behind Door $i$ (your initial pick), $P(A_i) = \dfrac{1}{1000}$ for each $i$.
-:::
-
----
-
-::: {.fragment}
-- **You were right initially** ($P = \frac{1}{1000}$): switching loses.
-- **You were wrong initially** ($P = \frac{999}{1000}$): the host was forced to open every wrong door *except one* — leaving the car sitting behind that single surviving door. Switching wins almost for sure.
-:::
-
-::: {.fragment}
-$$
+\]</span></p>
+</div>
+<hr>
+<p><strong>Same Question, 1000 Doors</strong></p>
+<p>You pick <strong>1 door out of 1000</strong>. The host — who knows where the car is — opens <strong>998</strong> of the other 999 doors, every single one revealing a goat, leaving exactly one other door closed. Switch?</p>
+<div class="fragment">
+<p>Same argument, same partition. Let <span class="math inline">\(A_i\)</span> = car is behind Door <span class="math inline">\(i\)</span> (your initial pick), <span class="math inline">\(P(A_i) = \dfrac{1}{1000}\)</span> for each <span class="math inline">\(i\)</span>.</p>
+</div>
+<hr>
+<div class="fragment">
+<ul>
+<li><strong>You were right initially</strong> (<span class="math inline">\(P = \frac{1}{1000}\)</span>): switching loses.</li>
+<li><strong>You were wrong initially</strong> (<span class="math inline">\(P = \frac{999}{1000}\)</span>): the host was forced to open every wrong door <em>except one</em> — leaving the car sitting behind that single surviving door. Switching wins almost for sure.</li>
+</ul>
+</div>
+<div class="fragment">
+<p><span class="math display">\[
 P(W) = 0\cdot\frac{1}{1000} + 1\cdot\frac{999}{1000} = \boxed{\frac{999}{1000}}
-$$
-:::
-
-::: {.callout-important .fragment}
-Your first pick was almost certainly wrong. The host, forced to avoid the car while emptying out 998 doors, has effectively **filtered 999 doors down to the one most likely to hide the car** — and handed it to you.
-:::
-
----
-
-**Simpson's Paradox in COVID-19 Case Fatality Rates**
-
-![](../simpson_covid_cfr.png){width="90%" fig-align="center"}
-
-CFR is the proportion of **confirmed cases** of a disease that result in death.
-
----
-
-Comparing early COVID-19 CFR — China (Feb 17, 2020) vs. Italy (Mar 9, 2020), von Kügelgen, Gresele & Schölkopf (2021):
-
-- **In every single age group**, Italy's CFR is lower than China's.
-- **Overall**, Italy's CFR (4.4%) is *higher* than China's (2.3%).
-
-
-::: {.fragment}
-**How can this be?**
-:::
-
----
-
-**Italy population is older than China's.** 
-
-:::{.incremental}
-- Italy is one of the world's oldest populations — a quarter of Italians are already 65+, while in China this fraction is below 15%
-- Older people are more likely to die from COVID-19, so Italy's overall CFR is higher even though its age-specific CFRs are lower.
-:::
-
----
-
-**The Paradox in the Language of Conditional Probability**
-
-Let:
-
-- $D$ = case results in death, 
-- $Y$ = patient is young, 
-- $C$ = patient is in China:
-
-::: {.fragment}
-**Within each age group, Italy does better:**
-$$
-P(D \mid Y, C^c) < P(D \mid Y, C)
+\]</span></p>
+</div>
+<div class="fragment callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Your first pick was almost certainly wrong. The host, forced to avoid the car while emptying out 998 doors, has effectively <strong>filtered 999 doors down to the one most likely to hide the car</strong> — and handed it to you.</p>
+</div>
+</div>
+<hr>
+<p><strong>Simpson’s Paradox in COVID-19 Case Fatality Rates</strong></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../simpson_covid_cfr.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%"></p>
+</figure>
+</div>
+<p>CFR is the proportion of <strong>confirmed cases</strong> of a disease that result in death.</p>
+<hr>
+<p>Comparing early COVID-19 CFR — China (Feb 17, 2020) vs.&nbsp;Italy (Mar 9, 2020), von Kügelgen, Gresele &amp; Schölkopf (2021):</p>
+<ul>
+<li><strong>In every single age group</strong>, Italy’s CFR is lower than China’s.</li>
+<li><strong>Overall</strong>, Italy’s CFR (4.4%) is <em>higher</em> than China’s (2.3%).</li>
+</ul>
+<div class="fragment">
+<p><strong>How can this be?</strong></p>
+</div>
+<hr>
+<p><strong>Italy population is older than China’s.</strong></p>
+<div class="incremental">
+<ul class="incremental">
+<li>Italy is one of the world’s oldest populations — a quarter of Italians are already 65+, while in China this fraction is below 15%</li>
+<li>Older people are more likely to die from COVID-19, so Italy’s overall CFR is higher even though its age-specific CFRs are lower.</li>
+</ul>
+</div>
+<hr>
+<p><strong>The Paradox in the Language of Conditional Probability</strong></p>
+<p>Let:</p>
+<ul>
+<li><span class="math inline">\(D\)</span> = case results in death,</li>
+<li><span class="math inline">\(Y\)</span> = patient is young,</li>
+<li><span class="math inline">\(C\)</span> = patient is in China:</li>
+</ul>
+<div class="fragment">
+<p><strong>Within each age group, Italy does better:</strong> <span class="math display">\[
+P(D \mid Y, C^c) &lt; P(D \mid Y, C)
 \qquad
-P(D \mid Y^c, C^c) < P(D \mid Y^c, C)
-$$
-:::
-
-::: {.fragment}
-**Yet overall, Italy does worse:**
-$$
-P(D \mid C^c) > P(D \mid C)
-$$
-:::
-
----
-
-**Abstract numerical example of Simpson's Paradox**
-
-```{=html}
+P(D \mid Y^c, C^c) &lt; P(D \mid Y^c, C)
+\]</span></p>
+</div>
+<div class="fragment">
+<p><strong>Yet overall, Italy does worse:</strong> <span class="math display">\[
+P(D \mid C^c) &gt; P(D \mid C)
+\]</span></p>
+</div>
+<hr>
+<p><strong>Abstract numerical example of Simpson’s Paradox</strong></p>
 <div id="scb-root" style="max-width:900px;margin:0 auto;font-family:sans-serif;">
 
   <div id="scb-legend" style="text-align:center;font-size:13px;color:#444;margin-bottom:16px;">
@@ -2301,22 +2311,15 @@ $$
   renderInitial();
 })();
 </script>
-```
----
-
-**Using conditioning as a tool: sequential battle**
-
-::: {.fragment}
-Alice and Bob play a game. Alice has 2 soldiers, Bob 1 soldier. Each round they toss a coin and the winner of the toss takes **one soldier** from the loser. Rounds are independent and repeat until one player has no soldiers left.
-:::
-
-::: {.fragment}
-**What is the probability that Alice wins the game?**
-:::
-
----
-
-```{=html}
+<hr>
+<p><strong>Using conditioning as a tool: sequential battle</strong></p>
+<div class="fragment">
+<p>Alice and Bob play a game. Alice has 2 soldiers, Bob 1 soldier. Each round they toss a coin and the winner of the toss takes <strong>one soldier</strong> from the loser. Rounds are independent and repeat until one player has no soldiers left.</p>
+</div>
+<div class="fragment">
+<p><strong>What is the probability that Alice wins the game?</strong></p>
+</div>
+<hr>
 <div id="bg-root" style="max-width:640px;margin:0 auto;font-family:sans-serif;">
 
   <div id="bg-setup" style="text-align:center;margin-bottom:18px;font-size:14px;color:#444;">
@@ -2352,7 +2355,7 @@ Alice and Bob play a game. Alice has 2 soldiers, Bob 1 soldier. Each round they 
   </div>
 
   <div style="border-top:1px solid #ddd;padding-top:14px;text-align:center;font-size:14px;color:#222;margin-bottom:20px;">
-    <div id="bg-tally">Games played: 0 &middot; Alice wins: 0 &middot; Bob wins: 0</div>
+    <div id="bg-tally">Games played: 0 · Alice wins: 0 · Bob wins: 0</div>
     <button id="bg-tally-reset" style="margin-top:8px;font-size:12px;color:#888;background:none;border:1px solid #ccc;border-radius:4px;padding:3px 8px;cursor:pointer;">Reset tally &amp; graph</button>
   </div>
 
@@ -2620,22 +2623,19 @@ Alice and Bob play a game. Alice has 2 soldiers, Bob 1 soldier. Each round they 
   updateTallyDisplay();
 })();
 </script>
-```
-
----
-
-- Each state can be represented as a pair $(a,b)$ where $a$ is the number of soldiers Alice has and $b$ is the number of soldiers Bob has.
-- Conditional on being in state $(a,b)$, the next state is either $(a+1,b-1)$ or $(a-1,b+1)$ with equal probability (we can let probability depend on the state).
-
-```{=html}
+<hr>
+<ul>
+<li>Each state can be represented as a pair <span class="math inline">\((a,b)\)</span> where <span class="math inline">\(a\)</span> is the number of soldiers Alice has and <span class="math inline">\(b\)</span> is the number of soldiers Bob has.</li>
+<li>Conditional on being in state <span class="math inline">\((a,b)\)</span>, the next state is either <span class="math inline">\((a+1,b-1)\)</span> or <span class="math inline">\((a-1,b+1)\)</span> with equal probability (we can let probability depend on the state).</li>
+</ul>
 <div id="mc-root" style="max-width:680px;margin:0 auto;font-family:sans-serif;">
 
   <div id="mc-status" style="text-align:center;font-size:14px;color:#444;margin-bottom:10px;min-height:20px;"></div>
 
   <div id="mc-diagram" style="position:relative;width:620px;height:180px;margin:0 auto;">
-    <svg id="mc-svg" width="620" height="180" viewBox="0 0 620 180" style="position:absolute;top:0;left:0;">
+    <svg id="mc-svg" width="620" height="180" viewbox="0 0 620 180" style="position:absolute;top:0;left:0;">
       <defs>
-        <marker id="mc-arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto" markerUnits="userSpaceOnUse">
+        <marker id="mc-arrow" markerwidth="8" markerheight="8" refx="6" refy="3" orient="auto" markerunits="userSpaceOnUse">
           <path d="M0,0 L6,3 L0,6 Z" fill="#999"></path>
         </marker>
       </defs>
@@ -2664,7 +2664,7 @@ Alice and Bob play a game. Alice has 2 soldiers, Bob 1 soldier. Each round they 
   <div style="font-size:13px;color:#333;">
     <div style="font-weight:bold;margin-bottom:6px;">Recorded sequences</div>
     <div id="mc-log"></div>
-    <div style="color:#999;margin-top:4px;">&#8942;&nbsp; many other sequences are possible</div>
+    <div style="color:#999;margin-top:4px;">⋮&nbsp; many other sequences are possible</div>
   </div>
 
 </div>
@@ -2854,135 +2854,526 @@ Alice and Bob play a game. Alice has 2 soldiers, Bob 1 soldier. Each round they 
   document.getElementById('mc-reset').addEventListener('click', reset);
 })();
 </script>
-```
-
----
-
-**Brute force solution: enumerate all possible sequences**
-
-:::{.incremental}
-- Alice can win the game in many ways, cach way corresponding to a sequence of individual round outcomes
-- Probability that Alice wins = sum of probabilities of all sequences that lead to her winning
-- To find probabilities of individual sequences, **multiply the probabilities of individual round outcomes** because the rounds are independent.
-
-:::
-
-::: {.fragment}
-**Way 1 — win immediately:** $(2,1)\to(3,0)$
-$$
+<hr>
+<p><strong>Brute force solution: enumerate all possible sequences</strong></p>
+<div class="incremental">
+<ul class="incremental">
+<li>Alice can win the game in many ways, cach way corresponding to a sequence of individual round outcomes</li>
+<li>Probability that Alice wins = sum of probabilities of all sequences that lead to her winning</li>
+<li>To find probabilities of individual sequences, <strong>multiply the probabilities of individual round outcomes</strong> because the rounds are independent.</li>
+</ul>
+</div>
+<div class="fragment">
+<p><strong>Way 1 — win immediately:</strong> <span class="math inline">\((2,1)\to(3,0)\)</span> <span class="math display">\[
 P = \frac{1}{2}
-$$
-:::
-
----
-
-::: {.fragment}
-**Way 2 — one bounce:** $(2,1)\to(1,2)\to(2,1)\to(3,0)$
-$$
+\]</span></p>
+</div>
+<hr>
+<div class="fragment">
+<p><strong>Way 2 — one bounce:</strong> <span class="math inline">\((2,1)\to(1,2)\to(2,1)\to(3,0)\)</span> <span class="math display">\[
 P = \underbrace{\frac12}_{\text{Bob wins}}\cdot\underbrace{\frac12}_{\text{Alice wins}}\cdot\underbrace{\frac12}_{\text{Alice wins}} = \frac{1}{8}
-$$
-:::
-
-::: {.fragment}
-**Way 3 — two bounces:** $(2,1)\to(1,2)\to(2,1)\to(1,2)\to(2,1)\to(3,0)$
-$$
+\]</span></p>
+</div>
+<div class="fragment">
+<p><strong>Way 3 — two bounces:</strong> <span class="math inline">\((2,1)\to(1,2)\to(2,1)\to(1,2)\to(2,1)\to(3,0)\)</span> <span class="math display">\[
 P = \left(\frac12\cdot\frac12\right)^2\cdot\frac12 = \frac{1}{32}
-$$
-:::
-
-::: {.fragment}
-Summing the geometric series:
-$$
+\]</span></p>
+</div>
+<div class="fragment">
+<p>Summing the geometric series: <span class="math display">\[
 P(\text{Alice wins}) = \frac12\sum_{n=0}^{\infty}\left(\frac14\right)^n = \frac12\cdot\frac{1}{1-\frac14} = \frac12\cdot\frac43 = \frac23
-$$
-:::
-
----
-
-
-**Quick Derivation: Sum of a Geometric Series**
-
-::: {.fragment}
-Let $S = \displaystyle\sum_{n=0}^{\infty} r^n = 1 + r + r^2 + r^3 + \cdots$, for $|r|<1$.
-:::
-
-::: {.fragment}
-Multiply both sides by $r$:
-$$
+\]</span></p>
+</div>
+<hr>
+<p><strong>Quick Derivation: Sum of a Geometric Series</strong></p>
+<div class="fragment">
+<p>Let <span class="math inline">\(S = \displaystyle\sum_{n=0}^{\infty} r^n = 1 + r + r^2 + r^3 + \cdots\)</span>, for <span class="math inline">\(|r|&lt;1\)</span>.</p>
+</div>
+<div class="fragment">
+<p>Multiply both sides by <span class="math inline">\(r\)</span>: <span class="math display">\[
 rS = r + r^2 + r^3 + \cdots
-$$
-:::
-
-::: {.fragment}
-Subtract — everything but the leading $1$ cancels:
-$$
+\]</span></p>
+</div>
+<div class="fragment">
+<p>Subtract — everything but the leading <span class="math inline">\(1\)</span> cancels: <span class="math display">\[
 S - rS = 1 \quad\Longrightarrow\quad S(1-r) = 1
-$$
-:::
-
-::: {.fragment}
-$$
+\]</span></p>
+</div>
+<div class="fragment">
+<p><span class="math display">\[
 \boxed{S = \sum_{n=0}^{\infty} r^n = \frac{1}{1-r}}
-$$
-:::
-
----
-
-**Conditioning: A System of Equations**
-
-Let $p(s)$ = probability Alice wins given she currently has $s$ soldiers (total $=3$). Condition on the outcome of the next round:
-
-::: {.fragment}
-$$
+\]</span></p>
+</div>
+<hr>
+<p><strong>Conditioning: A System of Equations</strong></p>
+<p>Let <span class="math inline">\(p(s)\)</span> = probability Alice wins given she currently has <span class="math inline">\(s\)</span> soldiers (total <span class="math inline">\(=3\)</span>). Condition on the outcome of the next round:</p>
+<div class="fragment">
+<p><span class="math display">\[
 p(1) = \frac12\, p(2) + \frac12\, p(0)
 \qquad\qquad
 p(2) = \frac12\, p(3) + \frac12\, p(1)
-$$
-:::
-
-::: {.fragment}
-Using the boundary values $p(0)=0$, $p(3)=1$:
-$$
+\]</span></p>
+</div>
+<div class="fragment">
+<p>Using the boundary values <span class="math inline">\(p(0)=0\)</span>, <span class="math inline">\(p(3)=1\)</span>: <span class="math display">\[
 p(1) = \frac12\, p(2)
 \qquad\qquad
 p(2) = \frac12 + \frac12\, p(1)
-$$
-:::
-
----
-
-::: {.fragment}
-Substitute the first equation into the second:
-$$
+\]</span></p>
+</div>
+<hr>
+<div class="fragment">
+<p>Substitute the first equation into the second: <span class="math display">\[
 p(2) = \frac12 + \frac12\left(\frac12\, p(2)\right) = \frac12 + \frac14\, p(2)
-$$
-:::
-
-::: {.fragment}
-$$
+\]</span></p>
+</div>
+<div class="fragment">
+<p><span class="math display">\[
 \frac34\, p(2) = \frac12 \quad\Longrightarrow\quad p(2) = \frac{2}{3}
-$$
-:::
-
-::: {.fragment}
-$$
+\]</span></p>
+</div>
+<div class="fragment">
+<p><span class="math display">\[
 p(1) = \frac12\, p(2) = \frac{1}{3}
-$$
-:::
+\]</span></p>
+</div>
+<div class="fragment callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Same answer as the geometric series, no infinite sum needed: two unknowns, two linear equations, solved directly. This is the general pattern — conditioning on one step always turns an infinite-path problem into a small system of linear equations.</p>
+</div>
+</div>
+<hr>
+<p><strong>Practice: Change the Numbers, Change the Rule</strong></p>
+<div class="callout callout-style-default callout-caution callout-titled" title="Question">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Caution</span>Question
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>(a)</strong> Alice starts with 3 soldiers, Bob with 1 (so <span class="math inline">\(N=4\)</span>). Each round is a fair coin flip (<span class="math inline">\(p=\frac12\)</span> regardless of soldier counts). First see that enumerating all ways to win is more difficult.Set up the system of equations by conditioning on the first step, and solve for <span class="math inline">\(P(\text{Alice wins})\)</span>.</p>
+<p><strong>(b)</strong> Assume that a player with <span class="math inline">\(k\)</span> soldiers beats an opponent with <span class="math inline">\(\ell\)</span> soldiers with probability <span class="math inline">\(\dfrac{k}{k+\ell}\)</span>. Using the same <span class="math inline">\(3\)</span> vs.&nbsp;<span class="math inline">\(1\)</span> starting point, set up and solve the corresponding system for <span class="math inline">\(P(\text{Alice wins})\)</span>.</p>
+</div>
+</div>
+<hr>
+</section>
 
-::: {.callout-tip .fragment}
-Same answer as the geometric series, no infinite sum needed: two unknowns, two linear equations, solved directly. This is the general pattern — conditioning on one step always turns an infinite-path problem into a small system of linear equations.
-:::
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
 
----
 
 
-**Practice: Change the Numbers, Change the Rule**
 
-::: {.callout-caution title="Question"}
-**(a)** Alice starts with 3 soldiers, Bob with 1 (so $N=4$). Each round is a fair coin flip ($p=\frac12$ regardless of soldier counts). First see that enumerating all ways to win is more difficult.Set up the system of equations by conditioning on the first step, and solve for $P(\text{Alice wins})$.
-
-**(b)** Assume that a player with $k$ soldiers beats an opponent with $\ell$ soldiers with probability $\dfrac{k}{k+\ell}$. Using the same $3$ vs. $1$ starting point, set up and solve the corresponding system for $P(\text{Alice wins})$.
-:::
-
----
+</body></html>

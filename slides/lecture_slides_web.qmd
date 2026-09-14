@@ -8,4 +8,4 @@ format:
     height: 700
 ---
 
-{{< include ../00_intro/intro.qmd >}}
+{{< include ../02_conditional/conditional.qmd >}}

@@ -1,0 +1,263 @@
+### Course Information
+
+| | |
+|---|---|
+| **Instructor** | Prof. Vladyslav Nora |
+| **Teaching Assistant** | TBA |
+| **Class Hours** | T/Th, 16:30–17:45 |
+| **Location** | Blue Hall |
+| **Office Hours** | T/Th, 15:00–16:00 — register via [Google Calendar](https://calendar.app.google/sNK5oxu7GNkL82316) |
+| **Announcements & materials** | Schedule, missing-class forms, exam samples — all on Moodle |
+
+---
+
+### Textbooks
+
+Procure the following (not available in the library):
+
+| Code | Textbook |
+|---|---|
+| **BH** | *Introduction to Probability*, Blitzstein & Hwang, 2nd edition — free online version available; based on the authors' Harvard lectures |
+| **K** | *Statistics for Management and Economics*, Gerald Keller, 11th edition |
+
+---
+
+### Assessment and Attendance {.smaller}
+
+| Component | Weight / Rule |
+|---|---|
+| Problem sets (6) | Pass/Fail — must pass at least 4 of 6 to qualify for the final exam. Hand-written, scanned, submitted via Moodle by the due date. |
+| Quizzes (2) | 35% total (Quiz 1: 15%, Quiz 2: 20%) |
+| Midterm exam | 25% |
+| Final exam | 40% |
+| Attendance | Mandatory — at most 2 missed classes without penalty. Missing more than 20% of classes requires retaking the course. |
+
+---
+
+::: {.callout-note title="Grading Curve"}
+Grades are curved to roughly: 15% A/A-, 50% B+/B/B-, 20% C+/C/C-, 10% D+/D/F, with a median around B-.
+:::
+
+---
+
+### How to Study
+
+- Practice is the single most important part of this course — **solve as many problems as you can** on your own.
+- Sources of practice: problem sets (6, mandatory), exercises in BH and K after each chapter.
+- **Believing you understand something is not the same as actually understanding it — only struggling with problems reliably measures comprehension.**
+
+---
+
+### AI Policy
+
+- Outside of exams, you may use generative AI tools **without restriction and at no penalty**.
+- If you can't solve a problem, ask AI first only for **hints**, not the full solution.
+- Any AI contribution must be **acknowledged** (extent of use + source). Unacknowledged AI use is treated as plagiarism.
+- Exams are closed-book: no notes, calculators, or electronic devices.
+
+---
+
+### Course Structure
+
+- **First three-quarters** of the course: probability theory — the mathematical tool for thinking about uncertainty.
+- **Last quarter**: basic statistics — applying probability theory to analyze real-world data.
+
+---
+
+### Prerequisites
+
+Review before the next lecture:
+
+- **Basic set theory**: sets, unions, intersections, complements, Cartesian products.
+- **Calculus**: derivatives, integrals, geometric series.
+
+---
+
+:::: {.callout-caution title="Review Question 1 — What is a Set?" appearance="minimal"}
+Consider the set of primary-ish colors used in traffic lights:
+
+$$C = \{\text{red}, \text{yellow}, \text{green}\}$$
+
+a) Is $\text{blue} \in C$?
+b) Is $\{\text{red}, \text{green}, \text{yellow}\}$ the same set as $C$? Does order matter?
+c) Suppose someone writes $C = \{\text{red}, \text{red}, \text{yellow}, \text{green}\}$. Is this still a valid representation of $C$? Why?
+::::
+
+--- 
+
+::: {.callout-tip collapse="true" title="Solution"}
+a) No, $\text{blue} \notin C$ since blue is not listed as an element.
+b) Yes — sets are unordered, so $\{\text{red}, \text{green}, \text{yellow}\} = C$.
+c) Yes, it represents the same set. Sets do not count multiplicity — repeated elements are collapsed, so $\{\text{red}, \text{red}, \text{yellow}, \text{green}\} = \{\text{red}, \text{yellow}, \text{green}\} = C$.
+:::
+
+
+---
+
+:::: {.callout-caution title="Review Question 2 — Operations on Sets of Numbers" appearance="minimal"}
+Let
+
+$$A = \{1, 2, 3, 4, 5\}, \qquad B = \{2, 4, 6, 8\}$$
+
+Find:
+
+a) $A \cup B$
+b) $A \cap B$
+c) $A \setminus B$ (elements in $A$ but not in $B$)
+d) $|A \cup B|$ (the cardinality, i.e. number of elements)
+::::
+
+---
+
+::: {.callout-tip collapse="true" title="Solution"}
+a) $A \cup B = \{1, 2, 3, 4, 5, 6, 8\}$
+b) $A \cap B = \{2, 4\}$
+c) $A \setminus B = \{1, 3, 5\}$
+d) $|A \cup B| = 7$
+:::
+
+
+---
+
+:::: {.callout-caution title="Review Question 3 — Reading Set Operations off a Venn Diagram" appearance="minimal"}
+Each diagram below shows two sets $A$ and $B$ inside a universal set $S$, with one region shaded. For each diagram, write the set expression (using $\cup$, $\cap$, $\setminus$, $\triangle$, or complement) that describes the shaded region.
+::::
+
+---
+
+**a)**
+
+```{=html}
+<div style="text-align:center;">
+<svg width="260" height="180" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+  <mask id="maskQ3a"><rect x="0" y="0" width="300" height="200" fill="white"/><circle cx="190" cy="100" r="80" fill="black"/></mask>
+  <circle cx="110" cy="100" r="80" fill="#a8c8f0" mask="url(#maskQ3a)"/>
+  <circle cx="110" cy="100" r="80" fill="none" stroke="black" stroke-width="1.5"/>
+  <circle cx="190" cy="100" r="80" fill="none" stroke="black" stroke-width="1.5"/>
+  <text x="55" y="25" font-size="16" font-weight="bold">A</text>
+  <text x="245" y="25" font-size="16" font-weight="bold">B</text>
+</svg>
+</div>
+```
+
+---
+
+**b)**
+
+```{=html}
+<div style="text-align:center;">
+<svg width="260" height="180" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+  <clipPath id="clipQ3b"><circle cx="110" cy="100" r="80"/></clipPath>
+  <g clip-path="url(#clipQ3b)"><circle cx="190" cy="100" r="80" fill="#8ec98e"/></g>
+  <circle cx="110" cy="100" r="80" fill="none" stroke="black" stroke-width="1.5"/>
+  <circle cx="190" cy="100" r="80" fill="none" stroke="black" stroke-width="1.5"/>
+  <text x="55" y="25" font-size="16" font-weight="bold">A</text>
+  <text x="245" y="25" font-size="16" font-weight="bold">B</text>
+</svg>
+</div>
+```
+
+---
+
+**c)**
+
+```{=html}
+<div style="text-align:center;">
+<svg width="260" height="180" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="110" cy="100" r="80" fill="#f5c98a"/>
+  <circle cx="190" cy="100" r="80" fill="#f5c98a"/>
+  <circle cx="110" cy="100" r="80" fill="none" stroke="black" stroke-width="1.5"/>
+  <circle cx="190" cy="100" r="80" fill="none" stroke="black" stroke-width="1.5"/>
+  <text x="55" y="25" font-size="16" font-weight="bold">A</text>
+  <text x="245" y="25" font-size="16" font-weight="bold">B</text>
+</svg>
+</div>
+```
+
+---
+
+**d)**
+
+```{=html}
+<div style="text-align:center;">
+<svg width="260" height="180" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+  <mask id="maskQ3d"><rect x="0" y="0" width="300" height="200" fill="white"/><circle cx="110" cy="100" r="80" fill="black"/><circle cx="190" cy="100" r="80" fill="black"/></mask>
+  <rect x="10" y="10" width="280" height="180" fill="#d0d0d0" mask="url(#maskQ3d)"/>
+  <rect x="10" y="10" width="280" height="180" fill="none" stroke="black" stroke-width="1.5"/>
+  <circle cx="110" cy="100" r="80" fill="none" stroke="black" stroke-width="1.5"/>
+  <circle cx="190" cy="100" r="80" fill="none" stroke="black" stroke-width="1.5"/>
+  <text x="55" y="30" font-size="16" font-weight="bold">A</text>
+  <text x="245" y="30" font-size="16" font-weight="bold">B</text>
+  <text x="270" y="25" font-size="16" font-style="italic">S</text>
+</svg>
+</div>
+```
+
+---
+
+**e)**
+
+```{=html}
+<div style="text-align:center;">
+<svg width="260" height="180" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+  <mask id="maskQ3e1"><rect x="0" y="0" width="300" height="200" fill="white"/><circle cx="190" cy="100" r="80" fill="black"/></mask>
+  <mask id="maskQ3e2"><rect x="0" y="0" width="300" height="200" fill="white"/><circle cx="110" cy="100" r="80" fill="black"/></mask>
+  <circle cx="110" cy="100" r="80" fill="#c9a8e0" mask="url(#maskQ3e1)"/>
+  <circle cx="190" cy="100" r="80" fill="#c9a8e0" mask="url(#maskQ3e2)"/>
+  <circle cx="110" cy="100" r="80" fill="none" stroke="black" stroke-width="1.5"/>
+  <circle cx="190" cy="100" r="80" fill="none" stroke="black" stroke-width="1.5"/>
+  <text x="55" y="25" font-size="16" font-weight="bold">A</text>
+  <text x="245" y="25" font-size="16" font-weight="bold">B</text>
+</svg>
+</div>
+```
+
+---
+
+::: {.callout-tip collapse="true" title="Solution"}
+a) $A \setminus B$ (equivalently $A \cap B^c$) — everything in $A$ that is not in $B$.
+b) $A \cap B$ — only the overlap.
+c) $A \cup B$ — everything in at least one of $A$ or $B$.
+d) $(A \cup B)^c$ — everything in $S$ but outside both circles.
+e) $A \triangle B = (A \setminus B) \cup (B \setminus A)$ — everything in exactly one of $A$ or $B$, not both.
+:::
+
+
+---
+
+:::: {.callout-caution title="Review Question 4 — Slopes, Areas, and the Fundamental Theorem" appearance="minimal"}
+a) **Derivative as slope.** Let $f(x) = x^2 - 4x + 3$. Find $f'(x)$, evaluate $f'(1)$, and interpret this value as the slope of the tangent line to $y = f(x)$ at $x = 1$.
+
+b) **Integral as area.** Compute $\displaystyle\int_0^3 x^2\,dx$ and interpret the result as the area of the region under the curve $y = x^2$.
+
+c) **Fundamental Theorem of Calculus.** Let $F(x) = \displaystyle\int_1^x (2t+1)\,dt$.
+   i. Use FTC Part 1 to find $F'(x)$ without computing the integral explicitly.
+   ii. Now compute $F(x)$ explicitly and differentiate it to confirm your answer to (i).
+
+d) **Basic rules with polynomials.**
+   i. Differentiate $g(x) = 5x^4 - 3x^2 + 7x - 2$.
+   ii. Find the general antiderivative of $h(x) = 6x^2 - 4x + 1$.
+::::
+
+---
+
+::: {.callout-tip collapse="true" title="Solution"}
+**a)** $f'(x) = 2x - 4$, so $f'(1) = 2(1) - 4 = -2$. Since $f(1) = 1 - 4 + 3 = 0$, the tangent line passes through $(1,0)$ with slope $-2$:
+$$y - 0 = -2(x-1) \;\Rightarrow\; y = -2x + 2.$$
+The slope $-2$ means $f$ is decreasing at a rate of 2 units of $f$ per unit of $x$ at $x=1$.
+
+**b)** $\displaystyle\int_0^3 x^2\,dx = \left[\frac{x^3}{3}\right]_0^3 = \frac{27}{3} - 0 = 9.$
+The region under $y=x^2$ from $x=0$ to $x=3$ has area $9$ square units.
+
+**c)**
+i. By FTC Part 1, $F'(x) = 2x+1$ directly — no need to integrate first.
+ii. $\displaystyle\int (2t+1)\,dt = t^2 + t + C$, so
+$$F(x) = \left[t^2+t\right]_1^x = (x^2+x) - (1+1) = x^2 + x - 2.$$
+Then $F'(x) = 2x+1$, confirming (i). (Check: $F(1) = 1+1-2=0$, consistent with $\int_1^1(\cdot)\,dt=0$.)
+
+**d)**
+i. $g'(x) = 20x^3 - 6x + 7$ (power rule term by term; the constant $-2$ drops out).
+ii. $H(x) = 2x^3 - 2x^2 + x + C$. Check: $H'(x) = 6x^2 - 4x + 1 = h(x)$. ✓
+:::
+
+

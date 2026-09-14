@@ -1,0 +1,2741 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>combinatorics</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="combinatorics_files/libs/clipboard/clipboard.min.js"></script>
+<script src="combinatorics_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="combinatorics_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="combinatorics_files/libs/quarto-html/popper.min.js"></script>
+<script src="combinatorics_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="combinatorics_files/libs/quarto-html/anchor.min.js"></script>
+<link href="combinatorics_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="combinatorics_files/libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="combinatorics_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="combinatorics_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="combinatorics_files/libs/bootstrap/bootstrap-138a6193a3bd40baf1e627da441a4734.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="fullcontent quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+
+
+
+<section id="contents" class="level2">
+<h2 class="anchored" data-anchor-id="contents">Contents</h2>
+<div class="incremental">
+<ul class="incremental">
+<li><strong>Combinatorics: Core Tools</strong>
+<ul class="incremental">
+<li>Multiplication rule, permutations, factorial</li>
+<li>Repeated elements (CAT, BOB, MISSISSIPPI)</li>
+<li>Binomial coefficient <span class="math inline">\(\binom{n}{k}\)</span></li>
+</ul></li>
+<li><strong>Sampling Table</strong>
+<ul class="incremental">
+<li>Order vs.&nbsp;replacement — four counting scenarios</li>
+<li>Stars-and-bars</li>
+</ul></li>
+<li><strong>Story Proofs</strong>
+<ul class="incremental">
+<li><span class="math inline">\(\binom{n}{k}=\binom{n}{n-k}\)</span>, <span class="math inline">\(\sum_k\binom{n}{k}=2^n\)</span>, Pascal’s rule</li>
+</ul></li>
+<li><strong>Combinatorics in Probability</strong>
+<ul class="incremental">
+<li>Selecting groups, poker hands, random walks, birthday problem</li>
+</ul></li>
+</ul>
+</div>
+</section>
+<section id="combinatorics" class="level2">
+<h2 class="anchored" data-anchor-id="combinatorics">Combinatorics</h2>
+<div class="callout callout-style-default callout-note callout-titled" title="Definition — Combinatorics">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Definition — Combinatorics
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Combinatorics</strong> is the branch of mathematics concerned with counting: determining the number of ways objects can be selected, arranged, or grouped according to a given set of rules — without necessarily listing every possibility one by one.</p>
+</div>
+</div>
+<ul>
+<li>For us, combinatorics is the toolbox for computing <span class="math inline">\(|E|\)</span> and <span class="math inline">\(|S|\)</span> in the naive definition of probability, once listing outcomes by hand (as we did for <span class="math inline">\(A_3\)</span>) stops being practical.</li>
+</ul>
+<hr>
+<section id="the-multiplication-rule" class="level3">
+<h3 class="anchored" data-anchor-id="the-multiplication-rule">The Multiplication Rule</h3>
+<div class="callout callout-style-default callout-note callout-titled" title="Definition — Multiplication Rule (Rule of Product)">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Definition — Multiplication Rule (Rule of Product)
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If an experiment consists of <span class="math inline">\(k\)</span> stages, where stage 1 has <span class="math inline">\(n_1\)</span> possible outcomes, stage 2 has <span class="math inline">\(n_2\)</span> possible outcomes (regardless of what happened at stage 1), …, and stage <span class="math inline">\(k\)</span> has <span class="math inline">\(n_k\)</span> possible outcomes, then the total number of outcomes of the combined experiment is <span class="math display">\[n_1 \times n_2 \times \cdots \times n_k\]</span></p>
+</div>
+</div>
+<hr>
+<p><strong>Applying it to two dice:</strong> stage 1 = first die (6 outcomes), stage 2 = second die (6 outcomes, regardless of what the first die showed). So <span class="math display">\[|S| = 6 \times 6 = 36,\]</span> matching what we counted directly earlier.</p>
+<hr>
+<p><strong>Illustrating <span class="math inline">\(2\times2\)</span> as a tree — two coin tosses.</strong> Every path from root to leaf is one outcome:</p>
+<div style="text-align:center;">
+<svg width="420" height="260" viewbox="0 0 420 260" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif">
+<circle cx="210.0" cy="25" r="4" fill="#333"></circle>
+<text x="210.0" y="13" font-size="13" text-anchor="middle" font-weight="bold">Toss 1</text>
+<line x1="210.0" y1="30" x2="130" y2="87" stroke="#555" stroke-width="1.3"></line>
+<circle cx="130" cy="95" r="13" fill="#f5e6b0" stroke="#555"></circle>
+<text x="130" y="99.5" font-size="13" text-anchor="middle" font-weight="bold">H</text>
+<text x="130" y="117" font-size="10" text-anchor="middle" fill="#555">Toss 2</text>
+<line x1="130" y1="123" x2="102.5" y2="166" stroke="#555" stroke-width="1"></line>
+<circle cx="102.5" cy="175" r="11" fill="#cfe3f7" stroke="#555"></circle>
+<text x="102.5" y="179" font-size="11" text-anchor="middle" font-weight="bold">H</text>
+<text x="102.5" y="199" font-size="11" text-anchor="middle">HH</text>
+<line x1="130" y1="123" x2="157.5" y2="166" stroke="#555" stroke-width="1"></line>
+<circle cx="157.5" cy="175" r="11" fill="#cfe3f7" stroke="#555"></circle>
+<text x="157.5" y="179" font-size="11" text-anchor="middle" font-weight="bold">T</text>
+<text x="157.5" y="199" font-size="11" text-anchor="middle">HT</text>
+<line x1="210.0" y1="30" x2="290" y2="87" stroke="#555" stroke-width="1.3"></line>
+<circle cx="290" cy="95" r="13" fill="#f5e6b0" stroke="#555"></circle>
+<text x="290" y="99.5" font-size="13" text-anchor="middle" font-weight="bold">T</text>
+<text x="290" y="117" font-size="10" text-anchor="middle" fill="#555">Toss 2</text>
+<line x1="290" y1="123" x2="262.5" y2="166" stroke="#555" stroke-width="1"></line>
+<circle cx="262.5" cy="175" r="11" fill="#cfe3f7" stroke="#555"></circle>
+<text x="262.5" y="179" font-size="11" text-anchor="middle" font-weight="bold">H</text>
+<text x="262.5" y="199" font-size="11" text-anchor="middle">TH</text>
+<line x1="290" y1="123" x2="317.5" y2="166" stroke="#555" stroke-width="1"></line>
+<circle cx="317.5" cy="175" r="11" fill="#cfe3f7" stroke="#555"></circle>
+<text x="317.5" y="179" font-size="11" text-anchor="middle" font-weight="bold">T</text>
+<text x="317.5" y="199" font-size="11" text-anchor="middle">TT</text>
+<text x="210.0" y="245" font-size="14" text-anchor="middle" font-weight="bold">Total outcomes = 2 × 2 = 4</text>
+</svg>
+</div>
+<p><span class="math inline">\(2 \times 2 = 4\)</span>: matches the sample space <span class="math inline">\(S = \{HH, HT, TH, TT\}\)</span> from our very first coin-toss example.</p>
+<hr>
+<div class="callout callout-style-default callout-tip callout-titled" title="Example 2">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Example 2
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Choosing Courses.</strong> There are 5 math courses and 6 economics courses on offer.</p>
+<ol type="a">
+<li><p>You must choose <strong>one</strong> math course and <strong>one</strong> economics course. In how many ways can you do this?</p></li>
+<li><p>Now suppose instead you must choose <strong>two</strong> math courses (out of the 5) and <strong>two</strong> economics courses (out of the 6). In how many ways can you do this?</p></li>
+</ol>
+<hr>
+<p><strong>Solving (a):</strong> two independent stages — pick the math course, then the econ course — so by the multiplication rule: <span class="math display">\[5 \times 6 = 30 \text{ ways}\]</span></p>
+<p><strong>Part (b) is harder:</strong> the multiplication rule doesn’t directly tell us how many ways to choose 2 courses <em>out of</em> 5, since order doesn’t matter and we haven’t yet built a tool for “choosing a subset” as opposed to “filling ordered stages.” We’ll come back to this once we have that tool.</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="permutations" class="level3">
+<h3 class="anchored" data-anchor-id="permutations">Permutations</h3>
+<ul>
+<li>Suppose we want to line up <span class="math inline">\(n\)</span> people in <span class="math inline">\(n\)</span> positions (position 1, position 2, …, position <span class="math inline">\(n\)</span>).</li>
+<li>This is a <span class="math inline">\(n\)</span>-stage experiment, so the multiplication rule applies — but with a twist compared to the dice and coins examples: <strong>the number of choices shrinks at each stage</strong>, because whoever fills an earlier position is no longer available for a later one.</li>
+</ul>
+<hr>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Position</th>
+<th>Who’s available</th>
+<th>Number of choices</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1st</td>
+<td>all <span class="math inline">\(n\)</span> people</td>
+<td><span class="math inline">\(n\)</span></td>
+</tr>
+<tr class="even">
+<td>2nd</td>
+<td>anyone except the person already placed</td>
+<td><span class="math inline">\(n-1\)</span></td>
+</tr>
+<tr class="odd">
+<td>3rd</td>
+<td>anyone except the two already placed</td>
+<td><span class="math inline">\(n-2\)</span></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\vdots\)</span></td>
+<td><span class="math inline">\(\vdots\)</span></td>
+<td><span class="math inline">\(\vdots\)</span></td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(n\)</span>-th (last)</td>
+<td>only one person left</td>
+<td><span class="math inline">\(1\)</span></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>By the multiplication rule, the total number of ways to arrange all <span class="math inline">\(n\)</span> people is <span class="math display">\[n \times (n-1) \times (n-2) \times \cdots \times 2 \times 1\]</span></li>
+</ul>
+<hr>
+<p><strong>Concrete example: 4 people (A, B, C, D) in a line.</strong></p>
+<ul>
+<li>Position 1: 4 choices. Position 2: 3 choices (one person used). Position 3: 2 choices. Position 4: 1 choice (whoever’s left).</li>
+<li>Total arrangements: <span class="math inline">\(4 \times 3 \times 2 \times 1 = 24\)</span>.</li>
+</ul>
+<div class="callout callout-style-default callout-warning callout-titled" title="Contrast with the Dice/Coin Examples">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>Contrast with the Dice/Coin Examples
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>With two dice (or two coin tosses), every stage had the <em>same</em> full set of choices available, because the outcome of the first roll doesn’t remove any option from the second. Here, each position <strong>uses up</strong> one of the available people, so the pool shrinks — the multiplication rule still applies, but the factors decrease: <span class="math inline">\(n, n-1, n-2, \dots, 1\)</span> instead of <span class="math inline">\(n, n, n, \dots, n\)</span>.</p>
+</div>
+</div>
+<hr>
+<div class="callout callout-style-default callout-note callout-titled" title="Definition — Factorial">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Definition — Factorial
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>For a positive integer <span class="math inline">\(n\)</span>, define <span class="math display">\[n! = n \times (n-1) \times (n-2) \times \cdots \times 2 \times 1\]</span> By convention, <span class="math inline">\(0! = 1\)</span>.</p>
+</div>
+</div>
+<hr>
+<p><img src="../growth_rates_n2_2n_nfactorial.png" class="img-fluid"></p>
+<hr>
+<div class="callout callout-style-default callout-important callout-titled" title="Combinatorial Interpretation">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Combinatorial Interpretation
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><span class="math inline">\(n!\)</span> is the number of <strong>permutations</strong> of <span class="math inline">\(n\)</span> distinct objects — that is, the number of different ways to arrange all <span class="math inline">\(n\)</span> of them in a sequence (a line, an order, a ranking, …).</p>
+</div>
+</div>
+<hr>
+<p>How many words can you make by rearranging the letters of “CAT”?</p>
+<hr>
+<ul>
+<li>6 words: CAT, CTA, TCA, ATC, TAC, ACT</li>
+</ul>
+<div class="incremental">
+<ul class="incremental">
+<li>How to count them systematically?</li>
+<li>All three letters are distinct, imagine each as a person.</li>
+<li>So this is exactly the “<span class="math inline">\(n\)</span> people in a line” problem: <span class="math inline">\(3! = 6\)</span> arrangements.</li>
+<li>Simple: we reduced the new problem to a previously solved one!</li>
+</ul>
+</div>
+<hr>
+<p>How about BOB?</p>
+<div class="incremental">
+<ul class="incremental">
+<li>Naive instinct: 3 letters, so <span class="math inline">\(3! = 6\)</span> arrangements?</li>
+<li>But we have only: BOB, BBO, OBB.</li>
+<li>Our approach fails because the two B’s are <strong>indistinguishable</strong> — we can’t treat them as distinct people. When they switch places, the word looks the same, so we are overcounting.</li>
+<li>Need to fix the overcount!</li>
+</ul>
+</div>
+<hr>
+<p>Fixing the overcounting:</p>
+<div class="incremental">
+<ul class="incremental">
+<li>Temporarily label the two B’s as <span class="math inline">\(B_1\)</span> and <span class="math inline">\(B_2\)</span>, as if they were distinguishable. Now all 3 “letters” (<span class="math inline">\(B_1, O, B_2\)</span>) are distinct, so there are <span class="math inline">\(3! = 6\)</span> arrangements:</li>
+<li><span class="math display">\[B_1OB_2,\; B_1B_2O,\; OB_1B_2,\; OB_2B_1,\; B_2OB_1,\; B_2B_1O\]</span></li>
+<li>Now drop the labels (i.e., stop distinguishing the B’s) and see what collapses together:
+<ul class="incremental">
+<li><span class="math inline">\(B_1OB_2\)</span> and <span class="math inline">\(B_2OB_1\)</span> both become <strong>BOB</strong></li>
+<li><span class="math inline">\(B_1B_2O\)</span> and <span class="math inline">\(B_2B_1O\)</span> both become <strong>BBO</strong></li>
+<li><span class="math inline">\(OB_1B_2\)</span> and <span class="math inline">\(OB_2B_1\)</span> both become <strong>OBB</strong></li>
+</ul></li>
+<li>Every real word shows up <strong>exactly 2 times</strong>. Why?</li>
+<li>Once for each way of permuting the two identical B’s.</li>
+</ul>
+</div>
+<hr>
+<p>Because each word is counted 2! times, we can fix the overcount by dividing by 2!: <span class="math display">\[\text{# of distinct arrangements of BOB} = \frac{3!}{2!} = \frac{6}{2} = 3\]</span></p>
+<hr>
+<p><strong>Strategy</strong>:</p>
+<div class="incremental">
+<ul class="incremental">
+<li>Reduce to a previously solved problem, then introduce a correction factor to account for overcounting.</li>
+<li>General approach for any word: <span class="math display">\[\text{# of distinct arrangements of a word} = \frac{n!}{k_1! k_2! \cdots k_m!}\]</span> where <span class="math inline">\(n\)</span> is the total number of letters, and <span class="math inline">\(k_1, k_2, \dots, k_m\)</span> are the counts of each repeated letter.</li>
+</ul>
+</div>
+<hr>
+<p><strong>Explore it yourself.</strong></p>
+<p>Type any word (up to 6 letters) below. It labels every repeated letter, lists all <span class="math inline">\(n!\)</span> labeled arrangements, and lets you click a word — or hit “highlight all clusters” — to see exactly which labeled arrangements collapse onto the same real word.</p>
+<hr>
+<div class="interactive-box">
+<div class="perm-widget-wrap">
+<style>
+.perm-widget-wrap { font-family: -apple-system, Helvetica, Arial, sans-serif; color: #222; }
+.perm-widget-wrap #permWordInput { font-size:16px; font-weight:600; letter-spacing:2px; text-transform:uppercase; padding:6px 10px; border-radius:6px; border:1px solid #ccc; width:140px; }
+.perm-widget-wrap button { cursor: pointer; }
+.perm-widget-wrap .perm-ctrl-btn { height:34px; padding:0 14px; border-radius:6px; border:1px solid #ccc; background:#fff; font-size:13px; }
+.perm-widget-wrap .perm-ctrl-btn.active { background:#222; color:#fff; border-color:#222; }
+.perm-widget-wrap .perm-stat-box { background:#f4f3f0; border-radius:8px; padding:0.75rem; text-align:center; }
+.perm-widget-wrap .perm-stat-label { font-size:12px; color:#666; margin:0 0 2px; }
+.perm-widget-wrap .perm-stat-value { font-size:20px; font-weight:600; margin:0; }
+.perm-widget-wrap #permRawList { display:flex; flex-wrap:wrap; gap:6px; padding:10px; border:1px solid #ddd; border-radius:8px; max-height:280px; overflow-y:auto; }
+.perm-widget-wrap .perm-raw-chip { font-size:14px; font-family: 'SF Mono', Menlo, monospace; padding:5px 10px; border-radius:6px; border:1px solid #ccc; background:#fff; transition: background 0.15s, color 0.15s, border-color 0.15s; }
+.perm-widget-wrap .perm-equation { font-size:17px; font-weight:600; text-align:center; margin: 1.1rem 0 0.4rem; }
+</style>
+<div style="display:flex; gap:12px; align-items:flex-end; margin-bottom:1rem; flex-wrap:wrap;">
+  <div>
+    <label style="font-size:13px; color:#666; display:block; margin-bottom:4px;">word (letters only, max 6)</label>
+    <input type="text" id="permWordInput" value="BOB" maxlength="6">
+  </div>
+  <div style="font-size:13px; color:#666;" id="permLetterCounts">B×2, O×1</div>
+  <button class="perm-ctrl-btn" id="permAllBtn">highlight all clusters</button>
+  <button class="perm-ctrl-btn" id="permResetBtn">clear</button>
+</div>
+<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:1rem;">
+  <div class="perm-stat-box">
+    <p class="perm-stat-label">n! (labeled arrangements)</p>
+    <p class="perm-stat-value" id="permStatNfact">6</p>
+  </div>
+  <div class="perm-stat-box">
+    <p class="perm-stat-label">distinct words</p>
+    <p class="perm-stat-value" id="permStatDistinct">3</p>
+  </div>
+  <div class="perm-stat-box">
+    <p class="perm-stat-label">cluster size (k₁!k₂!...)</p>
+    <p class="perm-stat-value" id="permStatCluster">2</p>
+  </div>
+</div>
+<div id="permRawList"></div>
+<p class="perm-equation" id="permEquation">3! = 3 × 2!</p>
+<p style="font-size:12px; color:#666; text-align:center; margin-top:0.25rem;">
+  click any labeled word to reveal its cluster · "highlight all clusters" reveals the full partition at once
+</p>
+</div>
+</div>
+
+<script>
+(function() {
+const wordInput = document.getElementById('permWordInput');
+const lettersEl = document.getElementById('permLetterCounts');
+const rawListEl = document.getElementById('permRawList');
+const statNfact = document.getElementById('permStatNfact');
+const statDistinct = document.getElementById('permStatDistinct');
+const statCluster = document.getElementById('permStatCluster');
+const equationEl = document.getElementById('permEquation');
+const allBtn = document.getElementById('permAllBtn');
+const resetBtn = document.getElementById('permResetBtn');
+const SUB = {0:'₀',1:'₁',2:'₂',3:'₃',4:'₄',5:'₅',6:'₆',7:'₇',8:'₈',9:'₉'};
+function toSubscript(num) { return String(num).split('').map(d => SUB[d]).join(''); }
+function factorial(k) { let r = 1; for (let i = 2; i <= k; i++) r *= i; return r; }
+const PALETTE = ['#0F6E56','#D85A30','#7F77DD','#BA7517','#378ADD','#B3467C','#6B8E23','#5B7C99','#8B5E3C','#946E3D'];
+let mode = 'none';
+let selectedPlain = null;
+let tokenPermutations = [];
+function permute(arr) {
+  if (arr.length <= 1) return [arr];
+  const result = [];
+  for (let i = 0; i < arr.length; i++) {
+    const rest = arr.slice(0, i).concat(arr.slice(i + 1));
+    for (const p of permute(rest)) result.push([arr[i], ...p]);
+  }
+  return result;
+}
+function render() {
+  let word = wordInput.value.toUpperCase().replace(/[^A-Z]/g, '');
+  if (word.length === 0) word = 'A';
+  wordInput.value = word;
+  const counts = {};
+  for (const ch of word) counts[ch] = (counts[ch] || 0) + 1;
+  lettersEl.textContent = Object.keys(counts).sort().map(ch => `${ch}×${counts[ch]}`).join(', ');
+  const seen = {};
+  const tokens = [];
+  for (const ch of word) {
+    seen[ch] = (seen[ch] || 0) + 1;
+    tokens.push({ letter: ch, sub: counts[ch] > 1 ? seen[ch] : null });
+  }
+  const n = word.length;
+  const nFact = factorial(n);
+  const denomVal = Object.values(counts).reduce((acc, c) => acc * factorial(c), 1);
+  const denomParts = Object.keys(counts).sort().map(ch => `${counts[ch]}!`).join('');
+  const perms = permute(tokens);
+  const plainOrder = [];
+  const plainIndex = {};
+  tokenPermutations = perms.map(p => {
+    const plain = p.map(t => t.letter).join('');
+    const labeled = p.map(t => t.letter + (t.sub ? toSubscript(t.sub) : '')).join('');
+    if (!(plain in plainIndex)) {
+      plainIndex[plain] = plainOrder.length;
+      plainOrder.push(plain);
+    }
+    return { labeled, plain, clusterIdx: plainIndex[plain] };
+  });
+  statNfact.textContent = nFact.toString();
+  statDistinct.textContent = plainOrder.length.toString();
+  statCluster.textContent = denomVal.toString();
+  equationEl.textContent = `${n}! = ${plainOrder.length} × ${denomParts}`;
+  rawListEl.innerHTML = '';
+  tokenPermutations.forEach((tp, idx) => {
+    const chip = document.createElement('div');
+    chip.className = 'perm-raw-chip';
+    chip.textContent = tp.labeled;
+    chip.dataset.plain = tp.plain;
+    chip.dataset.clusterIdx = tp.clusterIdx;
+    chip.addEventListener('click', () => selectPlain(tp.plain));
+    rawListEl.appendChild(chip);
+  });
+  mode = 'none';
+  selectedPlain = null;
+  applyStyles();
+}
+function applyStyles() {
+  const chips = rawListEl.querySelectorAll('.perm-raw-chip');
+  chips.forEach(chip => {
+    if (mode === 'single') {
+      if (chip.dataset.plain === selectedPlain) {
+        chip.style.background = '#0F6E56';
+        chip.style.color = '#fff';
+        chip.style.borderColor = '#0F6E56';
+      } else {
+        chip.style.background = '#fff';
+        chip.style.color = '#999';
+        chip.style.borderColor = '#e0e0e0';
+      }
+    } else if (mode === 'all') {
+      const c = PALETTE[(+chip.dataset.clusterIdx) % PALETTE.length];
+      chip.style.background = c;
+      chip.style.color = '#fff';
+      chip.style.borderColor = c;
+    } else {
+      chip.style.background = '#fff';
+      chip.style.color = '#222';
+      chip.style.borderColor = '#ccc';
+    }
+  });
+  allBtn.classList.toggle('active', mode === 'all');
+}
+function selectPlain(plain) {
+  if (mode === 'single' && selectedPlain === plain) {
+    mode = 'none';
+    selectedPlain = null;
+  } else {
+    mode = 'single';
+    selectedPlain = plain;
+  }
+  applyStyles();
+}
+allBtn.addEventListener('click', () => {
+  mode = (mode === 'all') ? 'none' : 'all';
+  selectedPlain = null;
+  applyStyles();
+});
+resetBtn.addEventListener('click', () => {
+  mode = 'none';
+  selectedPlain = null;
+  applyStyles();
+});
+wordInput.addEventListener('input', render);
+render();
+})();
+</script>
+<hr>
+<div class="callout callout-style-simple callout-caution no-icon callout-titled" title="Practice Question 2">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Caution</span>Practice Question 2
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Consider the word <strong>MISSISSIPPI</strong>.</p>
+<ol type="a">
+<li><p>How many distinct arrangements of its letters are there?</p></li>
+<li><p><em>(Bonus)</em> How many of these arrangements have all four I’s appearing together, as a single block?</p></li>
+</ol>
+</div>
+</div>
+<hr>
+<div class="callout callout-style-default callout-tip callout-titled" title="Solution">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-8" class="callout-8-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>a)</strong> MISSISSIPPI has 11 letters, with multiplicities <span class="math inline">\(M{=}1\)</span>, <span class="math inline">\(I{=}4\)</span>, <span class="math inline">\(S{=}4\)</span>, <span class="math inline">\(P{=}2\)</span> (check: <span class="math inline">\(1+4+4+2=11\)</span> ✓). By the formula for permutations with repeated elements: <span class="math display">\[\frac{11!}{1!\,4!\,4!\,2!} = \frac{39{,}916{,}800}{1 \times 24 \times 24 \times 2} = \frac{39{,}916{,}800}{1{,}152} = 34{,}650\]</span></p>
+<p><strong>b)</strong> Glue the four I’s into a single block, “<span class="math inline">\(\text{IIII}\)</span>”. Now we’re arranging 8 units: <span class="math inline">\(M, \text{[IIII]}, S, S, S, S, P, P\)</span> — that’s <span class="math inline">\(1\)</span> M, <span class="math inline">\(1\)</span> block, <span class="math inline">\(4\)</span> S’s, <span class="math inline">\(2\)</span> P’s, totaling 8 units. Same formula: <span class="math display">\[\frac{8!}{1!\,1!\,4!\,2!} = \frac{40{,}320}{1 \times 1 \times 24 \times 2} = \frac{40{,}320}{48} = 840\]</span></p>
+<p>(Note the block itself contributes no further arrangements internally, since all four I’s are identical — there’s only <span class="math inline">\(4!/4! = 1\)</span> way to arrange them within the block.)</p>
+</div>
+</div>
+</div>
+<hr>
+<p><strong>Counting ones and zeros</strong></p>
+<div class="incremental">
+<ul class="incremental">
+<li>A binary sequence of length <span class="math inline">\(n\)</span> is just a string of <span class="math inline">\(n\)</span> digits, each either <span class="math inline">\(0\)</span> or <span class="math inline">\(1\)</span>.</li>
+<li><strong>How many binary sequences of length <span class="math inline">\(n\)</span> are there?</strong>
+<ul class="incremental">
+<li>Each digit has 2 choices, it can be 0 or 1.</li>
+<li>There are <span class="math inline">\(n\)</span> digits, so by the multiplication rule, there are <span class="math inline">\(2\times 2 \times \cdots \times 2 = 2^n\)</span> binary sequences of length <span class="math inline">\(n\)</span>.</li>
+</ul></li>
+<li><strong>How many binary sequences of length <span class="math inline">\(n\)</span> have exactly <span class="math inline">\(k\)</span> ones?</strong>
+<ul class="incremental">
+<li>For example, for <span class="math inline">\(n=3\)</span> and <span class="math inline">\(k=2\)</span>, the sequences are: (110, 101, 011) — so there are 3 sequences.</li>
+<li>How to count systematically? We can reduce this to a previously solved problem.</li>
+</ul></li>
+</ul>
+</div>
+<hr>
+<p><strong>Strategy: reduce to a previously solved problem.</strong></p>
+<div class="incremental">
+<ul class="incremental">
+<li>A binary sequence of length <span class="math inline">\(n\)</span> with exactly <span class="math inline">\(k\)</span> ones is just a string of <span class="math inline">\(n\)</span> digits, <span class="math inline">\(k\)</span> of which are 1’s and the remaining <span class="math inline">\(n-k\)</span> are 0’s.</li>
+<li>This is exactly the same as arranging <span class="math inline">\(n\)</span> symbols, where
+<ul class="incremental">
+<li><span class="math inline">\(k\)</span> are one type (1’s) and</li>
+<li><span class="math inline">\(n-k\)</span> are another type (0’s).</li>
+</ul></li>
+<li>We already solved this problem in the “distinct arrangements of a word” section — the answer is <span class="math display">\[\frac{n!}{k!\,(n-k)!}\]</span></li>
+</ul>
+</div>
+<hr>
+<p><strong>Choosing a team</strong></p>
+<p>From a group of <span class="math inline">\(130\)</span> people, how many different teams of size <span class="math inline">\(5\)</span> can be formed? (Order within the team doesn’t matter — a team is just a subset of people.)</p>
+<hr>
+<p><strong>Again simplify the numbers to count manually</strong></p>
+<div class="incremental">
+<ul class="incremental">
+<li>Take: <span class="math inline">\(n=3\)</span>, <span class="math inline">\(k=2\)</span>. Let people be <span class="math inline">\(A, B, C\)</span>.</li>
+<li>Count by hand: <span class="math inline">\(\{\{A,B\}, \{A,C\}, \{B,C\}\}\)</span>, so there are 3 teams.</li>
+<li>To count systematically, notice that we must decide for each person whether they’re on the team or not.</li>
+</ul>
+</div>
+<hr>
+<p><strong>Strategy: encoding to reduce to previously solved problem.</strong></p>
+<div class="incremental">
+<ul class="incremental">
+<li>Line up all <span class="math inline">\(n\)</span> people in a fixed order.</li>
+<li>For any team, write <span class="math inline">\(1\)</span> under each person who’s on the team and <span class="math inline">\(0\)</span> under each person who isn’t.</li>
+<li>This turns every team into a binary sequence of length <span class="math inline">\(n\)</span> — and every binary sequence of length <span class="math inline">\(n\)</span> decodes back into exactly one team.</li>
+<li>So teams and binary sequences are in one-to-one and onto correspondence (bijection).</li>
+<li>If we know how to count the binary sequences, we know how to count the teams!</li>
+</ul>
+</div>
+<hr>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: center;">Team</th>
+<th style="text-align: center;"><span class="math inline">\(A\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(B\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(C\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><span class="math inline">\(\{A,B\}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(1\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(1\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><span class="math inline">\(\{A,C\}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(1\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(1\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><span class="math inline">\(\{B,C\}\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(0\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(1\)</span></td>
+<td style="text-align: center;"><span class="math inline">\(1\)</span></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<p>From a group of <span class="math inline">\(130\)</span> people, how many different teams of size <span class="math inline">\(5\)</span> can be formed? (Order within the team doesn’t matter — a team is just a subset of people.)</p>
+<div class="incremental">
+<ul class="incremental">
+<li>By the encoding argument, this is the same as counting binary sequences of length <span class="math inline">\(130\)</span> with exactly <span class="math inline">\(5\)</span> ones.</li>
+<li>By the formula we derived earlier, the answer is <span class="math display">\[\frac{130!}{5! 125!} = \frac{130 \times 129 \times 128 \times 127 \times 126}{5 \times 4 \times 3 \times 2 \times 1} = 2{,}421{,}303{,}200\]</span></li>
+<li>So there are over 2 billion different teams of size 5 that can be formed from 130 people!</li>
+<li>General formula: the number of teams of size <span class="math inline">\(k\)</span> from a group of <span class="math inline">\(n\)</span> people is <span class="math display">\[\frac{n!}{k!\,(n-k)!}\]</span></li>
+</ul>
+</div>
+<hr>
+<div class="callout callout-style-default callout-note callout-titled" title="Definition — Bijection">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Definition — Bijection
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>A function <span class="math inline">\(f: A \to B\)</span> is a <strong>bijection</strong> if it pairs up every element of <span class="math inline">\(A\)</span> with exactly one element of <span class="math inline">\(B\)</span>, and every element of <span class="math inline">\(B\)</span> is paired with exactly one element of <span class="math inline">\(A\)</span> — nothing on either side is left out or used twice.</p>
+</div>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../Bijection.svg.webp" class="img-fluid figure-img"></p>
+<figcaption>Bijection between <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span></figcaption>
+</figure>
+</div>
+<hr>
+<p>Our encoding creates a bijection between the set of teams of size <span class="math inline">\(k\)</span> from <span class="math inline">\(n\)</span> people and the set of binary sequences of length <span class="math inline">\(n\)</span> with exactly <span class="math inline">\(k\)</span> ones.</p>
+<hr>
+<div class="callout callout-style-default callout-important callout-titled" title="Key Counting Principle">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Key Counting Principle
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If a bijection exists between two finite sets <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span>, then <span class="math inline">\(|A| = |B|\)</span>.</p>
+<p>So to count a set that’s awkward to count directly, it’s enough to find <em>any</em> bijection between it and a set we already know how to count.</p>
+</div>
+</div>
+<hr>
+<div class="callout callout-style-simple callout-caution no-icon callout-titled" title="Practice Question 3">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Caution</span>Practice Question 3
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Consider two sets, A and B, each with 4 elements.</p>
+<ol type="a">
+<li><p>How many bijections exist from A to B?</p></li>
+<li><p>How many bijections exist from A to itself, such that no element maps to itself? (This is called a <strong>derangement</strong>.)</p></li>
+</ol>
+</div>
+</div>
+<hr>
+<div class="callout callout-style-default callout-note callout-titled" title="Definition — Binomial Coefficient">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Definition — Binomial Coefficient
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>For integers <span class="math inline">\(n \geq 0\)</span> and <span class="math inline">\(0 \leq k \leq n\)</span>, the <strong>binomial coefficient</strong> is <span class="math display">\[\binom{n}{k} = \frac{n!}{k!\,(n-k)!}\]</span> Read aloud as “<span class="math inline">\(n\)</span> choose <span class="math inline">\(k\)</span>.”</p>
+</div>
+</div>
+<hr>
+<div class="callout callout-style-default callout-important callout-titled" title="Combinatorial Interpretation of Binomial Coefficient">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Combinatorial Interpretation of Binomial Coefficient
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><span class="math inline">\(\binom{n}{k}\)</span> is the number of ways to choose a subset of size <span class="math inline">\(k\)</span> from a set of <span class="math inline">\(n\)</span> distinct objects. Everything we’ve built up to now is really the same quantity in disguise:</p>
+<ul>
+<li>the number of teams of size <span class="math inline">\(k\)</span> from <span class="math inline">\(n\)</span> people,</li>
+<li>the number of binary sequences of length <span class="math inline">\(n\)</span> with exactly <span class="math inline">\(k\)</span> ones (or, equivalently, <span class="math inline">\(k\)</span> zeros),</li>
+<li>the number of distinct arrangements of <span class="math inline">\(n\)</span> symbols where <span class="math inline">\(k\)</span> are one type and <span class="math inline">\(n-k\)</span> are another.</li>
+</ul>
+</div>
+</div>
+<hr>
+<p><strong>Revisiting: Choosing Courses</strong></p>
+<p>Recall the earlier problem: 5 math courses, 6 econ courses. Now let’s redo it with the binomial coefficient formally in hand — including part (b), which we set aside in Example 2.</p>
+<ol type="a">
+<li><p>Choose 1 math course and 1 econ course. In how many ways?</p></li>
+<li><p><strong>Choose 2 math courses and 2 econ courses. In how many ways?</strong></p></li>
+</ol>
+<hr>
+<p>To solve the problem, break it into parts:</p>
+<div class="incremental">
+<ul class="incremental">
+<li><p>Choosing 2 out of 5 (math courses): <span class="math display">\[\binom{5}{2} = \frac{5!}{2!\,3!} = \frac{120}{2 \times 6} = 10\]</span></p></li>
+<li><p>Choosing 2 out of 6 (econ courses): <span class="math display">\[\binom{6}{2} = \frac{6!}{2!\,4!} = \frac{720}{2 \times 24} = 15\]</span></p></li>
+<li><p>Combine the two independent stages using the multiplication rule: <span class="math display">\[\binom{5}{2} \times \binom{6}{2} = 10 \times 15 = 150\]</span></p></li>
+</ul>
+</div>
+<hr>
+<div class="callout callout-style-default callout-important callout-titled" title="Three Problem-Solving Techniques (So Far)">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Three Problem-Solving Techniques (So Far)
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li><p><strong>Count by hand with small numbers first to understand the problem.</strong> Before reaching for a general formula, work out a tiny concrete case explicitly (two dice summing to 3, BOB’s three arrangements, 3 people choosing a team of 2). This builds the intuition the formula is supposed to capture, and gives you a number to check the formula against once you have it.</p></li>
+<li><p><strong>Reduce to a problem you already know how to solve.</strong> Look for a way to reframe an unfamiliar problem as one you’ve already solved — either by <em>temporarily simplifying an assumption</em> (pretend BOB’s two B’s are distinguishable, solve the easy “all distinct” version, then correct for the overcounting) or by <em>encoding</em> it as a different but equivalent object (a team of people ↔︎ a binary sequence).</p></li>
+<li><p><strong>Break a complex problem into independent stages, and multiply.</strong> Whenever a choice splits into a sequence of smaller decisions — each with its own count of options, regardless of the others — the multiplication rule turns the whole problem into a product of easy pieces (two dice, two coin tosses, or “choose the math courses, then choose the econ courses”).</p></li>
+</ol>
+</div>
+</div>
+<hr>
+<div class="callout callout-style-simple callout-caution no-icon callout-titled" title="Practice Question 4 — Count By Hand (Intro · Manual Enumeration)">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Caution</span>Practice Question 4 — Count By Hand (Intro · Manual Enumeration)
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Ann, Ben, and Cleo sit in a row of 3 seats. By listing out all the seating arrangements, count how many of them have <strong>Ann not in the middle seat</strong>.</p>
+</div>
+</div>
+<hr>
+<div class="callout callout-style-simple callout-caution no-icon callout-titled" title="Practice Question 5 — Reduce to a Known Problem (Standard · Encoding)">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Caution</span>Practice Question 5 — Reduce to a Known Problem (Standard · Encoding)
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>On a city grid, you can only move <strong>right</strong> (R) or <strong>up</strong> (U), one block at a time. To get from point <span class="math inline">\(A\)</span> to point <span class="math inline">\(B\)</span>, you need exactly 4 moves right and 3 moves up (7 moves total). How many different shortest paths are there from <span class="math inline">\(A\)</span> to <span class="math inline">\(B\)</span>?</p>
+</div>
+</div>
+<hr>
+<div class="callout callout-style-simple callout-caution no-icon callout-titled" title="Practice Question 6 — Break Into Independent Stages (Standard · Multiplication Rule)">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Caution</span>Practice Question 6 — Break Into Independent Stages (Standard · Multiplication Rule)
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>A university committee needs 2 faculty members chosen from 5 eligible faculty, and 3 student representatives chosen from 8 eligible students. Afterward, one of the two chosen faculty members must be designated committee chair. How many different committees (including the chair designation) can be formed?</p>
+</div>
+</div>
+<hr>
+<p><strong>General approach</strong></p>
+<p>To recognize when differently sounding problems have the same combinatorial structure, it is useful to keep in mind the following general framework for counting:</p>
+<div class="incremental">
+<ul class="incremental">
+<li>Imagine we are choosing (sampling) <span class="math inline">\(k\)</span> objects from a set of <span class="math inline">\(n\)</span> distinct objects, one by one. There are two key questions to ask:
+<ul class="incremental">
+<li><strong>Order:</strong> does the <em>order</em> of selection matter?</li>
+<li><strong>Replacement:</strong> do we choose <em>with</em> or <em>without</em> replacement? (can we choose the same object more than once?)</li>
+</ul></li>
+<li>We want to count how many choices we have in each of the four resulting scenarios.</li>
+</ul>
+</div>
+<hr>
+</section>
+</section>
+<section id="sampling-table" class="level2">
+<h2 class="anchored" data-anchor-id="sampling-table">Sampling Table</h2>
+<div class="fragment">
+<table style="width:100%; border-collapse: collapse; text-align:center;">
+<tbody><tr>
+<th style="border: 1px solid #333; padding: 8px;">
+</th>
+<th style="border: 1px solid #333; padding: 8px;">
+Order matters
+</th>
+<th style="border: 1px solid #333; padding: 8px;">
+Order doesn’t matter
+</th>
+</tr>
+<tr>
+<td style="border: 1px solid #333; padding: 8px; text-align:left;">
+<strong>With replacement</strong>
+</td>
+<td style="border: 1px solid #333; padding: 8px;">
+</td>
+<td style="border: 1px solid #333; padding: 8px;">
+</td>
+</tr>
+<tr>
+<td style="border: 1px solid #333; padding: 8px; text-align:left;">
+<strong>Without replacement</strong>
+</td>
+<td style="border: 1px solid #333; padding: 8px;">
+</td>
+<td style="border: 1px solid #333; padding: 8px;">
+</td>
+</tr>
+</tbody></table>
+</div>
+<hr>
+<p>How many ways are there to distribute certain medals to a class of <span class="math inline">\(n\)</span> students?</p>
+<div class="incremental">
+<ul class="incremental">
+<li>Math and Econ medal</li>
+<li>Gold and Silver Math medals (must give one per person)</li>
+<li>Two Math medals (must give at most one per person)</li>
+<li>Two Math medals (can give more than one per person)</li>
+</ul>
+</div>
+<hr>
+<p>Which corner of the sampling table does each scenario belong to?</p>
+<div class="columns">
+<div class="column" style="width:55%;">
+<p><strong>Problems</strong></p>
+<ol type="1">
+<li>Math and Econ medal</li>
+<li>Gold and Silver medals</li>
+<li>Two Math medals</li>
+<li>Two Math medals — can give more than one to the same person</li>
+</ol>
+</div><div class="column" style="width:45%;">
+<p><strong>Categories</strong></p>
+<ul>
+<li><ol type="a">
+<li>Without replacement, unordered</li>
+</ol></li>
+<li><ol start="2" type="a">
+<li>With replacement, ordered</li>
+</ol></li>
+<li><ol start="3" type="a">
+<li>With replacement, unordered</li>
+</ol></li>
+<li><ol start="4" type="a">
+<li>Without replacement, ordered</li>
+</ol></li>
+</ul>
+</div>
+</div>
+<hr>
+<p><strong>Math and Econ medals</strong></p>
+<div class="incremental">
+<ul class="incremental">
+<li>Imaging distributing the medals one by one, first chosen student gets Math, second gets Econ
+<ul class="incremental">
+<li><span class="math inline">\(n\)</span> choices for Math</li>
+<li><span class="math inline">\(n\)</span> choices for Econ</li>
+<li>combine the two: <span class="math display">\[n^2\]</span></li>
+</ul></li>
+<li>Here <strong>order matters</strong> (first got gold, second got silver)</li>
+<li>and we choose <strong>with replacement</strong> since the same student can be chosen twice.</li>
+<li>Generally, <span class="math inline">\(n\)</span> students and <span class="math inline">\(k\)</span> distinct medals: <span class="math display">\[n^k.\]</span></li>
+</ul>
+</div>
+<hr>
+<table style="width:100%; border-collapse: collapse; text-align:center;">
+<tbody><tr>
+<th style="border: 1px solid #333; padding: 8px;">
+</th>
+<th style="border: 1px solid #333; padding: 8px;">
+Order matters
+</th>
+<th style="border: 1px solid #333; padding: 8px;">
+Order doesn’t matter
+</th>
+</tr>
+<tr>
+<td style="border: 1px solid #333; padding: 8px; text-align:left;">
+<strong>With replacement</strong>
+</td>
+<td style="border: 1px solid #333; padding: 8px; background-color: #fff3cd;">
+Math and Econ medals, <span class="math inline">\(n^k\)</span>
+</td>
+<td style="border: 1px solid #333; padding: 8px;">
+</td>
+</tr>
+<tr>
+<td style="border: 1px solid #333; padding: 8px; text-align:left;">
+<strong>Without replacement</strong>
+</td>
+<td style="border: 1px solid #333; padding: 8px;">
+</td>
+<td style="border: 1px solid #333; padding: 8px;">
+</td>
+</tr>
+</tbody></table>
+<hr>
+<p><strong>Gold and Silver Math medals (must give one per person) </strong></p>
+<div class="incremental">
+<ul class="incremental">
+<li>Imaging distributing the medals one by one, first chosen student gets Gold, second gets Silver
+<ul class="incremental">
+<li><span class="math inline">\(n\)</span> choices for Gold</li>
+<li>but <span class="math inline">\(n-1\)</span> choices for Silver</li>
+<li>combine the two: <span class="math display">\[n(n-1)=\frac{n!}{(n-2)!}\]</span></li>
+</ul></li>
+<li>Here <strong>order matters</strong> (first got gold, second got silver)</li>
+<li>and we choose <strong>without replacement</strong> since the same student <strong>cannot</strong> be chosen twice.</li>
+<li>Generally, <span class="math inline">\(n\)</span> students and <span class="math inline">\(k\)</span> distinct medals: <span class="math display">\[\frac{n!}{(n-k)!}.\]</span></li>
+</ul>
+</div>
+<hr>
+<table style="width:100%; border-collapse: collapse; text-align:center;">
+<tbody><tr>
+<th style="border: 1px solid #333; padding: 8px;">
+</th>
+<th style="border: 1px solid #333; padding: 8px;">
+Order matters
+</th>
+<th style="border: 1px solid #333; padding: 8px;">
+Order doesn’t matter
+</th>
+</tr>
+<tr>
+<td style="border: 1px solid #333; padding: 8px; text-align:left;">
+<strong>With replacement</strong>
+</td>
+<td style="border: 1px solid #333; padding: 8px; background-color: #fff3cd;">
+<span class="math inline">\(n^k\)</span>
+</td>
+<td style="border: 1px solid #333; padding: 8px;">
+</td>
+</tr>
+<tr>
+<td style="border: 1px solid #333; padding: 8px; text-align:left;">
+<strong>Without replacement</strong>
+</td>
+<td style="border: 1px solid #333; padding: 8px; background-color: #d1e7fd;">
+<span class="math inline">\(\dfrac{n!}{(n-k)!}\)</span>
+</td>
+<td style="border: 1px solid #333; padding: 8px;">
+</td>
+</tr>
+</tbody></table>
+<hr>
+<p><strong>Two Math Medals (at most one per person)</strong></p>
+<div class="incremental">
+<ul class="incremental">
+<li>Same setup, but the two medals are identical.</li>
+<li>This is the same as choosing a team of 2 out of <span class="math inline">\(n\)</span> people, hence <span class="math display">\[\binom{n}{2}\]</span></li>
+<li>Here <strong>order doesn’t matter</strong> (the two medals are indistinguishable)</li>
+<li>and we choose <strong>without replacement</strong> (same student can’t get both).</li>
+<li>Generally, <span class="math inline">\(n\)</span> students and <span class="math inline">\(k\)</span> identical medals: <span class="math display">\[\binom{n}{k} = \frac{n!}{k!(n-k)!}.\]</span></li>
+</ul>
+</div>
+<hr>
+<table style="width:100%; border-collapse: collapse; text-align:center;">
+<tbody><tr>
+<th style="border: 1px solid #333; padding: 8px;">
+</th>
+<th style="border: 1px solid #333; padding: 8px;">
+Order matters
+</th>
+<th style="border: 1px solid #333; padding: 8px;">
+Order doesn’t matter
+</th>
+</tr>
+<tr>
+<td style="border: 1px solid #333; padding: 8px; text-align:left;">
+<strong>With replacement</strong>
+</td>
+<td style="border: 1px solid #333; padding: 8px; background-color: #fff3cd;">
+<span class="math inline">\(n^k\)</span>
+</td>
+<td style="border: 1px solid #333; padding: 8px;">
+</td>
+</tr>
+<tr>
+<td style="border: 1px solid #333; padding: 8px; text-align:left;">
+<strong>Without replacement</strong>
+</td>
+<td style="border: 1px solid #333; padding: 8px; background-color: #d1e7fd;">
+<span class="math inline">\(\dfrac{n!}{(n-k)!}\)</span>
+</td>
+<td style="border: 1px solid #333; padding: 8px; background-color: #d4edda;">
+<span class="math inline">\(\dbinom{n}{k}\)</span>
+</td>
+</tr>
+</tbody></table>
+<hr>
+<p><strong>Two Math Medals, Repetition Allowed </strong></p>
+<ul>
+<li>Simplify - three students — Alice, Bob, Carol</li>
+<li>A student may receive 0, 1, or both.</li>
+</ul>
+<div class="fragment">
+<table style="width:100%; border-collapse: collapse; text-align:center;">
+<tbody><tr>
+<th style="border: 1px solid #333; padding: 8px;">
+#
+</th>
+<th style="border: 1px solid #333; padding: 8px;">
+Alice
+</th>
+<th style="border: 1px solid #333; padding: 8px;">
+Bob
+</th>
+<th style="border: 1px solid #333; padding: 8px;">
+Carol
+</th>
+</tr>
+<tr>
+<td style="border: 1px solid #333; padding: 8px;">
+1
+</td>
+<td style="border: 1px solid #333; padding: 8px;">
+••
+</td>
+<td style="border: 1px solid #333; padding: 8px;">
+</td>
+<td style="border: 1px solid #333; padding: 8px;">
+</td>
+</tr>
+<tr>
+<td style="border: 1px solid #333; padding: 8px;">
+2
+</td>
+<td style="border: 1px solid #333; padding: 8px;">
+</td>
+<td style="border: 1px solid #333; padding: 8px;">
+••
+</td>
+<td style="border: 1px solid #333; padding: 8px;">
+</td>
+</tr>
+<tr>
+<td style="border: 1px solid #333; padding: 8px;">
+3
+</td>
+<td style="border: 1px solid #333; padding: 8px;">
+</td>
+<td style="border: 1px solid #333; padding: 8px;">
+</td>
+<td style="border: 1px solid #333; padding: 8px;">
+••
+</td>
+</tr>
+<tr>
+<td style="border: 1px solid #333; padding: 8px;">
+4
+</td>
+<td style="border: 1px solid #333; padding: 8px;">
+•
+</td>
+<td style="border: 1px solid #333; padding: 8px;">
+•
+</td>
+<td style="border: 1px solid #333; padding: 8px;">
+</td>
+</tr>
+<tr>
+<td style="border: 1px solid #333; padding: 8px;">
+5
+</td>
+<td style="border: 1px solid #333; padding: 8px;">
+•
+</td>
+<td style="border: 1px solid #333; padding: 8px;">
+</td>
+<td style="border: 1px solid #333; padding: 8px;">
+•
+</td>
+</tr>
+<tr>
+<td style="border: 1px solid #333; padding: 8px;">
+6
+</td>
+<td style="border: 1px solid #333; padding: 8px;">
+</td>
+<td style="border: 1px solid #333; padding: 8px;">
+•
+</td>
+<td style="border: 1px solid #333; padding: 8px;">
+•
+</td>
+</tr>
+</tbody></table>
+</div>
+<div class="fragment">
+<p><strong>6 ways</strong> to distribute 2 identical medals among 3 students.</p>
+</div>
+<hr>
+<p><strong>Strategy: encoding</strong></p>
+<p>Two dividers split the row into 3 groups (Alice | Bob | Carol); two dots mark the medals. Reading left to right: let <strong>0</strong> = a medal, <strong>1</strong> = a divider.</p>
+<div class="fragment">
+<table style="width:100%; border-collapse: collapse; text-align:center;">
+<tbody><tr>
+<th style="border: 1px solid #333; padding: 6px 10px;">
+#
+</th>
+<th style="border: 1px solid #333; padding: 6px 10px;">
+Alice
+</th>
+<th style="border: 1px solid #333; padding: 6px 10px;">
+Bob
+</th>
+<th style="border: 1px solid #333; padding: 6px 10px;">
+Carol
+</th>
+<th style="border: 1px solid #333; padding: 6px 10px;">
+Encoding
+</th>
+</tr>
+<tr>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+1
+</td>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+••
+</td>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+</td>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+</td>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+<span class="math inline">\(0\,0\,1\,1\)</span>
+</td>
+</tr>
+<tr>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+2
+</td>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+</td>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+••
+</td>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+</td>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+<span class="math inline">\(1\,0\,0\,1\)</span>
+</td>
+</tr>
+<tr>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+3
+</td>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+</td>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+</td>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+••
+</td>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+<span class="math inline">\(1\,1\,0\,0\)</span>
+</td>
+</tr>
+<tr>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+4
+</td>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+•
+</td>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+•
+</td>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+</td>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+<span class="math inline">\(0\,1\,0\,1\)</span>
+</td>
+</tr>
+<tr>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+5
+</td>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+•
+</td>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+</td>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+•
+</td>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+<span class="math inline">\(0\,1\,1\,0\)</span>
+</td>
+</tr>
+<tr>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+6
+</td>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+</td>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+•
+</td>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+•
+</td>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+<span class="math inline">\(1\,0\,1\,0\)</span>
+</td>
+</tr>
+</tbody></table>
+</div>
+<hr>
+<table style="width:100%; border-collapse: collapse; text-align:center;">
+<tbody><tr>
+<th style="border: 1px solid #333; padding: 6px 10px;">
+#
+</th>
+<th style="border: 1px solid #333; padding: 6px 10px;">
+Alice
+</th>
+<th style="border: 1px solid #333; padding: 6px 10px;">
+Bob
+</th>
+<th style="border: 1px solid #333; padding: 6px 10px;">
+Carol
+</th>
+<th style="border: 1px solid #333; padding: 6px 10px;">
+Encoding
+</th>
+</tr>
+<tr>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+1
+</td>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+••
+</td>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+</td>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+</td>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+<span class="math inline">\(0\,0\,1\,1\)</span>
+</td>
+</tr>
+<tr>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+2
+</td>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+</td>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+••
+</td>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+</td>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+<span class="math inline">\(1\,0\,0\,1\)</span>
+</td>
+</tr>
+<tr>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+3
+</td>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+</td>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+</td>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+••
+</td>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+<span class="math inline">\(1\,1\,0\,0\)</span>
+</td>
+</tr>
+<tr>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+4
+</td>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+•
+</td>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+•
+</td>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+</td>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+<span class="math inline">\(0\,1\,0\,1\)</span>
+</td>
+</tr>
+<tr>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+5
+</td>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+•
+</td>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+</td>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+•
+</td>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+<span class="math inline">\(0\,1\,1\,0\)</span>
+</td>
+</tr>
+<tr>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+6
+</td>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+</td>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+•
+</td>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+•
+</td>
+<td style="border: 1px solid #333; padding: 6px 10px;">
+<span class="math inline">\(1\,0\,1\,0\)</span>
+</td>
+</tr>
+</tbody></table>
+<div class="fragment">
+<p>Every sequence has exactly <span class="math inline">\(k=2\)</span> zeros and <span class="math inline">\(n-1=2\)</span> ones, laid out in <span class="math inline">\(n+k-1=4\)</span> total slots. Choosing <strong>which</strong> <span class="math inline">\(k\)</span> of the <span class="math inline">\(4\)</span> positions are zeros fixes the whole sequence: <span class="math display">\[\binom{n+k-1}{k} = \binom{4}{2} = 6\]</span></p>
+</div>
+<hr>
+<table style="width:100%; border-collapse: collapse; text-align:center;">
+<tbody><tr>
+<th style="border: 1px solid #333; padding: 8px;">
+</th>
+<th style="border: 1px solid #333; padding: 8px;">
+Order matters
+</th>
+<th style="border: 1px solid #333; padding: 8px;">
+Order doesn’t matter
+</th>
+</tr>
+<tr>
+<td style="border: 1px solid #333; padding: 8px; text-align:left;">
+<strong>With replacement</strong>
+</td>
+<td style="border: 1px solid #333; padding: 8px; background-color: #fff3cd;">
+<span class="math inline">\(n^k\)</span>
+</td>
+<td style="border: 1px solid #333; padding: 8px; background-color: #f8d7da;">
+<span class="math inline">\(\dbinom{n+k-1}{k}\)</span>
+</td>
+</tr>
+<tr>
+<td style="border: 1px solid #333; padding: 8px; text-align:left;">
+<strong>Without replacement</strong>
+</td>
+<td style="border: 1px solid #333; padding: 8px; background-color: #d1e7fd;">
+<span class="math inline">\(\dfrac{n!}{(n-k)!}\)</span>
+</td>
+<td style="border: 1px solid #333; padding: 8px; background-color: #d4edda;">
+<span class="math inline">\(\dbinom{n}{k}\)</span>
+</td>
+</tr>
+</tbody></table>
+<hr>
+<p><strong>Story proofs: interpret combinatorial expressions </strong></p>
+<p>Prove that:</p>
+<p><span class="math display">\[\binom{n}{k}=\binom{n}{n-k}\]</span></p>
+<div class="incremental">
+<ul class="incremental">
+<li><strong>Algebraic proof:</strong> <span class="math inline">\(\dbinom{n}{n-k} = \dfrac{n!}{(n-k)!\,(n-(n-k))!} = \dfrac{n!}{(n-k)!\,k!} = \dbinom{n}{k}.\)</span></li>
+<li><strong>Story proof:</strong> choosing a team of <span class="math inline">\(k\)</span> people from <span class="math inline">\(n\)</span> is the same as choosing which <span class="math inline">\(n-k\)</span> people to <em>leave out</em> — so both sides count the number of teams of size <span class="math inline">\(k\)</span>.</li>
+</ul>
+</div>
+<hr>
+<p><strong>The Idea Behind a Story Proof </strong></p>
+<div class="fragment">
+<p>To show <span class="math inline">\(A = B\)</span>, find a single set of objects and <strong>count it two different ways</strong>:</p>
+</div>
+<div class="fragment">
+<ul>
+<li>one way of counting gives <span class="math inline">\(A\)</span></li>
+<li>another way of counting gives <span class="math inline">\(B\)</span></li>
+<li>since both count the same objects, <span class="math inline">\(A = B\)</span></li>
+</ul>
+</div>
+<div class="fragment">
+<p>No algebra required — and often more insightful, since it explains <em>why</em> the identity holds, not just <em>that</em> it holds.</p>
+</div>
+<hr>
+<p><strong>Sum of Binomial Coefficients </strong></p>
+<p>Prove that: <span class="math display">\[\sum_{k=0}^{n} \binom{n}{k} = \binom{n}{0}+\binom{n}{1}+\ldots+\binom{n}{n} \overset{?}{=} 2^n\]</span></p>
+<div class="incremental">
+<ul class="incremental">
+<li><strong>Algebraic proof:</strong> ????</li>
+<li><strong>Story proof:</strong> both sides count the number of binary sequences of length <span class="math inline">\(n\)</span>.</li>
+</ul>
+</div>
+<hr>
+<p><span class="math display">\[\binom{n}{0}+\binom{n}{1}+\ldots+\binom{n}{n}\]</span></p>
+<div class="incremental">
+<ul class="incremental">
+<li>Number of sequences with only 0’s (<span class="math inline">\(k=0\)</span> ones): <span class="math inline">\(\binom{n}{0}\)</span></li>
+<li>Number of sequences with exactly one 1 (<span class="math inline">\(k=1\)</span>): <span class="math inline">\(\binom{n}{1}\)</span></li>
+<li>Number of sequences with exactly two 1’s (<span class="math inline">\(k=2\)</span>): <span class="math inline">\(\binom{n}{2}\)</span></li>
+<li><span class="math inline">\(\vdots\)</span></li>
+<li>Number of sequences with only 1’s (<span class="math inline">\(k=n\)</span>): <span class="math inline">\(\binom{n}{n}\)</span></li>
+<li>Every sequence has <em>some</em> number of 1’s between <span class="math inline">\(0\)</span> and <span class="math inline">\(n\)</span>, and no sequence is counted twice — so summing over <span class="math inline">\(k\)</span> counts every sequence exactly once: <span class="math display">\[\sum_{k=0}^n \binom{n}{k} = \underbrace{2^n}_{\text{total sequences}}\]</span></li>
+</ul>
+</div>
+<hr>
+<div class="callout callout-style-default callout-caution callout-titled" title="Practice Question">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Caution</span>Practice Question
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Give a story proof of Pascal’s rule: for <span class="math inline">\(1 \le k \le n\)</span>, <span class="math display">\[\binom{n}{k} = \binom{n-1}{k-1} + \binom{n-1}{k}.\]</span></p>
+<p><em>Hint:</em> consider choosing a committee of size <span class="math inline">\(k\)</span> from <span class="math inline">\(n\)</span> people, one of whom is Nurlan. Split into cases based on whether Nurlan is on the committee.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-caution callout-titled" title="Practice Question">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Caution</span>Practice Question
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Give a story proof that, for <span class="math inline">\(1 \le k \le n\)</span>, <span class="math display">\[k\binom{n}{k} = n\binom{n-1}{k-1}.\]</span></p>
+<p><em>Hint:</em> consider choosing a committee of size <span class="math inline">\(k\)</span> from <span class="math inline">\(n\)</span> people, one of whom will be designated chair. Count the possibilities two ways: chair first vs.&nbsp;committee first.</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="combinatorics-in-probability-calculations" class="level2">
+<h2 class="anchored" data-anchor-id="combinatorics-in-probability-calculations">Combinatorics in probability calculations</h2>
+<div class="incremental">
+<ul class="incremental">
+<li>Naive definition = counting</li>
+<li>If the problem fits the naive definition (typically some symmetry), start by recalling the formula first: <span class="math display">\[P(A)=\frac{|A|}{|S|}.\]</span></li>
+<li>Usually <span class="math inline">\(|S|\)</span> is easy, start counting first.</li>
+<li><span class="math inline">\(A\)</span> is always a subset of <span class="math inline">\(S\)</span>, count it next (typically a hard part)</li>
+</ul>
+</div>
+<hr>
+<p><strong>Problem 1:</strong></p>
+<div class="incremental">
+<ul class="incremental">
+<li>Class has 70 girls and 60 boys</li>
+<li>Randomnly choose 5 people (what does it mean randomly?)</li>
+<li>What is the probability that all 5 chosen are girls?</li>
+</ul>
+</div>
+<hr>
+<p><strong>Approach 1 — unordered sample space (combinations)</strong></p>
+<div class="incremental">
+<ul class="incremental">
+<li>Randomly: experiment where a group of 5 people is chosen such that each possible 5-people group is equally likely to be chosen.</li>
+<li>Sample space: all ways to pick 5 people group out of 130:
+<ul class="incremental">
+<li>Choosing when order does not matter, without replacement — <span class="math inline">\(\binom{130}{5}\)</span> equally likely outcomes.</li>
+</ul></li>
+<li>Event A: all ways to pick 5 people from the 70 girls — <span class="math inline">\(\binom{70}{5}\)</span>.</li>
+<li><span class="math display">\[P(A) = \frac{\binom{70}{5}}{\binom{130}{5}} = \approx 0.042282\]</span></li>
+</ul>
+</div>
+<hr>
+<p><strong>Approach 2 — ordered sample space (permutations)</strong></p>
+<div class="incremental">
+<ul class="incremental">
+<li>Randomly: experiment where where a line is form of 5 people such that each possible 5-people line is equally likely to be formed.</li>
+<li>Sample space: all ways to line up 5 people out of 130:
+<ul class="incremental">
+<li>Order matters, without replacement — <span class="math inline">\(130\cdot129\cdot128\cdot127\cdot126\)</span> equally likely outcomes.</li>
+</ul></li>
+<li>Event A: all 5 people in a line come from the 70 girls — <span class="math inline">\(70\cdot69\cdot68\cdot67\cdot66\)</span>.</li>
+<li><span class="math display">\[P(A) = \frac{70\cdot69\cdot68\cdot67\cdot66}{130\cdot129\cdot128\cdot127\cdot126} = \approx 0.042282\]</span></li>
+</ul>
+</div>
+<div class="fragment">
+<p>Same answer either way — imposing an order on selection multiplies both numerator and favorable count by the same <span class="math inline">\(5!\)</span>, so it cancels out of the ratio.</p>
+</div>
+<hr>
+<p><strong>Problem 2:</strong> A 5-card hand is dealt from a standard 52-card deck (13 ranks, 4 suites).</p>
+<div class="incremental">
+<ul class="incremental">
+<li>What is the probability the hand contains exactly two pairs — two cards of one rank, two of another rank, and one card of a third, different rank?</li>
+</ul>
+</div>
+<p><img src="../two%20pairs.png" class="img-fluid"></p>
+<hr>
+<div class="inremental">
+<ul>
+<li>Experiment: choosing a 5-card hand, so that all hands are equally likely to be chosen.</li>
+<li>First count the sample space S, all possible hands: <span class="math display">\[\binom{52}{5}=2598960\]</span></li>
+<li>Then count event A: how many hands out of 2598960 are such that they contain exactly two pairs.</li>
+</ul>
+</div>
+<hr>
+<p>The event “two pairs”:</p>
+<div class="incremental">
+<ul class="incremental">
+<li>A hand of “two pair” has 3 distinct ranks involved: two ranks contribute <strong>2 cards each</strong> (the pairs), one rank contributes <strong>1 card</strong>. Total: <span class="math inline">\(2+2+1=5\)</span> cards.</li>
+<li>The deck has <span class="math inline">\(13\)</span> ranks, each with <span class="math inline">\(4\)</span> suits.</li>
+<li>We build the hand in 4 independent choices:
+<ol class="incremental" type="1">
+<li><strong>Which 2 ranks</strong> form the pairs: <span class="math inline">\(\binom{13}{2}\)</span></li>
+<li><strong>Which 2 suits</strong> for each of those ranks (2 out of 4 suits per rank, chosen independently for each of the 2 pair-ranks): <span class="math inline">\(\binom{4}{2}\)</span> each, so <span class="math inline">\(\binom{4}{2}^2\)</span></li>
+<li><strong>Which rank</strong> the 5th card comes from — must differ from the 2 pair-ranks, so <span class="math inline">\(11\)</span> remaining choices: <span class="math inline">\(\binom{11}{1}\)</span></li>
+<li><strong>Which suit</strong> for that 5th card: <span class="math inline">\(\binom{4}{1}\)</span></li>
+</ol></li>
+</ul>
+</div>
+<p>:::</p>
+<hr>
+<p>The event “two pairs”:</p>
+<div class="fragment">
+<p><span class="math display">\[\binom{13}{2}\binom{4}{2}^2\binom{11}{1}\binom{4}{1} = 78 \cdot 36 \cdot 11 \cdot 4 = 123{,}552\]</span></p>
+</div>
+<p>and combine:</p>
+<div class="fragment">
+<p><span class="math display">\[P(\text{two pair}) = \frac{123{,}552}{\binom{52}{5}} = \frac{123{,}552}{2{,}598{,}960} \approx 0.0475\]</span></p>
+</div>
+<hr>
+<p><strong>Problem: random binary price movement:</strong></p>
+<p>Shares of a company start at price $100 and follow a simple law of movement: each day, the price randomly moves up $1 or down $1.</p>
+<div class="incremental">
+<ul class="incremental">
+<li>What is the probability the in 10 days the price will stay the same (Event <span class="math inline">\(A_{100}\)</span>)?</li>
+<li>What is the probability the in 10 days the price will be greater or equal to $105 (Event <span class="math inline">\(A_{\geq 105})\)</span>?</li>
+</ul>
+</div>
+<hr>
+<style>
+  .rw-wrap {
+    font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    max-width: 860px;
+    margin: 0 auto;
+    color: #1f2937;
+  }
+  .rw-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 4px 0;
+  }
+  .rw-subtitle {
+    font-size: 13px;
+    color: #6b7280;
+    margin: 0 0 12px 0;
+  }
+  .rw-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+  .rw-btn {
+    font-size: 14px;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.15s ease;
+  }
+  .rw-btn:hover { opacity: 0.85; }
+  .rw-btn:active { opacity: 0.7; }
+  .rw-btn-primary { background: #2563eb; color: #ffffff; }
+  .rw-btn-secondary { background: #e5e7eb; color: #1f2937; }
+  .rw-btn-reset { background: #ffffff; color: #dc2626; border: 1.5px solid #dc2626; }
+  .rw-stats {
+    font-size: 13px;
+    color: #374151;
+    margin-bottom: 10px;
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+  }
+  .rw-stats b { color: #111827; }
+  .rw-legend {
+    display: flex;
+    gap: 16px;
+    font-size: 12px;
+    color: #4b5563;
+    margin-bottom: 6px;
+  }
+  .rw-legend span { display: inline-flex; align-items: center; gap: 5px; }
+  .rw-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .rw-svg-box { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 8px; }
+  .rw-caption {
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 8px;
+  }
+</style>
+
+<div class="rw-wrap">
+  <p class="rw-title">Random Binary Price Walk</p>
+  <p class="rw-subtitle">Start price = 100. Each of 10 steps: +1 tick or −1 tick, equally likely, independent of the past.</p>
+
+  <div class="rw-controls">
+    <button class="rw-btn rw-btn-primary" id="addBtn">Add trajectory</button>
+    <button class="rw-btn rw-btn-secondary" id="addTenBtn">Add 10</button>
+    <button class="rw-btn rw-btn-reset" id="resetBtn">Reset</button>
+  </div>
+
+  <div class="rw-stats">
+    <span>Trajectories: <b id="statCount">0</b></span>
+    <span>Mean final price: <b id="statMean">—</b></span>
+    <span>Std. dev.: <b id="statStd">—</b></span>
+  </div>
+
+  <div class="rw-legend">
+    <span><span class="rw-dot" style="background:#16a34a;"></span> ended above 100</span>
+    <span><span class="rw-dot" style="background:#dc2626;"></span> ended below 100</span>
+    <span><span class="rw-dot" style="background:#6b7280;"></span> ended at 100</span>
+  </div>
+
+  <div class="rw-svg-box">
+    <svg id="walkSvg" viewbox="0 0 820 430" style="width:100%;height:auto;display:block;"></svg>
+  </div>
+
+  <p class="rw-caption">The right-hand panel accumulates the final (step-10) price of every trajectory drawn so far. As trajectories pile up, its shape converges to Binomial(10, ½) shifted to a mean of 100 —.</p>
+</div>
+
+<script>
+(function () {
+  // ---------- config ----------
+  var START_PRICE = 100;
+  var STEPS = 10;
+  var W = 820, H = 430;
+  var margin = { top: 40, right: 16, bottom: 46, left: 50 };
+  var gap = 22;
+  var histW = 160;
+  var plotW = W - margin.left - margin.right - gap - histW;
+  var plotH = H - margin.top - margin.bottom;
+  var yMin = 88, yMax = 112;
+  var histX0 = margin.left + plotW + gap;
+
+  var svg = document.getElementById('walkSvg');
+  var NS = 'http://www.w3.org/2000/svg';
+
+  function xScale(step) { return margin.left + (step / STEPS) * plotW; }
+  function yScale(price) { return margin.top + ((yMax - price) / (yMax - yMin)) * plotH; }
+
+  function el(tag, attrs) {
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+
+  // ---------- static chart chrome ----------
+  function drawChrome() {
+    // horizontal gridlines + y ticks on main plot
+    var prices = [90, 95, 100, 105, 110];
+    prices.forEach(function (p) {
+      var y = yScale(p);
+      svg.appendChild(el('line', {
+        x1: margin.left, x2: margin.left + plotW, y1: y, y2: y,
+        stroke: p === 100 ? '#9ca3af' : '#f0f1f3',
+        'stroke-width': p === 100 ? 1.2 : 1,
+        'stroke-dasharray': p === 100 ? '4,3' : 'none'
+      }));
+      var t = el('text', { x: margin.left - 8, y: y + 4, 'text-anchor': 'end', 'font-size': 11, fill: '#6b7280' });
+      t.textContent = p;
+      svg.appendChild(t);
+    });
+
+    // x ticks
+    for (var s = 0; s <= STEPS; s++) {
+      var x = xScale(s);
+      svg.appendChild(el('line', {
+        x1: x, x2: x, y1: margin.top + plotH, y2: margin.top + plotH + 4,
+        stroke: '#9ca3af', 'stroke-width': 1
+      }));
+      var tx = el('text', { x: x, y: margin.top + plotH + 18, 'text-anchor': 'middle', 'font-size': 11, fill: '#6b7280' });
+      tx.textContent = s;
+      svg.appendChild(tx);
+    }
+
+    // axis frame
+    svg.appendChild(el('rect', {
+      x: margin.left, y: margin.top, width: plotW, height: plotH,
+      fill: 'none', stroke: '#d1d5db', 'stroke-width': 1
+    }));
+
+    // axis labels
+    var xlab = el('text', { x: margin.left + plotW / 2, y: H - 8, 'text-anchor': 'middle', 'font-size': 12, fill: '#374151' });
+    xlab.textContent = 'Step';
+    svg.appendChild(xlab);
+
+    var ylab = el('text', {
+      x: 14, y: margin.top + plotH / 2, 'text-anchor': 'middle', 'font-size': 12, fill: '#374151',
+      transform: 'rotate(-90 14 ' + (margin.top + plotH / 2) + ')'
+    });
+    ylab.textContent = 'Price';
+    svg.appendChild(ylab);
+
+    // histogram frame
+    svg.appendChild(el('rect', {
+      x: histX0, y: margin.top, width: histW, height: plotH,
+      fill: '#fafafa', stroke: '#d1d5db', 'stroke-width': 1
+    }));
+    var hlab = el('text', { x: histX0 + histW / 2, y: margin.top - 12, 'text-anchor': 'middle', 'font-size': 12, fill: '#374151' });
+    hlab.textContent = 'Final-price distribution';
+    svg.appendChild(hlab);
+  }
+
+  // ---------- histogram bars (one per reachable final price) ----------
+  var histLevels = [];
+  for (var u = 0; u <= STEPS; u++) histLevels.push(START_PRICE - STEPS + 2 * u); // 90..110 step 2
+  var counts = {};
+  histLevels.forEach(function (lv) { counts[lv] = 0; });
+  var barEls = {};
+
+  function drawHistBars() {
+    var barThickness = (plotH / (yMax - yMin)) * 2 * 0.72; // thickness in px, proportional to 2-tick spacing
+    histLevels.forEach(function (lv) {
+      var y = yScale(lv);
+      var bar = el('rect', {
+        x: histX0 + 4, y: y - barThickness / 2, width: 0, height: barThickness,
+        fill: '#93c5fd', stroke: '#2563eb', 'stroke-width': 0.6, rx: 2
+      });
+      svg.appendChild(bar);
+      barEls[lv] = bar;
+    });
+  }
+
+  function updateHistBars() {
+    var maxCount = 0;
+    histLevels.forEach(function (lv) { if (counts[lv] > maxCount) maxCount = counts[lv]; });
+    var usable = histW - 12;
+    histLevels.forEach(function (lv) {
+      var frac = maxCount > 0 ? counts[lv] / maxCount : 0;
+      barEls[lv].setAttribute('width', Math.max(0, frac * usable));
+    });
+  }
+
+  // ---------- trajectories ----------
+  var finals = [];
+
+  function genTrajectory() {
+    var p = START_PRICE;
+    var pts = [p];
+    for (var i = 0; i < STEPS; i++) {
+      p += Math.random() < 0.5 ? 1 : -1;
+      pts.push(p);
+    }
+    return pts;
+  }
+
+  function pathData(pts) {
+    return pts.map(function (p, i) {
+      return (i === 0 ? 'M' : 'L') + xScale(i).toFixed(1) + ',' + yScale(p).toFixed(1);
+    }).join(' ');
+  }
+
+  function colorFor(finalPrice) {
+    if (finalPrice > START_PRICE) return '#16a34a';
+    if (finalPrice < START_PRICE) return '#dc2626';
+    return '#6b7280';
+  }
+
+  function addTrajectory(animate) {
+    var pts = genTrajectory();
+    var finalPrice = pts[pts.length - 1];
+    var d = pathData(pts);
+    var color = colorFor(finalPrice);
+
+    var path = el('path', {
+      d: d, fill: 'none', stroke: color, 'stroke-width': 1.8,
+      'stroke-opacity': 0.28, 'stroke-linejoin': 'round', 'stroke-linecap': 'round'
+    });
+    svg.appendChild(path);
+
+    counts[finalPrice] = (counts[finalPrice] || 0) + 1;
+    finals.push(finalPrice);
+
+    if (animate) {
+      var len = path.getTotalLength();
+      path.style.strokeDasharray = len + ' ' + len;
+      path.style.strokeDashoffset = len;
+
+      // tracer dot that literally travels along the path as it's revealed;
+      // segment lengths are equal (each step is +-1 tick vertically over an
+      // identical horizontal span) so constant speed == constant per-step pace.
+      var startPt = path.getPointAtLength(0);
+      var tracer = el('circle', {
+        r: 4.5, fill: color, 'fill-opacity': 0.95, stroke: '#ffffff', 'stroke-width': 1
+      });
+      tracer.setAttribute('cx', startPt.x);
+      tracer.setAttribute('cy', startPt.y);
+      svg.appendChild(tracer);
+
+      var duration = STEPS * 90; // ms, ~90ms per step
+      var startTime = null;
+
+      function frame(ts) {
+        if (startTime === null) startTime = ts;
+        var t = Math.min(1, (ts - startTime) / duration);
+        var travelled = t * len;
+        path.style.strokeDashoffset = String(len - travelled);
+        var pt = path.getPointAtLength(travelled);
+        tracer.setAttribute('cx', pt.x);
+        tracer.setAttribute('cy', pt.y);
+        if (t < 1) {
+          requestAnimationFrame(frame);
+        } else {
+          svg.removeChild(tracer);
+          updateHistBars();
+          updateStats();
+        }
+      }
+      requestAnimationFrame(frame);
+    } else {
+      path.style.strokeDasharray = 'none';
+      path.style.strokeDashoffset = '0';
+      updateHistBars();
+      updateStats();
+    }
+  }
+
+  function updateStats() {
+    var n = finals.length;
+    document.getElementById('statCount').textContent = n;
+    if (n === 0) {
+      document.getElementById('statMean').textContent = '\u2014';
+      document.getElementById('statStd').textContent = '\u2014';
+      return;
+    }
+    var mean = finals.reduce(function (a, b) { return a + b; }, 0) / n;
+    var variance = finals.reduce(function (a, b) { return a + (b - mean) * (b - mean); }, 0) / n;
+    document.getElementById('statMean').textContent = mean.toFixed(2);
+    document.getElementById('statStd').textContent = Math.sqrt(variance).toFixed(2);
+  }
+
+  function reset() {
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    finals = [];
+    histLevels.forEach(function (lv) { counts[lv] = 0; });
+    drawChrome();
+    drawHistBars();
+    updateStats();
+  }
+
+  // ---------- wire up controls ----------
+  document.getElementById('addBtn').addEventListener('click', function () {
+    addTrajectory(true);
+  });
+  document.getElementById('addTenBtn').addEventListener('click', function () {
+    for (var i = 0; i < 10; i++) addTrajectory(false);
+  });
+  document.getElementById('resetBtn').addEventListener('click', reset);
+
+  // ---------- init ----------
+  drawChrome();
+  drawHistBars();
+  updateStats();
+})();
+</script>
+<hr>
+<div class="incremental">
+<ul class="incremental">
+<li>Price trajectory lists price movement per each of the days: a sequence of 10 letters, for example <span class="math inline">\((U, U, \dots, U)\)</span>.</li>
+<li>Experiment: a price trajectory is chosen at random such that each possible price trajectory is equally likely.</li>
+<li>Sample space: all possible trajectories, <span class="math display">\[2^{10}\]</span></li>
+<li>Event <span class="math inline">\(A_x\)</span>: trajectory results in price <span class="math inline">\(x\)</span>.</li>
+</ul>
+</div>
+<hr>
+<div class="incremental">
+<ul class="incremental">
+<li>Event <span class="math inline">\(A_{100}\)</span> occurs if and only if
+<ul class="incremental">
+<li>Ups-Downs=0 or Ups-(10-Ups)=0, hence Ups=5.</li>
+<li>in other words price went up 5 times and went down 5 times.</li>
+</ul></li>
+<li>It does not matter when the price went up or down, just total number of ups.</li>
+<li>Hence to count <span class="math inline">\(|A_{100}|\)</span> we need to count all sequences with exactly 5 ups: <span class="math inline">\(\binom{10}{5}\)</span></li>
+<li>Putting together: <span class="math display">\[P(A_{100})=\frac{\binom{10}{5}}{2^{10}}\approx 0.25 \]</span></li>
+</ul>
+</div>
+<hr>
+<div class="incremental">
+<ul class="incremental">
+<li>Event <span class="math inline">\(A_{\geq105}\)</span> occurs if and only if
+<ul class="incremental">
+<li>Ups-Downs <span class="math inline">\(\geq 5\)</span>, hence Ups <span class="math inline">\(\geq\)</span> 7.5.</li>
+</ul></li>
+<li>It does not matter when the price went up or down, just total number of ups must be 8 or more.</li>
+<li>Hence to count <span class="math inline">\(|A_{\geq105}|\)</span> we need to count all trajectories with exactly 8, 9, or 10 ups: <span class="math display">\[\binom{10}{8}, \binom{10}{9}, \binom{10}{10}\]</span></li>
+<li>Putting together: <span class="math display">\[P(A_{\geq105})=\frac{\binom{10}{8}+ \binom{10}{9}+\binom{10}{10}}{2^{10}}\approx 0.05 \]</span></li>
+</ul>
+</div>
+<hr>
+<p><strong>Practice Question</strong></p>
+<p>For the same random walk as the widget on the previous slide (<span class="math inline">\(n=10\)</span> steps, starting at 100, each step <span class="math inline">\(+1\)</span> or <span class="math inline">\(-1\)</span> equally likely): compute the probability of <strong>every</strong> possible final price. There are 11 reachable values.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 8%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Final price</th>
+<th>90</th>
+<th>92</th>
+<th>94</th>
+<th>96</th>
+<th>98</th>
+<th>100</th>
+<th>102</th>
+<th>104</th>
+<th>106</th>
+<th>108</th>
+<th>110</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(P(\text{price})\)</span></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<p><strong>Birthday problem</strong></p>
+<ul>
+<li>There are 130 students</li>
+<li>What is the probability that at least two students born on the same day?</li>
+</ul>
+<hr>
+<div class="incremental">
+<ul class="incremental">
+<li>Assumption: being born on any date is equally likely, 365 days in a year.</li>
+<li>Outcome: a birthday sequence records a birth date for each person.</li>
+<li>Experiment: a random birthday sequence is chosen, with all sequences equally likely. How many are there?</li>
+<li><span class="math display">\[|S|=365^{130}\]</span></li>
+<li>Event A: a birthday sequence contains at least two same dates.</li>
+</ul>
+</div>
+<hr>
+<p>We need to count how many birthday sequences are in A.</p>
+<div class="incremental">
+<ul class="incremental">
+<li>All sequences either contain at least two same dates or do not contain same dates (all are born on different days).</li>
+<li>It is easier to count the latter here!</li>
+<li>In set notation <span class="math display">\[S=A\cup A^c\]</span></li>
+<li>So, <span class="math inline">\(|S|=|A|+|A^c|\)</span>, that is <span class="math display">\[|A|=|S|-|A^c|\]</span></li>
+<li>Hence, by naive definition <span class="math display">\[P(A)=1-\frac{|A^c|}{|S|}\]</span></li>
+</ul>
+</div>
+<hr>
+<p>How many sequences do not contain repeated dates?</p>
+<div class="incremental">
+<p>Lets choose a birthday sequence person by person: - 365 choices for first student - 364 choices for second student - 363 choices for third student - … - 365-129=236 choices for the 130th student - Combining: <span class="math display">\[|A^c|=365\times364\times\dots\times 236\]</span></p>
+</div>
+<hr>
+<p>Applying naive definition:</p>
+<p><span class="math display">\[P(A)=1-\frac{365\times364\times\dots\times 236}{365^{130}}\approx 0.99999999999624\]</span></p>
+<hr>
+<p><img src="../birthday_probability_curve.png" class="img-fluid"></p>
+<hr>
+<div class="incremental">
+<ul class="incremental">
+<li>Naive definition = <strong>way to assign probabilities to outcomes of an experiment</strong>.</li>
+<li>But many experiments we care about have assymetric outcomes, so naive approach does not apply.</li>
+<li>We want to be able to think about any experiment, so should have a way to assign any nonequal probabilities to outcomes.</li>
+<li>For example: model a “biased” coin which has nonequal probabilities of Heads and Tails.</li>
+</ul>
+</div>
+<hr>
+<p><strong>How to model Biased coin?</strong></p>
+<div class="incremental">
+<ul class="incremental">
+<li>Can simply <strong>assume</strong> that <span class="math inline">\(P(H)=0.8\)</span></li>
+<li>But of course this restricts the probability of T:
+<ul class="incremental">
+<li><span class="math inline">\(P(T)=0.2\)</span> since only two outcomes and we define probabity <span class="math inline">\(P(T)\)</span> to be long run proportion of T, and hence probabilities of all outcomes must sum to 1 by definition of probability.</li>
+</ul></li>
+<li>So, it would make no sense to assume <span class="math inline">\(P(H)=0.8\)</span> and <span class="math inline">\(P(T)=0.5\)</span>.</li>
+<li>The assumed probabilities <strong>must satisfy some constraints</strong> for our probability model to make sense.</li>
+</ul>
+</div>
+<hr>
+<p>A <strong>probability space</strong> consists of:</p>
+<div class="incremental">
+<ul class="incremental">
+<li>a <strong>sample space</strong> <span class="math inline">\(S\)</span> (the set of all possible outcomes), and</li>
+<li>a <strong>probability function</strong> <span class="math inline">\(P\)</span> that takes an event <span class="math inline">\(A \subseteq S\)</span> and returns a real number <span class="math inline">\(P(A) \in [0,1]\)</span>,</li>
+</ul>
+<p>satisfying two axioms:</p>
+<ol class="incremental" type="1">
+<li><span class="math inline">\(P(\emptyset) = 0, \quad P(S) = 1\)</span>.</li>
+<li>If <span class="math inline">\(A_1, A_2, \dots\)</span> are <strong>disjoint</strong> (<span class="math inline">\(A_i \cap A_j = \emptyset\)</span> for <span class="math inline">\(i \ne j\)</span>), then <span class="math display">\[P\left(\bigcup_{j=1}^{\infty} A_j\right) = \sum_{j=1}^{\infty} P(A_j).\]</span></li>
+</ol>
+</div>
+<hr>
+<div class="incremental">
+<ul class="incremental">
+<li>Any <span class="math inline">\(P\)</span> satisfying these axioms is a <strong>valid</strong> probability function — the axioms say nothing about whether <span class="math inline">\((S,P)\)</span> correctly describes reality:</li>
+<li>Every problem in this course fixes a probability space <span class="math inline">\((S,P)\)</span> for some experiment:
+<ul class="incremental">
+<li><span class="math inline">\(S\)</span> is suggested by the problem</li>
+<li><span class="math inline">\(P\)</span> is not given in full: we’re told some probabilities, or properties, and must derive the rest.</li>
+</ul></li>
+<li>This is the game for most of the semester: <strong>given partial information about <span class="math inline">\(P\)</span>, use the axioms to find what’s asked.</strong></li>
+<li>Later: what if we don’t know <span class="math inline">\(P\)</span> at all — only data generated by it? <span class="math inline">\(\to\)</span> <strong>statistics</strong>.</li>
+</ul>
+</div>
+<hr>
+<div class="incremental">
+<ul class="incremental">
+<li><strong>Naive:</strong> assuming that every outcome in <span class="math inline">\(S\)</span> has the same probability <span class="math inline">\(1/|S|\)</span>.</li>
+<li><strong>General:</strong> outcomes can have <strong>different probabilities</strong> — non-negative, summing to 1.</li>
+</ul>
+</div>
+<hr>
+<p><strong>Example: Tossing two Fair coins</strong></p>
+<p>How do we build a probability model of this experiment?</p>
+<div class="incremental">
+<ul class="incremental">
+<li>Sample space: <span class="math inline">\(\{HH, HT, TH, TT\}\)</span>
+<ul class="incremental">
+<li><strong>ordered</strong>: because coins are “physically” distinguishable (give names to coins, flip sequentially)</li>
+<li>outcomes are <strong>physically symmetric</strong> because different sides of the coins are not really different, just called differently, and the two tosses don’t influence each other</li>
+</ul></li>
+<li>Assume that naive definition applies.</li>
+<li>Find probability of each outcome in <span class="math inline">\(S\)</span>.</li>
+</ul>
+</div>
+<hr>
+<p><strong>Example: Tossing two Magic coins</strong></p>
+<p>Now we want our experiment to have some special properties.</p>
+<div class="incremental">
+<ul class="incremental">
+<li>Sample space: <span class="math inline">\(\{HH, HT, TH, TT\}\)</span>
+<ul class="incremental">
+<li>still ordered</li>
+<li>no longer symmetric (magic coins behave in a magical way!)</li>
+</ul></li>
+<li>Naive no longer applies. We specify some probabilities instead:
+<ul class="incremental">
+<li>Probability that the first toss is H is 1/2.</li>
+<li>Probability that the second toss is H is 1/2.</li>
+<li>Probabilty of TT is 0.</li>
+</ul></li>
+<li>Find probability of each outcome in <span class="math inline">\(S\)</span>.</li>
+</ul>
+</div>
+<hr>
+<p><strong>Properties of probability</strong></p>
+<p>From the axioms we can derive the following properties which apply to any events <span class="math inline">\(A, B \subseteq S\)</span>:</p>
+<div class="incremental">
+<ol class="incremental" type="1">
+<li><span class="math inline">\(P(A^c) = 1 - P(A)\)</span> (complement)</li>
+<li>If <span class="math inline">\(A \subseteq B\)</span>, then <span class="math inline">\(P(A) \le P(B)\)</span> (monotonicity)</li>
+<li><span class="math inline">\(P(A \cup B) = P(A) + P(B) - P(A \cap B)\)</span></li>
+</ol>
+</div>
+<div class="fragment">
+<p>Take a look at <strong>formal</strong> derivation of these in the book.</p>
+</div>
+<hr>
+<p><strong>Compute complement</strong></p>
+<p>Throw dice 3 times. What is the probability that at least one 6 appears (A)?</p>
+<div class="incremental">
+<ul class="incremental">
+<li>Event A is compex, consisting of outcomes with exactly one 6, two 6’s, and three 6’s. So, to count directly, we need to count one by one:
+<ul class="incremental">
+<li>one 6: <span class="math inline">\(\binom{3}{1}5^2\)</span></li>
+<li>two 6’s: <span class="math inline">\(\binom{3}{2}5\)</span></li>
+<li>three 6’s: <span class="math inline">\(\binom{3}{3}\)</span></li>
+<li>Total outcomes: <span class="math display">\[|A|=\binom{3}{1}5^2+\binom{3}{2}5+\binom{3}{3}=91\]</span></li>
+</ul></li>
+</ul>
+</div>
+<hr>
+<p><strong>Compute complement</strong></p>
+<p>Throw dice 3 times. What is the probability that at least one 6 appears (event A)?</p>
+<p><span class="math display">\[P(A)=\frac{91}{6^3}\approx 0.42\]</span></p>
+<div class="incremental">
+<ul class="incremental">
+<li>But <span class="math inline">\(A^c\)</span> is a simpler event – no 6’s at all. Easy to count:
+<ul class="incremental">
+<li><span class="math inline">\(5^3\)</span> outcomes (drop 6 out of the feasible choices)</li>
+</ul></li>
+<li><span class="math display">\[P(A)=1-P(A^c)=1-\frac{5^3}{6^3}=\frac{91}{6^3}\approx 0.42\]</span></li>
+</ul>
+</div>
+<hr>
+<p><strong>Monotonicity to bound the probabilities</strong></p>
+<p>Throw 3 dice. Find a lower bound on the probability that the sum is greater or equal to 8 (event B).</p>
+<div class="incremental">
+<ul class="incremental">
+<li>Probability of Event B is harder to compute since there are many cases:
+<ul class="incremental">
+<li>Complement does not help since it also consists of many cases.</li>
+</ul></li>
+<li>Notice that if A happens, then the lowest possible sum is 8. Hence <span class="math inline">\(A\subseteq B\)</span>.</li>
+<li>By monotonicty we get the lower bound <span class="math inline">\(P(A)\approx 0.42 \leq P(B)\)</span>.</li>
+<li>The actual probability is <span class="math inline">\(P(B)\approx 0.84\)</span>.</li>
+</ul>
+</div>
+<hr>
+<p><strong>Inclusion-Exclusion Principle</strong></p>
+<p>Throw three dice. What is the probability that either 6 does not appear, or 5 does not appear?</p>
+<div class="incremental">
+<ul class="incremental">
+<li><span class="math inline">\(E_x\)</span> is event that number <span class="math inline">\(x\)</span> does not appear.</li>
+<li>We look for <span class="math inline">\(P(E_5\cup E_6)\)</span>:
+<ul class="incremental">
+<li><span class="math display">\[P(E_5\cup E_6)=P(E_5)+P(E_6)-P(E_5 \cap E_6)\]</span></li>
+<li><span class="math inline">\(P(E_5)=P(E_6)=\dfrac{5^3}{6^3}\)</span></li>
+<li><span class="math inline">\(P(E_5 \cap E_6)=\dfrac{4^3}{6^3}\)</span></li>
+</ul></li>
+</ul>
+</div>
+<hr>
+<p><span class="math display">\[
+      \begin{aligned}
+      P(E_5\cup E_6) &amp;= \frac{5^3}{6^3}+\frac{5^3}{6^3}-\frac{4^3}{6^3}\\
+      &amp;= \frac{125+125-64}{216}=\frac{186}{216}=\frac{31}{36}\approx 0.861
+      \end{aligned}
+\]</span></p>
+<hr>
+<p><strong>Inclusion-Exclusion Principle</strong></p>
+<p>Throw three dice. What is the probability that either 6 does not appear, or 5 does not appear, or 4 does not appear?</p>
+<div class="incremental">
+<ul class="incremental">
+<li>We look for <span class="math inline">\(P(E_4\cup E_5\cup E_6)\)</span>:
+<ul class="incremental">
+<li><span class="math display">\[
+\begin{aligned}
+P(E_4\cup E_5\cup E_6) &amp;= P(E_4)+P(E_5)+P(E_6)\\
+&amp;\quad -P(E_4\cap E_5)-P(E_4\cap E_6)-P(E_5\cap E_6)\\
+&amp;\quad +P(E_4\cap E_5\cap E_6)
+\end{aligned}
+\]</span></li>
+<li><span class="math inline">\(P(E_4)=P(E_5)=P(E_6)=\dfrac{5^3}{6^3}\)</span></li>
+<li><span class="math inline">\(P(E_4\cap E_5)=P(E_4\cap E_6)=P(E_5\cap E_6)=\dfrac{4^3}{6^3}\)</span></li>
+<li><span class="math inline">\(P(E_4\cap E_5\cap E_6)=\dfrac{3^3}{6^3}\)</span></li>
+</ul></li>
+</ul>
+</div>
+<hr>
+<p><span class="math display">\[
+      \begin{aligned}
+      P(E_4\cup E_5\cup E_6) &amp;= 3\cdot\frac{125}{216}-3\cdot\frac{64}{216}+\frac{27}{216}\\
+      &amp;= \frac{375-192+27}{216}=\frac{210}{216}=\frac{35}{36}\approx 0.972
+      \end{aligned}
+      \]</span></p>
+<hr>
+<p><strong>Problem: Four Couples in a Row</strong></p>
+<p>Four couples — are seated randomly in a row of 8 chairs at a wedding banquet. All <span class="math inline">\(8!\)</span> seatings are equally likely.</p>
+<div class="incremental">
+<ul class="incremental">
+<li>What is the probability that <strong>noone ends up sitting next to their partner</strong>?</li>
+</ul>
+</div>
+<hr>
+<div class="incremental">
+<ul class="incremental">
+<li>Experiment: seat all 8 people in a row, so that all <span class="math inline">\(8!\)</span> orderings are equally likely.</li>
+<li>First count the sample space <span class="math inline">\(S\)</span>, all possible seatings: <span class="math display">\[|S| = 8! = 40{,}320\]</span></li>
+<li>Then count event <span class="math inline">\(A\)</span>: seatings where noone is sitting next to his/her partner.</li>
+</ul>
+</div>
+<hr>
+<p><strong>Strategy</strong></p>
+<div class="incremental">
+<ul class="incremental">
+<li>Formulate in terms of probability of union of some sets.</li>
+<li><span class="math inline">\(A^c\)</span> is an event when:
+<ul class="incremental">
+<li>at least one person sits next to partner, that is at least one couple together</li>
+</ul></li>
+<li>Let <span class="math inline">\(A_i\)</span> be event that couple <span class="math inline">\(i\)</span> together</li>
+<li>Then: <span class="math inline">\(A^c=A_1\cup A_2 \cup A_3 \cup A_4\)</span></li>
+<li>Now we can apply inclusion-exclusion: first find probabilities of all possible intersections, then combine</li>
+</ul>
+</div>
+<hr>
+<p><strong><span class="math inline">\(P(A_i)\)</span>: One Couple Together</strong></p>
+<div class="incremental">
+<ul class="incremental">
+<li>Fix couple <span class="math inline">\(i\)</span>. Glue them into one block: now arranging <strong>7 units</strong> (the block + the other 6 people).</li>
+<li>Arrangements of the 7 units: <span class="math inline">\(7!\)</span>. Orderings inside the block: <span class="math inline">\(2\)</span>.</li>
+<li><span class="math display">\[P(A_i) = \frac{2 \cdot 7!}{8!} = \frac{2 \cdot 5040}{40320} = \frac{1}{4}\]</span></li>
+</ul>
+</div>
+<hr>
+<p>Fix two specific couples, say <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>. Glue <strong>both</strong> into blocks.</p>
+<div class="incremental">
+<ul class="incremental">
+<li>Now arranging <strong>6 units</strong>: 2 blocks + the 4 people from the other two couples.</li>
+<li>Arrangements of the 6 units: <span class="math inline">\(6!\)</span>. Orderings inside each block: <span class="math inline">\(2\)</span>, and there are 2 blocks, so <span class="math inline">\(2^2\)</span>.</li>
+<li><span class="math display">\[P(A_i \cap A_j) = \frac{2^2 \cdot 6!}{8!} = \frac{4 \cdot 720}{40320} = \frac{1}{14}\]</span></li>
+</ul>
+</div>
+<hr>
+<p>Fix three specific couples. Glue all three into blocks.</p>
+<div class="incremental">
+<ul class="incremental">
+<li>Now arranging <strong>5 units</strong>: 3 blocks + the 2 people from the remaining couple.</li>
+<li>Arrangements of the 5 units: <span class="math inline">\(5!\)</span>. Orderings inside the 3 blocks: <span class="math inline">\(2^3\)</span>.</li>
+<li><span class="math display">\[P(A_i \cap A_j \cap A_k) = \frac{2^3 \cdot 5!}{8!} = \frac{8 \cdot 120}{40320} = \frac{1}{42}\]</span></li>
+</ul>
+</div>
+<hr>
+<div class="incremental">
+<ul class="incremental">
+<li>All four couples glued into blocks: <strong>4 units</strong> total, nothing left ungrouped.</li>
+<li>Arrangements of the 4 units: <span class="math inline">\(4!\)</span>. Orderings inside each block: <span class="math inline">\(2^4\)</span>.</li>
+<li><span class="math display">\[P(A_1\cap A_2\cap A_3\cap A_4) = \frac{2^4 \cdot 4!}{8!} = \frac{16 \cdot 24}{40320} = \frac{1}{105}\]</span></li>
+</ul>
+</div>
+<hr>
+<p>Every specific choice of <span class="math inline">\(j\)</span> couples gives the <em>same</em> probability (only <span class="math inline">\(j\)</span> matters, not which couples) — so each level of the sum is just <span class="math inline">\(\binom{4}{j}\)</span> copies of what we already found:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>together</th>
+<th>count</th>
+<th>probability</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1 couple</td>
+<td><span class="math inline">\(\binom{4}{1}=4\)</span></td>
+<td><span class="math inline">\(1/4\)</span></td>
+</tr>
+<tr class="even">
+<td>2 couples</td>
+<td><span class="math inline">\(\binom{4}{2}=6\)</span></td>
+<td><span class="math inline">\(1/14\)</span></td>
+</tr>
+<tr class="odd">
+<td>3 couples</td>
+<td><span class="math inline">\(\binom{4}{3}=4\)</span></td>
+<td><span class="math inline">\(1/42\)</span></td>
+</tr>
+<tr class="even">
+<td>4 couples</td>
+<td><span class="math inline">\(\binom{4}{4}=1\)</span></td>
+<td><span class="math inline">\(1/105\)</span></td>
+</tr>
+</tbody>
+</table>
+<div class="fragment">
+<p><span class="math display">\[P(A^c) = 4\cdot\tfrac14 - 6\cdot\tfrac{1}{14} + 4\cdot\tfrac{1}{42} - 1\cdot\tfrac{1}{105} = 1 - \tfrac37 + \tfrac{2}{21} - \tfrac{1}{105} = \frac{23}{35}\]</span></p>
+</div>
+<hr>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

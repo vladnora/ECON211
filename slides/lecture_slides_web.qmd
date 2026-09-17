@@ -8,4 +8,4 @@ format:
     height: 700
 ---
 
-{{< include ../02_conditional/conditional.qmd >}}
+{{< include ../03_variables/variables.qmd >}}

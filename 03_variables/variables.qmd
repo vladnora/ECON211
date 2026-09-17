@@ -1,4 +1,17 @@
-## Motivation: Why Random Variables?
+## Contents
+
+- [Random Variables: Motivation & Definition](#rv-definition)
+- [PMF, CDF, and Support](#pmf-cdf)
+- [Named Distributions: Bernoulli, Binomial](#named-distributions)
+- [The Hypergeometric Distribution](#hypergeometric)
+- [Validating PMFs: Newton & Vandermonde](#valid-pmfs)
+- [Functions of One Random Variable](#functions-one-rv)
+- [Functions of Several Random Variables](#functions-several-rv)
+- [Independence of Random Variables](#independence-rv)
+
+---
+
+## Motivation: Why Random Variables? {#rv-definition}
 
 - So far, we've reasoned about **events**: subsets of the sample space $S$
 - But often we don't care *which* outcome occurred — only some **number** attached to it
@@ -237,7 +250,7 @@ Questions like $P(X = 2)$ or "the average value of $X$" are questions about $X$ 
 This is why random variables are useful: they let us **abstract away** from the sample space and work with numbers.
 :::
 
-## Distribution of a r.v. {.smaller}
+## Distribution of a r.v. {.smaller #pmf-cdf}
 
 - Recall that $X$ counts heads after two coin flips.
 - Two natural questions: 
@@ -648,7 +661,7 @@ Check: $k=\tfrac12$ satisfies both $k \ge 0$ and $|k|<1$. So $p(x) = (1/2)^x$ fo
 :::
 :::
 
-## Named Distributions
+## Named Distributions {#named-distributions}
 
 - Some random variables are so common that they have their own names.
 - We'll start with the **Bernoulli**, then the **Binomial**, and **Hypergeometric** distributions.
@@ -995,7 +1008,7 @@ The probability of "ace" on draw 2 **depends on the outcome of draw 1** — the 
 
 ---
 
-**The Hypergeometric Distribution**
+## The Hypergeometric Distribution {#hypergeometric}
 
 ::: {.callout-note title="Story Definition"}
 An urn contains $w$ white (success) balls and $b$ black (failure) balls, $N = w+b$ total. Draw $n$ balls **without replacement**. Let $X$ = number of white balls drawn. Then
@@ -1418,7 +1431,7 @@ Without replacement, the extremes are **less** likely: $P(X=0)$ drops from $.031
 
 ----
 
-**Are These Really Valid PMFs?**
+## Are These Really Valid PMFs? {#valid-pmfs}
 
 ::: {.fragment}
 We've now written down three PMFs. For $\text{Bern}(p)$, checking $p_X(x)\ge0$ and $\sum p_X(x) = p + (1-p) = 1$ is immediate.
@@ -1496,7 +1509,7 @@ $$\sum_{k=0}^{r} \binom{m}{k}\binom{l}{r-k} = \binom{m+l}{r}$$
 :::
 :::
 
-## Part I: Functions of One Random Variable
+## Functions of One Random Variable {#functions-one-rv}
 
 ::: {.fragment}
 Often we are interested in quantaties that are functions of random variables.
@@ -1506,13 +1519,6 @@ Often we are interested in quantaties that are functions of random variables.
 - Let $X$ be the number of H after two coin tosses:
   - $2-X$ is the number of T
   - $|2-2X|$ is the absolute difference between H and T
-- Let $X$ be the number of people per day that are willing to buy a cinnabon from Daily Cup
-  - 
-- 
-- where $X$ is random. The revenue is: $\text{Price} \cdot X$ tenge
-  
-- whether she **hits her target** of at least 5 students: yes or no
-- how far she is **from her target**: $|X - 5|$
 :::
 
 ::: {.fragment}
@@ -1522,57 +1528,36 @@ Each of these is a new random quantity built out of $X$. If we know the distribu
 :::
 
 
-## The Function Machine {.smaller}
+---
 
-$X$ turns outcomes into numbers. Then $g$ turns those numbers into new numbers.
+**Illustration of the two functions**
+
 
 ```{=html}
 <div class="fmach-wrap">
   <div class="fmach-btnrow">
-    <button class="fmach-btn" data-g="sqrt">g(x) = &#8730;x</button>
-    <button class="fmach-btn" data-g="plus">g(x) = x + 2</button>
-    <button class="fmach-btn" data-g="ind">g(x) = 1 if x &#8805; 1</button>
+    <button class="fmach-btn" data-g="minus">g(x) = 2 &minus; x</button>
+    <button class="fmach-btn" data-g="absd">g(x) = |2 &minus; 2x|</button>
   </div>
 
   <svg class="fmach-svg" viewBox="0 0 900 400" xmlns="http://www.w3.org/2000/svg">
-    <rect x="45" y="40" width="130" height="320" rx="10" fill="none" stroke="#334155" stroke-width="2"/>
-    <text x="110" y="30" text-anchor="middle" class="fmach-head">S</text>
+    <rect x="45" y="55" width="130" height="300" rx="10" fill="none" stroke="#334155" stroke-width="2"/>
+    <text x="110" y="42" text-anchor="middle" class="fmach-head">S</text>
+    <text x="110" y="385" text-anchor="middle" class="fmach-tick">each outcome: 1/4</text>
 
     <g id="fmach-l1"></g>
     <g id="fmach-l2"></g>
-
-    <circle cx="110" cy="70"  r="20" fill="#2563eb"/><text x="110" y="76" text-anchor="middle" class="fmach-peb">s1</text>
-    <circle cx="110" cy="120" r="20" fill="#16a34a"/><text x="110" y="126" text-anchor="middle" class="fmach-peb">s2</text>
-    <circle cx="110" cy="170" r="20" fill="#ea580c"/><text x="110" y="176" text-anchor="middle" class="fmach-peb">s3</text>
-    <circle cx="110" cy="220" r="20" fill="#dc2626"/><text x="110" y="226" text-anchor="middle" class="fmach-peb">s4</text>
-    <circle cx="110" cy="270" r="20" fill="#7c3aed"/><text x="110" y="276" text-anchor="middle" class="fmach-peb">s5</text>
-    <circle cx="110" cy="320" r="20" fill="#0891b2"/><text x="110" y="326" text-anchor="middle" class="fmach-peb">s6</text>
+    <g id="fmach-s"></g>
 
     <line x1="260" y1="150" x2="880" y2="150" stroke="#334155" stroke-width="2"/>
     <line x1="260" y1="318" x2="880" y2="318" stroke="#334155" stroke-width="2"/>
-    <text x="215" y="145" text-anchor="end" class="fmach-axis">X</text>
-    <text x="215" y="313" text-anchor="end" class="fmach-axis">g(X)</text>
+    <text x="880" y="136" text-anchor="end" class="fmach-axis">X</text>
+    <text x="880" y="304" text-anchor="end" class="fmach-axis">g(X)</text>
 
-    <g id="fmach-ticks">
-      <line x1="280" y1="144" x2="280" y2="156" stroke="#334155" stroke-width="2"/><text x="280" y="174" text-anchor="middle" class="fmach-tick">0</text>
-      <line x1="342" y1="144" x2="342" y2="156" stroke="#334155" stroke-width="2"/><text x="342" y="174" text-anchor="middle" class="fmach-tick">1</text>
-      <line x1="404" y1="144" x2="404" y2="156" stroke="#334155" stroke-width="2"/><text x="404" y="174" text-anchor="middle" class="fmach-tick">2</text>
-      <line x1="466" y1="144" x2="466" y2="156" stroke="#334155" stroke-width="2"/><text x="466" y="174" text-anchor="middle" class="fmach-tick">3</text>
-      <line x1="528" y1="144" x2="528" y2="156" stroke="#334155" stroke-width="2"/><text x="528" y="174" text-anchor="middle" class="fmach-tick">4</text>
-      <line x1="590" y1="144" x2="590" y2="156" stroke="#334155" stroke-width="2"/><text x="590" y="174" text-anchor="middle" class="fmach-tick">5</text>
-      <line x1="652" y1="144" x2="652" y2="156" stroke="#334155" stroke-width="2"/><text x="652" y="174" text-anchor="middle" class="fmach-tick">6</text>
-
-      <line x1="280" y1="312" x2="280" y2="324" stroke="#334155" stroke-width="2"/><text x="280" y="298" text-anchor="middle" class="fmach-tick">0</text>
-      <line x1="342" y1="312" x2="342" y2="324" stroke="#334155" stroke-width="2"/><text x="342" y="298" text-anchor="middle" class="fmach-tick">1</text>
-      <line x1="404" y1="312" x2="404" y2="324" stroke="#334155" stroke-width="2"/><text x="404" y="298" text-anchor="middle" class="fmach-tick">2</text>
-      <line x1="466" y1="312" x2="466" y2="324" stroke="#334155" stroke-width="2"/><text x="466" y="298" text-anchor="middle" class="fmach-tick">3</text>
-      <line x1="528" y1="312" x2="528" y2="324" stroke="#334155" stroke-width="2"/><text x="528" y="298" text-anchor="middle" class="fmach-tick">4</text>
-      <line x1="590" y1="312" x2="590" y2="324" stroke="#334155" stroke-width="2"/><text x="590" y="298" text-anchor="middle" class="fmach-tick">5</text>
-      <line x1="652" y1="312" x2="652" y2="324" stroke="#334155" stroke-width="2"/><text x="652" y="298" text-anchor="middle" class="fmach-tick">6</text>
-    </g>
+    <g id="fmach-ticks"></g>
   </svg>
 
-  <div class="fmach-info" id="fmach-info">Pick a function g to apply on top of X.</div>
+  <div class="fmach-info" id="fmach-info">P(X=0) = 1/4, P(X=1) = 1/2, P(X=2) = 1/4 &nbsp;&mdash;&nbsp; pick a function g to apply on top of X.</div>
 </div>
 
 <style>
@@ -1587,7 +1572,7 @@ $X$ turns outcomes into numbers. Then $g$ turns those numbers into new numbers.
 .fmach-btn.active { background: #1e293b; color: #ffffff; border-color: #1e293b; }
 .fmach-svg { width: 100%; height: auto; max-height: 400px; display: block; margin: 0 auto; }
 .fmach-head { font-size: 20px; fill: #1e293b; font-weight: 600; }
-.fmach-peb { font-size: 13px; fill: #ffffff; font-weight: 600; }
+.fmach-peb { font-size: 14px; fill: #ffffff; font-weight: 600; }
 .fmach-tick { font-size: 13px; fill: #334155; }
 .fmach-axis { font-size: 17px; fill: #1e293b; font-weight: 600; }
 .fmach-arc { fill: none; stroke-width: 2.5; opacity: 0.9; }
@@ -1597,20 +1582,47 @@ $X$ turns outcomes into numbers. Then $g$ turns those numbers into new numbers.
 <script>
 (function() {
   const NS = 'http://www.w3.org/2000/svg';
+  const AX_X = 150, AX_G = 318;
   const peb = [
-    {id:'s1', y:70,  x:0, color:'#2563eb'},
-    {id:'s2', y:120, x:1, color:'#16a34a'},
-    {id:'s3', y:170, x:4, color:'#ea580c'},
-    {id:'s4', y:220, x:1, color:'#dc2626'},
-    {id:'s5', y:270, x:0, color:'#7c3aed'},
-    {id:'s6', y:320, x:4, color:'#0891b2'}
+    {id:'HH', x:2, color:'#2563eb'},
+    {id:'HT', x:1, color:'#16a34a'},
+    {id:'TH', x:1, color:'#ea580c'},
+    {id:'TT', x:0, color:'#dc2626'}
   ];
+  peb.forEach(function(p, i) { p.y = 100 + 70 * i; });
   const gs = {
-    sqrt: {map:{0:0, 1:1, 4:2}, label:'g(x) = &#8730;x', note:'three distinct values in, three distinct values out'},
-    plus: {map:{0:2, 1:3, 4:6}, label:'g(x) = x + 2', note:'a shift: every value slides right by 2'},
-    ind:  {map:{0:0, 1:1, 4:1}, label:'g(x) = 1 if x &#8805; 1, else 0', note:'two values collapse into one &mdash; not one-to-one'}
+    minus: {f: function(x) { return 2 - x; },
+            label: 'g(x) = 2 &minus; x',
+            pmf: 'P(g=0) = 1/4, P(g=1) = 1/2, P(g=2) = 1/4',
+            note: 'one-to-one: same probabilities, new labels'},
+    absd:  {f: function(x) { return Math.abs(2 - 2 * x); },
+            label: 'g(x) = |2 &minus; 2x|',
+            pmf: 'P(g=0) = 1/2, P(g=2) = 1/2',
+            note: 'HH and TT collapse onto 2: probabilities add'}
   };
-  function px(v) { return 280 + v * 62; }
+  function px(v) { return 340 + v * 200; }
+  function el(tag, attrs, parent) {
+    const e = document.createElementNS(NS, tag);
+    Object.keys(attrs).forEach(function(k) { e.setAttribute(k, attrs[k]); });
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+
+  function build() {
+    const S = document.getElementById('fmach-s');
+    const T = document.getElementById('fmach-ticks');
+    if (!S || !T) return;
+    peb.forEach(function(p) {
+      el('circle', {cx:110, cy:p.y, r:22, fill:p.color}, S);
+      el('text', {x:110, y:p.y + 5, 'text-anchor':'middle', 'class':'fmach-peb'}, S).textContent = p.id;
+    });
+    [0, 1, 2].forEach(function(v) {
+      el('line', {x1:px(v), y1:AX_X - 6, x2:px(v), y2:AX_X + 6, stroke:'#334155', 'stroke-width':2}, T);
+      el('text', {x:px(v), y:AX_X + 24, 'text-anchor':'middle', 'class':'fmach-tick'}, T).textContent = v;
+      el('line', {x1:px(v), y1:AX_G - 6, x2:px(v), y2:AX_G + 6, stroke:'#334155', 'stroke-width':2}, T);
+      el('text', {x:px(v), y:AX_G - 14, 'text-anchor':'middle', 'class':'fmach-tick'}, T).textContent = v;
+    });
+  }
 
   function line1() {
     const g = document.getElementById('fmach-l1');
@@ -1619,17 +1631,9 @@ $X$ turns outcomes into numbers. Then $g$ turns those numbers into new numbers.
     peb.forEach(function(p) {
       const idx = counts[p.x] || 0; counts[p.x] = idx + 1;
       const tx = px(p.x);
-      const path = document.createElementNS(NS, 'path');
-      path.setAttribute('d', 'M 133 ' + p.y + ' Q ' + ((133 + tx) / 2) + ' ' + p.y + ', ' + tx + ' 150');
-      path.setAttribute('class', 'fmach-arc');
-      path.setAttribute('stroke', p.color);
-      g.appendChild(path);
-      const c = document.createElementNS(NS, 'circle');
-      c.setAttribute('cx', tx);
-      c.setAttribute('cy', 150 - 14 - 16 * idx);
-      c.setAttribute('r', 6);
-      c.setAttribute('fill', p.color);
-      g.appendChild(c);
+      el('path', {d:'M 132 ' + p.y + ' Q ' + ((132 + tx) / 2) + ' ' + p.y + ', ' + tx + ' ' + AX_X,
+                  'class':'fmach-arc', stroke:p.color}, g);
+      el('circle', {cx:tx, cy:AX_X - 14 - 16 * idx, r:6, fill:p.color}, g);
     });
   }
 
@@ -1638,36 +1642,29 @@ $X$ turns outcomes into numbers. Then $g$ turns those numbers into new numbers.
     const info = document.getElementById('fmach-info');
     if (!g || !info) return;
     g.innerHTML = '';
-    const f = gs[key];
+    const G = gs[key];
     const counts = {};
     peb.forEach(function(p) {
-      const v = f.map[p.x];
+      const v = G.f(p.x);
       const idx = counts[v] || 0; counts[v] = idx + 1;
       const x0 = px(p.x), x1 = px(v);
-      const path = document.createElementNS(NS, 'path');
-      path.setAttribute('d', 'M ' + x0 + ' 158 Q ' + ((x0 + x1) / 2) + ' 250, ' + x1 + ' 310');
-      path.setAttribute('class', 'fmach-arc');
-      path.setAttribute('stroke', p.color);
-      g.appendChild(path);
+      const path = el('path', {d:'M ' + x0 + ' ' + (AX_X + 8) + ' Q ' + ((x0 + x1) / 2) + ' 250, ' + x1 + ' ' + (AX_G - 8),
+                               'class':'fmach-arc', stroke:p.color}, g);
       const len = path.getTotalLength();
       path.style.strokeDasharray = len;
       path.style.strokeDashoffset = len;
       path.getBoundingClientRect();
       path.style.transition = 'stroke-dashoffset 0.6s ease';
       requestAnimationFrame(function() { path.style.strokeDashoffset = '0'; });
-      const c = document.createElementNS(NS, 'circle');
-      c.setAttribute('cx', x1);
-      c.setAttribute('cy', 332 + 16 * idx);
-      c.setAttribute('r', 6);
-      c.setAttribute('fill', p.color);
+      const c = el('circle', {cx:x1, cy:AX_G + 14 + 16 * idx, r:6, fill:p.color}, g);
       c.style.opacity = '0';
       c.style.transition = 'opacity 0.4s ease 0.45s';
-      g.appendChild(c);
       requestAnimationFrame(function() { c.style.opacity = '1'; });
     });
-    info.innerHTML = f.label + ' &nbsp;&mdash;&nbsp; ' + f.note;
+    info.innerHTML = G.label + ' &nbsp;&rarr;&nbsp; ' + G.pmf + '<br>' + G.note;
   }
 
+  build();
   line1();
   document.querySelectorAll('.fmach-btn').forEach(function(b) {
     b.addEventListener('click', function() {
@@ -1680,8 +1677,7 @@ $X$ turns outcomes into numbers. Then $g$ turns those numbers into new numbers.
 </script>
 ```
 
-
-## Definition: Function of a Random Variable
+---
 
 ::: {.callout-note title="Definition"}
 For an experiment with sample space $S$, an r.v. $X$, and a function $g : \mathbb{R} \to \mathbb{R}$, the random variable $g(X)$ is the function that maps
@@ -1689,9 +1685,6 @@ For an experiment with sample space $S$, an r.v. $X$, and a function $g : \mathb
 $$s \;\longmapsto\; g(X(s)) \qquad \text{for all } s \in S$$
 :::
 
-::: {.fragment}
-So $g(X)$ is the **composition** of $X$ and $g$: *first apply $X$, then apply $g$*.
-:::
 
 ::: {.fragment}
 ::: {.callout-important title="Key point"}
@@ -1699,57 +1692,25 @@ $g(X)$ is a function from $S$ to $\mathbb{R}$ — so it is a random variable in 
 :::
 :::
 
-::: {.fragment}
-$X^2$, $\;e^X$, $\;\sqrt{X}$, $\;3X + 500$, $\;|X - 5|$ — all random variables.
-:::
 
 ## Why is $g(X)$ Random?
 
 ::: {.incremental}
-- The function $g$ is **not random** — $\sqrt{4}$ is always $2$
-- What is random is the **input**: we don't know which $s$ will occur, so we don't know $X(s)$
-- Once the experiment runs and $X$ **crystallizes** to a number, $g(X)$ crystallizes too
+- The function $g$ is **not random**.
+- What is random is the **input**: we don't know which $s$ will occur, so we don't know $X(s)$ which is the input into $g$.
+- Once the experiment runs and $X$ **crystallizes** to a number, $g(X)$ crystallizes too.
 :::
 
-::: {.fragment}
-::: {.callout-tip title="Pebble picture"}
-$X$ writes a number inside every pebble. Now apply $g$ to every number written inside. Each pebble still carries exactly one number — that new labelling **is** the r.v. $g(X)$.
-:::
-:::
+---
 
-::: {.fragment}
-If $X$ crystallizes to $4$ and $g(x)=\sqrt{x}$, then $g(X)$ crystallizes to $2$. No extra randomness enters.
-:::
+**One-to-One Transformations**
 
+The function $g(x)=2-x$ maps each $x$ into a distinct $g(x)$, i.e. it is **one-to-one function**. 
 
-## Example: Cashback
-
-Aigerim makes $n = 5$ online purchases this month. Each one independently qualifies for cashback with probability $p = 0.4$.
-
-::: {.fragment}
-$$X = \text{number of qualifying purchases} \sim \text{Bin}(5, 0.4)$$
-:::
-
-::: {.fragment}
-Each qualifying purchase pays 300 tenge, and there is a flat 100 tenge monthly bonus. Her total reward is
-
-$$R = 300X + 100$$
-:::
-
-::: {.fragment}
-$R$ is a random variable. What is its distribution?
-:::
-
-## One-to-One Transformations
-
-::: {.callout-note title="Rule"}
+::: {.callout-note title="Rule for one-to-one functions"}
 If $g$ is **one-to-one** (distinct inputs give distinct outputs), then the support of $Y = g(X)$ is $\{g(x) : x \in \text{supp}(X)\}$ and
 
 $$P\big(Y = g(x)\big) = P\big(g(X) = g(x)\big) = P(X = x)$$
-:::
-
-::: {.fragment}
-In table form: the probabilities are **carried along unchanged**, only the labels change.
 :::
 
 ::: {.fragment}
@@ -1757,100 +1718,37 @@ In table form: the probabilities are **carried along unchanged**, only the label
 ::: {.column width="48%"}
 | $x$ | $P(X = x)$ |
 |:---:|:---:|
-| $x_1$ | $p_1$ |
-| $x_2$ | $p_2$ |
-| $x_3$ | $p_3$ |
+| $x=0$ | $1/4$ |
+| $x=1$ | $1/2$ |
+| $x=2$ | $1/4$ |
 : PMF of $X$
 :::
 ::: {.column width="48%"}
 | $y$ | $P(Y = y)$ |
 |:---:|:---:|
-| $g(x_1)$ | $p_1$ |
-| $g(x_2)$ | $p_2$ |
-| $g(x_3)$ | $p_3$ |
+| $2$ | $1/4$ |
+| $1$ | $1/2$ |
+| $0$ | $1/4$ |
 : PMF of $Y = g(X)$
 :::
 :::
 :::
 
-## Example: Cashback, Continued {.smaller}
-
-$X \sim \text{Bin}(5, 0.4)$, and $R = 300X + 100$ is one-to-one (a line with nonzero slope).
-
-::: {.fragment}
-| $x$ | $0$ | $1$ | $2$ | $3$ | $4$ | $5$ |
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| $P(X=x)$ | $0.078$ | $0.259$ | $0.346$ | $0.230$ | $0.077$ | $0.010$ |
-| $r = 300x+100$ | $100$ | $400$ | $700$ | $1000$ | $1300$ | $1600$ |
-| $P(R=r)$ | $0.078$ | $0.259$ | $0.346$ | $0.230$ | $0.077$ | $0.010$ |
-:::
-
-::: {.fragment}
-The bottom row is a **copy** of the first — only the values on the axis moved.
-:::
-
-::: {.fragment}
-::: {.callout-warning title="Strategy"}
-This gives a way to find the PMF of an unfamiliar r.v.: **write it as a one-to-one function of an r.v. whose distribution you already know.**
-:::
-:::
-
-## Your Turn {.smaller}
+---
 
 ::: {.callout-caution title="Question 1"}
 With $X \sim \text{Bin}(5,0.4)$ and $R = 300X + 100$:
 
-(a) Find $P(R = 1000)$.
-
-(b) Find $P(R > 900)$.
-
-(c) Is $P(R = 800)$ well defined? What is it?
-:::
-
-::: {.fragment}
-(a) $R = 1000 \iff X = 3$, so $P(R=1000) = \binom{5}{3}(0.4)^3(0.6)^2 = 0.230$
-:::
-
-::: {.fragment}
-(b) $R > 900 \iff X \ge 3$, so $P = 0.230 + 0.077 + 0.010 = 0.317$
-:::
-
-::: {.fragment}
-(c) Yes — the PMF is defined on all of $\mathbb{R}$. $800$ is not in the support, so $P(R = 800) = 0$.
-:::
-
-
-## A Special Function: The Indicator
-
-::: {.callout-note title="Definition"}
-The **indicator random variable** of an event $A$ is
-
-$$I_A = \begin{cases} 1 & \text{if } A \text{ occurs} \\ 0 & \text{otherwise}\end{cases}$$
-
-We also write $I(A)$. Note that $I_A \sim \text{Bern}(P(A))$.
-:::
-
-::: {.fragment}
-Indicators are the bridge between **events** and **numbers**: any yes/no question about an experiment becomes an r.v.
-:::
-
-::: {.fragment}
-**Applied to an r.v.:** $I(X \ge 3)$ is a function of $X$ — it is $1$ when $X \ge 3$ and $0$ otherwise.
-:::
-
-::: {.fragment}
-For Aigerim: "did she get at least 3 cashbacks?" is $I(X \ge 3) \sim \text{Bern}(0.317)$.
+Find pmf of $R$.
 :::
 
 
 ## When $g$ is Not One-to-One
 
-::: {.fragment}
-$I(X \ge 3)$ sends $x = 0, 1, 2$ all to the same output $0$.
-:::
+The function $g(x)=|2-2X|$ is not one-to-one -- both 0 and 2 are mapped into the same output 2. 
 
 ::: {.fragment}
-So $P\big(I(X\ge3) = 0\big)$ cannot be "the probability of one $x$" — **several** values of $X$ produce that output.
+So $P(g(X)=2)$ cannot be the probability of one $x$ — **two** values produce that output.
 :::
 
 ::: {.fragment}
@@ -1860,7 +1758,7 @@ When several $x$'s map to the same $y$, the event $\{g(X) = y\}$ is the **union*
 :::
 
 ::: {.fragment}
-$$P\big(I(X \ge 3) = 0\big) = P(X=0)+P(X=1)+P(X=2) = 0.683$$
+$$P(g(X)=2) = P(X=0)+P(X=2) = 1/2$$
 :::
 
 ## Theorem: PMF of $g(X)$
@@ -1883,8 +1781,6 @@ $$P\big(g(X) = y\big) \;=\; \sum_{x \,:\, g(x) = y} P(X = x)$$
 ::: {.fragment}
 One-to-one is just the special case where every group has size one.
 :::
-
-
 
 ## Watch the PMF Transform {.smaller}
 
@@ -2078,121 +1974,7 @@ A transformation moves probability mass **sideways** along the axis. Mass is nev
 :::
 :::
 
-## Warning: Do Not Multiply the PMF {.smaller}
-
-::: {.callout-warning title="Category error"}
-A very common mistake: getting the PMF of $2X$ by multiplying the PMF of $X$ by $2$.
-:::
-
-::: {.fragment}
-This cannot be right — the values would sum to $2$, not $1$.
-:::
-
-::: {.fragment}
-The PMF of $2X$ is a **horizontal stretch** of the PMF of $X$, not a vertical one:
-
-$$P(2X = 2x) = P(X = x)$$
-:::
-
-::: {.fragment}
-::: {.callout-important title="Confusing an r.v. with its distribution"}
-An r.v. is a *function on the sample space*. Its distribution is a *description of that function's output*. Manipulating the description is not the same as manipulating the r.v. — the map is not the territory.
-:::
-:::
-
-
-## Example: A Nauryz Fair Game
-
-At a Nauryz fair there is a betting stall. You play $n$ rounds; in each round you independently win 1000₸ or lose 1000₸ with probability $1/2$ each.
-
-::: {.fragment}
-Let $X$ = number of rounds won. Each round is a Bernoulli trial, so
-$$X \sim \text{Bin}(n, 1/2)$$
-:::
-
-::: {.fragment}
-Your **net position** (in thousands of tenge) after $n$ rounds is
-
-$$W = X - (n - X) = 2X - n$$
-:::
-
-::: {.fragment}
-This is exactly a one-dimensional **random walk** — and it is a one-to-one function of $X$.
-:::
-
-## PMF of the Net Position {.smaller}
-
-::: {.fragment}
-$X$ takes values in $\{0,1,\dots,n\}$, so $W = 2X-n$ takes values in $\{-n, -n+2, \dots, n-2, n\}$ — every second integer.
-:::
-
-::: {.fragment}
-Invert the map: $W = k \iff X = \dfrac{n+k}{2}$. Therefore
-
-$$P(W = k) = P\!\left(X = \frac{n+k}{2}\right) = \binom{n}{\frac{n+k}{2}}\left(\frac12\right)^{\!n}$$
-
-for integers $k$ between $-n$ and $n$ with $n+k$ even.
-:::
-
-::: {.fragment}
-::: {.callout-warning title="Notice"}
-Only the **labels** on the axis changed. All the work was done by the Binomial PMF we already had.
-:::
-:::
-
-## How Far From Break-Even? {.smaller}
-
-Now suppose $n$ is even and you only care about the **size** of your gain or loss:
-
-$$D = |W|$$
-
-::: {.fragment}
-This is a function of $W$ — but **not** one-to-one: $W = 2$ and $W = -2$ both give $D = 2$.
-:::
-
-::: {.fragment}
-Apply the theorem. For $k = 2, 4, \dots, n$ the event $\{D=k\}$ is $\{W = k\} \cup \{W = -k\}$, a union of disjoint events:
-
-$$P(D = k) = P(W=k) + P(W=-k) = 2\binom{n}{\frac{n+k}{2}}\left(\frac12\right)^{\!n}$$
-:::
-
-::: {.fragment}
-And $\{D = 0\}$ is the same event as $\{W = 0\}$, so it does not double:
-
-$$P(D=0) = \binom{n}{n/2}\left(\frac12\right)^{\!n}$$
-:::
-
-::: {.fragment}
-The factor $2$ uses **symmetry**: winning $k$ and losing $k$ are equally likely when $p = 1/2$.
-:::
-
-## Your Turn {.smaller}
-
-::: {.callout-caution title="Question 2"}
-Nurlan's bus is late by $X$ minutes, where $X$ is equally likely to be $1, 2, 3, 4, 5$ or $6$. The university's compensation scheme pays $Z = \min(X, 4)$ thousand tenge.
-
-(a) What is the support of $Z$?
-
-(b) Find the PMF of $Z$.
-
-(c) Is $g(x) = \min(x,4)$ one-to-one on the support of $X$?
-:::
-
-::: {.fragment}
-(a) $\text{supp}(Z) = \{1, 2, 3, 4\}$
-:::
-
-::: {.fragment}
-(b) $P(Z=1)=P(Z=2)=P(Z=3)=\tfrac16$, and
-$$P(Z=4) = P(X=4)+P(X=5)+P(X=6) = \tfrac36 = \tfrac12$$
-:::
-
-::: {.fragment}
-(c) No — three values of $X$ are sent to $4$. The cap **merges** mass at the top.
-:::
-
-
-## Part II: Functions of Several Random Variables
+## Functions of Several Random Variables {#functions-several-rv}
 
 Most interesting quantities depend on **more than one** random input.
 
@@ -2506,501 +2288,119 @@ Still the dice duel, $X$ and $Y$ independent fair dice.
 $$P(X>Y) = \tfrac12\left(1 - \tfrac16\right) = \tfrac{5}{12}$$
 :::
 
-## Independence of Random Variables
-
-To go further with sums we need one more concept.
+## Independence of random variables {#independence-rv}
 
 ::: {.callout-note title="Definition"}
-Random variables $X$ and $Y$ are **independent** if
-
-$$P(X \le x,\, Y \le y) = P(X \le x)\,P(Y \le y) \qquad \text{for all } x, y \in \mathbb{R}$$
-
-In the **discrete** case this is equivalent to
-
-$$P(X = x,\, Y = y) = P(X = x)\,P(Y = y)$$
-
-for all $x$ in the support of $X$ and $y$ in the support of $Y$.
+$X$ and $Y$ are **independent** if
+$$P(X \le x,\ Y \le y) = P(X \le x)\,P(Y \le y) \quad \text{for all } x, y \in \mathbb{R}.$$
+For **discrete** $X, Y$ this is equivalent to
+$$P(X = x,\ Y = y) = P(X = x)\,P(Y = y) \quad \text{for all } x, y.$$
 :::
 
-::: {.fragment}
-Intuition: knowing the value of $X$ gives **no information** about $Y$, and vice versa.
+- Intuition: learning about $X$ tells you **nothing** about $Y$
+- $X_1,\dots,X_n$ independent: $P(X_1=x_1,\dots,X_n=x_n)=P(X_1=x_1)\cdots P(X_n=x_n)$ for **all** $x_1,\dots,x_n$
+- **i.i.d.** = independent + identically distributed — e.g. the $n$ Bernoulli trials behind $\text{Bin}(n,p)$
+
+## From events to random variables
+
+:::: {.columns}
+::: {.column width="55%"}
+- Each value pair $(x,y)$ gives two events: $\{X=x\}$ and $\{Y=y\}$
+- $X, Y$ independent $\iff$ $\{X=x\}$ and $\{Y=y\}$ are independent **for every** pair $(x,y)$
+- Via conditioning: $P(Y=y \mid X=x) = P(Y=y)$ for all $y$, whenever $P(X=x)>0$
+
+:::
+::: {.column width="45%"}
+![](../indep_events_grid.png)
+:::
+::::
+
+::: {.callout-important}
+Independence of two events: **one** equation. Independence of two r.v.s: **one equation per cell** of the table.
 :::
 
-## Independence: Fine Print {.smaller}
+--- 
 
-::: {.incremental}
-- Unlike independence of events, this is **one** equation — but it must hold for **all** $x$ and $y$ (infinitely many conditions)
-- To **disprove** independence, one bad pair $(x,y)$ is enough
-- $X_1, \dots, X_n$ are independent if $P(X_1 \le x_1, \dots, X_n \le x_n) = \prod_i P(X_i \le x_i)$ for all $x_1,\dots,x_n$
-- Independence implies pairwise independence; the converse fails, exactly as for events
+**Checking independence = checking many conditions**
+
+- $X$ takes $m$ values, $Y$ takes $n$ values $\Rightarrow$ $m \times n$ equations
+- Two dice: $6\times 6 = 36$ equations; first die and sum: $6 \times 11 = 66$
+- Some cells can satisfy the product rule even when $X, Y$ are **dependent** (Example 3)
+
+---
+
+::: {.callout-tip title="Example 1"}
+Roll two fair dice. $X$ = first die, $Y$ = second die.
 :::
 
-::: {.fragment}
-::: {.callout-note title="Definition: i.i.d."}
-R.v.s that are **independent** and have the **same distribution** are called **independent and identically distributed**, or **i.i.d.**
+:::: {.columns}
+::: {.column width="45%"}
+- $P(X=x)=P(Y=y)=\tfrac16$
+- 36 equally likely outcomes
+- $\tfrac1{36}=\tfrac16\cdot\tfrac16$ in **all 36** cells
+- $\Rightarrow$ $X, Y$ **independent** (in fact i.i.d.)
 :::
+::: {.column width="55%"}
+![](../indep_two_dice.png)
 :::
+::::
 
-## "Independent" $\ne$ "Identically Distributed" {.smaller}
+---
 
-Two completely separate ideas. All four combinations exist:
-
-::: {.fragment}
-| | **identically distributed** | **not identically distributed** |
-|:--|:--|:--|
-| **independent** | two separate fair dice | a die roll, and tomorrow's KASE index |
-| **dependent** | $X$ = students attending, $Y = n - X$ = students absent | $X$ = whether it snows, $Y$ = number of taxis booked |
-:::
-
-::: {.fragment}
-The dependent-but-identical case is the instructive one: with $n$ students each attending independently with probability $1/2$,
-
-$$X \sim \text{Bin}(n, 1/2) \quad \text{and} \quad Y = n - X \sim \text{Bin}(n, 1/2)$$
+::: {.callout-tip title="Example 2"}
+Roll **one** fair die. $X = 1$ if the roll is even, $Y = 1$ if the roll is $\le 2$ ($0$ otherwise).
 :::
 
-::: {.fragment}
-Same distribution — yet knowing $X$ tells you $Y$ **exactly**. Same blueprint, different houses.
-:::
-
-## Careful: Functions Can Create Dependence
-
-::: {.fragment}
-$X$ and $Y$ are independent dice. Are $X+Y$ and $X-Y$ independent?
-:::
-
-::: {.fragment}
-$$P(X+Y = 12,\; X-Y = 1) = 0$$
-
-because a total of $12$ forces $X = Y = 6$, hence a difference of $0$.
-:::
-
-::: {.fragment}
-But
-$$P(X+Y=12)\,P(X-Y=1) = \frac{1}{36}\cdot\frac{5}{36} \neq 0$$
-:::
-
-::: {.fragment}
-::: {.callout-important title="Lesson"}
-Independence of $X$ and $Y$ does **not** survive functions that mix them. The sum tells you about the difference.
-:::
-:::
-
-## But Separate Functions Are Safe
-
-::: {.callout-note title="Theorem"}
-If $X$ and $Y$ are independent r.v.s, then **any function of $X$ is independent of any function of $Y$**.
-:::
-
-::: {.fragment}
-So $X^2$ is independent of $e^{Y}$, and $I(X \ge 3)$ is independent of $\min(Y, 4)$.
-:::
-
-::: {.fragment}
-**Why:** $X$ determines $X^2$. If $X^2$ carried information about $Y^4$, then $X$ would carry information about $Y$ — contradicting independence.
-:::
-
-::: {.fragment}
-::: {.callout-warning title="Contrast"}
-$g(X)$ and $h(Y)$: independent. $\;g(X,Y)$ and $h(X,Y)$: usually **not**.
-:::
-:::
-
-## Sums: The Convolution Formula {.smaller}
-
-Let $T = X + Y$ where $X$ and $Y$ are discrete.
-
-::: {.fragment}
-The event $\{T = t\}$ is the union over all ways to split $t$ into $x$ and $t - x$:
-
-$$P(T = t) = \sum_{x} P(X = x,\, Y = t - x)$$
-:::
-
-::: {.fragment}
-If in addition $X$ and $Y$ are **independent**, the joint probability factors:
-
-$$\boxed{\;P(T = t) = \sum_{x} P(X = x)\, P(Y = t - x)\;}$$
-:::
-
-::: {.fragment}
-This is called the **convolution** of the two PMFs. It is the two-variable version of the same recipe as before: *group the outcomes that give the same value, then add.*
-:::
-
-## Building a Convolution {.smaller}
-
-Aigerim attempts $3$ problems, Nurlan attempts $2$; each solves a problem independently with probability $1/2$. So $X \sim \text{Bin}(3,\tfrac12)$, $Y \sim \text{Bin}(2,\tfrac12)$. Let $T = X+Y$.
-
-```{=html}
-<div class="convtab-wrap">
-  <div class="convtab-btnrow">
-    <button class="convtab-btn" data-t="0">T = 0</button>
-    <button class="convtab-btn" data-t="1">T = 1</button>
-    <button class="convtab-btn" data-t="2">T = 2</button>
-    <button class="convtab-btn" data-t="3">T = 3</button>
-    <button class="convtab-btn" data-t="4">T = 4</button>
-    <button class="convtab-btn" data-t="5">T = 5</button>
-    <button class="convtab-btn convtab-rst" id="convtab-reset">Reset</button>
-  </div>
-
-  <svg class="convtab-svg" viewBox="0 0 900 430" xmlns="http://www.w3.org/2000/svg">
-    <text x="207" y="40" text-anchor="middle" class="convtab-lab">Nurlan solves k</text>
-    <text x="30" y="230" text-anchor="middle" class="convtab-lab" transform="rotate(-90 30 230)">Aigerim solves j</text>
-
-    <text x="128" y="72" text-anchor="middle" class="convtab-hdr">0</text>
-    <text x="206" y="72" text-anchor="middle" class="convtab-hdr">1</text>
-    <text x="284" y="72" text-anchor="middle" class="convtab-hdr">2</text>
-    <text x="128" y="94" text-anchor="middle" class="convtab-small">1/4</text>
-    <text x="206" y="94" text-anchor="middle" class="convtab-small">2/4</text>
-    <text x="284" y="94" text-anchor="middle" class="convtab-small">1/4</text>
-
-    <text x="70" y="150" text-anchor="middle" class="convtab-hdr">0</text>
-    <text x="70" y="208" text-anchor="middle" class="convtab-hdr">1</text>
-    <text x="70" y="266" text-anchor="middle" class="convtab-hdr">2</text>
-    <text x="70" y="324" text-anchor="middle" class="convtab-hdr">3</text>
-    <text x="44" y="150" text-anchor="middle" class="convtab-small">1/8</text>
-    <text x="44" y="208" text-anchor="middle" class="convtab-small">3/8</text>
-    <text x="44" y="266" text-anchor="middle" class="convtab-small">3/8</text>
-    <text x="44" y="324" text-anchor="middle" class="convtab-small">1/8</text>
-
-    <g id="convtab-cells"></g>
-
-    <text x="645" y="70" text-anchor="middle" class="convtab-lab">PMF of T = X + Y</text>
-    <line x1="420" y1="380" x2="880" y2="380" stroke="#334155" stroke-width="2"/>
-    <g id="convtab-bars"></g>
-  </svg>
-
-  <div class="convtab-info" id="convtab-info">Each cell is P(X=j)P(Y=k) &mdash; the product, because X and Y are independent.</div>
-</div>
-
-<style>
-.convtab-wrap { width: 100%; }
-.convtab-btnrow { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 6px; }
-.convtab-btn {
-  font-size: 0.8em; padding: 6px 12px; border-radius: 6px;
-  border: 1px solid #cbd5e1; background: #f1f5f9; color: #1e293b;
-  cursor: pointer; transition: background 0.15s, color 0.15s;
-}
-.convtab-btn:hover { background: #e2e8f0; }
-.convtab-btn.active { background: #1e293b; color: #ffffff; border-color: #1e293b; }
-.convtab-rst { background: #ffffff; border-color: #94a3b8; }
-.convtab-svg { width: 100%; height: auto; max-height: 430px; display: block; margin: 0 auto; }
-.convtab-lab { font-size: 15px; fill: #1e293b; font-weight: 600; }
-.convtab-hdr { font-size: 15px; fill: #475569; font-weight: 600; }
-.convtab-small { font-size: 12px; fill: #64748b; }
-.convtab-cell { transition: fill 0.3s ease; }
-.convtab-cellnum { font-size: 14px; font-weight: 600; transition: fill 0.3s ease; }
-.convtab-info { text-align: center; margin-top: 6px; font-size: 0.82em; font-family: 'Courier New', monospace; color: #1e293b; }
-</style>
-
-<script>
-(function() {
-  const NS = 'http://www.w3.org/2000/svg';
-  const pX = [1, 3, 3, 1];
-  const pY = [1, 2, 1];
-  const TX = 90, TY = 118, CW = 78, CH = 58;
-  const BX = 470, BBASE = 380, BTOP = 120, MAXP = 12;
-  const found = {};
-
-  function cellId(j, k) { return 'convtab-c-' + j + '-' + k; }
-
-  function build() {
-    const g = document.getElementById('convtab-cells');
-    if (!g) return;
-    for (let j = 0; j <= 3; j++) for (let k = 0; k <= 2; k++) {
-      const x = TX + k * CW, y = TY + j * CH;
-      const r = document.createElementNS(NS, 'rect');
-      r.setAttribute('id', cellId(j, k));
-      r.setAttribute('x', x); r.setAttribute('y', y);
-      r.setAttribute('width', CW - 3); r.setAttribute('height', CH - 3);
-      r.setAttribute('fill', '#e2e8f0');
-      r.setAttribute('stroke', '#94a3b8');
-      r.setAttribute('rx', 3);
-      r.setAttribute('class', 'convtab-cell');
-      g.appendChild(r);
-      const t = document.createElementNS(NS, 'text');
-      t.setAttribute('id', cellId(j, k) + '-t');
-      t.setAttribute('x', x + (CW - 3) / 2); t.setAttribute('y', y + 35);
-      t.setAttribute('text-anchor', 'middle');
-      t.setAttribute('fill', '#475569');
-      t.setAttribute('class', 'convtab-cellnum');
-      t.textContent = (pX[j] * pY[k]) + '/32';
-      g.appendChild(t);
-    }
-  }
-
-  function drawBars() {
-    const g = document.getElementById('convtab-bars');
-    if (!g) return;
-    g.innerHTML = '';
-    for (let t = 0; t <= 5; t++) {
-      const cx = BX + t * 70;
-      const lb = document.createElementNS(NS, 'text');
-      lb.setAttribute('x', cx); lb.setAttribute('y', BBASE + 20);
-      lb.setAttribute('text-anchor', 'middle');
-      lb.setAttribute('class', 'convtab-small');
-      lb.textContent = t;
-      g.appendChild(lb);
-      if (found[t] === undefined) continue;
-      const h = (found[t] / MAXP) * (BBASE - BTOP);
-      const r = document.createElementNS(NS, 'rect');
-      r.setAttribute('x', cx - 20); r.setAttribute('y', BBASE - h);
-      r.setAttribute('width', 40); r.setAttribute('height', h);
-      r.setAttribute('fill', '#2563eb'); r.setAttribute('rx', 3);
-      g.appendChild(r);
-      const n = document.createElementNS(NS, 'text');
-      n.setAttribute('x', cx); n.setAttribute('y', BBASE - h - 8);
-      n.setAttribute('text-anchor', 'middle');
-      n.setAttribute('class', 'convtab-small');
-      n.textContent = found[t] + '/32';
-      g.appendChild(n);
-    }
-  }
-
-  function show(t) {
-    const terms = [], cells = [];
-    let total = 0;
-    for (let j = 0; j <= 3; j++) {
-      const k = t - j;
-      if (k >= 0 && k <= 2) {
-        total += pX[j] * pY[k];
-        terms.push('(' + pX[j] + '/8)(' + pY[k] + '/4)');
-        cells.push(cellId(j, k));
-      }
-    }
-    for (let j = 0; j <= 3; j++) for (let k = 0; k <= 2; k++) {
-      const on = cells.indexOf(cellId(j, k)) >= 0;
-      const r = document.getElementById(cellId(j, k));
-      const tx = document.getElementById(cellId(j, k) + '-t');
-      if (r) r.setAttribute('fill', on ? '#2563eb' : '#e2e8f0');
-      if (tx) tx.setAttribute('fill', on ? '#ffffff' : '#475569');
-    }
-    found[t] = total;
-    drawBars();
-    const info = document.getElementById('convtab-info');
-    if (info) info.innerHTML = 'P(T = ' + t + ') = ' + terms.join(' + ') + ' = ' + total + '/32';
-  }
-
-  function reset() {
-    for (let t = 0; t <= 5; t++) delete found[t];
-    for (let j = 0; j <= 3; j++) for (let k = 0; k <= 2; k++) {
-      const r = document.getElementById(cellId(j, k));
-      const tx = document.getElementById(cellId(j, k) + '-t');
-      if (r) r.setAttribute('fill', '#e2e8f0');
-      if (tx) tx.setAttribute('fill', '#475569');
-    }
-    document.querySelectorAll('.convtab-btn').forEach(function(o) { o.classList.remove('active'); });
-    drawBars();
-    const info = document.getElementById('convtab-info');
-    if (info) info.innerHTML = 'Each cell is P(X=j)P(Y=k) &mdash; the product, because X and Y are independent.';
-  }
-
-  build();
-  drawBars();
-  document.querySelectorAll('.convtab-btn').forEach(function(b) {
-    if (b.id === 'convtab-reset') return;
-    b.addEventListener('click', function() {
-      document.querySelectorAll('.convtab-btn').forEach(function(o) { o.classList.remove('active'); });
-      b.classList.add('active');
-      show(Number(b.dataset.t));
-    });
-  });
-  const rb = document.getElementById('convtab-reset');
-  if (rb) rb.addEventListener('click', reset);
-})();
-</script>
-```
-
-## What Did We Just Build?
-
-::: {.fragment}
-Collecting the six answers:
-
-$$\frac{1}{32},\; \frac{5}{32},\; \frac{10}{32},\; \frac{10}{32},\; \frac{5}{32},\; \frac{1}{32}$$
-:::
-
-::: {.fragment}
-Those numerators are $\binom{5}{0}, \binom{5}{1}, \dots, \binom{5}{5}$ — so
-
-$$T = X + Y \sim \text{Bin}\!\left(5, \tfrac12\right)$$
-:::
-
-::: {.fragment}
-::: {.callout-important title="Not a coincidence"}
-$\text{Bin}(3,\tfrac12) + \text{Bin}(2,\tfrac12) = \text{Bin}(5,\tfrac12)$ when the two are independent.
-:::
-:::
-
-## Theorem: Sum of Independent Binomials
-
-::: {.callout-note title="Theorem"}
-If $X \sim \text{Bin}(n, p)$, $Y \sim \text{Bin}(m, p)$, and $X$ is **independent** of $Y$, then
-
-$$X + Y \sim \text{Bin}(n+m,\, p)$$
-:::
-
-::: {.fragment}
-::: {.callout-warning title="Two conditions, both essential"}
-- the **same** success probability $p$
-- **independence** of $X$ and $Y$
-:::
-:::
-
-::: {.fragment}
-We give two proofs — the first is one line, the second is the algebra.
-:::
-
-## Proof 1: A Story Proof {.smaller}
-
-**Setting.** ECON211 has two sections: $n$ students in section A, $m$ in section B. Each student independently attends today's lecture with probability $p$.
-
-::: {.incremental}
-- $X$ = attendees from section A $\sim \text{Bin}(n,p)$
-- $Y$ = attendees from section B $\sim \text{Bin}(m,p)$
-- Sections are separate groups of students, so $X$ and $Y$ are independent
-:::
-
-::: {.fragment}
-Now look at $X + Y$: it is the **total number of attendees** among $n + m$ students, each attending independently with probability $p$.
-:::
-
-::: {.fragment}
-That is exactly the Binomial story with $n+m$ trials. Hence $X+Y \sim \text{Bin}(n+m, p)$. $\blacksquare$
-:::
-
-::: {.fragment}
-::: {.callout-important title="Why story proofs are worth learning"}
-No algebra at all. We recognized the *generative process* instead of manipulating formulas.
-:::
-:::
-
-## Proof 2: Convolution + Vandermonde {.smaller}
-
-::: {style="font-size:0.85em"}
-Write $q = 1-p$ and condition on $X$ (this is the LOTP):
-
-::: {.fragment}
-$$P(X+Y = k) = \sum_{j=0}^{k} P(X+Y = k \mid X = j)\,P(X=j) = \sum_{j=0}^{k} P(Y = k-j)\,P(X=j)$$
-
-using independence to drop the conditioning.
-:::
-
-::: {.fragment}
-$$= \sum_{j=0}^{k} \binom{m}{k-j} p^{\,k-j} q^{\,m-k+j} \binom{n}{j} p^{\,j} q^{\,n-j} = p^k q^{\,n+m-k}\sum_{j=0}^{k}\binom{m}{k-j}\binom{n}{j}$$
-:::
-
-::: {.fragment}
-The sum is **Vandermonde's identity** — the same one we used to show the Hypergeometric PMF sums to $1$:
-
-$$\sum_{j=0}^{k}\binom{n}{j}\binom{m}{k-j} = \binom{n+m}{k}$$
-:::
-
-::: {.fragment}
-$$\Longrightarrow \quad P(X+Y=k) = \binom{n+m}{k} p^k q^{\,n+m-k} \qquad \blacksquare$$
-:::
-:::
-
-## Warning: $X + Y$ is Not $2X$ {.smaller}
-
-::: {.callout-warning title="A tempting shortcut that is wrong"}
-If $X \sim \text{Bin}(n,p)$ and $Y \sim \text{Bin}(n,p)$, is $X + Y = 2X$?
-:::
-
-::: {.fragment}
-**No.** $X + Y$ requires two **separate** r.v.s. Adding $X$ to itself gives $2X$, a completely different random variable.
-:::
-
-::: {.fragment}
-::: {.columns}
+:::: {.columns}
 ::: {.column width="48%"}
-**$X + Y$, independent**
-
-$\sim \text{Bin}(2n, p)$
-
-support $\{0,1,2,\dots,2n\}$
-:::
-::: {.column width="48%"}
-**$2X$**
-
-not Binomial
-
-support $\{0,2,4,\dots,2n\}$ — always even
-:::
-:::
-:::
+- $P(X=1)=\tfrac12$, $P(Y=1)=\tfrac13$
+- $P(X=1, Y=1)=P(\text{roll}=2)=\tfrac16=\tfrac12\cdot\tfrac13$
+- All **4** cells pass $\Rightarrow$ **independent**
 
 ::: {.fragment}
-Both have the same "average size", but $2X$ can never take an odd value. Same distribution for $X$ and $Y$ does **not** mean $X$ and $Y$ are the same r.v.
+- But if we change $Y=1$ to mean "roll $\le 3$" (otherwise): $P(X=1,Y=1)=\tfrac16 \ne \tfrac12\cdot\tfrac12$ $\Rightarrow$ **dependent**
+:::
+:::
+::: {.column width="52%"}
+![](figs/indep_same_die.png){width="100%"}
+:::
+::::
+
+---
+
+::: {.callout-tip title="Example 3"}
+Roll two fair dice. $X$ = first die, $S$ = sum of both dice.
 :::
 
-## The Binomial, Rebuilt from Bernoullis
-
-::: {.callout-note title="Theorem"}
-If $X \sim \text{Bin}(n,p)$, then we can write
-
-$$X = X_1 + X_2 + \dots + X_n$$
-
-where $X_1, \dots, X_n$ are i.i.d. $\text{Bern}(p)$.
-:::
+:::: {.columns}
+::: {.column width="55%"}
+- Zero cell: $P(X=1, S=12)=0$, but
+  $P(X=1)\,P(S=12)=\tfrac16\cdot\tfrac1{36}=\tfrac1{216}$
+- $\Rightarrow$ **dependent** — one failure is enough
+- 30 of the 66 cells are zero cells
 
 ::: {.fragment}
-**Proof.** Let $X_i = 1$ if trial $i$ is a success and $0$ otherwise. Imagine one person assigned to each trial, raising a hand if their trial succeeded. Counting raised hands is the same as adding the $X_i$. $\blacksquare$
-:::
-
-::: {.fragment}
-::: {.callout-important title="Why this matters"}
-We have turned a distribution into a **sum of simple pieces**. This decomposition is the single most useful trick in the rest of the course — it is how we will compute expectations and variances almost effortlessly.
+- **Trap:** the whole row $S=7$ passes:
+  $P(X=x, S=7)=\tfrac1{36}=\tfrac16\cdot\tfrac16$ for every $x$
+- Checking only $S=7$ gives the **wrong** answer
 :::
 :::
+::: {.column width="45%"}
+![](../indep_die_sum.png)
+:::
+::::
 
-## Your Turn {.smaller}
 
-::: {.callout-caution title="Question 4"}
-A delivery service has two couriers. Today Aigerim has $10$ deliveries and Nurlan has $15$; each delivery is completed on time independently with probability $0.8$. Let $X$ and $Y$ be their numbers of on-time deliveries.
+## Independent or dependent?
 
-(a) Name the distribution of $X + Y$.
-
-(b) A student writes "$X + Y \sim \text{Bin}(25, 1.6)$". What went wrong?
-
-(c) Tomorrow Aigerim has the same $10$ deliveries again. Is her two-day total $\text{Bin}(20, 0.8)$?
-
-(d) Is $2X$ $\;\text{Bin}(20, 0.8)$?
+::: {.callout-caution title="Practice"}
+1. Last digit of your student ID and your ECON211 final score [— **independent**: nothing links them]{.fragment}
+2. Your Quiz 1 score and your Quiz 2 score [— **dependent**: same student, same study habits]{.fragment}
+3. Your die roll at one Nauryz fair booth and your friend's roll at the next booth [— **independent**: separate physical mechanisms]{.fragment}
+4. Minutes late to a 9:00 class: you and your roommate [— **dependent**: same bus, same −30°C buran morning]{.fragment}
+5. USD/KZT rate next month and the tenge price of a new iPhone [— **dependent**: imports are priced off the dollar]{.fragment}
 :::
 
-::: {.fragment}
-(a) $X + Y \sim \text{Bin}(25, 0.8)$.
-:::
-
-::: {.fragment}
-(b) The parameters are not both added — $n$ adds, $p$ stays. And $p = 1.6$ is not a probability: a category error.
-:::
-
-::: {.fragment}
-(c) Yes, **if** the two days are independent with the same $p$. That is a modelling assumption, not a fact.
-:::
-
-::: {.fragment}
-(d) No. $2X$ is even with probability $1$.
-:::
-
-## Summary {.smaller}
-
-::: {.callout-important title="One random variable"}
-$g(X)$ is an r.v.: apply $X$, then apply $g$. To get its PMF:
-**group** the $x$'s sharing the same $g(x)$, then **add** their probabilities.
-$$P(g(X)=y) = \sum_{x:\,g(x)=y} P(X=x)$$
-One-to-one $g$: probabilities are just **relabelled**.
-:::
-
-::: {.fragment}
-::: {.callout-important title="Several random variables"}
-$g(X,Y)$ is an r.v. on the common sample space. Same recipe: group the outcomes giving the same value, add.
-For sums with $X \perp Y$: $\;P(X+Y=t) = \sum_x P(X=x)P(Y=t-x)$.
-:::
-:::
-
-::: {.fragment}
-::: {.callout-warning title="Three traps"}
-1. Multiplying a PMF instead of moving it sideways
-2. Forgetting to merge mass when $g$ is not one-to-one
-3. Treating $X+Y$ (two r.v.s) as $2X$ (one r.v.)
-:::
+::: {.callout-important .fragment}
+Most real-world dependence comes from a **shared cause** — weather, the economy, ability. Variables that are independent **given** the cause are dependent once the cause is unknown.
 :::

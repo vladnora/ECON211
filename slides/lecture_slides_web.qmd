@@ -8,4 +8,4 @@ format:
     height: 700
 ---
 
-{{< include ../03_variables/variables.qmd >}}
+{{< include ../04_expectation/expectation.qmd >}}

@@ -1393,7 +1393,7 @@ $$E[X] \;=\; pq \cdot \frac{1}{p^2} \;=\; \frac{q}{p}$$
 
 **Geometric mean: check and intuition**
 
-$$\boxed{\;X \sim \text{Geom}(p) \;\Longrightarrow\; E[X] = \tfrac{q}{p}\;}$$
+$$\boxed{\;X \sim \text{Geom}(p) \;\Longrightarrow\; E[X] = \tfrac{1-p}{p}\;}$$
 
 - Waiting for a six: $p = \tfrac16$, so $E[X] = \tfrac{5/6}{1/6} = 5$ **wasted rolls** — six rolls in total.
 - Waiting for heads: $E[X] = 1$ wasted toss — two tosses in total.
@@ -1430,7 +1430,7 @@ where $T_i$ = rolls taken to find the $i$-th distinct face, once $i-1$ are alrea
 
 - For example, $T_1$ is how many rolls needed to get 1 distinct face. Of course, $T_1=1$.
 - $T_2$ is how many rolls needed to get 2nd distinct face. This is truly random. 
-- While holding $i-1$ faces, a roll is "new" with probability $p_i = \dfrac{6-(i-1)}{6}$.
+- While holding $i-1$ faces, a roll is "new face" with probability $p_i = \dfrac{6-(i-1)}{6}$.
 - The **wasted** rolls are $G_i \sim \text{Geom}(p_i)$, and $T_i = 1 + G_i$:
 
 $$E[T_i] \;=\; 1 + \frac{q_i}{p_i} \;=\; \frac{1}{p_i} \;=\; \frac{6}{7-i}$$
@@ -1448,3 +1448,524 @@ $$=\; 1 + 1.2 + 1.5 + 2 + 3 + 6 \;=\; 14.7$$
 . . .
 
 That asymmetry is the whole phenomenon: collecting is fast early and agonising at the end, because the target keeps shrinking.
+
+
+## Example: same seat again?
+
+- On **day 1**, $n = 20$ students take seats in a classroom with 20 seats.
+
+- On **day 2**, they sit completely at random: all $20!$ seatings equally likely.
+
+- Let $X$ = number of students sitting in the **same seat** as on day 1. 
+
+- Find $E(X)$.
+
+. . .
+
+- Guess first: is $E(X)$ closer to $0$, $1$, or $10$?
+- Does the answer depend on $n$?
+
+---
+
+**Simulate: 20 students, 20 seats**
+
+```{=html}
+<style>
+#seat-root { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 15px; color: #222222; }
+#seat-root .seat-wrap { display: flex; gap: 28px; align-items: flex-start; justify-content: center; }
+#seat-root .seat-board { width: 520px; text-align: center; background: #3b4a5a; color: #ffffff;
+  border-radius: 4px; padding: 4px 0; font-size: 13px; letter-spacing: 1px; margin-bottom: 10px; }
+#seat-grid { display: grid; grid-template-columns: repeat(5, 96px); gap: 10px; width: 520px; }
+#seat-root .seat-cell { height: 52px; border: 2px solid #b8c0cc; border-radius: 6px; background: #eef1f5;
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  transition: background 0.25s, border-color 0.25s; }
+#seat-root .seat-now { font-size: 15px; font-weight: 600; line-height: 1.2; }
+#seat-root .seat-was { font-size: 10px; color: #666666; line-height: 1.2; }
+#seat-root .seat-side { width: 340px; }
+#seat-root .seat-btns { display: flex; gap: 8px; margin-bottom: 14px; }
+#seat-root button { font-size: 14px; padding: 6px 12px; border-radius: 5px; border: 1px solid #3b4a5a;
+  background: #ffffff; color: #3b4a5a; cursor: pointer; }
+#seat-root button.seat-primary { background: #3b4a5a; color: #ffffff; }
+#seat-root .seat-stats { display: grid; grid-template-columns: auto auto; gap: 4px 16px; margin-bottom: 12px; font-size: 16px; }
+#seat-root .seat-stats b { font-variant-numeric: tabular-nums; }
+#seat-root .seat-cap { font-size: 13px; color: #555555; margin-bottom: 2px; }
+</style>
+<div id="seat-root">
+  <div class="seat-wrap">
+    <div>
+      <div class="seat-board">FRONT OF CLASSROOM</div>
+      <div id="seat-grid"></div>
+    </div>
+    <div class="seat-side">
+      <div class="seat-btns">
+        <button id="seat-one" class="seat-primary">New day</button>
+        <button id="seat-many">+100 days</button>
+        <button id="seat-reset">Reset</button>
+      </div>
+      <div class="seat-stats">
+        <span>Days simulated</span><b id="seat-days">0</b>
+        <span>Same seat (last day)</span><b id="seat-today">–</b>
+        <span>Average same seat</span><b id="seat-avg">–</b>
+      </div>
+      <div class="seat-cap">Share of days with k students in the same seat</div>
+      <svg id="seat-hist" width="330" height="190" viewBox="0 0 330 190"></svg>
+    </div>
+  </div>
+</div>
+<script>
+(function () {
+  var root = document.getElementById("seat-root");
+  if (!root) return;
+  var N = 20;
+  var NAMES = ["Aigerim","Nurlan","Dana","Arman","Aruzhan","Daulet","Madina","Yerlan","Asel","Timur",
+               "Zarina","Bekzat","Aliya","Sanzhar","Kamila","Didar","Tomiris","Alibek","Saule","Rustam"];
+  function mulberry32(a) {
+    return function () {
+      a |= 0; a = (a + 0x6D2B79F5) | 0;
+      var t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  function shuffle(rand) {
+    var p = [], i, j, tmp;
+    for (i = 0; i < N; i++) p.push(i);
+    for (i = N - 1; i > 0; i--) {
+      j = Math.floor(rand() * (i + 1));
+      tmp = p[i]; p[i] = p[j]; p[j] = tmp;
+    }
+    return p;
+  }
+  var day1 = shuffle(mulberry32(211));          // seat s -> student day1[s]
+  var today = null, days = 0, sumGreen = 0;
+  var BINS = 7;                                   // 0,1,...,5,6+
+  var hist = [0, 0, 0, 0, 0, 0, 0];
+
+  var grid = document.getElementById("seat-grid");
+  var cells = [];
+  for (var s = 0; s < N; s++) {
+    var c = document.createElement("div");
+    c.className = "seat-cell";
+    c.innerHTML = '<div class="seat-now"></div><div class="seat-was"></div>';
+    grid.appendChild(c);
+    cells.push(c);
+  }
+
+  function countGreen(p) {
+    var g = 0;
+    for (var s = 0; s < N; s++) if (p[s] === day1[s]) g++;
+    return g;
+  }
+  function drawSeats() {
+    for (var s = 0; s < N; s++) {
+      var c = cells[s];
+      if (today === null) {
+        c.style.background = "#eef1f5"; c.style.borderColor = "#b8c0cc";
+        c.children[0].textContent = NAMES[day1[s]];
+        c.children[1].textContent = "day 1";
+      } else {
+        var same = today[s] === day1[s];
+        c.style.background = same ? "#c8ecd0" : "#f6d0d0";
+        c.style.borderColor = same ? "#2e9e4f" : "#d04a4a";
+        c.children[0].textContent = NAMES[today[s]];
+        c.children[1].textContent = "day 1: " + NAMES[day1[s]];
+      }
+    }
+  }
+  function drawHist() {
+    var svg = document.getElementById("seat-hist");
+    var W = 330, H = 190, padL = 8, padB = 24, padT = 20;
+    var bw = (W - padL) / BINS, maxH = H - padB - padT;
+    var html = "";
+    for (var k = 0; k < BINS; k++) {
+      var share = days > 0 ? hist[k] / days : 0;
+      var h = share * maxH;
+      var x = padL + k * bw + 5, y = H - padB - h;
+      html += '<rect x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" width="' + (bw - 10).toFixed(1) +
+              '" height="' + h.toFixed(1) + '" fill="#2e9e4f"></rect>';
+      if (days > 0) {
+        html += '<text x="' + (x + (bw - 10) / 2).toFixed(1) + '" y="' + (y - 5).toFixed(1) +
+                '" text-anchor="middle" font-size="12" fill="#333333">' + Math.round(100 * share) + '%</text>';
+      }
+      html += '<text x="' + (x + (bw - 10) / 2).toFixed(1) + '" y="' + (H - 7) +
+              '" text-anchor="middle" font-size="13" fill="#333333">' + (k === BINS - 1 ? "6+" : k) + '</text>';
+    }
+    html += '<line x1="' + padL + '" y1="' + (H - padB) + '" x2="' + W + '" y2="' + (H - padB) +
+            '" stroke="#888888" stroke-width="1"></line>';
+    svg.innerHTML = html;
+  }
+  function drawStats(g) {
+    document.getElementById("seat-days").textContent = days;
+    document.getElementById("seat-today").textContent = today === null ? "–" : g;
+    document.getElementById("seat-avg").textContent = days > 0 ? (sumGreen / days).toFixed(3) : "–";
+  }
+  function newDay() {
+    today = shuffle(Math.random);
+    var g = countGreen(today);
+    days++; sumGreen += g; hist[Math.min(g, BINS - 1)]++;
+    return g;
+  }
+  function render(g) { drawSeats(); drawHist(); drawStats(g); }
+
+  document.getElementById("seat-one").addEventListener("click", function () { render(newDay()); });
+  document.getElementById("seat-many").addEventListener("click", function () {
+    var g = 0;
+    for (var r = 0; r < 100; r++) g = newDay();
+    render(g);
+  });
+  document.getElementById("seat-reset").addEventListener("click", function () {
+    today = null; days = 0; sumGreen = 0; hist = [0, 0, 0, 0, 0, 0, 0];
+    render(0);
+  });
+  render(0);
+})();
+</script>
+```
+
+## Indicator random variables
+
+::: {.callout-note title="Definition: indicator"}
+For an event $A$, the **indicator** of $A$ is the r.v.
+$$
+I_A = \begin{cases} 1 & \text{if } A \text{ occurs} \\ 0 & \text{if } A \text{ does not occur} \end{cases}
+$$
+:::
+
+. . .
+
+- $I_A \sim \text{Bern}(p)$ with $p = P(A)$
+- **Fundamental bridge:** $E(I_A) = 1\cdot P(A) + 0\cdot P(A^c) = P(A)$
+
+. . .
+
+::: {.callout-important}
+**Strategy:** to find $E(\text{count})$, write the count as a **sum of indicators**, then use linearity.
+Expectation of the count $=$ sum of probabilities.
+:::
+
+## Solution with indicators
+
+**Step 1 — Decompose.** Label students $1,\dots,n$. Let $A_j$ = {student $j$ sits in their day-1 seat}, $I_j = I_{A_j}$.
+$$
+X = I_1 + I_2 + \dots + I_n
+$$
+Each student who matches adds $1$; each who doesn't adds $0$.
+
+. . .
+
+**Step 2 — One indicator.** By symmetry, student $j$'s day-2 seat is equally likely to be any of the $n$ seats:
+$$
+E(I_j) = P(A_j) = \frac{(n-1)!}{n!} = \frac{1}{n}
+$$
+
+. . .
+
+**Step 3 — Linearity.**
+$$
+E(X) = \sum_{j=1}^{n} E(I_j) = n \cdot \frac{1}{n} = 1
+$$
+
+## Dependence doesn't matter
+
+- The $I_j$ are **not independent**:
+  - $P(A_1 \cap A_2) = \dfrac{(n-2)!}{n!} = \dfrac{1}{n(n-1)} \neq \dfrac{1}{n^2} = P(A_1)P(A_2)$
+  - Extreme case: if $n-1$ students match, the last one **must** match $\Rightarrow P(X = n-1) = 0$
+
+. . .
+
+- Finding the full PMF of $X$ is hard (inclusion–exclusion)
+- $E(X)$ is easy: **linearity holds with or without independence**
+
+## The tradeoff
+
+::: {.callout-important}
+$$
+E(X) = \underbrace{n}_{\text{more candidates}} \times \underbrace{\tfrac{1}{n}}_{\text{each less likely}} = 1 \quad \text{for every } n
+$$
+:::
+
+| $n$ | $P(A_j)$ | $E(X)$ |
+|:---:|:---:|:---:|
+| 2 | $1/2$ | 1 |
+| 20 | $1/20$ | 1 |
+| 1000 | $1/1000$ | 1 |
+
+. . .
+
+- More students: each is less likely to match, but there are more students who *could* match
+- The two effects cancel **exactly**
+- Bonus (matching problem): $P(X = 0) \to 1/e \approx 0.37$ — compare with the simulation histogram
+
+## Expectation of a function of an r.v.
+
+::: {.callout-important}
+In general,
+$$
+E\big(g(X)\big) \neq g\big(E(X)\big)
+$$
+"Average of the function" is **not** "function of the average."
+:::
+
+. . .
+
+- Order of operations matters:
+  - $E(g(X))$: transform each outcome, **then** average
+  - $g(E(X))$: average first, **then** transform
+
+## Example: $X$ vs $X^2$
+
+::: {.callout-tip title="Example N+1"}
+$X$ takes values $1$ and $2$, each with probability $1/2$. Compare $E(X^2)$ and $(E(X))^2$.
+:::
+
+:::: {.columns}
+::: {.column width="50%"}
+| $x$ | $1$ | $2$ |
+|:---:|:---:|:---:|
+| $P(X=x)$ | $1/2$ | $1/2$ |
+
+$E(X) = \frac{1}{2}\cdot 1 + \frac{1}{2}\cdot 2 = \frac{3}{2}$
+:::
+
+::: {.column width="50%"}
+| $y$ | $1$ | $4$ |
+|:---:|:---:|:---:|
+| $P(X^2=y)$ | $1/2$ | $1/2$ |
+
+$E(X^2) = \frac{1}{2}\cdot 1 + \frac{1}{2}\cdot 4 = \frac{5}{2}$
+:::
+::::
+
+. . .
+
+$$
+E(X^2) = \frac{5}{2} = \frac{10}{4} \;>\; \frac{9}{4} = \left(\frac{3}{2}\right)^2 = \big(E(X)\big)^2
+$$
+
+
+## When they do agree: linear functions
+
+::: {.callout-important}
+If $g(x) = ax + b$ (linear/affine), then
+$$
+E(aX + b) = aE(X) + b
+$$
+For any **other** $g$, don't assume $E(g(X)) = g(E(X))$.
+:::
+
+## Expectation of a function: direct approach
+
+Toss a fair coin twice. Let $H$ = number of heads, $T$ = number of tails. Find $E(D)$, where $D = \lvert H - T \rvert$.
+
+. . .
+
+| Outcome | $TT$ | $HT$ | $TH$ | $HH$ |
+|:---:|:---:|:---:|:---:|:---:|
+| $H$ | 0 | 1 | 1 | 2 |
+| $T$ | 2 | 1 | 1 | 0 |
+| $D = \lvert H - T \rvert$ | 2 | 0 | 0 | 2 |
+
+. . .
+
+- **Step 1 — PMF of $D$:** $\;P(D=0) = \frac{2}{4} = \frac{1}{2}, \quad P(D=2) = \frac{2}{4} = \frac{1}{2}$
+- **Step 2 — Average:** $\;E(D) = 0 \cdot \frac{1}{2} + 2 \cdot \frac{1}{2} = 1$
+
+. . .
+
+We built the PMF of $D$ only to average it. **Can we skip that step?**
+
+## LOTUS
+
+::: {.callout-note title="Theorem: LOTUS (Law of the Unconscious Statistician)"}
+If $X$ is a discrete r.v. and $g: \mathbb{R} \to \mathbb{R}$, then
+$$
+E\big(g(X)\big) = \sum_{x} g(x)\, P(X = x),
+$$
+where the sum is over the support of $X$.
+:::
+
+. . .
+
+- Only the PMF of $X$ is needed — **not** the PMF of $g(X)$
+- Recipe: weight each value $g(x)$ by the probability of $x$, then add
+- "Unconscious": it looks so natural that people use it without noticing it needs justification
+  - Definition gives $E(Y) = \sum_y y\,P(Y=y)$ for $Y = g(X)$; LOTUS lets us sum over $x$ instead
+
+## Why LOTUS works: many draws {.smaller}
+
+Same idea as linearity: expectation = long-run average.
+
+Coin example: $T = 2 - H$, so $D = g(H)$ with $g(h) = \lvert 2h - 2 \rvert$. Repeat the two tosses 10 times:
+
+| Draw | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| $h$ | 1 | 2 | 1 | 1 | 0 | 1 | 2 | 1 | 1 | 0 |
+| $g(h)$ | 0 | 2 | 0 | 0 | 2 | 0 | 2 | 0 | 0 | 2 |
+
+. . .
+
+- Average of $g$: $\;\dfrac{0+2+0+0+2+0+2+0+0+2}{10} = 0.8$
+- Group the same draws by value of $h$:
+$$
+0.8 = \underbrace{2}_{g(0)} \cdot \underbrace{\tfrac{2}{10}}_{\text{freq. of } 0} + \underbrace{0}_{g(1)} \cdot \underbrace{\tfrac{6}{10}}_{\text{freq. of } 1} + \underbrace{2}_{g(2)} \cdot \underbrace{\tfrac{2}{10}}_{\text{freq. of } 2}
+$$
+
+. . .
+
+::: {.callout-important}
+As draws $\to \infty$: frequency of $x$ $\to P(X=x)$, so average of $g(X)$ $\to \sum_x g(x) P(X=x)$.
+:::
+
+---
+
+**Back to Example with LOTUS**
+
+- $T = 2 - H$, so $D = \lvert H - (2 - H) \rvert = \lvert 2H - 2 \rvert = g(H)$
+- $H \sim \text{Bin}(2, 1/2)$: $\;P(H = h) = \binom{2}{h}\left(\frac{1}{2}\right)^2$
+
+| $h$ | $0$ | $1$ | $2$ |
+|:---:|:---:|:---:|:---:|
+| $P(H=h)$ | $1/4$ | $1/2$ | $1/4$ |
+
+---
+
+Apply LOTUS: sum over the support of $H$, weighting $g(h)$ by $P(H=h)$:
+$$
+\begin{aligned}
+E(D) = E\big(\lvert 2H - 2 \rvert\big) &= \sum_{h=0}^{2} \lvert 2h - 2 \rvert \, P(H = h) \\[4pt]
+&= \underbrace{\lvert 0 - 2 \rvert}_{h=0} \cdot \frac{1}{4} + \underbrace{\lvert 2 - 2 \rvert}_{h=1} \cdot \frac{1}{2} + \underbrace{\lvert 4 - 2 \rvert}_{h=2} \cdot \frac{1}{4} \\[4pt]
+&= 2 \cdot \frac{1}{4} + 0 \cdot \frac{1}{2} + 2 \cdot \frac{1}{4} = 1 \quad \checkmark
+\end{aligned}
+$$
+
+. . .
+
+- We never found the PMF of $D$; we only used the PMF of $H$
+- $h = 0$ and $h = 2$ enter as separate terms, whereas the PMF of $D$ merged them into $P(D = 2)$
+
+---
+
+**Example: table tennis tournament**
+
+Each of $n = 20$ students on a dorm floor registers for a table tennis tournament independently with probability $p = 0.3$.
+The format is round-robin: every pair of registered players plays **exactly once**.
+
+Let $X$ = number of registered players, $Y$ = number of games. Find $E(Y)$.
+
+
+:::{.incremental}
+- $X \sim \text{Bin}(n, p)$: $n$ independent Bernoulli$(p)$ trials, so $E(X) = np = 6$
+- $Y$ = number of pairs among $X$ players:
+$$
+Y = \binom{X}{2} = \frac{X(X-1)}{2}
+$$
+:::
+
+## Way 1: LOTUS — reduce to $E(X^2)$
+
+**Step 1 — Expand.**
+$$
+Y = \frac{X^2 - X}{2}
+$$
+
+. . .
+
+**Step 2 — Linearity.**
+$$
+E(Y) = \frac{1}{2}\big[E(X^2) - E(X)\big] = \frac{1}{2}\big[E(X^2) - np\big]
+$$
+
+. . .
+
+**Step 3 — What's left is $E(X^2)$**, the expectation of a function of $X$. By LOTUS with $g(k) = k^2$:
+$$
+E(X^2) = \sum_{k=0}^{n} k^2 \binom{n}{k} p^k q^{n-k}, \qquad q = 1 - p
+$$
+
+---
+
+**Step 1 — Split $k^2 = k(k-1) + k$.**
+$$
+E(X^2) = \sum_{k=0}^{n} k(k-1)\binom{n}{k} p^k q^{n-k} \;+\; \underbrace{\sum_{k=0}^{n} k \binom{n}{k} p^k q^{n-k}}_{= E(X) = np \text{ (LOTUS, } g(k)=k)}
+$$
+
+- Why split? $k(k-1)$ cancels nicely against the factorials in $\binom{n}{k}$; $k^2$ doesn't
+
+. . .
+
+**Step 2 — Drop zero terms.** $k(k-1) = 0$ for $k = 0$ and $k = 1$:
+$$
+\sum_{k=0}^{n} k(k-1)\binom{n}{k} p^k q^{n-k} = \sum_{k=2}^{n} k(k-1)\binom{n}{k} p^k q^{n-k}
+$$
+
+---
+
+**Step 3 — Simplify the coefficient.** Cancel $k(k-1)$ against $k!$, then pull $n(n-1)$ out of $n!$:
+$$
+k(k-1)\binom{n}{k} = \frac{k(k-1)\, n!}{k!\,(n-k)!} = \frac{n!}{(k-2)!\,(n-k)!} = n(n-1)\frac{(n-2)!}{(k-2)!\,(n-k)!} = n(n-1)\binom{n-2}{k-2}
+$$
+
+. . .
+
+**Step 4 — Factor out $p^2$, reindex $j = k - 2$.** As $k$ runs $2, \dots, n$, $j$ runs $0, \dots, n-2$, and $n - k = (n-2) - j$:
+$$
+\sum_{k=2}^{n} k(k-1)\binom{n}{k} p^k q^{n-k} = n(n-1)p^2 \sum_{j=0}^{n-2} \binom{n-2}{j} p^{j} q^{(n-2)-j}
+$$
+
+. . .
+
+**Step 5 — Recognize a PMF.** The last sum adds the Bin$(n-2, p)$ PMF over its whole support, so it equals $1$:
+$$
+E(X^2) = n(n-1)p^2 + np
+$$
+
+---
+
+$$
+E(Y) = \frac{1}{2}\big[\underbrace{n(n-1)p^2 + np}_{E(X^2)} - \underbrace{np}_{E(X)}\big] = \frac{n(n-1)}{2}\,p^2 = \binom{n}{2} p^2
+$$
+
+. . .
+
+With $n = 20$, $p = 0.3$:
+
+- $E(X^2) = 20 \cdot 19 \cdot 0.09 + 6 = 40.2$
+- $E(Y) = \frac{1}{2}(40.2 - 6) = 17.1$
+
+
+## Way 2: indicators
+
+**Step 1 — Decompose.** Label students $1, \dots, n$. For each pair $i < j$:
+$$
+I_{ij} = \begin{cases} 1 & \text{if both } i \text{ and } j \text{ register (game } i \text{ vs } j \text{ is played)} \\ 0 & \text{otherwise} \end{cases}
+$$
+$$
+Y = \sum_{i < j} I_{ij} \qquad \left(\tbinom{n}{2} \text{ indicators, one per potential game}\right)
+$$
+
+. . .
+
+**Step 2 — One indicator.** By independence of registrations:
+$$
+E(I_{ij}) = P(i \text{ registers}) \cdot P(j \text{ registers}) = p^2
+$$
+
+. . .
+
+**Step 3 — Linearity.**
+$$
+E(Y) = \binom{n}{2} p^2 = 190 \cdot 0.09 = 17.1 \quad \checkmark
+$$
+
+## Two ways, one answer
+
+::: {.callout-important}
+Count **potential games**, not players: each of the $\binom{n}{2}$ possible games happens with probability $p^2$.
+No PMF of $Y$, no binomial sums.
+:::
+
+. . .
+
+- Way 1 (LOTUS): works for any $g$, but the algebra can be heavy
+- Way 2 (indicators): needs a clever decomposition, then it's one line
+

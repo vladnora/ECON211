@@ -949,7 +949,13 @@ and combining them, $E[aX + bY] = a\,E[X] + b\,E[Y]$.
 
 . . .
 
+
+::: {.callout-note}
+
 No need for any **assumption whatsoever** about how $X$ and $Y$ relate. Independent, dependent, one a function of the other — **linearity always holds**.
+
+:::
+
 
 . . .
 
@@ -993,28 +999,35 @@ $$\frac1n\sum_i (a x_i + b) \;=\; a\cdot\frac1n\sum_i x_i \;+\; b \;\longrightar
 
 **Application 1: the die lottery pays $\$10$ per point**
 
-- Roll a die, get $\$10 \times$ score. 
+- Roll a die, get $\$10 \times$ Score. 
 - Call the payment $W$.
-
-$W$ is a **different random variable** from $X$. It has its own pmf and expectation.
+- Find $E[W]$.
 
 . . .
+
+- $W$ is a **new random variable**, a function of $X$: $$W=10X.$$
+- It has its own pmf, hence to apply the definition we need to derive the pmf first.
+- Linearity allows us to skip this derivation of pmf.
+
+---
 
 **The long way: derive the pmf of $W$**
 
-Support is $10, 20, \dots, 60$, and $P(W = 10k) = P(X = k) = \tfrac16$:
+- Support is $\{10, 20, \dots, 60\}$, 
+- $P(W = 10k) = P(X = k) = \tfrac16$.
+- Hence:
 
 . . .
 
-$$E[W] \;=\; 10\cdot\tfrac16 + 20\cdot\tfrac16 + 30\cdot\tfrac16 + 40\cdot\tfrac16 + 50\cdot\tfrac16 + 60\cdot\tfrac16 \;=\; \tfrac{210}{6} \;=\; 35$$
+$$E[W] \;=\; \tfrac16(10 + 20 + 30 + 40 + 50 + 60) \;=\; \tfrac{210}{6} \;=\; 35$$
 
 . . .
 
-**The short way: use linearity directly**
+**The short way: use linearity**
 
 $W = 10X$, so linearity gives
 
-$$E[W] \;=\; 10\,E[X] \;=\; 10 \times 3.5 \;=\; 35$$
+$$E[W] \;=\; E[10X] \;=\; 10\,E[X] \;=\; 10 \times 3.5 \;=\; 35$$
 
 ---
 
@@ -1023,55 +1036,46 @@ $$E[W] \;=\; 10\,E[X] \;=\; 10 \times 3.5 \;=\; 35$$
 
 - Roll the die *and* toss the six coins.
 - Collect both payments: $S = X + Y$.
-
-$S$ is a **new random variable**. Support: $1, 2, \dots, 12$.
-
+- $S$ is a **new random variable**.
+- Find $E[S]$. 
+  
 . . .
 
 **The long way starts with the pmf of $S$**
 
-Each value of $s$ can arise from several splits between the die and the coins. We must find them all, and multiply — this is where **independence** enters.
+- Support: $1, 2, \dots, 12$.
+- Now lets get the pmf.
+  
+---
+
+**Building $P(S=s)$ by hand is complex**
+
+. . .
+
+**$S = 1$.** Only one way to get this: the die shows $1$ and the coins give $0$ heads. By independence (assumed implicitly):
+
+
+$$P(S=1) \;=\; P(X=1)\,P(Y=0) \;=\; \tfrac16 \cdot \tfrac1{64} \;=\; \tfrac{1}{384}$$
+
+. . .
+
+**$S = 2$.** Two ways: $(X,Y) = (1,1)$ or $(2,0)$.
+
+. . .
+
+$$P(S=2) \;=\; \underbrace{\tfrac16\cdot\tfrac{6}{64}}_{(1,1)} \;+\; \underbrace{\tfrac16\cdot\tfrac{1}{64}}_{(2,0)} \;=\; \tfrac{6+1}{384} \;=\; \tfrac{7}{384}$$
+
+. . .
+
+The number of splits keeps growing, hence the complexity. 
 
 ---
 
-**Building $p_S$ by hand**
-
-**$S = 1$.** Only one way: the die shows $1$ and the coins give $0$ heads.
-
-. . .
-
-$$p_S(1) \;=\; P(X=1)\,P(Y=0) \;=\; \tfrac16 \cdot \tfrac1{64} \;=\; \tfrac{1}{384}$$
-
-. . .
-
-**$S = 2$.** Two ways now: $(X,Y) = (1,1)$ or $(2,0)$.
-
-. . .
-
-$$p_S(2) \;=\; \underbrace{\tfrac16\cdot\tfrac{6}{64}}_{(1,1)} \;+\; \underbrace{\tfrac16\cdot\tfrac{1}{64}}_{(2,0)} \;=\; \tfrac{6+1}{384} \;=\; \tfrac{7}{384}$$
-
-. . .
-
-The number of splits keeps growing. 
+**Question: find $P(S=7)$.**
 
 ---
 
-**Question: find $p_S(7)$**
-
-. . .
-
-Every die face works, since $Y = 7-k$ lands in $\{1,\dots,6\}$ for each $k$:
-
-$$p_S(7) \;=\; \frac{1}{384}\left[\binom66 + \binom65 + \binom64 + \binom63 + \binom62 + \binom61\right]
-\;=\; \frac{1+6+15+20+15+6}{384} \;=\; \frac{63}{384}$$
-
-. . .
-
-The most likely total — and the only one every die face can reach.
-
----
-
-**The full pmf, after twelve such calculations**
+**The full pmf $P(S=s)$, after twelve such calculations**
 
 ```{=html}
 <svg viewBox="0 0 820 340" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;font-family:inherit;font-size:14px;">
@@ -1123,10 +1127,14 @@ The most likely total — and the only one every die face can reach.
 
 . . .
 
-Finally, the expectation is:
+Why probability decreasing toward tails?
+
+. . .
+
+Finally, using the definition and the above pmf:
 
 ::: {style="font-size: 0.8em;"}
-$$E[S] \;=\; \sum_{s=1}^{12} s\,p_S(s) \;=\; 6.5$$
+$$E[S] \;=\; \sum_{s=1}^{12} s\,P(S=s) \;=\; 6.5$$
 :::
 
 ---
@@ -1141,7 +1149,7 @@ Same answer. One line.
 
 . . .
 
-We never needed $p_S$ at all — and linearity would have worked even if the die and the coins were somehow rigged to move together.
+We never needed $P(S=s)$ at all — and linearity would have worked even if the die and the coins were somehow rigged to move together (not independent).
 
 ---
 
@@ -1160,7 +1168,7 @@ $$E[T] \;=\; 10\,E[X] + 10\,E[Y] \;=\; 10(3.5) + 10(3) \;=\; 65$$
 The long way needs the pmf of $T$: the same twelve-point convolution, rescaled. We will not do it.
 
 
-## Binomial expectation, second derivation {.smaller}
+## Binomial expectation, second derivation
 
 $X \sim \text{Binomial}(n,p)$ counts successes in $n$ trials. Write it as a sum of indicators:
 
@@ -1178,9 +1186,8 @@ $$E[X] \;=\; E[I_1 + \cdots + I_n] \;=\; E[I_1] + \cdots + E[I_n] \;=\; \underbr
 
 Three lines. No factorials, no combinatorial identity, no binomial theorem.
 
-The earlier algebraic derivation took four slides. Same answer.
 
-## Hypergeometric: the same trick {.smaller}
+## Hypergeometric: the same trick
 
 **Hypergeometric.** A deck of $N = 52$ cards contains $K = 13$ hearts. Draw $n = 5$ **without replacement**. Let $X$ = number of hearts drawn.
 

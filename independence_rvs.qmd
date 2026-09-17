@@ -1,0 +1,165 @@
+## Independence of random variables
+
+::: {.callout-note title="Definition: independent random variables"}
+$X$ and $Y$ are **independent** if
+$$P(X \le x,\ Y \le y) = P(X \le x)\,P(Y \le y) \quad \text{for all } x, y \in \mathbb{R}.$$
+For **discrete** $X, Y$ this is equivalent to
+$$P(X = x,\ Y = y) = P(X = x)\,P(Y = y) \quad \text{for all } x, y.$$
+:::
+
+- $P(X=x,\ Y=y)$ is shorthand for $P(\{X=x\}\cap\{Y=y\})$ — the **joint** probability
+- Intuition: learning the value of $X$ tells you **nothing** about $Y$
+- $X_1,\dots,X_n$ independent: $P(X_1=x_1,\dots,X_n=x_n)=P(X_1=x_1)\cdots P(X_n=x_n)$ for **all** $x_1,\dots,x_n$
+- **i.i.d.** = independent + identically distributed — e.g. the $n$ Bernoulli trials behind $\text{Bin}(n,p)$
+
+## From events to random variables
+
+:::: {.columns}
+::: {.column width="55%"}
+- Each value pair $(x,y)$ gives two events: $\{X=x\}$ and $\{Y=y\}$
+- $X, Y$ independent $\iff$ $\{X=x\}$ and $\{Y=y\}$ are independent **for every** pair $(x,y)$
+- Via conditioning: $P(Y=y \mid X=x) = P(Y=y)$ for all $y$, whenever $P(X=x)>0$
+- General form: $\{X\in A\}$ and $\{Y\in B\}$ independent for **all** sets $A, B$
+:::
+::: {.column width="45%"}
+![](figs/indep_events_grid.png){width="100%"}
+:::
+::::
+
+::: {.callout-important}
+Independence of two events: **one** equation. Independence of two r.v.s: **one equation per cell** of the table.
+:::
+
+## Checking independence = checking many conditions
+
+- $X$ takes $m$ values, $Y$ takes $n$ values $\Rightarrow$ $m \times n$ equations
+- Two dice: $6\times 6 = 36$ equations; first die and sum: $6 \times 11 = 66$
+- Some cells can satisfy the product rule even when $X, Y$ are **dependent** (Example 3)
+
+::: {.callout-warning title="Strategy"}
+- **Dependent?** Find **one** pair $(x,y)$ that fails. Look for **zero cells** first: $P(X=x, Y=y)=0$ while $P(X=x)>0$ and $P(Y=y)>0$
+- **Independent?** Verify **every** pair — or argue from the setup: values produced by separate, non-interacting mechanisms
+:::
+
+::: {.fragment}
+*Fine print:* with the marginals fixed, the cells outside one row and one column — $(m-1)(n-1)$ of them — pin down the rest. For a $2\times 2$ table **one** cell suffices: this is the Ch. 2 fact that $A, B$ independent $\Rightarrow$ $A, B^c$ independent.
+:::
+
+## Example: two dice — independent
+
+::: {.callout-tip title="Example 1"}
+Roll two fair dice. $X$ = first die, $Y$ = second die.
+:::
+
+:::: {.columns}
+::: {.column width="45%"}
+- Marginals: $P(X=x)=P(Y=y)=\tfrac16$
+- 36 equally likely outcomes: $P(X=x,Y=y)=\tfrac1{36}$
+- $\tfrac1{36}=\tfrac16\cdot\tfrac16$ in **all 36** cells
+- $\Rightarrow$ $X, Y$ **independent** (in fact i.i.d.)
+:::
+::: {.column width="55%"}
+![](figs/indep_two_dice.png){width="100%"}
+:::
+::::
+
+## Example: one die, two questions — independent
+
+::: {.callout-tip title="Example 2"}
+Roll **one** fair die. $X = 1$ if the roll is even, $Y = 1$ if the roll is $\le 2$ ($0$ otherwise).
+:::
+
+:::: {.columns}
+::: {.column width="48%"}
+- $P(X=1)=\tfrac12$, $P(Y=1)=\tfrac13$
+- $P(X=1, Y=1)=P(\text{roll}=2)=\tfrac16=\tfrac12\cdot\tfrac13$
+- All **4** cells pass $\Rightarrow$ **independent**
+- Same experiment $\not\Rightarrow$ dependent
+
+::: {.fragment}
+- Change $Y=1$ to "roll $\le 3$": $P(X=1,Y=1)=\tfrac16 \ne \tfrac12\cdot\tfrac12$ $\Rightarrow$ **dependent**
+:::
+:::
+::: {.column width="52%"}
+![](figs/indep_same_die.png){width="100%"}
+:::
+::::
+
+## Example: die and sum — dependent {.smaller}
+
+::: {.callout-tip title="Example 3"}
+Roll two fair dice. $X$ = first die, $S$ = sum of both dice.
+:::
+
+:::: {.columns}
+::: {.column width="55%"}
+- Zero cell: $P(X=1, S=12)=0$, but
+  $P(X=1)\,P(S=12)=\tfrac16\cdot\tfrac1{36}=\tfrac1{216}$
+- $\Rightarrow$ **dependent** — one failure is enough
+- 30 of the 66 cells are zero cells
+
+::: {.fragment}
+- **Trap:** the whole row $S=7$ passes:
+  $P(X=x, S=7)=\tfrac1{36}=\tfrac16\cdot\tfrac16$ for every $x$
+- Checking only $S=7$ gives the **wrong** answer
+:::
+:::
+::: {.column width="45%"}
+![](figs/indep_die_sum.png){height="560"}
+:::
+::::
+
+## Example 3: the conditional view
+
+![](figs/indep_conditional.png){width="100%"}
+
+- Independent: $P(Y=y\mid X=x)$ is the **same** PMF for every $x$
+- Dependent: $P(S=s \mid X=x)$ is uniform on $\{x+1,\dots,x+6\}$ — it **moves** with $x$
+
+## Example: pairwise is not enough — dependent {.smaller}
+
+::: {.callout-tip title="Example 4"}
+Aigerim and Nurlan each flip a fair coin: $X, Y \in\{0,1\}$ independent. $Z = 1$ if their coins **match**, $Z=0$ otherwise.
+:::
+
+- Every **pair** is independent: e.g. $P(X=1, Z=1)=P(X=1,Y=1)=\tfrac14=\tfrac12\cdot\tfrac12$ — all 12 pair-cells pass
+- The **triple** fails: $P(X=1, Y=1, Z=1)=\tfrac14 \ne \tfrac12\cdot\tfrac12\cdot\tfrac12=\tfrac18$
+- $X$ and $Y$ together determine $Z$ completely
+
+![](figs/indep_coins_match.png){width="100%"}
+
+::: {.callout-important}
+For $n$ r.v.s the product rule must hold for the **joint** PMF of all $n$ at once — pairwise checks are not enough.
+:::
+
+## Independent or dependent?
+
+::: {.callout-caution title="Practice"}
+1. Last digit of your student ID and your ECON211 final score [— **independent**: nothing links them]{.fragment}
+2. Your Quiz 1 score and your Quiz 2 score [— **dependent**: same student, same study habits]{.fragment}
+3. Your die roll at one Nauryz fair booth and your friend's roll at the next booth [— **independent**: separate physical mechanisms]{.fragment}
+4. Minutes late to a 9:00 class: you and your roommate [— **dependent**: same bus, same −30°C buran morning]{.fragment}
+5. USD/KZT rate next month and the tenge price of a new iPhone [— **dependent**: imports are priced off the dollar]{.fragment}
+6. Daily returns of Kaspi.kz and Halyk Bank shares on KASE [— **dependent**: common market-wide shocks]{.fragment}
+:::
+
+::: {.callout-important .fragment}
+Most real-world dependence comes from a **shared cause** — weather, the economy, ability. Variables that are independent **given** the cause are dependent once the cause is unknown.
+:::
+
+## When the independence assumption fails: loan defaults {.smaller}
+
+::: {.callout-tip title="Example 5"}
+A bank in Astana holds 100 small-business loans; each defaults with probability $0.05$. $D$ = number of defaults.
+
+- **Model A:** defaults independent $\Rightarrow D \sim \text{Bin}(100,\ 0.05)$
+- **Model B:** bad year (devaluation) w.p. $0.2$ → each loan defaults w.p. $0.15$; good year → w.p. $0.025$; independent **given** the year
+:::
+
+- Same default probability per loan: $0.2(0.15)+0.8(0.025)=0.05$ — only independence differs
+- Model B, two loans: $P(L_1=1, L_2=1)=0.2(0.15)^2+0.8(0.025)^2=0.005 \ne 0.05^2=0.0025$
+
+![](figs/indep_loans.png){width="92%"}
+
+- $P(D \ge 15)$: $\approx 0.00014$ (A) vs $\approx 0.11$ (B) — about **800×** larger
+- 2008: models underestimated how strongly mortgage defaults move together

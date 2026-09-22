@@ -3045,8 +3045,550 @@ E(Y) = \binom{n}{2} p^2 = 190 \cdot 0.09 = 17.1 \quad \checkmark
 <li>Way 1 (LOTUS): works for any <span class="math inline">\(g\)</span>, but the algebra can be heavy</li>
 <li>Way 2 (indicators): needs a clever decomposition, then it’s one line</li>
 </ul>
-
 </div>
+</section>
+<section class="slide level2">
+
+
+
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Same Mean, Wildly Different Shapes</title>
+<style>
+.eqm-wrap, .eqm-wrap * { box-sizing: border-box; }
+.eqm-wrap {
+font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+color: #1a1a1a;
+max-width: 1080px;
+margin: 0 auto;
+padding: 20px;
+background: #ffffff;
+}
+.eqm-wrap h1 { font-size: 1.4rem; margin: 0 0 6px; }
+.eqm-lead {
+color: #5a5a5a;
+font-size: 0.92rem;
+line-height: 1.5;
+margin: 0 0 18px;
+max-width: 80ch;
+}
+.eqm-lead code {
+background: #f7f7f9;
+border: 1px solid #e0e0e5;
+border-radius: 4px;
+padding: 1px 5px;
+font-size: 0.9em;
+}
+.eqm-controls {
+display: flex;
+flex-wrap: wrap;
+gap: 10px;
+margin-bottom: 16px;
+}
+.eqm-btn {
+border: 2px solid #c8c8ce;
+background: #f7f7f9;
+color: #1a1a1a;
+border-radius: 8px;
+padding: 9px 16px;
+font-size: 0.9rem;
+font-weight: 600;
+cursor: pointer;
+}
+.eqm-btn .eqm-dot {
+display: inline-block;
+width: 10px; height: 10px;
+border-radius: 50%;
+margin-right: 7px;
+vertical-align: middle;
+background: #c8c8ce;
+}
+.eqm-btn.on { color: #ffffff; border-color: transparent; }
+.eqm-btn.on .eqm-dot { background: #ffffff; }
+.eqm-btn[data-series="binomial"].on { background: #3568b5; }
+.eqm-btn[data-series="hyper"].on { background: #2e8b57; }
+.eqm-btn[data-series="geometric"].on { background: #c94b4b; }
+.eqm-btn[data-series="uniform"].on { background: #7e57c2; }
+.eqm-reset {
+border: 2px solid #e0e0e5;
+background: #ffffff;
+color: #5a5a5a;
+border-radius: 8px;
+padding: 9px 14px;
+font-size: 0.85rem;
+cursor: pointer;
+}
+.eqm-panel {
+background: #f7f7f9;
+border: 1px solid #e0e0e5;
+border-radius: 10px;
+padding: 16px 16px 12px;
+overflow-x: auto;
+}
+.eqm-wrap svg { width: 100%; height: auto; display: block; min-width: 700px; }
+.eqm-gridline { stroke: #dcdce2; stroke-width: 1; }
+.eqm-gridline-minor { stroke: #ececf0; stroke-width: 1; }
+.eqm-axis-label { fill: #5a5a5a; font-size: 12px; }
+.eqm-mean-line { stroke: #d68a00; stroke-width: 2; stroke-dasharray: 5 4; }
+.eqm-mean-label { fill: #d68a00; font-size: 12px; font-weight: 700; }
+.eqm-s-binomial { stroke: #3568b5; fill: #3568b5; }
+.eqm-s-hyper { stroke: #2e8b57; fill: #2e8b57; }
+.eqm-s-geometric { stroke: #c94b4b; fill: #c94b4b; }
+.eqm-s-uniform { stroke: #7e57c2; fill: #7e57c2; }
+.eqm-table {
+width: 100%;
+border-collapse: collapse;
+margin-top: 14px;
+font-size: 0.85rem;
+}
+.eqm-table th, .eqm-table td {
+text-align: left;
+padding: 6px 10px;
+border-top: 1px solid #e0e0e5;
+}
+.eqm-table th { color: #5a5a5a; font-weight: 600; }
+.eqm-table tr.dim { color: #b5b5bc; }
+.eqm-table tr.dim .eqm-tag { opacity: 0.35; }
+.eqm-tag { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+</style>
+
+
+<div class="eqm-wrap">
+  <h1>Same Mean, Wildly Different Shapes</h1>
+  <p class="eqm-lead">
+    All four distributions below have <code>E[X] = 4</code>. Click a button to add that PMF to the
+    plot — a wide symmetric <b style="color:#3568b5">bell</b> (Binomial), an extremely narrow
+    <b style="color:#2e8b57">spike</b> (HGeom: an urn with <code>w=5</code> white and <code>b=5</code>
+    black balls, sampling <code>n=8</code> of the 10 without replacement — almost the whole urn), a
+    long monotonically-decaying <b style="color:#c94b4b">tail</b> (Geometric, whose mode sits at
+    <code>k=0</code> despite its mean being <code>4</code>), and a perfectly <b style="color:#7e57c2">flat</b>
+    rectangle (<code>DUnif(1,2,...,7)</code>, every value from 1 to 7 equally likely). Same mean,
+    variances spanning a 45× range. For <code>X ~ HGeom(w,b,n)</code>, <code>P(X=k)=0</code> outside
+    <code>max(0,n−b) ≤ k ≤ min(n,w)</code> — here that&#39;s exactly <code>k ∈ {3,4,5}</code>, so those
+    three points are the <em>complete</em> PMF, not a truncated view of it.
+  </p>
+
+  <div class="eqm-controls">
+    <button class="eqm-btn" data-series="binomial"><span class="eqm-dot"></span>Binomial(8, 0.5)</button>
+    <button class="eqm-btn" data-series="hyper"><span class="eqm-dot"></span>HGeom(w=5, b=5, n=8)</button>
+    <button class="eqm-btn" data-series="geometric"><span class="eqm-dot"></span>Geometric(0.2)</button>
+    <button class="eqm-btn" data-series="uniform"><span class="eqm-dot"></span>DUnif(1,...,7)</button>
+    <button class="eqm-reset" id="eqm-reset">Reset</button>
+  </div>
+
+  <div class="eqm-panel">
+    <svg id="eqm-svg" viewbox="0 0 1200 420"></svg>
+    <table class="eqm-table" id="eqm-table"></table>
+  </div>
+</div>
+
+<script>
+(function() {
+  // ---- distribution data (all verified to have E[X] = 4) ----
+  const MU = 4;
+  const SERIES = {
+    binomial: {
+      label: 'Binomial(n=8, p=0.5)', cls: 'eqm-s-binomial', color: '#3568b5',
+      k: [0,1,2,3,4,5,6,7,8],
+      p: [0.00391,0.03125,0.10938,0.21875,0.27344,0.21875,0.10938,0.03125,0.00391],
+      mean: 4, variance: 2.0
+    },
+    hyper: {
+      label: 'HGeom(w=5, b=5, n=8) — support 3≤k≤5, P(X=k)=0 elsewhere', cls: 'eqm-s-hyper', color: '#2e8b57',
+      k: [3,4,5],
+      p: [0.22222,0.55556,0.22222],
+      mean: 4, variance: 0.4444
+    },
+    geometric: (function() {
+      // computed directly from the closed form p_k = q^k * p, k=0..39 (q^39 ~ 3e-4, negligible),
+      // rather than a hand-copied rounded array -- avoids transcription error in the tail
+      const p_geo = 0.2, q_geo = 0.8, K_MAX = 60;
+      const k = Array.from({length: K_MAX + 1}, (_, i) => i);
+      const p = k.map(ki => p_geo * Math.pow(q_geo, ki));
+      return {
+        label: 'Geometric(0.2)  [#failures before success]', cls: 'eqm-s-geometric', color: '#c94b4b',
+        k: k, p: p, mean: (1 - p_geo) / p_geo, variance: (1 - p_geo) / (p_geo * p_geo)
+      };
+    })(),
+    uniform: (function() {
+      // X ~ DUnif(1,...,7): flat PMF, computed from the definition P(X=k)=1/|C|
+      const a = 1, b = 7;
+      const k = Array.from({length: b - a + 1}, (_, i) => a + i);
+      const m = k.length;
+      const p = k.map(() => 1 / m);
+      const mean = (a + b) / 2;
+      const variance = (m * m - 1) / 12;
+      return {
+        label: 'DUnif(1,2,...,7)', cls: 'eqm-s-uniform', color: '#7e57c2',
+        k: k, p: p, mean: mean, variance: variance
+      };
+    })()
+  };
+  const ORDER = ['binomial', 'hyper', 'geometric', 'uniform'];
+  const OFFSET_PX = { binomial: -6, hyper: -2, geometric: 2, uniform: 6 };
+
+  const active = new Set();
+  const svg = document.getElementById('eqm-svg');
+  const table = document.getElementById('eqm-table');
+  const buttons = document.querySelectorAll('.eqm-btn');
+  const resetBtn = document.getElementById('eqm-reset');
+
+  const X_MAX = 25, X_PAD = 0.6, Y_MAX = 0.62;
+  const W = 1200, H = 420, ML = 60, MR = 20, MT = 30, MB = 46;
+  const PW = W - ML - MR, PH = H - MT - MB;
+  const xScale = (k) => ML + ((k + X_PAD) / (X_MAX + 2 * X_PAD)) * PW;
+  const yScale = (p) => MT + PH - (p / Y_MAX) * PH;
+  const baseY = MT + PH;
+
+  function render() {
+    let s = '';
+    for (let v = 0; v <= X_MAX; v++) {
+      const x = xScale(v);
+      const major = (v % 5 === 0) || v === 3 || v === 4;
+      s += `<line x1="${x}" y1="${MT}" x2="${x}" y2="${baseY}" class="${major ? 'eqm-gridline' : 'eqm-gridline-minor'}"/>`;
+      if (major) s += `<text x="${x}" y="${baseY + 20}" class="eqm-axis-label" text-anchor="middle">${v}</text>`;
+    }
+    for (let i = 0; i <= 6; i++) {
+      const p = (Y_MAX * i) / 6;
+      const y = yScale(p);
+      s += `<line x1="${ML}" y1="${y}" x2="${ML + PW}" y2="${y}" class="eqm-gridline"/>`;
+      s += `<text x="${ML - 8}" y="${y + 4}" class="eqm-axis-label" text-anchor="end">${p.toFixed(2)}</text>`;
+    }
+
+    ORDER.forEach(name => {
+      if (!active.has(name)) return;
+      const d = SERIES[name];
+      const off = OFFSET_PX[name];
+      d.k.forEach((kv, i) => {
+        const x = xScale(kv) + off;
+        const y = yScale(d.p[i]);
+        if (baseY - y > 0.15) {
+          s += `<line x1="${x.toFixed(2)}" y1="${baseY}" x2="${x.toFixed(2)}" y2="${y.toFixed(2)}" class="${d.cls}" stroke-width="2.2"/>`;
+          s += `<circle cx="${x.toFixed(2)}" cy="${y.toFixed(2)}" r="3.4" class="${d.cls}" stroke="none"/>`;
+        }
+      });
+    });
+
+    const meanX = xScale(MU);
+    s += `<line x1="${meanX}" y1="${MT}" x2="${meanX}" y2="${baseY}" class="eqm-mean-line"/>`;
+    s += `<text x="${meanX}" y="${MT - 10}" class="eqm-mean-label" text-anchor="middle">μ = 4</text>`;
+    s += `<text x="${ML}" y="18" class="eqm-axis-label" text-anchor="start">P(X = k)</text>`;
+
+    svg.innerHTML = s;
+
+    let rows = '<tr><th></th><th>Distribution</th><th>Mean</th><th>Variance</th></tr>';
+    ORDER.forEach(name => {
+      const d = SERIES[name];
+      const on = active.has(name);
+      rows += `<tr class="${on ? '' : 'dim'}"><td><span class="eqm-tag" style="background:${d.color}"></span></td>` +
+              `<td>${d.label}</td><td>${d.mean.toFixed(2)}</td><td>${d.variance.toFixed(4)}</td></tr>`;
+    });
+    table.innerHTML = rows;
+  }
+
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const name = btn.dataset.series;
+      if (active.has(name)) { active.delete(name); btn.classList.remove('on'); }
+      else { active.add(name); btn.classList.add('on'); }
+      render();
+    });
+  });
+  resetBtn.addEventListener('click', () => {
+    active.clear();
+    buttons.forEach(b => b.classList.remove('on'));
+    render();
+  });
+
+  render();
+})();
+</script>
+
+
+</section>
+<section class="slide level2">
+
+<style>
+.divb-wrap, .divb-wrap * { box-sizing: border-box; }
+.divb-wrap {
+font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+color: #1a1a1a;
+max-width: 1040px;
+margin: 0 auto;
+padding: 28px 20px 48px;
+}
+.divb-wrap h1 {
+font-size: 1.5rem;
+margin: 0 0 6px;
+}
+.divb-lead {
+color: #5a5a5a;
+font-size: 0.95rem;
+line-height: 1.5;
+margin: 0 0 22px;
+max-width: 72ch;
+}
+.divb-lead code {
+background: #f7f7f9;
+border: 1px solid #e0e0e5;
+border-radius: 4px;
+padding: 1px 5px;
+font-size: 0.9em;
+}
+.divb-controls {
+display: flex;
+flex-wrap: wrap;
+align-items: center;
+gap: 14px;
+background: #f7f7f9;
+border: 1px solid #e0e0e5;
+border-radius: 10px;
+padding: 16px 18px;
+margin-bottom: 22px;
+}
+.divb-controls label {
+font-size: 0.9rem;
+font-weight: 600;
+white-space: nowrap;
+}
+.divb-controls input[type="range"] {
+flex: 1 1 220px;
+min-width: 140px;
+accent-color: #3568b5;
+}
+.divb-controls input[type="number"] {
+width: 72px;
+padding: 6px 8px;
+border-radius: 6px;
+border: 1px solid #e0e0e5;
+background: #ffffff;
+color: #1a1a1a;
+font-size: 0.95rem;
+}
+.divb-panel {
+background: #f7f7f9;
+border: 1px solid #e0e0e5;
+border-radius: 10px;
+padding: 16px 16px 12px;
+overflow-x: auto;
+}
+.divb-legend {
+display: flex;
+gap: 20px;
+flex-wrap: wrap;
+margin-bottom: 6px;
+font-size: 0.88rem;
+}
+.divb-legend span.divb-swatch {
+display: inline-block;
+width: 16px; height: 3px;
+margin-right: 6px;
+vertical-align: middle;
+border-radius: 2px;
+}
+.divb-wrap svg { width: 100%; height: auto; display: block; }
+.divb-gridline { stroke: #dcdce2; stroke-width: 1; }
+.divb-axis-label { fill: #5a5a5a; font-size: 12px; }
+.divb-mean-line { stroke: #d68a00; stroke-width: 2; stroke-dasharray: 5 4; }
+.divb-mean-label { fill: #d68a00; font-size: 12px; font-weight: 600; }
+.divb-series-allin { stroke: #c94b4b; fill: #c94b4b; }
+.divb-series-n { stroke: #3568b5; fill: #3568b5; }
+.divb-stats {
+font-size: 0.85rem;
+color: #5a5a5a;
+margin-top: 10px;
+padding-top: 10px;
+border-top: 1px solid #e0e0e5;
+display: flex;
+flex-direction: column;
+gap: 4px;
+}
+.divb-stats b { color: #1a1a1a; }
+.divb-stats .divb-row-allin b.divb-tag { color: #c94b4b; }
+.divb-stats .divb-row-n b.divb-tag { color: #3568b5; }
+.divb-summary {
+margin-top: 20px;
+background: #f7f7f9;
+border: 1px solid #e0e0e5;
+border-radius: 10px;
+padding: 16px 18px;
+font-size: 0.92rem;
+line-height: 1.6;
+}
+.divb-summary b { color: #3568b5; }
+</style>
+
+<div class="divb-wrap">
+  <h1>All-In vs. Diversified Betting</h1>
+  <p class="divb-lead">
+    You have <code>$100</code>. A fair bet pays even money: bet <code>$b</code>, win or lose <code>$b</code>
+    with probability ½ each. <b style="color:#c94b4b">All-in</b> (red) bets the full <code>$100</code>
+    at once and stays fixed. <b style="color:#3568b5">n bets</b> (blue) splits it into <code>n</code> equal,
+    independent, simultaneous bets of <code>$100/n</code> — drag the slider to change <code>n</code> and watch
+    the blue PMF move while red stays put. Both have the same expected wealth; only the spread differs.
+  </p>
+
+  <div class="divb-controls">
+    <label for="divb-nInput">n =</label>
+    <input type="range" id="divb-nSlider" min="2" max="300" value="2" step="1">
+    <input type="number" id="divb-nInput" min="2" max="300" value="2">
+  </div>
+
+  <div class="divb-panel">
+    <div class="divb-legend">
+      <span><span class="divb-swatch" style="background:#c94b4b"></span>All-in (n=1, fixed)</span>
+      <span><span class="divb-swatch" style="background:#3568b5"></span><span id="divb-nLegendLabel">n=4</span> equal simultaneous bets</span>
+    </div>
+    <svg id="divb-combinedSvg" viewbox="0 0 1000 420"></svg>
+    <div class="divb-stats" id="divb-statsBlock"></div>
+  </div>
+
+  <div class="divb-summary" id="divb-summary"></div>
+</div>
+<script>
+(function() {
+
+// ---- log-gamma (Lanczos) for numerically stable binomial coefficients ----
+function logGamma(x) {
+  const g = 7;
+  const c = [0.99999999999980993, 676.5203681218851, -1259.1392167224028,
+    771.32342877765313, -176.61502916214059, 12.507343278686905,
+    -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7];
+  if (x < 0.5) return Math.log(Math.PI / Math.sin(Math.PI * x)) - logGamma(1 - x);
+  x -= 1;
+  let a = c[0];
+  const t = x + g + 0.5;
+  for (let i = 1; i < g + 2; i++) a += c[i] / (x + i);
+  return 0.5 * Math.log(2 * Math.PI) + (x + 0.5) * Math.log(t) - t + Math.log(a);
+}
+function binomPmf(n, k) { // p = 0.5 fixed
+  if (k < 0 || k > n) return 0;
+  const logChoose = logGamma(n + 1) - logGamma(k + 1) - logGamma(n - k + 1);
+  return Math.exp(logChoose + n * Math.log(0.5));
+}
+function computeDistribution(n) {
+  const wealth = [], prob = [];
+  for (let k = 0; k <= n; k++) {
+    wealth.push(200 * k / n);
+    prob.push(binomPmf(n, k));
+  }
+  return { wealth, prob };
+}
+function stats(wealth, prob) {
+  let mean = 0;
+  for (let i = 0; i < wealth.length; i++) mean += wealth[i] * prob[i];
+  let variance = 0;
+  for (let i = 0; i < wealth.length; i++) variance += prob[i] * (wealth[i] - mean) ** 2;
+  return { mean, variance, sd: Math.sqrt(variance) };
+}
+function formatProb(v) {
+  if (v === 0) return '0';
+  if (v < 0.01) return v.toFixed(4);
+  if (v < 0.1) return v.toFixed(3);
+  return v.toFixed(2);
+}
+
+// Single shared chart. Both series plotted as stem plots (line + dot, no bar
+// width — width carries no meaning for a PMF). All-in (red) is fixed at n=1,
+// so its peak (0.5) is always the largest value on the chart; the y-axis is
+// therefore fixed at a constant 0 to 0.55, giving a stable frame of reference
+// against which the blue n-bet series visibly flattens and widens/narrows as
+// n changes. Points are offset a few px horizontally where the two series
+// share an x-value (always true at $0 and $200) so neither stem is hidden
+// behind the other.
+const Y_MAX = 0.55;
+
+function renderCombinedChart(svgEl, allin, nBet, mean) {
+  const w = 1000, h = 420;
+  const marginL = 74, marginR = 24, marginT = 34, marginB = 50;
+  const plotW = w - marginL - marginR;
+  const plotH = h - marginT - marginB;
+
+  const X_PAD = 18; // dollars of empty margin left/right of $0 and $200
+  const xScale = (wv) => marginL + ((wv + X_PAD) / (200 + 2 * X_PAD)) * plotW;
+  const yScale = (p) => marginT + plotH - (p / Y_MAX) * plotH;
+  const baseY = marginT + plotH;
+
+  let s = '';
+  [0, 50, 100, 150, 200].forEach(v => {
+    const x = xScale(v);
+    s += `<line x1="${x}" y1="${marginT}" x2="${x}" y2="${baseY}" class="divb-gridline"/>`;
+    s += `<text x="${x}" y="${baseY + 22}" class="divb-axis-label" text-anchor="middle">$${v}</text>`;
+  });
+  for (let i = 0; i <= 5; i++) {
+    const p = (Y_MAX * i) / 5;
+    const y = yScale(p);
+    s += `<line x1="${marginL}" y1="${y}" x2="${marginL + plotW}" y2="${y}" class="divb-gridline"/>`;
+    s += `<text x="${marginL - 10}" y="${y + 4}" class="divb-axis-label" text-anchor="end">${formatProb(p)}</text>`;
+  }
+
+  function drawSeries(dist, cls, offsetPx) {
+    const n = dist.wealth.length - 1;
+    const strokeW = n > 60 ? 1 : 2.5;
+    const dotR = n > 60 ? 1.4 : 4;
+    dist.wealth.forEach((wv, i) => {
+      const x = xScale(wv) + offsetPx;
+      const y = yScale(dist.prob[i]);
+      if (baseY - y > 0.15) {
+        s += `<line x1="${x.toFixed(2)}" y1="${baseY}" x2="${x.toFixed(2)}" y2="${y.toFixed(2)}" class="${cls}" stroke-width="${strokeW}"/>`;
+        s += `<circle cx="${x.toFixed(2)}" cy="${y.toFixed(2)}" r="${dotR}" class="${cls}" stroke="none"/>`;
+      }
+    });
+  }
+  drawSeries(allin, 'divb-series-allin', -3);
+  drawSeries(nBet, 'divb-series-n', 3);
+
+  const meanX = xScale(mean);
+  s += `<line x1="${meanX}" y1="${marginT}" x2="${meanX}" y2="${baseY}" class="divb-mean-line"/>`;
+  s += `<text x="${meanX}" y="${marginT - 10}" class="divb-mean-label" text-anchor="middle">μ=$${mean.toFixed(0)}</text>`;
+  s += `<text x="${marginL}" y="18" class="divb-axis-label" text-anchor="start">P(wealth = k)</text>`;
+
+  svgEl.innerHTML = s;
+}
+
+const nSlider = document.getElementById('divb-nSlider');
+const nInput = document.getElementById('divb-nInput');
+const nLegendLabel = document.getElementById('divb-nLegendLabel');
+const combinedSvg = document.getElementById('divb-combinedSvg');
+const statsBlock = document.getElementById('divb-statsBlock');
+const summaryEl = document.getElementById('divb-summary');
+
+function update() {
+  let n = parseInt(nInput.value, 10);
+  if (isNaN(n) || n < 2) n = 2;
+  if (n > 300) n = 300;
+  nInput.value = n;
+  nSlider.value = n;
+  nLegendLabel.textContent = `n=${n}`;
+
+  const allin = computeDistribution(1);
+  const nBet = computeDistribution(n);
+  const aStats = stats(allin.wealth, allin.prob);
+  const nStats_ = stats(nBet.wealth, nBet.prob);
+
+  renderCombinedChart(combinedSvg, allin, nBet, aStats.mean);
+
+  statsBlock.innerHTML =
+    `<div class="row-allin"><b class="tag">All-in:</b> Mean = <b>$${aStats.mean.toFixed(2)}</b> &nbsp;|&nbsp; Variance = <b>${aStats.variance.toFixed(1)}</b> &nbsp;|&nbsp; SD = <b>$${aStats.sd.toFixed(2)}</b></div>` +
+    `<div class="row-n"><b class="tag">${n} bets:</b> Mean = <b>$${nStats_.mean.toFixed(2)}</b> &nbsp;|&nbsp; Variance = <b>${nStats_.variance.toFixed(1)}</b> &nbsp;|&nbsp; SD = <b>$${nStats_.sd.toFixed(2)}</b></div>`;
+
+  const ratio = nStats_.variance > 0 ? aStats.variance / nStats_.variance : NaN;
+  summaryEl.innerHTML =
+    `Both strategies have the same expected wealth (<b>$100</b>). Splitting into <b>n = ${n}</b> equal ` +
+    `simultaneous bets divides the variance by <b>n</b>: Var(all-in) / Var(${n} bets) = ` +
+    `<b>${isFinite(ratio) ? ratio.toFixed(2) : '—'}</b> ≈ n.<br>` +
+    `Closed form: Var(all-in) = 100² = 10,000. Var(n bets) = 10,000 / n = ` +
+    `<b>${(10000 / n).toFixed(1)}</b>.`;
+}
+
+nSlider.addEventListener('input', () => { nInput.value = nSlider.value; update(); });
+nInput.addEventListener('input', update);
+
+update();
+})();
+</script>
+
 </section>
     </div>
   <div class="quarto-auto-generated-content" style="display: none;">

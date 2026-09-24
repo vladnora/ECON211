@@ -8,4 +8,4 @@ format:
     height: 700
 ---
 
-{{< include ../04_expectation/expectation.qmd >}}
+{{< include ../05_continious/continious.qmd >}}

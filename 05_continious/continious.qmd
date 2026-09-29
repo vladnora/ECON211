@@ -777,7 +777,386 @@
 </div>
 ```
 
-## Expectation
+## PDFs vs Histograms
+
+```{=html}
+<div id="dhist-root" style="font-size:20px;">
+<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px;">
+  <button id="dhist-sim" style="font-size:16px;padding:4px 10px;">Simulate +50</button>
+  <button id="dhist-reset" style="font-size:16px;padding:4px 10px;">Reset</button>
+  <span style="margin-left:10px;color:#555555;font-size:16px;">View:</span>
+  <button id="dhist-v0" style="font-size:16px;padding:4px 10px;border:1px solid #1f4e79;border-radius:4px;">Density</button>
+  <button id="dhist-v1" style="font-size:16px;padding:4px 10px;border:1px solid #1f4e79;border-radius:4px;">Histogram: counts</button>
+  <button id="dhist-v2" style="font-size:16px;padding:4px 10px;border:1px solid #1f4e79;border-radius:4px;">Histogram: proportions</button>
+  <button id="dhist-v3" style="font-size:16px;padding:4px 10px;border:1px solid #1f4e79;border-radius:4px;">Histogram: proportion / &Delta;</button>
+</div>
+<div id="dhist-status" style="color:#555555;font-size:18px;"></div>
+<svg id="dhist-svg" viewBox="0 0 800 440" style="width:100%;max-width:880px;display:block;"></svg>
+</div>
+<script>
+(function () {
+  var root = document.getElementById("dhist-root");
+  if (!root) return;
+  var NS = "http://www.w3.org/2000/svg";
+  var LO = 0, HI = 2, D = 0.2, K = 10, FX = 0.5, BATCH = 50;
+  var XL = -0.3, XR = 2.3;             // plotted x-range: a margin of real line on both sides
+  var SHOW_F_IN_PROPORTIONS = false;   // set true to also overlay f in the Proportions view
+  var DEFAULT_VIEW = 1;                // 0 = Density, 1 = counts, 2 = proportions, 3 = proportion / Delta
+  var VIEWS = [
+    { ylab: "density  f(x)", ymax: 0.8, ticks: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8], fmt: 1, bars: false },
+    { ylab: "count  n\u1D62", ymax: 50, ticks: [0, 10, 20, 30, 40, 50], fmt: 0, bars: true },
+    { ylab: "proportion  n\u1D62 / n", ymax: 0.3, ticks: [0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3], fmt: 2, bars: true },
+    { ylab: "n\u1D62 / (n\u0394)", ymax: 0.8, ticks: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8], fmt: 1, bars: true }
+  ];
+  // layout: plot area, tick labels, then rug strip of raw draws
+  var W = 800, H = 440, mL = 80, mR = 20, mT = 20, mB = 95;
+  var RUG0 = 34, RUG1 = 80;            // rug strip offsets below the x-axis
+  function sx(x) { return mL + (x - XL) / (XR - XL) * (W - mL - mR); }
+  function sy(y, ymax) { return H - mB - y / ymax * (H - mT - mB); }
+  function el(tag, attrs, parent) {
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  function clear(g) { while (g.firstChild) g.removeChild(g.firstChild); }
+  function mulberry32(a) {
+    return function () {
+      a |= 0; a = (a + 0x6D2B79F5) | 0;
+      var t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  var svg = document.getElementById("dhist-svg");
+  var gBars = el("g", {}, svg), gAxes = el("g", {}, svg), gTop = el("g", {}, svg);
+  var gRugFrame = el("g", {}, svg), gRug = el("g", {}, svg);
+  var btnSim = document.getElementById("dhist-sim"), btnReset = document.getElementById("dhist-reset"),
+      status = document.getElementById("dhist-status");
+  var vbtns = [0, 1, 2, 3].map(function (v) { return document.getElementById("dhist-v" + v); });
+
+  // rug frame (static, independent of view)
+  var y0 = H - mB;
+  el("line", { x1: sx(XL), y1: y0 + RUG1, x2: sx(XR), y2: y0 + RUG1, stroke: "#bbbbbb" }, gRugFrame);
+  el("text", { x: sx(XL) - 8, y: y0 + (RUG0 + RUG1) / 2 + 5, "text-anchor": "end", "font-size": 14, fill: "#555555" }, gRugFrame).textContent = "draws";
+
+  var rng, n, counts, view = 0;
+
+  function drawAxes(V) {
+    clear(gAxes);
+    el("line", { x1: sx(XL), y1: y0, x2: sx(XR), y2: y0, stroke: "#333333" }, gAxes);
+    el("line", { x1: sx(XL), y1: y0, x2: sx(XL), y2: sy(V.ymax, V.ymax), stroke: "#333333" }, gAxes);
+    V.ticks.forEach(function (v) {
+      var yy = sy(v, V.ymax);
+      el("line", { x1: sx(XL) - 5, y1: yy, x2: sx(XL), y2: yy, stroke: "#333333" }, gAxes);
+      el("text", { x: sx(XL) - 8, y: yy + 5, "text-anchor": "end", "font-size": 14, fill: "#333333" }, gAxes).textContent = v.toFixed(V.fmt);
+    });
+    for (var t = -1; t <= 11; t++) {
+      var tx = t * D;
+      el("line", { x1: sx(tx), y1: y0, x2: sx(tx), y2: y0 + 5, stroke: "#333333" }, gAxes);
+      el("text", { x: sx(tx), y: y0 + 20, "text-anchor": "middle", "font-size": 13, fill: "#333333" }, gAxes).textContent = +tx.toFixed(1);
+    }
+    var lab = el("text", { x: 0, y: 0, "text-anchor": "middle", "font-size": 16, fill: "#333333",
+      transform: "translate(" + 22 + "," + ((mT + y0) / 2) + ") rotate(-90)" }, gAxes);
+    lab.textContent = V.ylab;
+  }
+
+  function drawDensity(V) {
+    var yf = sy(FX, V.ymax), yb = sy(0, V.ymax), red = "#d62728";
+    // f = 0 outside [0, 2]
+    el("line", { x1: sx(XL), y1: yb, x2: sx(LO), y2: yb, stroke: red, "stroke-width": 3 }, gTop);
+    el("line", { x1: sx(HI), y1: yb, x2: sx(XR), y2: yb, stroke: red, "stroke-width": 3 }, gTop);
+    // f = 1/2 on [0, 2]
+    el("line", { x1: sx(LO), y1: yf, x2: sx(HI), y2: yf, stroke: red, "stroke-width": 3 }, gTop);
+    // jumps: dashed
+    el("line", { x1: sx(LO), y1: yb, x2: sx(LO), y2: yf, stroke: red, "stroke-width": 1.5, "stroke-dasharray": "5,4" }, gTop);
+    el("line", { x1: sx(HI), y1: yb, x2: sx(HI), y2: yf, stroke: red, "stroke-width": 1.5, "stroke-dasharray": "5,4" }, gTop);
+    el("text", { x: sx(HI) - 6, y: yf - 16, "text-anchor": "end", "font-size": 15, fill: red, "font-style": "italic",
+      stroke: "#ffffff", "stroke-width": 4, "paint-order": "stroke" }, gTop).textContent = "f(x) = 1/2";
+  }
+
+  function draw() {
+    var V = VIEWS[view];
+    drawAxes(V);
+    clear(gBars); clear(gTop);
+    for (var k = 0; V.bars && k < K; k++) {
+      var a = LO + k * D, c = counts[k];
+      var h = view === 1 ? c : (n > 0 ? (view === 2 ? c / n : c / (n * D)) : 0);
+      var hc = Math.min(h, V.ymax);
+      if (h > 0) el("rect", { x: sx(a), y: sy(hc, V.ymax), width: sx(a + D) - sx(a), height: sy(0, V.ymax) - sy(hc, V.ymax),
+        fill: "#9ecae1", stroke: "#3182bd", "stroke-width": 1 }, gBars);
+      if (h > V.ymax) {
+        var cx = (sx(a) + sx(a + D)) / 2, ty = sy(V.ymax, V.ymax);
+        el("path", { d: "M" + cx + "," + (ty - 12) + " l-7,10 l14,0 z", fill: "#d62728" }, gTop);
+      }
+    }
+    if (view === 0 || view === 3 || (view === 2 && SHOW_F_IN_PROPORTIONS)) drawDensity(V);
+    vbtns.forEach(function (b, v) {
+      b.style.background = v === view ? "#1f4e79" : "#ffffff";
+      b.style.color = v === view ? "#ffffff" : "#1f4e79";
+    });
+    var mx = n > 0 ? Math.max.apply(null, counts) : 0;
+    status.innerHTML = "<em>X</em> ~ Unif(0, 2), bin width &Delta; = 0.2 &nbsp;|&nbsp; <em>n</em> = " + n +
+      (n > 0 ? " &nbsp;|&nbsp; largest bin count " + mx : "");
+  }
+
+  function simulate() {
+    for (var i = 0; i < BATCH; i++) {
+      var x = LO + (HI - LO) * rng(), jy = rng();
+      counts[Math.min(K - 1, Math.floor((x - LO) / D))]++;
+      el("circle", { cx: sx(x).toFixed(2), cy: (y0 + RUG0 + 3 + jy * (RUG1 - RUG0 - 6)).toFixed(2),
+        r: 1.6, fill: "#08306b", "fill-opacity": 0.5 }, gRug);
+    }
+    n += BATCH;
+    draw();
+  }
+
+  function reset() {
+    rng = mulberry32(211); n = 0; counts = new Array(K).fill(0); view = DEFAULT_VIEW;
+    clear(gRug);
+    draw();
+  }
+
+  btnSim.addEventListener("click", simulate);
+  btnReset.addEventListener("click", reset);
+  vbtns.forEach(function (b, v) { b.addEventListener("click", function () { view = v; draw(); }); });
+  root.addEventListener("keydown", function (e) {
+    if (e.key === " " || e.key === "Enter") e.stopPropagation();
+  });
+  reset();
+})();
+</script>
+```
+
+::: {.notes}
+Counts: ~ n/10 per bin, so height depends on n; bars leave the axis (max 50) after ~8-10 presses.
+Proportions: settle at P(bin) = 0.2 x 1/2 = 0.1, independent of n, but would halve if Delta were halved.
+Proportion / Delta: 0.1 / 0.2 = 0.5 = f. Area = proportion, height -> f. Note f = 0 outside [0, 2]: no draws land there.
+:::
+
+
+## Expectation: continuous case {.smaller}
+
+Same logic as the discrete case: repeat the experiment $n$ times and average $x_1,\dots,x_n$.
+
+::: {.incremental}
+- **Problem:** with a continuous $X$, every value occurs once, so "proportion of times $X = x$" is $1/n$ and says nothing -- it goes to zero as we repeat more times.
+- **Fix:** group draws into bins $B_i$ of width $\Delta$, with midpoints $m_i$ and count the number of draws falling into each bin $n_i$:
+  $$\bar x = \frac1n\sum_{j=1}^n x_j \;\approx\; \sum_i m_i\cdot\frac{n_i}{n} \qquad \text{(approximate since $m_i$ approximates values of draws in bin $i$)}$$
+- **Density histogram:** rewrite the above using the density per bin $h_i = \dfrac{n_i}{n\Delta}$:
+  $$\sum_i m_i\cdot\frac{n_i}{n} = \sum_i m_i\cdot h_i\cdot\Delta$$
+  
+- **Limit** ($n\to\infty$ and $\Delta\to 0$): we have $h_i \to f(m_i)$:
+  $$\bar x \;\approx\; \sum_i m_i\, h_i\,\Delta \;\longrightarrow\; \sum_i m_i\, f(m_i)\,\Delta \;\longrightarrow\; \int_{-\infty}^{\infty} x\, f(x)\,dx$$
+:::
+
+---
+
+::: {.callout-note .fragment title="Definition"}
+The expected value of a continuous r.v. $X$ with PDF $f$ is $\displaystyle E(X) = \int_{-\infty}^{\infty} x f(x)\,dx.$
+:::
+
+:::{.incremental}
+- Discrete case: $E(X)=\sum x P(X=x)$
+- Continuous case:
+  - $\sum \to \int$
+  - $P(X=x)\to f(x)$
+:::
+
+## Interactive: shrinking the bins
+
+
+```{=html}
+<div id="ex2c-root" style="font-size:20px;">
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;">
+  <button id="ex2c-sim" style="font-size:18px;padding:4px 12px;">Simulate 5000 draws</button>
+  <button id="ex2c-bin" style="font-size:18px;padding:4px 12px;" disabled>Group into bins</button>
+  <button id="ex2c-reset" style="font-size:18px;padding:4px 12px;">Reset</button>
+  <span id="ex2c-status" style="color:#555555;"><em>f</em>(<em>x</em>) = 2<em>x</em> on [0, 1]</span>
+</div>
+<svg id="ex2c-svg" viewBox="0 0 700 330" style="width:100%;max-width:880px;display:block;"></svg>
+<table style="font-size:18px;border-collapse:collapse;margin-top:2px;">
+  <tr id="ex2c-r1" style="display:none;"><td style="padding:1px 12px;">Sample average &nbsp;<span style="text-decoration:overline;"><em>x</em></span></td><td id="ex2c-xbar" style="padding:1px 12px;font-family:monospace;"></td><td style="padding:1px 12px;color:#666666;">data, no binning</td></tr>
+  <tr id="ex2c-r2" style="display:none;color:#1f4e79;"><td style="padding:1px 12px;">Binned average &nbsp;&Sigma; <em>m<sub>i</sub></em> &middot; <em>n<sub>i</sub></em>/<em>n</em> &nbsp;(dashed line)</td><td id="ex2c-binned" style="padding:1px 12px;font-family:monospace;"></td><td style="padding:1px 12px;color:#666666;">value &times; proportion</td></tr>
+  <tr id="ex2c-r3" style="display:none;"><td style="padding:1px 12px;">Density sum &nbsp;&Sigma; <em>m<sub>i</sub></em> &middot; <em>f</em>(<em>m<sub>i</sub></em>) &middot; &Delta;</td><td id="ex2c-riem" style="padding:1px 12px;font-family:monospace;"></td><td style="padding:1px 12px;color:#666666;">proportion &rarr; <em>f</em> &middot; &Delta;</td></tr>
+  <tr id="ex2c-r4" style="display:none;color:#d62728;"><td style="padding:1px 12px;">&int; <em>x f</em>(<em>x</em>) <em>dx</em> &nbsp;(marker)</td><td id="ex2c-ex" style="padding:1px 12px;font-family:monospace;"></td><td style="padding:1px 12px;color:#666666;">limit</td></tr>
+</table>
+</div>
+<script>
+(function () {
+  var root = document.getElementById("ex2c-root");
+  if (!root) return;
+  var NS = "http://www.w3.org/2000/svg";
+  var DELTAS = [0.2, 0.1, 0.05, 0.005];
+  var N = 5000, EX = 2 / 3;
+  function f(x) { return (x < 0 || x > 1) ? 0 : 2 * x; }
+  function mulberry32(a) {
+    return function () {
+      a |= 0; a = (a + 0x6D2B79F5) | 0;
+      var t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  // draws via inverse CDF: F(x) = x^2  =>  X = sqrt(U); jitter only for display
+  var rng = mulberry32(211), xs = new Float64Array(N), jit = new Float64Array(N), s = 0;
+  for (var i = 0; i < N; i++) { xs[i] = Math.sqrt(rng()); jit[i] = rng(); s += xs[i]; }
+  var xbar = s / N;
+
+  // geometry: plot area above axis, rug band below axis, tick labels below rug
+  var W = 700, H = 330, mL = 50, mR = 20, mT = 15, mB = 62, YMAX = 3;
+  var RUG0 = 5, RUG1 = 27;
+  function sx(x) { return mL + x * (W - mL - mR); }
+  function sy(y) { return H - mB - y / YMAX * (H - mT - mB); }
+  function el(tag, attrs, parent) {
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  function clear(g) { while (g.firstChild) g.removeChild(g.firstChild); }
+  var svg = document.getElementById("ex2c-svg");
+  var gBars = el("g", {}, svg), gStatic = el("g", {}, svg), gRug = el("g", {}, svg), gMarks = el("g", {}, svg);
+
+  // axes, ticks, density (static)
+  el("line", { x1: sx(0), y1: sy(0), x2: sx(1), y2: sy(0), stroke: "#333333" }, gStatic);
+  el("line", { x1: sx(0), y1: sy(0), x2: sx(0), y2: sy(YMAX), stroke: "#333333" }, gStatic);
+  for (var t = 0; t <= 5; t++) {
+    var tx = t / 5;
+    el("line", { x1: sx(tx), y1: sy(0) + RUG1, x2: sx(tx), y2: sy(0) + RUG1 + 5, stroke: "#333333" }, gStatic);
+    el("text", { x: sx(tx), y: sy(0) + RUG1 + 21, "text-anchor": "middle", "font-size": 14, fill: "#333333" }, gStatic).textContent = tx.toFixed(1);
+  }
+  [0, 0.5, 1, 1.5, 2, 2.5].forEach(function (v) {
+    el("line", { x1: sx(0) - 5, y1: sy(v), x2: sx(0), y2: sy(v), stroke: "#333333" }, gStatic);
+    el("text", { x: sx(0) - 8, y: sy(v) + 4, "text-anchor": "end", "font-size": 14, fill: "#333333" }, gStatic).textContent = v.toFixed(1);
+  });
+  el("polyline", { points: [sx(0), sy(0), sx(1), sy(2), sx(1), sy(0)].join(" "), fill: "none", stroke: "#d62728", "stroke-width": 2.5 }, gStatic);
+
+  var btnSim = document.getElementById("ex2c-sim"), btnBin = document.getElementById("ex2c-bin"),
+      btnReset = document.getElementById("ex2c-reset"), status = document.getElementById("ex2c-status");
+  var rows = [1, 2, 3, 4].map(function (k) { return document.getElementById("ex2c-r" + k); });
+  var cXbar = document.getElementById("ex2c-xbar"), cBinned = document.getElementById("ex2c-binned"),
+      cRiem = document.getElementById("ex2c-riem"), cEx = document.getElementById("ex2c-ex");
+  cXbar.textContent = xbar.toFixed(4);
+  cEx.textContent = "2/3 \u2248 " + EX.toFixed(4);
+
+  var dots = [], step = -1;
+
+  function simulate() {
+    clear(gRug); dots = [];
+    for (var i = 0; i < N; i++) {
+      dots.push(el("circle", { cx: sx(xs[i]).toFixed(2), cy: (sy(0) + RUG0 + jit[i] * (RUG1 - RUG0 - 4) + 2).toFixed(2),
+        r: 1.1, fill: "#333333", "fill-opacity": 0.45 }, gRug));
+    }
+    rows[0].style.display = "";
+    btnSim.disabled = true; btnBin.disabled = false;
+    btnBin.textContent = "Group into bins: \u0394 = " + DELTAS[0];
+    status.textContent = "5000 draws shown below the axis";
+  }
+
+  function compute(d) {
+    var K = Math.round(1 / d), counts = new Array(K).fill(0), idx = new Int32Array(N);
+    for (var i = 0; i < N; i++) {
+      var k = Math.floor(xs[i] / d);
+      if (k < 0) k = 0; if (k > K - 1) k = K - 1;
+      counts[k]++; idx[i] = k;
+    }
+    var binned = 0, riem = 0, bars = [];
+    for (var k2 = 0; k2 < K; k2++) {
+      var a = k2 * d, m = a + d / 2, p = counts[k2] / N;
+      binned += m * p; riem += m * f(m) * d;
+      bars.push({ a: a, h: p / d, odd: k2 % 2 === 1 });
+    }
+    return { binned: binned, riem: riem, bars: bars, idx: idx };
+  }
+
+  function group() {
+    step++;
+    var d = DELTAS[step], r = compute(d);
+    clear(gBars); clear(gMarks);
+    r.bars.forEach(function (b) {
+      var h = Math.min(b.h, YMAX);
+      el("rect", { x: sx(b.a), y: sy(h), width: sx(b.a + d) - sx(b.a), height: sy(0) - sy(h),
+        fill: b.odd ? "#c6dbef" : "#9ecae1", stroke: "#3182bd", "stroke-width": d < 0.05 ? 0.3 : 1 }, gBars);
+    });
+    // colour draws by bin parity so the grouping is visible in the rug
+    for (var i = 0; i < N; i++) dots[i].setAttribute("fill", r.idx[i] % 2 ? "#6baed6" : "#08306b");
+    el("line", { x1: sx(r.binned), x2: sx(r.binned), y1: sy(0), y2: sy(YMAX), stroke: "#1f4e79", "stroke-width": 2, "stroke-dasharray": "6,4" }, gMarks);
+    el("path", { d: "M" + sx(EX) + "," + sy(YMAX) + " l-7,-12 l14,0 z", fill: "#d62728", transform: "translate(0,12)" }, gMarks);
+    el("text", { x: sx(EX) + 10, y: sy(YMAX) + 10, "font-size": 14, fill: "#d62728", "font-style": "italic" }, gMarks).textContent = "E(X)";
+    cBinned.textContent = r.binned.toFixed(4);
+    cRiem.textContent = r.riem.toFixed(4);
+    rows[1].style.display = ""; rows[2].style.display = ""; rows[3].style.display = "";
+    status.textContent = "\u0394 = " + d + "  (" + r.bars.length + " bins)";
+    if (step < DELTAS.length - 1) btnBin.textContent = "Finer bins: \u0394 = " + DELTAS[step + 1];
+    else { btnBin.textContent = "Finest bins shown"; btnBin.disabled = true; }
+  }
+
+  function reset() {
+    step = -1; clear(gBars); clear(gRug); clear(gMarks); dots = [];
+    rows.forEach(function (rw) { rw.style.display = "none"; });
+    btnSim.disabled = false; btnBin.disabled = true; btnBin.textContent = "Group into bins";
+    status.innerHTML = "<em>f</em>(<em>x</em>) = 2<em>x</em> on [0, 1]";
+  }
+
+  btnSim.addEventListener("click", simulate);
+  btnBin.addEventListener("click", group);
+  btnReset.addEventListener("click", reset);
+  // keep Space/Enter on a focused button from also advancing the slide
+  root.addEventListener("keydown", function (e) {
+    if (e.key === " " || e.key === "Enter") e.stopPropagation();
+  });
+})();
+</script>
+```
+
+::: {.notes}
+Before simulating: where will most draws land? (Near 1, where f is high.)
+Delta -> 0: binned average -> x-bar (error <= Delta/2). n -> infinity: x-bar -> E(X) = 2/3.
+Gap 0.6717 vs 0.6667 is sampling noise (SE = sqrt(1/18)/sqrt(5000) ~ 0.0033).
+At Delta = 0.005 the histogram is ragged (~25 draws per bin): fine bins need more data. That is the n -> infinity half of the argument.
+:::
+
+## Median: continuous case {.smaller}
+
+::: {.callout-note title="Definition"}
+A **median** of $X$ is any $m$ with $P(X \le m) \ge \tfrac12$ and $P(X \ge m) \ge \tfrac12$.
+For continuous $X$ with CDF $F$, this means $F(m) = \tfrac12$: half the area under $f$ on each side of $m$.
+:::
+
+:::: {.columns}
+::: {.column width="50%"}
+**Median vs. mean**
+
+- Median splits the **area** in half; the mean is the **balance point**
+- Median depends only on the ordering of values; the mean uses their magnitudes
+- Push the right tail further out: the mean moves, the median doesn't
+- Symmetric $f$: mean $=$ median (when the mean exists)
+- Right-skewed $f$: typically mean $>$ median
+- A median always exists; the mean may not
+- Loss view: the mean minimizes $E(X-c)^2$, the median minimizes $E|X-c|$
+:::
+
+::: {.column width="50%"}
+**Where it matters**
+
+- **Median grade:** a few no-shows scoring 0 drag the mean down; the median describes the typical student
+- **Median income:** right-skewed, so top earners pull the mean up. Typically *most* people earn less than the average wage
+- **Median voter:** with single-peaked preferences on a left–right line, the median voter's ideal policy beats any alternative in a majority vote. Making extremists more extreme changes nothing
+:::
+::::
+
+::: {.callout-tip title="Example N"}
+$f(x) = 2x$ on $[0,1]$: $F(m) = m^2 = \tfrac12 \Rightarrow m = 1/\sqrt2 \approx 0.707 > E(X) = \tfrac23$. Left-skewed, so median $>$ mean.
+:::
+
+::: {.notes}
+Uniqueness: if F is strictly increasing on the support, F(m) = 1/2 has exactly one solution.
+If f = 0 on an interval straddling the 1/2 point, every point in that flat stretch of F is a median.
+Skew rule of thumb (mean > median for right skew) is not a theorem; counterexamples exist.
+:::
+
+## Expectation as the center of mass
 
 ```{=html}
 <div id="pe-root">
@@ -962,3 +1341,654 @@
 </div>
 ```
 
+## Median vs Mean game
+
+```{=html}
+<div id="gmm-root" class="gmm-wrap">
+<style>
+.gmm-wrap{font-size:15px;line-height:1.35;color:#1e293b;font-family:inherit;text-align:left;max-width:1050px;margin:0 auto}
+.gmm-wrap *{box-sizing:border-box}
+.gmm-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:6px}
+.gmm-bar label{font-size:14px;display:flex;align-items:center;gap:5px;margin:0}
+.gmm-bar select{font-size:14px;padding:3px 6px;border:1px solid #94a3b8;border-radius:5px;background:#ffffff;color:#1e293b}
+.gmm-btn{font-size:14px;padding:5px 14px;border-radius:6px;border:1px solid #334155;background:#334155;color:#ffffff;cursor:pointer}
+.gmm-btn.gmm-lock{background:#ea580c;border-color:#ea580c}
+.gmm-btn:disabled{background:#cbd5e1;border-color:#cbd5e1;color:#64748b;cursor:default}
+.gmm-main{display:flex;gap:14px;align-items:flex-start}
+.gmm-left{flex:1 1 62%;min-width:0}
+.gmm-side{flex:1 1 38%;min-width:0;font-size:14px}
+.gmm-svg{width:100%;height:auto;display:block;touch-action:none;user-select:none;-webkit-user-select:none;background:#ffffff;border:1px solid #e2e8f0;border-radius:8px}
+.gmm-status{background:#f8fafc;border-left:4px solid #334155;padding:6px 9px;margin-bottom:8px;border-radius:4px}
+.gmm-rtab{border-collapse:collapse;width:100%;margin:4px 0 6px 0;font-size:13.5px}
+.gmm-rtab th,.gmm-rtab td{padding:3px 5px;border-bottom:1px solid #e2e8f0;text-align:right}
+.gmm-rtab th:first-child,.gmm-rtab td:first-child{text-align:left}
+.gmm-rtab th{font-weight:600;color:#64748b;font-size:12.5px}
+.gmm-rtot td{font-weight:700;border-bottom:none}
+.gmm-totals{margin:6px 0;padding:6px 9px;background:#f1f5f9;border-radius:4px}
+.gmm-diag{margin-top:8px;font-size:13.5px}
+.gmm-dhead{font-weight:600;margin-bottom:2px}
+.gmm-tip{margin-top:6px;padding:6px 9px;background:#fff7ed;border-left:4px solid #ea580c;border-radius:4px}
+.gmm-muted{color:#64748b}
+.gmm-formula{display:none;align-items:center;gap:10px;margin-top:6px;font-size:15px;flex-wrap:wrap}
+.gmm-ftab{border-collapse:collapse;border-left:2px solid #334155}
+.gmm-ftab td{padding:1px 10px;border:none}
+.gmm-fexact{flex-basis:100%;font-size:14px;color:#334155}
+.gmm-formula sup,.gmm-formula sub{font-size:0.75em}
+</style>
+<div class="gmm-bar">
+  <label>Level
+    <select class="gmm-level">
+      <option value="1">1: Uniform &amp; symmetric</option>
+      <option value="2">2: Skewed</option>
+      <option value="3">3: Multi-kink</option>
+      <option value="4">4: Long tail</option>
+      <option value="mix">Mixed (2&ndash;4)</option>
+    </select>
+  </label>
+  <button class="gmm-btn gmm-new" type="button">New density</button>
+  <button class="gmm-btn gmm-lock" type="button" disabled>Lock in</button>
+  <label><input type="checkbox" class="gmm-formula-toggle"> Show formula</label>
+</div>
+<div class="gmm-main">
+  <div class="gmm-left">
+    <svg class="gmm-svg" viewBox="0 0 720 340" xmlns="http://www.w3.org/2000/svg"></svg>
+    <div class="gmm-formula"></div>
+  </div>
+  <div class="gmm-side">
+    <div class="gmm-status"></div>
+    <div class="gmm-result"></div>
+    <div class="gmm-totals"></div>
+    <div class="gmm-diag"></div>
+  </div>
+</div>
+<script>
+(function () {
+  /* ===== math core ===== */
+  function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { var t = a % b; a = b; b = t; } return a || 1; }
+  function Fr(n, d) { if (d === undefined) d = 1; if (d < 0) { n = -n; d = -d; } var g = gcd(n, d); return { n: n / g, d: d / g }; }
+  function fadd(a, b) { return Fr(a.n * b.d + b.n * a.d, a.d * b.d); }
+  function fsub(a, b) { return Fr(a.n * b.d - b.n * a.d, a.d * b.d); }
+  function fmul(a, b) { return Fr(a.n * b.n, a.d * b.d); }
+  function fdiv(a, b) { return Fr(a.n * b.d, a.d * b.n); }
+  function fval(a) { return a.n / a.d; }
+  function fstr(a) { return a.d === 1 ? String(a.n) : a.n + "/" + a.d; }
+
+  function ri(lo, hi) { return lo + Math.floor(Math.random() * (hi - lo + 1)); }
+  function pickDistinct(lo, hi, k) {
+    var pool = []; for (var i = lo; i <= hi; i++) pool.push(i);
+    for (var j = pool.length - 1; j > 0; j--) { var r = Math.floor(Math.random() * (j + 1)); var t = pool[j]; pool[j] = pool[r]; pool[r] = t; }
+    return pool.slice(0, k).sort(function (a, b) { return a - b; });
+  }
+  function mirror(xs, ys) {
+    var a = xs[0], b = xs[xs.length - 1];
+    return { xs: xs.map(function (x) { return a + b - x; }).reverse(), ys: ys.slice().reverse() };
+  }
+  function symTri() { var h = ri(2, 5), a = ri(0, 3), b = a + 2 * h; if (b > 10) { a = 0; b = 2 * h; } return { xs: [a, a + h, b], ys: [0, 1, 0] }; }
+  function symTrap() { var a = ri(0, 2), s = ri(1, 3), t = ri(1, 2); return { xs: [a, a + s, a + s + t, a + 2 * s + t], ys: [0, 2, 2, 0] }; }
+
+  function genLevel(level) {
+    var d, a, b, L;
+    if (level === 1) {
+      if (Math.random() < 0.5) { a = ri(0, 4); b = ri(a + 3, 10); d = { xs: [a, b], ys: [1, 1] }; }
+      else d = symTri();
+    } else if (level === 2) {
+      var u = Math.random();
+      if (u < 0.12) d = Math.random() < 0.5 ? symTri() : symTrap();
+      else if (u < 0.55) {
+        a = ri(0, 3); b = ri(a + 4, 10); var c;
+        do { c = ri(a + 1, b - 1); } while (2 * c === a + b);
+        d = { xs: [a, c, b], ys: [0, 1, 0] };
+      } else {
+        a = ri(0, 3); b = ri(a + 3, 10); var h0, h1;
+        do { h0 = ri(0, 4); h1 = ri(1, 4); } while (h0 === h1);
+        d = { xs: [a, b], ys: [h0, h1] };
+      }
+    } else if (level === 3) {
+      if (Math.random() < 0.12) {
+        d = Math.random() < 0.5 ? symTrap() : (function () {
+          var a0 = ri(0, 2), s = ri(1, 2), t = ri(1, 2), p = ri(1, 4), q;
+          do { q = ri(1, 4); } while (q === p);
+          return { xs: [a0, a0 + s, a0 + s + t, a0 + s + 2 * t, a0 + 2 * s + 2 * t], ys: [0, p, q, p, 0] };
+        })();
+      } else {
+        var k = ri(4, 5); a = ri(0, 2); b = ri(Math.max(a + 6, 8), 10);
+        var inner = pickDistinct(a + 1, b - 1, k - 2);
+        var xs = [a].concat(inner, [b]), ys = [];
+        for (var i = 0; i < k; i++) ys.push(i === 0 || i === k - 1 ? ri(0, 2) : ri(1, 5));
+        d = { xs: xs, ys: ys };
+      }
+    } else {
+      a = ri(0, 1); b = ri(9, 10);
+      var pk = a + ri(1, 2), m1 = pk + ri(1, 2), m2 = m1 + ri(2, 3);
+      if (m2 >= b) m2 = b - 1;
+      var hp = ri(4, 6), h1 = ri(2, hp - 1), h2 = 1;
+      d = { xs: [a, pk, m1, m2, b], ys: [0, hp, h1, h2, ri(0, 1)] };
+      if (m1 >= m2) d = { xs: [a, pk, m2, b], ys: [0, hp, h1, ri(0, 1)] };
+    }
+    if (level >= 2 && Math.random() < 0.5) d = mirror(d.xs, d.ys);
+    return d;
+  }
+
+  function analyze(d) {
+    var xs = d.xs, ys = d.ys, n = xs.length, segs = [], A = Fr(0);
+    for (var i = 0; i < n - 1; i++) A = fadd(A, Fr((ys[i] + ys[i + 1]) * (xs[i + 1] - xs[i]), 2));
+    var c = fdiv(Fr(1), A);
+    var mean = Fr(0), EX2 = 0, cum = 0;
+    for (i = 0; i < n - 1; i++) {
+      var x0 = xs[i], x1 = xs[i + 1], y0 = ys[i], y1 = ys[i + 1];
+      var m = Fr(y1 - y0, x1 - x0), q = fsub(Fr(y0), fmul(m, Fr(x0)));
+      var al = fmul(c, m), be = fmul(c, q);
+      mean = fadd(mean, fadd(fmul(al, Fr(x1 * x1 * x1 - x0 * x0 * x0, 3)), fmul(be, Fr(x1 * x1 - x0 * x0, 2))));
+      EX2 += fval(al) * (Math.pow(x1, 4) - Math.pow(x0, 4)) / 4 + fval(be) * (Math.pow(x1, 3) - Math.pow(x0, 3)) / 3;
+      var area = fval(c) * (y0 + y1) * (x1 - x0) / 2;
+      segs.push({ x0: x0, x1: x1, f0: fval(c) * y0, f1: fval(c) * y1, al: al, be: be, cum0: cum, area: area });
+      cum += area;
+    }
+    var mu = fval(mean), sd = Math.sqrt(Math.max(EX2 - mu * mu, 0));
+    var ymax = Math.max.apply(null, ys), first = -1, last = -1;
+    for (i = 0; i < n; i++) if (ys[i] === ymax) { if (first < 0) first = i; last = i; }
+    var allEq = ys.every(function (y) { return y === ys[0]; });
+    var res = { d: d, segs: segs, c: c, mean: mean, mu: mu, sd: sd, fmax: fval(c) * ymax,
+      peak: allEq ? null : (xs[first] + xs[last]) / 2, mid: (xs[0] + xs[n - 1]) / 2, a: xs[0], b: xs[n - 1] };
+    res.F = function (x) {
+      if (x <= res.a) return 0; if (x >= res.b) return 1;
+      for (var j = 0; j < segs.length; j++) { var s = segs[j]; if (x <= s.x1) { var t = x - s.x0, sl = (s.f1 - s.f0) / (s.x1 - s.x0); return s.cum0 + s.f0 * t + sl * t * t / 2; } }
+      return 1;
+    };
+    res.f = function (x) {
+      if (x < res.a || x > res.b) return 0;
+      for (var j = 0; j < segs.length; j++) { var s = segs[j]; if (x <= s.x1) return s.f0 + (s.f1 - s.f0) * (x - s.x0) / (s.x1 - s.x0); }
+      return 0;
+    };
+    for (i = 0; i < segs.length; i++) {
+      var s = segs[i];
+      if (s.cum0 + s.area >= 0.5 - 1e-12) {
+        var r = 0.5 - s.cum0, sl = (s.f1 - s.f0) / (s.x1 - s.x0);
+        res.med = s.x0 + 2 * r / (s.f0 + Math.sqrt(Math.max(s.f0 * s.f0 + 2 * sl * r, 0)));
+        break;
+      }
+    }
+    return res;
+  }
+
+  /* scoring: median error on probability scale (0 pts at 20pp off), mean error in SD units (0 pts at 1/3 SD off) */
+  function score(res, gMed, gMean) {
+    var eMed = Math.abs(res.F(gMed) - 0.5), eMean = Math.abs(gMean - res.mu) / res.sd;
+    return { eMed: eMed, eMean: eMean,
+      pMed: Math.round(100 * Math.max(0, 1 - 5 * eMed)),
+      pMean: Math.round(100 * Math.max(0, 1 - 3 * eMean)) };
+  }
+  /* ===== UI ===== */
+  var root = document.getElementById("gmm-root");
+  if (!root) return;
+  var NS = "http://www.w3.org/2000/svg";
+  var W = 720, H = 340, ML = 52, MR = 16, MT = 44, MB = 64, X0 = 0, X1 = 10;
+  var AX = H - MB, PINY = AX + 30;
+  var C = { med: "#0d9488", medL: "#99f6e4", mean: "#ea580c", ink: "#334155", grid: "#e2e8f0", fill: "#cbd5e1", right: "#f1f5f9" };
+  var BONUS = 20;
+
+  var svg = root.querySelector(".gmm-svg"), status = root.querySelector(".gmm-status");
+  var btnNew = root.querySelector(".gmm-new"), btnLock = root.querySelector(".gmm-lock");
+  var selLevel = root.querySelector(".gmm-level"), chkFormula = root.querySelector(".gmm-formula-toggle");
+  var formulaBox = root.querySelector(".gmm-formula"), resultBox = root.querySelector(".gmm-result");
+  var totalsBox = root.querySelector(".gmm-totals"), diagBox = root.querySelector(".gmm-diag");
+
+  var cur = null, pins = { med: null, mean: null }, locked = false, drag = null, ymaxAxis = 1;
+  var history = [];
+
+  function sx(x) { return ML + (x - X0) / (X1 - X0) * (W - ML - MR); }
+  function ix(px) { return X0 + (px - ML) / (W - ML - MR) * (X1 - X0); }
+  function sy(y) { return AX - y / ymaxAxis * (AX - MT); }
+  function el(tag, attrs, parent, text) {
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (text !== undefined) e.textContent = text;
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  function niceMax(v) {
+    var steps = [0.05, 0.1, 0.2, 0.25, 0.5, 1, 2], t = v * 1.08;
+    for (var i = 0; i < steps.length; i++) { var k = Math.ceil(t / steps[i] - 1e-9); if (k <= 6) return { max: k * steps[i], step: steps[i] }; }
+    return { max: Math.ceil(t), step: Math.ceil(t) / 4 };
+  }
+  function fmt(x, d) { return x.toFixed(d === undefined ? 2 : d); }
+  function frHTML(f) {
+    var s = f.n < 0 ? "&minus;" : "", n = Math.abs(f.n);
+    return f.d === 1 ? s + n : s + "<sup>" + n + "</sup>&frasl;<sub>" + f.d + "</sub>";
+  }
+  function coefHTML(f, withX, first) {
+    if (f.n === 0) return "";
+    var n = Math.abs(f.n), sign = f.n < 0 ? (first ? "&minus;" : " &minus; ") : (first ? "" : " + ");
+    var body = f.d === 1 ? String(n) : "<sup>" + n + "</sup>&frasl;<sub>" + f.d + "</sub>";
+    if (withX) body = (f.d === 1 && n === 1 ? "" : body) + "<em>x</em>";
+    return sign + body;
+  }
+
+  function drawAxes() {
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    var g = el("g", {}, svg);
+    if (cur) {
+      var nm = niceMax(cur.fmax); ymaxAxis = nm.max;
+      for (var v = 0; v <= nm.max + 1e-9; v += nm.step) {
+        el("line", { x1: ML, x2: W - MR, y1: sy(v), y2: sy(v), stroke: C.grid, "stroke-width": 1 }, g);
+        el("text", { x: ML - 7, y: sy(v) + 4, "text-anchor": "end", "font-size": 12, fill: "#64748b" }, g, +v.toFixed(2));
+      }
+      el("text", { x: 14, y: MT + (AX - MT) / 2, "font-size": 13, fill: "#64748b", "text-anchor": "middle", transform: "rotate(-90 14 " + (MT + (AX - MT) / 2) + ")", "font-style": "italic" }, g, "f(x)");
+    }
+    el("line", { x1: ML, x2: W - MR, y1: AX, y2: AX, stroke: C.ink, "stroke-width": 1.5 }, g);
+    for (var t = X0; t <= X1; t++) {
+      el("line", { x1: sx(t), x2: sx(t), y1: AX, y2: AX + 5, stroke: C.ink }, g);
+      el("text", { x: sx(t), y: AX + 18, "text-anchor": "middle", "font-size": 12, fill: C.ink }, g, t);
+    }
+  }
+
+  function areaPath(lo, hi) {
+    var d = cur.d, N = 60;
+    lo = Math.max(lo, cur.a); hi = Math.min(hi, cur.b);
+    if (hi <= lo) return "";
+    var xsS = [lo];
+    for (var i = 0; i <= N; i++) xsS.push(lo + (hi - lo) * i / N);
+    d.xs.forEach(function (x) { if (x > lo && x < hi) xsS.push(x); });
+    xsS.push(hi); xsS.sort(function (a, b) { return a - b; });
+    var s = "M" + sx(lo) + "," + AX;
+    xsS.forEach(function (x) { s += " L" + sx(x).toFixed(2) + "," + sy(cur.f(x)).toFixed(2); });
+    return s + " L" + sx(hi) + "," + AX + " Z";
+  }
+
+  var layerReveal, layerPins;
+  function drawDensity() {
+    drawAxes();
+    var d = cur.d;
+    el("path", { d: areaPath(cur.a, cur.b), fill: C.fill, "fill-opacity": 0.55, stroke: "none" }, svg);
+    layerReveal = el("g", {}, svg);
+    var line = "M" + sx(cur.a) + "," + AX;
+    for (var i = 0; i < d.xs.length; i++) line += " L" + sx(d.xs[i]).toFixed(2) + "," + sy(cur.f(d.xs[i])).toFixed(2);
+    line += " L" + sx(cur.b) + "," + AX;
+    el("path", { d: line, fill: "none", stroke: C.ink, "stroke-width": 2.2, "stroke-linejoin": "round" }, svg);
+    el("rect", { x: ML, y: MT, width: W - ML - MR, height: PINY + 16 - MT, fill: "transparent", class: "gmm-hit" }, svg);
+    layerPins = el("g", {}, svg);
+  }
+
+  function drawPins() {
+    while (layerPins.firstChild) layerPins.removeChild(layerPins.firstChild);
+    [["med", "median", "M"], ["mean", "mean", "\u03bc"]].forEach(function (p, idx) {
+      var x = pins[p[0]]; if (x === null) return;
+      var col = C[p[0]], X = sx(x), g = el("g", { "data-pin": p[0], style: locked ? "" : "cursor:ew-resize" }, layerPins);
+      el("line", { x1: X, x2: X, y1: MT + 16 + idx * 16, y2: PINY - 10, stroke: col, "stroke-width": 2.2, "stroke-dasharray": "6 4" }, g);
+      el("text", { x: X + 5, y: MT + 12 + idx * 16, "font-size": 12, fill: col, "font-weight": 600 }, g, "your " + p[1]);
+      el("circle", { cx: X, cy: PINY, r: 10, fill: col, stroke: "#ffffff", "stroke-width": 2 }, g);
+      el("text", { x: X, y: PINY + 4, "text-anchor": "middle", "font-size": 12, fill: "#ffffff", "font-weight": 700, "pointer-events": "none" }, g, p[2]);
+      el("rect", { x: X - 9, y: MT, width: 18, height: PINY + 12 - MT, fill: "transparent" }, g);
+    });
+  }
+
+  function toData(evt) {
+    var pt;
+    if (svg.createSVGPoint && svg.getScreenCTM && svg.getScreenCTM()) {
+      pt = svg.createSVGPoint(); pt.x = evt.clientX; pt.y = evt.clientY;
+      pt = pt.matrixTransform(svg.getScreenCTM().inverse());
+    } else pt = { x: evt.offsetX, y: evt.offsetY };
+    return Math.min(X1, Math.max(X0, ix(pt.x)));
+  }
+
+  svg.addEventListener("pointerdown", function (evt) {
+    if (!cur || locked) return;
+    var pg = evt.target.closest ? evt.target.closest("[data-pin]") : null;
+    var x = toData(evt);
+    if (pg) drag = pg.getAttribute("data-pin");
+    else if (pins.med === null) { pins.med = x; drag = "med"; }
+    else if (pins.mean === null) { pins.mean = x; drag = "mean"; }
+    else return;
+    if (svg.setPointerCapture) try { svg.setPointerCapture(evt.pointerId); } catch (e) {}
+    evt.preventDefault(); evt.stopPropagation();
+    drawPins(); updateStatus();
+  });
+  svg.addEventListener("pointermove", function (evt) {
+    if (!drag || locked) return;
+    pins[drag] = toData(evt); drawPins();
+  });
+  function endDrag() { drag = null; updateStatus(); }
+  svg.addEventListener("pointerup", endDrag);
+  svg.addEventListener("pointercancel", endDrag);
+  svg.addEventListener("touchstart", function (e) { e.stopPropagation(); }, { passive: true });
+
+  function updateStatus() {
+    if (!cur) { status.innerHTML = "Choose a level and press <b>New density</b>."; return; }
+    if (locked) return;
+    if (pins.med === null) status.innerHTML = "Click on the plot to place your <b style='color:" + C.med + "'>median</b> pin.";
+    else if (pins.mean === null) status.innerHTML = "Now click to place your <b style='color:" + C.mean + "'>mean</b> pin.";
+    else status.innerHTML = "Drag pins to adjust, then press <b>Lock in</b>.";
+    btnLock.disabled = !(pins.med !== null && pins.mean !== null);
+  }
+
+  function showFormula(reveal) {
+    if (!cur || !chkFormula.checked) { formulaBox.style.display = "none"; return; }
+    var rows = cur.segs.map(function (s, i) {
+      var t = coefHTML(s.al, true, true), u = coefHTML(s.be, false, t === "");
+      var body = (t + u) || "0";
+      var last = i === cur.segs.length - 1;
+      return "<tr><td>" + body + ",</td><td>" + s.x0 + " &le; <em>x</em> " + (last ? "&le; " : "&lt; ") + s.x1 + "</td></tr>";
+    }).join("");
+    var h = "<div class='gmm-fhead'><em>f</em>(<em>x</em>) =</div><table class='gmm-ftab'>" + rows +
+      "<tr><td>0,</td><td>otherwise</td></tr></table>";
+    if (reveal) h += "<div class='gmm-fexact'>E[<em>X</em>] = " + frHTML(cur.mean) + " &asymp; " + fmt(cur.mu, 3) +
+      "; &nbsp; median <em>m</em> solves <em>F</em>(<em>m</em>) = &frac12;, <em>m</em> &asymp; " + fmt(cur.med, 3) + "</div>";
+    formulaBox.innerHTML = h; formulaBox.style.display = "flex";
+  }
+
+  function newRound() {
+    var lv = selLevel.value, L = lv === "mix" ? 2 + Math.floor(Math.random() * 3) : +lv;
+    cur = analyze(genLevel(L)); cur.level = L;
+    pins = { med: null, mean: null }; locked = false; drag = null;
+    drawDensity(); drawPins(); showFormula(false);
+    resultBox.innerHTML = ""; btnLock.disabled = true; updateStatus();
+  }
+
+  function reveal() {
+    if (!cur || locked || pins.med === null || pins.mean === null) return;
+    locked = true; btnLock.disabled = true;
+    var sc = score(cur, pins.med, pins.mean);
+    var gap = cur.mu - cur.med, sym = Math.abs(gap) < 1e-9, gGap = pins.mean - pins.med, orderOK;
+    if (sym) orderOK = Math.abs(gGap) <= 0.1 * cur.sd;
+    else orderOK = gGap * gap > 0;
+    var bonus = orderOK ? BONUS : 0, pts = sc.pMed + sc.pMean + bonus;
+
+    el("path", { d: areaPath(cur.a, cur.med), fill: C.medL, "fill-opacity": 0.85 }, layerReveal);
+    el("path", { d: areaPath(cur.med, cur.b), fill: C.right, "fill-opacity": 0.9 }, layerReveal);
+    var yl = AX - 12;
+    el("text", { x: (sx(cur.a) + sx(cur.med)) / 2, y: yl, "text-anchor": "middle", "font-size": 13, "font-weight": 700, fill: C.med }, layerReveal, "50%");
+    el("text", { x: (sx(cur.med) + sx(cur.b)) / 2, y: yl, "text-anchor": "middle", "font-size": 13, "font-weight": 700, fill: "#64748b" }, layerReveal, "50%");
+    var gT = el("g", {}, svg);
+    el("line", { x1: sx(cur.med), x2: sx(cur.med), y1: 20, y2: AX, stroke: C.med, "stroke-width": 3 }, gT);
+    el("line", { x1: sx(cur.mu), x2: sx(cur.mu), y1: 36, y2: AX, stroke: C.mean, "stroke-width": 3 }, gT);
+    var tx = sx(cur.mu);
+    el("path", { d: "M" + tx + "," + AX + " L" + (tx - 8) + "," + (AX + 13) + " L" + (tx + 8) + "," + (AX + 13) + " Z", fill: C.mean }, gT);
+    var lm = sx(cur.med), lu = sx(cur.mu), lab = Math.abs(lm - lu) < 70;
+    el("text", { x: lm + (lab && lm < lu ? -5 : 5), y: 16, "font-size": 12, "font-weight": 700, fill: C.med, "text-anchor": lab && lm < lu ? "end" : "start" }, gT, "median " + fmt(cur.med));
+    el("text", { x: lu + (lab && lu <= lm ? -5 : 5), y: 32, "font-size": 12, "font-weight": 700, fill: C.mean, "text-anchor": lab && lu <= lm ? "end" : "start" }, gT, "mean " + fmt(cur.mu));
+    svg.appendChild(layerPins); drawPins();
+
+    var leftPct = Math.round(100 * cur.F(pins.med));
+    var skewTxt = sym ? "Symmetric: mean = median" : (gap > 0 ? "Right-skewed: mean &gt; median" : "Left-skewed: mean &lt; median");
+    resultBox.innerHTML =
+      "<table class='gmm-rtab'>" +
+      "<tr><th></th><th>true</th><th>yours</th><th>miss</th><th>pts</th></tr>" +
+      "<tr><td style='color:" + C.med + "'><b>Median</b></td><td>" + fmt(cur.med) + "</td><td>" + fmt(pins.med) + "</td><td>" + leftPct + "% left</td><td>" + sc.pMed + "</td></tr>" +
+      "<tr><td style='color:" + C.mean + "'><b>Mean</b></td><td>" + fmt(cur.mu) + "</td><td>" + fmt(pins.mean) + "</td><td>" + fmt(sc.eMean) + " SD</td><td>" + sc.pMean + "</td></tr>" +
+      "<tr><td colspan='4'>" + skewTxt + (sym ? " &mdash; pins together?" : " &mdash; your order") + " " + (orderOK ? "&#10003;" : "&#10007;") + "</td><td>" + bonus + "</td></tr>" +
+      "<tr class='gmm-rtot'><td colspan='4'>Round total</td><td>" + pts + "</td></tr></table>";
+    status.innerHTML = "Press <b>New density</b> for the next round.";
+    showFormula(true);
+
+    history.push({ cur: cur, gMed: pins.med, gMean: pins.mean, pts: pts, sym: sym, orderOK: orderOK });
+    updateTotals(); updateDiag();
+  }
+
+  function updateTotals() {
+    var n = history.length, tot = history.reduce(function (s, h) { return s + h.pts; }, 0);
+    totalsBox.innerHTML = "Rounds: <b>" + n + "</b> &nbsp; Total: <b>" + tot + "</b> &nbsp; Avg: <b>" + (n ? Math.round(tot / n) : 0) + "</b> / " + (200 + BONUS);
+  }
+
+  function classify(key) {
+    var cnt = { truth: 0, peak: 0, mid: 0 }, used = 0;
+    history.forEach(function (h) {
+      var r = h.cur; if (r.peak === null) return;
+      var truth = key === "mean" ? r.mu : r.med, g = key === "mean" ? h.gMean : h.gMed;
+      var refs = { truth: truth, peak: r.peak, mid: r.mid };
+      if (Math.abs(truth - r.peak) < 0.1 * r.sd || Math.abs(truth - r.mid) < 0.1 * r.sd || Math.abs(r.peak - r.mid) < 0.1 * r.sd) return;
+      var best = null, bd = Infinity;
+      for (var k in refs) { var dd = Math.abs(g - refs[k]); if (dd < bd) { bd = dd; best = k; } }
+      cnt[best]++; used++;
+    });
+    return { cnt: cnt, used: used };
+  }
+
+  function updateDiag() {
+    var n = history.length;
+    if (n < 5) { diagBox.innerHTML = "<span class='gmm-muted'>Bias check unlocks after 5 rounds (" + n + "/5).</span>"; return; }
+    var cm = classify("med"), cu = classify("mean");
+    var sk = history.filter(function (h) { return !h.sym; }), ok = sk.filter(function (h) { return h.orderOK; }).length;
+    function row(lbl, c, col) {
+      return "<tr><td style='color:" + col + "'><b>" + lbl + "</b></td><td>" + c.cnt.truth + "</td><td>" + c.cnt.peak + "</td><td>" + c.cnt.mid + "</td></tr>";
+    }
+    var h = "<div class='gmm-dhead'>Bias check: which point were your pins closest to?</div>" +
+      "<table class='gmm-rtab'><tr><th></th><th>true value</th><th>peak</th><th>middle of range</th></tr>" +
+      row("Median pins", cm, C.med) + row("Mean pins", cu, C.mean) + "</table>" +
+      "<div>Mean vs median on the correct side: <b>" + ok + "/" + sk.length + "</b> skewed rounds.</div>";
+    var tips = [];
+    if (cu.used >= 3 && cu.cnt.peak > cu.cnt.truth) tips.push("Your mean pins drift toward the <b>peak</b>. The mean is the balance point, not the highest point of the density.");
+    if (cm.used >= 3 && cm.cnt.mid > cm.cnt.truth) tips.push("Your median pins drift toward the <b>middle of the range</b>. The median splits the <em>area</em> in half, not the interval.");
+    if (cm.used >= 3 && cm.cnt.peak > cm.cnt.truth) tips.push("Your median pins drift toward the <b>peak</b>. Half the area can lie well away from where the density is highest.");
+    if (sk.length >= 3 && ok / sk.length < 0.6) tips.push("Order check: a long tail pulls the <b>mean</b> toward it more than the median.");
+    if (tips.length) h += "<div class='gmm-tip'>" + tips.join("<br>") + "</div>";
+    diagBox.innerHTML = h;
+  }
+
+  btnNew.addEventListener("click", newRound);
+  btnLock.addEventListener("click", reveal);
+  chkFormula.addEventListener("change", function () { showFormula(locked); });
+  drawAxes(); updateStatus(); updateTotals(); updateDiag();
+})();
+</script>
+</div>
+```
+---
+
+```{=html}
+<div id="ls-root">
+<style>
+#ls-root{font-size:20px;line-height:1.3;color:#222222;text-align:left;display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:6px 18px;align-items:start}
+#ls-root *{box-sizing:border-box}
+#ls-root .ls-top{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+#ls-root .ls-tabs{display:flex;gap:4px}
+#ls-root .ls-tabs button{font:inherit;font-size:18px;padding:4px 14px;border:1px solid #bbbbbb;background:#ffffff;color:#444444;border-radius:4px;cursor:pointer}
+#ls-root .ls-tabs button[aria-pressed="true"]{background:#1f4e9c;border-color:#1f4e9c;color:#ffffff}
+#ls-root .ls-model{font-size:22px}
+#ls-root .ls-plots{display:grid;gap:4px}
+#ls-root svg{display:block;width:100%;height:auto}
+#ls-root .ls-panel{display:grid;gap:10px;font-size:17px}
+#ls-root .ls-ctl label{display:flex;justify-content:space-between;align-items:baseline;font-weight:600}
+#ls-root .ls-ctl output{font-variant-numeric:tabular-nums;font-size:20px}
+#ls-root input[type=range]{width:100%;margin:2px 0 0;accent-color:#1f4e9c}
+#ls-root .ls-reset{font:inherit;font-size:15px;padding:4px 10px;border:1px solid #bbbbbb;background:#ffffff;color:#444444;border-radius:4px;cursor:pointer;justify-self:start}
+#ls-root .ls-row{border-left:3px solid #cccccc;padding:1px 0 1px 10px}
+#ls-root .ls-row.ls-m{border-color:#c0392b}
+#ls-root .ls-row.ls-s{border-color:#e6a817}
+#ls-root .ls-lab{color:#666666;font-size:15px}
+#ls-root .ls-num{font-variant-numeric:tabular-nums}
+#ls-root .ls-name{font-size:18px}
+#ls-root .ls-note{font-size:15px;color:#666666}
+#ls-root button:focus-visible,#ls-root input:focus-visible{outline:2px solid #7aa2e8;outline-offset:2px}
+</style>
+
+<div class="ls-top">
+  <div class="ls-tabs">
+    <button type="button" data-d="unif" aria-pressed="true">Uniform</button>
+    <button type="button" data-d="norm" aria-pressed="false">Normal</button>
+    <button type="button" data-d="expo" aria-pressed="false">Exponential</button>
+  </div>
+  <div class="ls-model" id="ls-model"></div>
+</div>
+
+<div class="ls-plots">
+  <svg id="ls-pdf" viewBox="0 0 640 240" role="img" aria-label="Density of Y"></svg>
+  <svg id="ls-cdf" viewBox="0 0 640 240" role="img" aria-label="CDF of Y"></svg>
+</div>
+
+<div class="ls-panel">
+  <div class="ls-ctl">
+    <label for="ls-a"><span>Location <em>a</em></span><output id="ls-aOut"></output></label>
+    <input type="range" id="ls-a" min="-3" max="3" step="0.05" value="0">
+  </div>
+  <div class="ls-ctl">
+    <label for="ls-b"><span>Scale <em>b</em></span><output id="ls-bOut"></output></label>
+    <input type="range" id="ls-b" min="0.5" max="3" step="0.05" value="1">
+  </div>
+  <button type="button" class="ls-reset" id="ls-reset">Reset to <em>a</em> = 0, <em>b</em> = 1</button>
+  <div id="ls-out"></div>
+</div>
+
+<script>
+(() => {
+  const root = document.getElementById('ls-root');
+  const q = s => root.querySelector(s);
+  const COL = { ink:'#222222', muted:'#666666', grid:'#e5e5e5', axis:'#999999',
+    curve:'#1f4e9c', fill:'#1f4e9c', mean:'#c0392b', band:'#e6a817' };
+
+  function erf(x){
+    const s = x < 0 ? -1 : 1; x = Math.abs(x);
+    const t = 1 / (1 + 0.3275911 * x);
+    const p = ((((1.061405429 * t - 1.453152027) * t + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t;
+    return s * (1 - p * Math.exp(-x * x));
+  }
+  const fmt = (v, d = 2) => {
+    let s = v.toFixed(d);
+    if (/^-0(\.0+)?$/.test(s)) s = s.slice(1);
+    return s.replace('-', '\u2212');
+  };
+
+  const D = {
+    unif: { z:'Unif(0, 1)', EZ:0.5, VZ:1/12, EZs:'\u00bd', VZs:'1/12', SDs:'1/\u221a12',
+      xmin:-4, xmax:7, xstep:1, ymax:2.2, ystep:0.5, bmax:3,
+      pdf:z => (z >= 0 && z <= 1) ? 1 : 0,
+      cdf:z => z <= 0 ? 0 : z >= 1 ? 1 : z,
+      zb:[0, 1],
+      name:(a,b) => `<em>Y</em> ~ Unif(${fmt(a)}, ${fmt(a + b)})`,
+      note:'<em>a</em> is the left endpoint, <em>b</em> is the width.' },
+    norm: { z:'N(0, 1)', EZ:0, VZ:1, EZs:'0', VZs:'1', SDs:'1',
+      xmin:-10, xmax:10, xstep:2, ymax:0.9, ystep:0.2, bmax:2.5,
+      pdf:z => Math.exp(-z*z/2) / Math.sqrt(2*Math.PI),
+      cdf:z => 0.5 * (1 + erf(z / Math.SQRT2)),
+      zb:[],
+      name:(a,b) => `<em>Y</em> ~ N(\u03bc = ${fmt(a)}, \u03c3\u00b2 = ${fmt(b*b)})`,
+      note:'<em>a</em> = \u03bc, <em>b</em> = \u03c3.' },
+    expo: { z:'Exp(1)', EZ:1, VZ:1, EZs:'1', VZs:'1', SDs:'1',
+      xmin:-4, xmax:14, xstep:2, ymax:2.2, ystep:0.5, bmax:2.5,
+      pdf:z => z >= 0 ? Math.exp(-z) : 0,
+      cdf:z => z >= 0 ? 1 - Math.exp(-z) : 0,
+      zb:[0],
+      name:(a,b) => Math.abs(a) < 1e-9
+        ? `<em>Y</em> ~ Exp(\u03bb = 1/<em>b</em> = ${fmt(1/b)})`
+        : `<em>Y</em> = ${fmt(a)} + Exp(\u03bb = ${fmt(1/b)}): shifted, not exponential`,
+      note:'<em>b</em> = 1/\u03bb; <em>a</em> moves the start of the support.' }
+  };
+  const st = { d:'unif', a:0, b:1 };
+
+  const W = 640, H = 240, M = { l:46, r:12, t:30, b:26 };
+  const PW = W - M.l - M.r, PH = H - M.t - M.b;
+  const ticks = (lo, hi, step) => { const o = []; for (let k = Math.ceil(lo/step - 1e-9); k*step <= hi + 1e-9; k++) o.push(+(k*step).toFixed(6)); return o; };
+  const tstr = v => String(+v.toFixed(2)).replace('-', '\u2212');
+  const r1 = v => v.toFixed(1);
+
+  function plot(kind){
+    const d = D[st.d], a = st.a, b = st.b;
+    const ymax = kind === 'pdf' ? d.ymax : 1.05;
+    const X = x => M.l + (x - d.xmin) / (d.xmax - d.xmin) * PW;
+    const Y = y => M.t + PH - y / ymax * PH;
+    const mean = a + b * d.EZ, sd = b * Math.sqrt(d.VZ);
+    const id = 'ls-clip-' + kind;
+    let s = `<defs><clipPath id="${id}"><rect x="${M.l}" y="${M.t - 2}" width="${PW}" height="${PH + 4}"/></clipPath></defs>`;
+
+    // grid
+    const yt = kind === 'pdf' ? ticks(0, d.ymax, d.ystep) : [0, 0.25, 0.5, 0.75, 1];
+    yt.forEach(v => {
+      s += `<line x1="${M.l}" x2="${M.l + PW}" y1="${r1(Y(v))}" y2="${r1(Y(v))}" stroke="${v === 0 ? COL.axis : COL.grid}" stroke-width="1"/>`;
+      s += `<text x="${M.l - 6}" y="${r1(Y(v))}" text-anchor="end" dominant-baseline="middle" font-size="12" fill="${COL.muted}">${tstr(v)}</text>`;
+    });
+    ticks(d.xmin, d.xmax, d.xstep).forEach(v => {
+      s += `<line x1="${r1(X(v))}" x2="${r1(X(v))}" y1="${M.t}" y2="${M.t + PH}" stroke="${v === 0 ? COL.axis : COL.grid}" stroke-width="1"/>`;
+      s += `<text x="${r1(X(v))}" y="${M.t + PH + 16}" text-anchor="middle" font-size="12" fill="${COL.muted}">${tstr(v)}</text>`;
+    });
+
+    // mean ± 1 SD band
+    s += `<g clip-path="url(#${id})"><rect x="${r1(X(mean - sd))}" y="${M.t}" width="${r1(X(mean + sd) - X(mean - sd))}" height="${PH}" fill="${COL.band}" fill-opacity="0.2"/>`;
+
+    if (kind === 'pdf') {
+      // split support at discontinuities; solid pieces, dashed verticals at jumps
+      const f = y => d.pdf((y - a) / b) / b;
+      const br = d.zb.map(z => a + b * z).filter(y => y > d.xmin && y < d.xmax);
+      const cuts = [d.xmin, ...br, d.xmax], del = 1e-7, N = 300;
+      const pieces = [];
+      for (let i = 0; i < cuts.length - 1; i++) {
+        const lo = cuts[i], hi = cuts[i + 1], pts = [];
+        for (let k = 0; k <= N; k++) {
+          const x = lo + (hi - lo) * k / N;
+          const xe = Math.min(Math.max(x, lo + del), hi - del);
+          pts.push([X(x), Y(f(xe))]);
+        }
+        pieces.push(pts);
+      }
+      const all = pieces.flat();
+      s += `<path d="M${all.map(p => r1(p[0]) + ',' + r1(p[1])).join('L')}L${r1(X(d.xmax))},${r1(Y(0))}L${r1(X(d.xmin))},${r1(Y(0))}Z" fill="${COL.fill}" fill-opacity="0.12" stroke="none"/>`;
+      pieces.forEach(pts => {
+        s += `<path d="M${pts.map(p => r1(p[0]) + ',' + r1(p[1])).join('L')}" fill="none" stroke="${COL.curve}" stroke-width="3" stroke-linejoin="round"/>`;
+      });
+      br.forEach(y0 => {
+        const yl = f(y0 - del), yr = f(y0 + del);
+        s += `<line x1="${r1(X(y0))}" x2="${r1(X(y0))}" y1="${r1(Y(yl))}" y2="${r1(Y(yr))}" stroke="${COL.curve}" stroke-width="2" stroke-dasharray="6 4"/>`;
+      });
+    } else {
+      const F = y => d.cdf((y - a) / b), N = 600;
+      let p = '';
+      for (let k = 0; k <= N; k++) { const x = d.xmin + (d.xmax - d.xmin) * k / N; p += (k ? 'L' : 'M') + r1(X(x)) + ',' + r1(Y(F(x))); }
+      s += `<path d="${p}" fill="none" stroke="${COL.curve}" stroke-width="3" stroke-linejoin="round"/>`;
+    }
+
+    // mean marker (solid; dashes are reserved for density jumps)
+    s += `<line x1="${r1(X(mean))}" x2="${r1(X(mean))}" y1="${M.t}" y2="${M.t + PH}" stroke="${COL.mean}" stroke-width="2"/>`;
+    if (kind === 'cdf') {
+      s += `<circle cx="${r1(X(mean))}" cy="${r1(Y(d.cdf(d.EZ)))}" r="5" fill="#ffffff" stroke="${COL.mean}" stroke-width="2.5"/>`;
+    }
+    s += `</g>`;
+
+    if (kind === 'pdf') {
+      const right = X(mean) > M.l + PW * 0.6;
+      s += `<text x="${r1(X(mean) + (right ? -7 : 7))}" y="${M.t + 14}" text-anchor="${right ? 'end' : 'start'}" font-size="15" font-style="italic" font-weight="600" fill="${COL.mean}" stroke="#ffffff" stroke-width="4" paint-order="stroke">E[Y] = ${fmt(mean)}</text>`;
+      // legend
+      const lx = M.l + PW - 250;
+      s += `<line x1="${lx}" x2="${lx + 20}" y1="14" y2="14" stroke="${COL.mean}" stroke-width="2"/>`;
+      s += `<text x="${lx + 26}" y="14" dominant-baseline="middle" font-size="13" fill="${COL.muted}">mean</text>`;
+      s += `<rect x="${lx + 82}" y="7" width="20" height="14" fill="${COL.band}" fill-opacity="0.35"/>`;
+      s += `<text x="${lx + 108}" y="14" dominant-baseline="middle" font-size="13" fill="${COL.muted}">mean \u00b1 1 SD</text>`;
+    }
+    s += `<text x="${M.l}" y="15" dominant-baseline="middle" font-size="16" font-style="italic" fill="${COL.ink}">${kind === 'pdf' ? 'Density' : 'CDF'} of Y</text>`;
+    return s;
+  }
+
+  function render(){
+    const d = D[st.d], a = st.a, b = st.b;
+    const mean = a + b * d.EZ, vr = b * b * d.VZ, sd = b * Math.sqrt(d.VZ);
+    q('#ls-model').innerHTML = `<em>Y</em> = <em>a</em> + <em>b Z</em>,&ensp;<em>Z</em> ~ ${d.z}`;
+    q('#ls-aOut').textContent = fmt(a);
+    q('#ls-bOut').textContent = fmt(b);
+    q('#ls-pdf').innerHTML = plot('pdf');
+    q('#ls-cdf').innerHTML = plot('cdf');
+    q('#ls-out').innerHTML = `
+      <div class="ls-name">${d.name(a, b)}</div>
+      <div class="ls-row ls-m"><div class="ls-lab"><em>E</em>[<em>Y</em>] = <em>a</em> + <em>b E</em>[<em>Z</em>]</div>
+        <div class="ls-num">${fmt(a)} + ${fmt(b)} \u00d7 ${d.EZs} = <b>${fmt(mean)}</b></div></div>
+      <div class="ls-row"><div class="ls-lab">Var[<em>Y</em>] = <em>b</em>\u00b2 Var[<em>Z</em>]</div>
+        <div class="ls-num">${fmt(b)}\u00b2 \u00d7 ${d.VZs} = <b>${fmt(vr, 3)}</b></div></div>
+      <div class="ls-row ls-s"><div class="ls-lab">SD[<em>Y</em>] = <em>b</em> SD[<em>Z</em>]</div>
+        <div class="ls-num">${fmt(b)} \u00d7 ${d.SDs} = <b>${fmt(sd, 3)}</b></div></div>
+      <div class="ls-note">${d.note}</div>`;
+  }
+
+  function sync(){
+    const A = q('#ls-a'), B = q('#ls-b');
+    B.max = D[st.d].bmax;
+    A.value = st.a; B.value = st.b;
+  }
+  root.querySelectorAll('.ls-tabs button').forEach(btn => btn.addEventListener('click', () => {
+    st.d = btn.dataset.d; st.a = 0; st.b = 1;
+    root.querySelectorAll('.ls-tabs button').forEach(x => x.setAttribute('aria-pressed', String(x === btn)));
+    sync(); render();
+  }));
+  q('#ls-a').addEventListener('input', e => { st.a = +e.target.value; render(); });
+  q('#ls-b').addEventListener('input', e => { st.b = +e.target.value; render(); });
+  q('#ls-reset').addEventListener('click', () => { st.a = 0; st.b = 1; sync(); render(); });
+  sync(); render();
+})();
+</script>
+</div>
+```

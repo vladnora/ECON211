@@ -8,4 +8,4 @@ format:
     height: 700
 ---
 
-{{< include ../05_continious/continious.qmd >}}
+{{< include ../06_joint/joint.qmd >}}

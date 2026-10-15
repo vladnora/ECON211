@@ -1447,6 +1447,302 @@ const CFG_P = {"title": "Quiz 1 and Midterm", "prefix": "q1m", "data": [{"x": 71
   update();
 })();
 </script>
+</section>
+<section class="slide level2">
+
+<div id="jgb-root">
+  <div class="jgb-bar">
+    <div class="jgb-seg" data-role="mode"></div>
+    <div class="jgb-seg jgb-vals" data-role="vals"></div>
+  </div>
+  <div class="jgb-cap"></div>
+  <div class="jgb-main">
+    <div class="jgb-fig"><svg class="jgb-svg"></svg><div class="jgb-hint">drag to rotate</div></div>
+    <div class="jgb-side"><div class="jgb-tab"></div><div class="jgb-cond"></div></div>
+  </div>
+  <div class="jgb-info"> </div>
+</div>
+<style>
+#jgb-root { max-width:980px; margin:0 auto; color:#1f2933; text-align:left; line-height:1.3;
+font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; font-size:16px; }
+#jgb-root .jgb-bar { display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
+#jgb-root .jgb-seg { display:inline-flex; background:#eef1f4; border-radius:9px; padding:3px; transition:opacity .3s; }
+#jgb-root .jgb-seg button { border:0; margin:0; background:transparent; padding:6px 12px; border-radius:7px; cursor:pointer;
+font-family:inherit; font-size:15px; line-height:1.2; color:#7b8794; text-transform:none; letter-spacing:normal;
+transition:background .25s, color .25s, box-shadow .25s; }
+#jgb-root .jgb-seg button.jgb-on { background:#ffffff; color:#1f2933; box-shadow:0 1px 3px rgba(0,0,0,.14); }
+#jgb-root .jgb-vals.jgb-off { opacity:0; pointer-events:none; }
+#jgb-root .jgb-cap { font-size:15px; color:#52606d; margin:10px 2px 4px; min-height:40px; }
+#jgb-root .jgb-main { display:flex; flex-wrap:wrap; gap:14px; align-items:flex-start; }
+#jgb-root .jgb-fig { flex:1 1 560px; position:relative; }
+#jgb-root .jgb-svg { overflow:visible; width:100%; height:auto; display:block; margin:0; max-height:none; touch-action:none; cursor:grab; user-select:none; }
+#jgb-root .jgb-svg:active { cursor:grabbing; }
+#jgb-root .jgb-hint { position:absolute; right:4px; bottom:2px; font-size:12px; color:#9aa5b1; }
+#jgb-root .jgb-side { flex:0 1 330px; padding-top:18px; }
+#jgb-root table { border-collapse:collapse; font-size:14px; margin:0; width:auto; }
+#jgb-root th, #jgb-root td { padding:5px 9px; text-align:right; border:0; border-bottom:1px solid #edf0f3;
+font-variant-numeric:tabular-nums; transition:background .35s, color .35s; background:transparent; }
+#jgb-root th { color:#7b8794; font-weight:500; white-space:nowrap; }
+#jgb-root td.jgb-m, #jgb-root th.jgb-m { color:#7b8794; border-left:1px solid #d9dee4; }
+#jgb-root tr.jgb-mr td, #jgb-root tr.jgb-mr th { border-top:1px solid #d9dee4; color:#7b8794; }
+#jgb-root td.jgb-hl { background:#fdecd9; color:#1f2933; }
+#jgb-root td.jgb-hm { background:#dce8f7; color:#1f2933; font-weight:600; }
+#jgb-root td.jgb-dim { color:#c3cad3; }
+#jgb-root .jgb-cond { margin-top:14px; font-size:14px; min-height:60px; color:#52606d; }
+#jgb-root .jgb-cond td { color:#1f2933; }
+#jgb-root .jgb-info { font-size:14px; color:#52606d; min-height:20px; margin:4px 2px 0; }
+#jgb-root em { font-style:italic; }
+</style>
+<script>
+(function () {
+  const P = 'jgb', CFG = {"p": [[0.043478260869565216, 0.02608695652173913, 0.034782608695652174, 0.0], [0.02608695652173913, 0.11304347826086956, 0.08695652173913043, 0.008695652173913044], [0.02608695652173913, 0.10434782608695652, 0.30434782608695654, 0.0782608695652174], [0.0, 0.008695652173913044, 0.06956521739130435, 0.06956521739130435]], "xvals": ["D/F", "C", "B", "A"], "yvals": ["D/F", "C", "B", "A"], "xname": "X", "yname": "Y", "xlab": "X = Quiz 1 grade", "ylab": "Y = Midterm grade", "stretch": 1.5, "view": [40, 20], "defaultCond": [3, 3], "n": 115};
+  const root = document.getElementById(P + '-root');
+  const q = s => root.querySelector('.' + P + '-' + s);
+  const svg = q('svg'), cap = q('cap'), info = q('info'), tabBox = q('tab'), condBox = q('cond');
+  const W = 620, H = 470; svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+
+  // ---------- model ----------
+  const pm = CFG.p, nx = pm.length, ny = pm[0].length, XV = CFG.xvals, YV = CFG.yvals;
+  const pX = pm.map(r => r.reduce((a, b) => a + b, 0));
+  const pY = YV.map((_, j) => pm.reduce((a, r) => a + r[j], 0));
+  // tallest bar any view can show (joint, marginal or conditional); vertical scale is set so it is ~ CFG.stretch x the grid width
+  const ZMAX = Math.max(...pX, ...pY, ...pm.flatMap((r, i) => r.map((v, j) => Math.max(pX[i] ? v / pX[i] : 0, pY[j] ? v / pY[j] : 0))));
+  const HS = CFG.hs || (CFG.stretch || 0.9) * Math.max(nx, ny) / ZMAX, BW = 0.56;   // world units per unit probability
+  const XW = -1.9, YW = ny - 1 + 1.9;                     // back walls (viewer sits in the +x, -y quadrant)
+  const XST = -1.15, YST = ny - 1 + 1.15;                 // where marginal stacks form
+  const XN = CFG.xname, YN = CFG.yname;
+  const f3 = v => v.toFixed(3);
+
+  const hex = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+  const BASE = hex('#3d72b8'), HIL = hex('#e07b2a');
+
+  const bars = [];
+  for (let i = 0; i < nx; i++) for (let j = 0; j < ny; j++) {
+    bars.push({ i, j, p: pm[i][j], x: i, y: j, z0: 0, h: pm[i][j] * HS, op: 1, r: BASE[0], g: BASE[1], b: BASE[2], lab: 0, labv: 0 });
+  }
+  const cam = { a: CFG.view[0], e: CFG.view[1], wallH: 0.4, cz: 0 };
+
+  // ---------- projection ----------
+  const rad = d => d * Math.PI / 180;
+  let R, U, V, C;
+  function setCam() {
+    const a = rad(cam.a), e = rad(cam.e);
+    R = [Math.sin(a), Math.cos(a), 0];
+    U = [-Math.sin(e) * Math.cos(a), Math.sin(e) * Math.sin(a), Math.cos(e)];
+    V = [Math.cos(a) * Math.cos(e), -Math.sin(a) * Math.cos(e), Math.sin(e)];
+    C = [(XW + nx - 1 + 0.6) / 2, (-0.6 + YW) / 2, cam.cz];
+  }
+  const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+  let S = 60; const CX = W / 2, CY = H / 2 + 6;
+  function pr(x, y, z) { const d = [x - C[0], y - C[1], z - C[2]]; return [CX + S * dot(d, R), CY - S * dot(d, U), dot(d, V)]; }
+  // fixed zoom: fits the whole scene for every allowed camera angle, so rotating never zooms
+  (function fit() {
+    let best = Infinity; const save = { ...cam };
+    for (const a of [0, 6, 22, CFG.view[0], 62, 84, 90]) for (const e of [13, 20, CFG.view[1]]) {   // the automatic views; manual drags may overflow slightly
+      cam.a = a; cam.e = e; cam.cz = ZMAX * HS * 0.42; setCam(); S = 1;
+      let x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9;
+      for (const X of [XW, nx - 1 + 0.9]) for (const Y of [-0.9, YW]) for (const Z of [0, ZMAX * HS + 0.4]) {
+        const s = pr(X, Y, Z); x0 = Math.min(x0, s[0] - CX); x1 = Math.max(x1, s[0] - CX); y0 = Math.min(y0, s[1] - CY); y1 = Math.max(y1, s[1] - CY);
+      }
+      best = Math.min(best, (W / 2 - 30) / Math.max(-x0, x1), (H / 2 - 18) / Math.max(-y0, y1));
+    }
+    Object.assign(cam, save); S = best;
+  })();
+
+  // ---------- drawing ----------
+  const rgb = (r, g, b, k) => `rgb(${Math.round(r * k)},${Math.round(g * k)},${Math.round(b * k)})`;
+  const poly = (pts, fill, stroke, op, extra = '') =>
+    `<polygon points="${pts.map(p => p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ')}" fill="${fill}" stroke="${stroke}" stroke-width="0.8" stroke-linejoin="round" opacity="${op.toFixed(3)}" ${extra}/>`;
+  const txt = (p, s, cls, anchor = 'middle', dy = 0) =>
+    `<text x="${p[0].toFixed(1)}" y="${(p[1] + dy).toFixed(1)}" text-anchor="${anchor}" font-size="${cls === 'lab' ? 14 : 13}" fill="${cls === 'lab' ? '#1f2933' : '#7b8794'}" font-family="system-ui, -apple-system, Segoe UI, sans-serif">${s}</text>`;
+
+  function render() {
+    setCam();
+    let out = '';
+    // back walls with probability gridlines
+    const wh = cam.wallH * HS, xr = nx - 1 + 0.6, y0 = -0.6;
+    out += poly([pr(XW, y0, 0), pr(XW, YW, 0), pr(XW, YW, wh), pr(XW, y0, wh)], '#fafbfc', '#e3e7ec', 1);
+    out += poly([pr(XW, YW, 0), pr(xr, YW, 0), pr(xr, YW, wh), pr(XW, YW, wh)], '#fafbfc', '#e3e7ec', 1);
+    for (let k = 1; k * 0.1 <= cam.wallH + 1e-9; k++) {
+      const z = k * 0.1 * HS, a = pr(XW, y0, z), b = pr(XW, YW, z), c = pr(xr, YW, z);
+      const strong = k % 2 === 0;
+      out += `<polyline points="${a[0]},${a[1]} ${b[0]},${b[1]} ${c[0]},${c[1]}" fill="none" stroke="${strong ? '#e3e7ec' : '#f0f2f5'}" stroke-width="0.8"/>`;
+      if (strong) out += txt(a, (k / 10).toFixed(1), 'tick', 'end', 4).replace('<text', '<text dx="-6"');
+    }
+    // floor footprints
+    for (const b of bars) {
+      const h = BW / 2 + 0.06, x = b.i, y = b.j;
+      out += poly([pr(x - h, y - h, 0), pr(x + h, y - h, 0), pr(x + h, y + h, 0), pr(x - h, y + h, 0)], b.p > 0 ? '#eef1f5' : '#f6f7f9', '#e3e7ec', 1);
+    }
+    // axis tick labels and names on the two front edges
+    const fx = Math.max(0, Math.min(1, (Math.abs(R[0]) - 0.3) / 0.3)), fy = Math.max(0, Math.min(1, (Math.abs(R[1]) - 0.3) / 0.3));
+    const op = (s, o) => o < 1 ? s.replace('<text', `<text opacity="${o.toFixed(2)}"`) : s;
+    if (fx > 0) { XV.forEach((v, i) => out += op(txt(pr(i, -0.95, 0), v, 'tick', 'middle', 10), fx));
+                  out += op(txt(pr((nx - 1) / 2, -2.1, 0), CFG.xlab, 'lab', 'middle', 10), fx); }
+    if (fy > 0) { YV.forEach((v, j) => out += op(txt(pr(nx - 1 + 0.95, j, 0), v, 'tick', 'middle', 10), fy));
+                  out += op(txt(pr(nx - 1 + 2.1, (ny - 1) / 2, 0), CFG.ylab, 'lab', 'middle', 10), fy); }
+
+    // bars, painter's order (far to near)
+    const list = bars.filter(b => b.h > 1e-3 && b.op > 0.005)
+      .map(b => ({ b, d: pr(b.x, b.y, b.z0 + b.h / 2)[2] })).sort((u, v) => u.d - v.d);
+    const labels = [];
+    for (const { b } of list) {
+      const w = BW / 2, x0 = b.x - w, x1 = b.x + w, ya = b.y - w, yb = b.y + w, z0 = b.z0, z1 = b.z0 + b.h;
+      const id = `data-i="${b.i}" data-j="${b.j}"`, st = rgb(b.r, b.g, b.b, 0.82);
+      if (V[0] > 1e-6) out += poly([pr(x1, ya, z0), pr(x1, yb, z0), pr(x1, yb, z1), pr(x1, ya, z1)], rgb(b.r, b.g, b.b, 0.80), st, b.op, id);
+      if (V[1] < -1e-6) out += poly([pr(x0, ya, z0), pr(x1, ya, z0), pr(x1, ya, z1), pr(x0, ya, z1)], rgb(b.r, b.g, b.b, 0.66), st, b.op, id);
+      out += poly([pr(x0, ya, z1), pr(x1, ya, z1), pr(x1, yb, z1), pr(x0, yb, z1)], rgb(b.r, b.g, b.b, 1.0), st, b.op, id);
+      if (b.lab > 0.02) labels.push({ p: pr(b.x, b.y, z1), s: f3(b.labv), op: b.lab });
+    }
+    for (const L of stackLabels()) labels.push(L);
+    for (const L of labels) out += txt(L.p, L.s, 'lab', 'middle', -8).replace('<text', `<text opacity="${L.op.toFixed(2)}" font-weight="600"`);
+    svg.innerHTML = out;
+  }
+
+  // ---------- tweens ----------
+  let tweens = [], t0 = 0, raf = null;
+  const ease = u => u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2;
+  function tw(obj, key, to, start, dur) { tweens.push({ obj, key, from: null, to, start, dur }); }
+  function tick(now) {
+    if (!t0) t0 = now; const t = now - t0; let busy = false;
+    for (const w of tweens) {
+      if (t < w.start) { busy = true; continue; }
+      if (w.from === null) w.from = w.obj[w.key];
+      const u = Math.min(1, (t - w.start) / w.dur); if (u < 1) busy = true;
+      w.obj[w.key] = w.from + (w.to - w.from) * ease(u);
+    }
+    render(); raf = busy ? requestAnimationFrame(tick) : null;
+  }
+  function go() { t0 = 0; if (!raf) raf = requestAnimationFrame(tick); }
+
+  // ---------- modes ----------
+  let mode = 'joint', sel = null, stackOp = { x: 0, y: 0 };
+  function stackLabels() {
+    const L = [];
+    if (stackOp.x > 0.02) XV.forEach((_, i) => L.push({ p: pr(i, YST, pX[i] * HS), s: f3(pX[i]), op: stackOp.x }));
+    if (stackOp.y > 0.02) YV.forEach((_, j) => L.push({ p: pr(XST, j, pY[j] * HS), s: f3(pY[j]), op: stackOp.y }));
+    return L;
+  }
+  function colorTo(b, c, s, d) { tw(b, 'r', c[0], s, d); tw(b, 'g', c[1], s, d); tw(b, 'b', c[2], s, d); }
+
+  function setMode(m, v) {
+    const prev = mode; mode = m; sel = v; tweens = [];
+    const camTo = (a, e, s = 0, d = 1100) => { tw(cam, 'a', a, s, d); tw(cam, 'e', e, s, d); };
+    let wall = Math.max(...pm.flat());
+    tw(stackOp, 'x', 0, 0, 300); tw(stackOp, 'y', 0, 0, 300);
+
+    if (m === 'joint') {
+      bars.forEach(b => { tw(b, 'x', b.i, 0, 900); tw(b, 'y', b.j, 0, 900); tw(b, 'z0', 0, 0, 900); tw(b, 'h', b.p * HS, 0, 900);
+        tw(b, 'op', 1, 0, 600); tw(b, 'lab', 0, 0, 300); colorTo(b, BASE, 0, 600); });
+      if (prev.startsWith('cond') || prev.startsWith('marg')) camTo(...CFG.view);
+      cap.innerHTML = `Joint PMF: bar height at (<em>x</em>, <em>y</em>) is P(${XN} = <em>x</em>, ${YN} = <em>y</em>). All bar heights sum to 1.`;
+    }
+    if (m === 'mx' || m === 'my') {
+      const isX = m === 'mx';
+      // bars slide toward the back wall and stack: heights add up to the marginal
+      bars.forEach(b => {
+        const below = isX ? pm[b.i].slice(0, b.j).reduce((s, v) => s + v, 0) : pm.slice(0, b.i).reduce((s, r) => s + r[b.j], 0);
+        const order = isX ? (ny - 1 - b.j) : b.i, st = order * 140;
+        tw(b, isX ? 'y' : 'x', isX ? YST : XST, st, 950); tw(b, isX ? 'x' : 'y', isX ? b.i : b.j, st, 950);
+        tw(b, 'z0', below * HS, st, 950); tw(b, 'h', b.p * HS, 0, 600);
+        tw(b, 'op', 1, 0, 400); tw(b, 'lab', 0, 0, 300); colorTo(b, BASE, 0, 400);
+      });
+      tw(stackOp, isX ? 'x' : 'y', 1, 1400, 500);
+      wall = Math.max(...(isX ? pX : pY));
+      camTo(isX ? 62 : 22, 20);
+      cap.innerHTML = isX
+        ? `Marginal of ${XN}: for each <em>x</em>, stack the bars along <em>y</em>. P(${XN} = <em>x</em>) = &Sigma;<sub><em>y</em></sub> P(${XN} = <em>x</em>, ${YN} = <em>y</em>).`
+        : `Marginal of ${YN}: for each <em>y</em>, stack the bars along <em>x</em>. P(${YN} = <em>y</em>) = &Sigma;<sub><em>x</em></sub> P(${XN} = <em>x</em>, ${YN} = <em>y</em>).`;
+    }
+    if (m === 'cx' || m === 'cy') {
+      const isX = m === 'cx', den = isX ? pX[v] : pY[v], val = isX ? XV[v] : YV[v];
+      const inSlice = b => (isX ? b.i : b.j) === v;
+      bars.forEach(b => {
+        tw(b, 'x', b.i, 0, 700); tw(b, 'y', b.j, 0, 700); tw(b, 'z0', 0, 0, 700);
+        if (inSlice(b)) {
+          tw(b, 'h', b.p * HS, 0, 700); colorTo(b, HIL, 0, 600); tw(b, 'op', 1, 0, 500);
+          tw(b, 'h', den > 0 ? b.p / den * HS : 0, 1700, 1000);           // phase 2: divide by the marginal
+          tw(b, 'lab', 1, 2700, 400); b.labv = den > 0 ? b.p / den : 0;
+        } else { tw(b, 'h', b.p * HS, 0, 700); tw(b, 'op', 0.13, 0, 700); colorTo(b, BASE, 0, 600); tw(b, 'lab', 0, 0, 300); }
+      });
+      wall = Math.max(wall, ...bars.filter(inSlice).map(b => den > 0 ? b.p / den : 0));
+      camTo(isX ? 6 : 84, 13, 0, 1300);
+      const given = isX ? `${XN} = ${val}` : `${YN} = ${val}`, other = isX ? YN : XN, ov = isX ? '<em>y</em>' : '<em>x</em>';
+      cap.innerHTML = `Conditional PMF of ${other} given ${given}: take the slice ${given}, then divide by P(${given}) = ${f3(den)} so the slice sums to 1. ` +
+        `P(${other} = ${ov} | ${given}) = P(${isX ? `${XN} = ${val}, ${YN} = <em>y</em>` : `${XN} = <em>x</em>, ${YN} = ${val}`}) / P(${given}).`;
+    }
+    tw(cam, 'wallH', Math.min(1, Math.ceil(wall * 10 - 1e-9) / 10 + 0.1), 0, 900);
+    tw(cam, 'cz', Math.min(1, Math.ceil(wall * 10 - 1e-9) / 10 + 0.1) * HS * 0.42, 0, 900);
+    drawTable(); go();
+  }
+
+  // ---------- table ----------
+  function drawTable() {
+    const hlRow = mode === 'cx' ? sel : -1, hlCol = mode === 'cy' ? sel : -1;
+    const cls = (i, j) => (i === hlRow || j === hlCol) ? P + '-hl' : ((hlRow >= 0 || hlCol >= 0) ? P + '-dim' : '');
+    let h = `<table><tr><th>${XN} \\ ${YN}</th>${YV.map(v => `<th>${v}</th>`).join('')}<th class="${P}-m">P(${XN}=<em>x</em>)</th></tr>`;
+    pm.forEach((r, i) => {
+      h += `<tr><th>${XV[i]}</th>${r.map((v, j) => `<td class="${cls(i, j)}">${f3(v)}</td>`).join('')}` +
+           `<td class="${P}-m ${mode === 'mx' ? P + '-hm' : (i === hlRow ? P + '-hm' : '')}">${f3(pX[i])}</td></tr>`;
+    });
+    h += `<tr class="${P}-mr"><th>P(${YN}=<em>y</em>)</th>${pY.map((v, j) => `<td class="${mode === 'my' || j === hlCol ? P + '-hm' : ''}">${f3(v)}</td>`).join('')}<td class="${P}-m">1</td></tr></table>`;
+    tabBox.innerHTML = h;
+    let c = '';
+    if (mode === 'cx' || mode === 'cy') {
+      const isX = mode === 'cx', den = isX ? pX[sel] : pY[sel], vals = isX ? YV : XV, given = isX ? `${XN}=${XV[sel]}` : `${YN}=${YV[sel]}`;
+      const cp = vals.map((_, k) => (isX ? pm[sel][k] : pm[k][sel]) / den);
+      c = `<table><tr><th>${isX ? YN : XN}</th>${vals.map(v => `<th>${v}</th>`).join('')}<th class="${P}-m">sum</th></tr>` +
+          `<tr><th>P(&middot; | ${given})</th>${cp.map(v => `<td class="${P}-hl">${f3(v)}</td>`).join('')}<td class="${P}-m">1</td></tr></table>`;
+    }
+    condBox.innerHTML = c;
+  }
+
+  // ---------- controls ----------
+  const modeBox = root.querySelector('[data-role=mode]'), valBox = root.querySelector('[data-role=vals]');
+  function buttons(box, opts, onPick) {
+    box.innerHTML = ''; const bs = [];
+    opts.forEach(([k, l]) => { const b = document.createElement('button'); b.innerHTML = l; b.dataset.k = k;
+      b.onclick = () => { if (b.classList.contains(P + '-on')) return; bs.forEach(x => x.classList.toggle(P + '-on', x === b)); onPick(k); };
+      bs.push(b); box.appendChild(b); });
+    return bs;
+  }
+  function showVals(isX) {
+    if (isX === null) { valBox.classList.add(P + '-off'); return; }
+    valBox.classList.remove(P + '-off');
+    const vals = isX ? XV : YV, def = CFG.defaultCond[isX ? 0 : 1];
+    const bs = buttons(valBox, vals.map((v, k) => [k, `${isX ? XN : YN} = ${v}`]), k => setMode(isX ? 'cx' : 'cy', +k));
+    bs[def].classList.add(P + '-on'); return def;
+  }
+  const mbs = buttons(modeBox, [['joint', 'Joint'], ['mx', `Marginal of ${XN}`], ['my', `Marginal of ${YN}`], ['cx', `Given ${XN}`], ['cy', `Given ${YN}`]], k => {
+    if (k === 'cx' || k === 'cy') setMode(k, showVals(k === 'cx')); else { showVals(null); setMode(k); }
+  });
+  mbs[0].classList.add(P + '-on'); showVals(null);
+
+  // ---------- rotate by dragging; hover readout ----------
+  let drag = null;
+  svg.addEventListener('pointerdown', e => { drag = { x: e.clientX, y: e.clientY }; svg.setPointerCapture(e.pointerId); tweens = tweens.filter(w => w.obj !== cam || w.key === 'wallH' || w.key === 'cz'); });
+  svg.addEventListener('pointermove', e => {
+    if (drag) {
+      const k = W / svg.getBoundingClientRect().width;
+      cam.a = Math.max(0, Math.min(90, cam.a - (e.clientX - drag.x) * 0.35 * k));
+      cam.e = Math.max(8, Math.min(60, cam.e + (e.clientY - drag.y) * 0.3 * k));
+      drag = { x: e.clientX, y: e.clientY }; if (!raf) render(); return;
+    }
+    const t = e.target, i = t.getAttribute && t.getAttribute('data-i');
+    if (i === null || i === undefined) { info.innerHTML = '&nbsp;'; return; }
+    const j = +t.getAttribute('data-j'), b = bars.find(z => z.i === +i && z.j === j);
+    let s = `P(${XN} = ${XV[b.i]}, ${YN} = ${YV[b.j]}) = ${f3(b.p)}` + (CFG.n ? ` &nbsp;(${Math.round(b.p * CFG.n)} of ${CFG.n} students)` : '');
+    if (mode === 'cx' && b.i === sel) s += ` &nbsp;&rarr;&nbsp; P(${YN} = ${YV[b.j]} | ${XN} = ${XV[sel]}) = ${f3(b.p)} / ${f3(pX[sel])} = ${f3(b.p / pX[sel])}`;
+    if (mode === 'cy' && b.j === sel) s += ` &nbsp;&rarr;&nbsp; P(${XN} = ${XV[b.i]} | ${YN} = ${YV[sel]}) = ${f3(b.p)} / ${f3(pY[sel])} = ${f3(b.p / pY[sel])}`;
+    info.innerHTML = s;
+  });
+  const end = () => { drag = null; };
+  svg.addEventListener('pointerup', end); svg.addEventListener('pointercancel', end);
+  svg.addEventListener('pointerleave', () => { if (!drag) info.innerHTML = '&nbsp;'; });
+
+  setMode('joint');
+})();
+</script>
 
 </section>
     </div>

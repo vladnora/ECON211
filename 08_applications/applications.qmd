@@ -473,12 +473,16 @@
   #dc-root svg { width:100%; height:auto; display:block; margin:0; max-height:none; }
   #dc-root .dc-tick { font-size:12px; fill:#7b8794; }
   #dc-root .dc-lab { font-size:13px; fill:#52606d; }
-  #dc-root table { border-collapse:collapse; width:100%; font-size:14px; margin:4px 0 0; }
-  #dc-root td { padding:3px 4px; border:0; border-top:1px solid #edf0f3; background:none; text-align:right; white-space:nowrap; }
+  #dc-root table { border-collapse:collapse; width:100%; font-size:13.5px; margin:2px 0 0; }
+  #dc-root td { padding:2px 4px; border:0; border-top:1px solid #edf0f3; background:none; text-align:right; white-space:nowrap; }
   #dc-root td:first-child { text-align:left; color:#52606d; }
   #dc-root .dc-sw { display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:6px; }
   #dc-root .dc-note { font-size:14.5px; color:#323f4b; margin:6px 2px 0; min-height:40px; }
   #dc-root .dc-sub { font-size:12.5px; color:#7b8794; }
+  #dc-root .dc-intro { background:#f5f7fa; border-radius:9px; padding:6px 14px; margin:0 0 8px; font-size:14px; line-height:1.35; }
+  #dc-root .dc-intro ol { margin:0; padding-left:20px; }
+  #dc-root .dc-intro li { margin:1px 0; }
+  #dc-root .dc-now { margin-top:4px; font-weight:600; color:#1f2933; }
   #dc-root .dc-die { font-size:30px; line-height:1; vertical-align:-4px; }
 </style>
 <script>
@@ -495,6 +499,16 @@
   const MODES = [['ind', 'Independent dice'], ['opp', 'Opposite faces (B = 7 − A)']];
   const RHO = { ind: 0, opp: -1 };
   let k = 0, mode = 'ind', frontier = false, visited = new Set([0]), tally = null, last = null;
+
+  // ---------- explanation ----------
+  const intro = document.createElement('div'); intro.className = P + '-intro'; root.appendChild(intro);
+  intro.innerHTML = '<ol>'
+    + '<li>You have <b>$' + NU + '</b> for one period. Put <b>$k</b> in B and <b>$' + NU + ' − k</b> in A: for example $2 in B and $4 in A, or $3 and $3, or $4 in B and $2 in A.</li>'
+    + '<li>Each asset’s return is set by a fair die: <span style="color:' + CA + '"><b>A</b> returns (roll − 3.5)%</span>, <span style="color:' + CB + '"><b>B</b> returns (roll − 2.5)%</span>. B is A shifted up by 1 point.</li>'
+    + '<li>Roll both dice. Portfolio return = <b>(' + NU + ' − k)/' + NU + ' × return of A + k/' + NU + ' × return of B</b>. The chart shows the probability of each outcome.</li>'
+    + '<li><i>Opposite faces</i>: B’s die shows the opposite face of A’s (B rolls 7 − A), so the assets move against each other.</li>'
+    + '</ol><div class="dc-now"></div>';
+  const nowLine = intro.querySelector('.dc-now');
 
   // ---------- controls ----------
   const r1 = document.createElement('div'); r1.className = P + '-row'; root.appendChild(r1);
@@ -552,7 +566,9 @@
   function paint() {
     for (const key in mb) mb[key].classList.toggle(P + '-on', key === mode);
     const al = alpha(), q = moments(al);
-    l1.textContent = 'In B: ' + k + ' of ' + NU + ' units (' + (NU - k) + ' in A)';
+    nowLine.innerHTML = 'Now: <b>$' + k + '</b> in B and <b>$' + (NU - k) + '</b> in A  →  portfolio return = ' + (NU - k) + '/' + NU + ' × A + ' + k + '/' + NU + ' × B'
+      + (k === 0 ? '  (everything in A)' : k === NU ? '  (everything in B)' : '');
+    l1.textContent = 'Dollars in B: $' + k + ' of $' + NU;
     const dist = pmf(), P0 = ghost(rA), P1 = ghost(rB);
     let pLoss = 0, pBig = 0, mean = 0, ex2 = 0;
     dist.forEach((p, v) => { if (v < 0) pLoss += p; if (v <= -18) pBig += p; mean += p * v / 12; ex2 += p * (v / 12) ** 2; });
@@ -560,7 +576,7 @@
 
     // ---------- PMF chart ----------
     chartDiv.innerHTML = '';
-    const W = 520, H = 310, m = { l: 40, r: 10, t: 30, b: 34 }, pw = W - m.l - m.r, ph = H - m.t - m.b;
+    const W = 520, H = 300, m = { l: 40, r: 10, t: 30, b: 34 }, pw = W - m.l - m.r, ph = H - m.t - m.b;
     const x0 = -3.2, x1 = 3.8, xs = v => m.l + (v - x0) / (x1 - x0) * pw;
     const ymax = 1.05, ys = p => m.t + ph - p / ymax * ph;
     const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': 'Probability distribution of the weekly portfolio return' }, chartDiv);
@@ -592,7 +608,7 @@
 
     // ---------- side: risk-return plane ----------
     side.innerHTML = '';
-    const SW = 250, SHt = 215, sm = { l: 34, r: 12, t: 10, b: 34 }, spw = SW - sm.l - sm.r, sph = SHt - sm.t - sm.b;
+    const SW = 250, SHt = 165, sm = { l: 34, r: 12, t: 10, b: 34 }, spw = SW - sm.l - sm.r, sph = SHt - sm.t - sm.b;
     const sx = v => sm.l + v / 2.0 * spw, sy = v => sm.t + sph - (v + 0.1) / 1.2 * sph;
     const s2 = el('svg', { viewBox: `0 0 ${SW} ${SHt}`, role: 'img', 'aria-label': 'Risk and expected return of each portfolio' }, side);
     [0, 0.5, 1].forEach(v => { el('line', { x1: sm.l, x2: sm.l + spw, y1: sy(v), y2: sy(v), stroke: '#edf0f3' }, s2);

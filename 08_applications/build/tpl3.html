@@ -1,0 +1,165 @@
+```{=html}
+<div id="pf-root"></div>
+<style>
+  #pf-root { max-width:780px; margin:0 auto; padding:2px 0; color:#1f2933; text-align:left;
+             font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; font-size:16px; line-height:1.3; }
+  #pf-root .pf-row { display:flex; flex-wrap:wrap; gap:10px 18px; align-items:center; margin-bottom:6px; }
+  #pf-root .pf-sl { display:flex; align-items:center; gap:10px; flex:1; min-width:260px; }
+  #pf-root .pf-sl b { white-space:nowrap; min-width:150px; font-size:16px; }
+  #pf-root input[type=range] { flex:1; margin:0; }
+  #pf-root button { border:0; margin:0; border-radius:8px; padding:5px 13px; cursor:pointer; font-family:inherit; font-size:14.5px;
+                line-height:1.2; text-transform:none; letter-spacing:normal; background:#e4e7eb; color:#323f4b; }
+  #pf-root button:hover { filter:brightness(.94); }
+  #pf-root .pf-chk { font-size:14.5px; color:#52606d; display:flex; align-items:center; gap:6px; cursor:pointer; user-select:none; }
+  #pf-root .pf-body { display:flex; gap:14px; align-items:flex-start; }
+  #pf-root .pf-chart { flex:1.75; min-width:0; }
+  #pf-root .pf-side { flex:1; min-width:0; }
+  #pf-root svg { width:100%; height:auto; display:block; margin:0; max-height:none; }
+  #pf-root .pf-tick { font-size:12px; fill:#7b8794; }
+  #pf-root .pf-lab { font-size:13px; fill:#52606d; }
+  #pf-root table { border-collapse:collapse; width:100%; font-size:14px; margin:4px 0 0; }
+  #pf-root td { padding:3px 4px; border:0; border-top:1px solid #edf0f3; background:none; text-align:right; white-space:nowrap; }
+  #pf-root td:first-child { text-align:left; color:#52606d; }
+  #pf-root .pf-sw { display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:6px; }
+  #pf-root .pf-note { font-size:14.5px; color:#323f4b; margin:8px 2px 0; min-height:40px; }
+  #pf-root .pf-sub { font-size:12px; color:#9aa5b1; }
+</style>
+<script>
+(function () {
+  const CFG = __CFG__;
+  const P = 'pf', root = document.getElementById(P + '-root');
+  const NS = 'http://www.w3.org/2000/svg';
+  const el = (t, a, p) => { const e = document.createElementNS(NS, t);
+    for (const k in a) e.setAttribute(k, a[k]); if (p) p.appendChild(e); return e; };
+  const CA = '#2b6cb0', CB = '#c05621', CP = '#2f855a';
+  const { muA, sdA, muB, sdB } = CFG, N = CFG.z1.length;
+  let alpha = 0, rho = CFG.rho, bars = false, timer = null;
+
+  // ---------- controls ----------
+  const mkSlider = (min, max, step, val, on) => { const s = document.createElement('input'); s.type = 'range';
+    s.min = min; s.max = max; s.step = step; s.value = val; s.oninput = () => on(+s.value); return s; };
+  const r1 = document.createElement('div'); r1.className = P + '-row'; root.appendChild(r1);
+  const sl1 = document.createElement('div'); sl1.className = P + '-sl'; r1.appendChild(sl1);
+  const l1 = document.createElement('b'); sl1.appendChild(l1);
+  const sA = mkSlider(0, 100, 1, 0, v => { stop(); alpha = v / 100; paint(); }); sl1.appendChild(sA);
+  const bPlay = document.createElement('button'); bPlay.textContent = '▶ Play'; bPlay.onclick = () => timer ? stop() : play(); r1.appendChild(bPlay);
+  const bMin = document.createElement('button'); bMin.textContent = 'Minimum variance'; bMin.onclick = () => { stop(); alpha = minW(); sA.value = Math.round(alpha * 100); paint(); }; r1.appendChild(bMin);
+  const r2 = document.createElement('div'); r2.className = P + '-row'; root.appendChild(r2);
+  const sl2 = document.createElement('div'); sl2.className = P + '-sl'; r2.appendChild(sl2);
+  const l2 = document.createElement('b'); sl2.appendChild(l2);
+  const sR = mkSlider(-80, 80, 5, Math.round(rho * 100), v => { rho = v / 100; paint(); }); sl2.appendChild(sR);
+  const lab = document.createElement('label'); lab.className = P + '-chk';
+  const cb = document.createElement('input'); cb.type = 'checkbox'; cb.onchange = () => { bars = cb.checked; paint(); };
+  lab.appendChild(cb); lab.appendChild(document.createTextNode('Show 1,000 simulated weeks')); r2.appendChild(lab);
+
+  const body = document.createElement('div'); body.className = P + '-body'; root.appendChild(body);
+  const chartDiv = document.createElement('div'); chartDiv.className = P + '-chart'; body.appendChild(chartDiv);
+  const side = document.createElement('div'); side.className = P + '-side'; body.appendChild(side);
+  const note = document.createElement('div'); note.className = P + '-note'; root.appendChild(note);
+
+  // ---------- portfolio algebra (the board formulas) ----------
+  const cov = () => rho * sdA * sdB;
+  const moments = a => { const m = (1 - a) * muA + a * muB,
+      vA = (1 - a) * (1 - a) * sdA * sdA, vB = a * a * sdB * sdB, vC = 2 * a * (1 - a) * cov();
+    return { m, vA, vB, vC, v: vA + vB + vC, sd: Math.sqrt(vA + vB + vC) }; };
+  const minW = () => Math.min(1, Math.max(0, (sdA * sdA - cov()) / (sdA * sdA + sdB * sdB - 2 * cov())));
+  const phi = (x, m, s) => Math.exp(-0.5 * ((x - m) / s) ** 2) / (s * Math.sqrt(2 * Math.PI));
+  const f2 = v => (Math.abs(v) < 0.005 ? 0 : v).toFixed(2);
+  const pcs = v => (v < 0 ? '−' : '') + Math.abs(v).toFixed(2) + '%';
+
+  function play() {
+    if (alpha >= 1) alpha = 0;
+    bPlay.textContent = '❚❚ Pause';
+    timer = setInterval(() => { alpha = Math.min(1, alpha + 0.005); sA.value = Math.round(alpha * 100); paint();
+      if (alpha >= 1) stop(); }, 30);
+  }
+  function stop() { if (timer) { clearInterval(timer); timer = null; } bPlay.textContent = '▶ Play'; }
+
+  function paint() {
+    l1.textContent = 'Share in B: ' + Math.round(alpha * 100) + '%';
+    l2.textContent = 'Correlation: ' + (rho < 0 ? '−' : rho > 0 ? '+' : '') + Math.abs(rho).toFixed(2);
+    const q = moments(alpha), mw = minW(), qm = moments(mw);
+
+    // ---------- distribution chart ----------
+    chartDiv.innerHTML = '';
+    const W = 520, H = 330, m = { l: 12, r: 10, t: 12, b: 36 }, pw = W - m.l - m.r, ph = H - m.t - m.b;
+    const x0 = -10, x1 = 11, xs = v => m.l + (v - x0) / (x1 - x0) * pw;
+    const ymax = 1.12 * Math.max(phi(0, 0, qm.sd), phi(0, 0, sdA));
+    const ys = d => m.t + ph - d / ymax * ph;
+    const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': 'Distribution of weekly portfolio return' }, chartDiv);
+    for (let v = -10; v <= 10; v += 5) {
+      el('line', { x1: xs(v), x2: xs(v), y1: m.t, y2: m.t + ph, stroke: v === 0 ? '#cbd2d9' : '#edf0f3' }, svg);
+      el('text', { x: xs(v), y: m.t + ph + 16, 'text-anchor': 'middle', class: P + '-tick' }, svg).textContent = v + '%';
+    }
+    el('text', { x: W / 2, y: H - 4, 'text-anchor': 'middle', class: P + '-lab' }, svg).textContent = 'Weekly return';
+    const curve = (mu, sd, close) => { const pts = [];
+      for (let i = 0; i <= 200; i++) { const v = x0 + (x1 - x0) * i / 200; pts.push([xs(v), ys(phi(v, mu, sd))]); }
+      return pts.map(p => p.join(',')).join(' ') + (close ? ` ${xs(x1)},${ys(0)} ${xs(x0)},${ys(0)}` : ''); };
+    if (bars) {
+      const bw = 0.5, nb = Math.round((x1 - x0) / bw), c = new Array(nb).fill(0), a = alpha;
+      const zb = CFG.z1.map((_, i) => { const xa = muA + sdA * CFG.z1[i], xb = muB + sdB * (rho * CFG.z1[i] + Math.sqrt(1 - rho * rho) * CFG.z2[i]);
+        return (1 - a) * xa + a * xb; });
+      zb.forEach(v => { const k = Math.floor((v - x0) / bw); if (k >= 0 && k < nb) c[k]++; });
+      c.forEach((n, i) => { if (n) { const d = n / (N * bw), x = xs(x0 + i * bw);
+        el('rect', { x: x + 0.5, y: ys(d), width: Math.max(1, xs(x0 + (i + 1) * bw) - x - 1), height: ys(0) - ys(d), fill: CP, opacity: 0.45 }, svg); } });
+    }
+    // ghosts of the two assets
+    el('polyline', { points: curve(muA, sdA), fill: 'none', stroke: CA, 'stroke-width': 2, opacity: 0.55, 'stroke-dasharray': '6 4' }, svg);
+    el('polyline', { points: curve(muB, sdB), fill: 'none', stroke: CB, 'stroke-width': 2, opacity: 0.55, 'stroke-dasharray': '6 4' }, svg);
+    // portfolio
+    if (!bars) el('polygon', { points: curve(q.m, q.sd, true), fill: CP, opacity: 0.28 }, svg);
+    el('polyline', { points: curve(q.m, q.sd), fill: 'none', stroke: CP, 'stroke-width': 3 }, svg);
+    // mean line + 1 SD bracket
+    el('line', { x1: xs(q.m), x2: xs(q.m), y1: ys(phi(q.m, q.m, q.sd)), y2: ys(0), stroke: '#1f2933', 'stroke-width': 1.6 }, svg);
+    const yb = ys(phi(q.m + q.sd, q.m, q.sd));
+    el('line', { x1: xs(q.m - q.sd), x2: xs(q.m + q.sd), y1: yb, y2: yb, stroke: '#1f2933', 'stroke-width': 2 }, svg);
+    el('line', { x1: xs(q.m - q.sd), x2: xs(q.m - q.sd), y1: yb - 5, y2: yb + 5, stroke: '#1f2933', 'stroke-width': 2 }, svg);
+    el('line', { x1: xs(q.m + q.sd), x2: xs(q.m + q.sd), y1: yb - 5, y2: yb + 5, stroke: '#1f2933', 'stroke-width': 2 }, svg);
+    el('text', { x: xs(q.m + q.sd) + 6, y: yb + 4, style: 'font-size:13px;font-weight:600;fill:#1f2933' }, svg).textContent = '±1 SD';
+    // legend
+    [['Asset A', CA, 0.55, '6 4'], ['Asset B', CB, 0.55, '6 4'], ['Your portfolio', CP, 1, '']].forEach(([t, c, o, d], i) => {
+      el('line', { x1: W - 140, x2: W - 118, y1: m.t + 12 + i * 18, y2: m.t + 12 + i * 18, stroke: c, 'stroke-width': 2.6, opacity: o, 'stroke-dasharray': d }, svg);
+      el('text', { x: W - 112, y: m.t + 16 + i * 18, class: P + '-lab' }, svg).textContent = t; });
+
+    // ---------- side: SD(alpha) curve + read-outs ----------
+    side.innerHTML = '';
+    const SW = 250, SH = 190, sm = { l: 34, r: 16, t: 10, b: 34 }, spw = SW - sm.l - sm.r, sph = SH - sm.t - sm.b;
+    const smax = Math.max(sdA, sdB) * 1.08, sx = a => sm.l + a * spw, sy = v => sm.t + sph - v / smax * sph;
+    const s2 = el('svg', { viewBox: `0 0 ${SW} ${SH}`, role: 'img', 'aria-label': 'Portfolio SD as a function of the share in B' }, side);
+    [0, 1, 2, 3].forEach(v => { el('line', { x1: sm.l, x2: sm.l + spw, y1: sy(v), y2: sy(v), stroke: '#edf0f3' }, s2);
+      el('text', { x: sm.l - 5, y: sy(v) + 4, 'text-anchor': 'end', class: P + '-tick' }, s2).textContent = v + '%'; });
+    [0, 0.5, 1].forEach(a => el('text', { x: sx(a), y: SH - 18, 'text-anchor': 'middle', class: P + '-tick' }, s2).textContent = Math.round(a * 100) + '%');
+    el('text', { x: sm.l + spw / 2, y: SH - 1, 'text-anchor': 'middle', class: P + '-lab' }, s2).textContent = 'share in B';
+    const line = [], chord = [];
+    for (let i = 0; i <= 100; i++) { const a = i / 100; line.push([sx(a), sy(moments(a).sd)]); chord.push([sx(a), sy((1 - a) * sdA + a * sdB)]); }
+    el('polygon', { points: line.map(p => p.join(',')).join(' ') + ' ' + chord.slice().reverse().map(p => p.join(',')).join(' '), fill: CP, opacity: 0.18 }, s2);
+    el('polyline', { points: chord.map(p => p.join(',')).join(' '), fill: 'none', stroke: '#7b8794', 'stroke-width': 1.6, 'stroke-dasharray': '5 4' }, s2);
+    el('polyline', { points: line.map(p => p.join(',')).join(' '), fill: 'none', stroke: CP, 'stroke-width': 2.6 }, s2);
+    el('circle', { cx: sx(mw), cy: sy(qm.sd), r: 3.5, fill: '#fff', stroke: CP, 'stroke-width': 2 }, s2);
+    el('circle', { cx: sx(alpha), cy: sy(q.sd), r: 6, fill: CP, stroke: '#fff', 'stroke-width': 2 }, s2);
+    const chordNow = (1 - alpha) * sdA + alpha * sdB;
+    const tbl = document.createElement('table');
+    tbl.innerHTML =
+      '<tr><td>Mean return</td><td><b>' + pcs(q.m) + '</b></td></tr>' +
+      '<tr><td>SD (risk)</td><td><b>' + pcs(q.sd) + '</b></td></tr>' +
+      '<tr><td>5% of weeks are worse than</td><td>' + pcs(q.m - 1.645 * q.sd) + '</td></tr>' +
+      '<tr><td><span class="pf-sw" style="background:' + CA + '"></span>(1−α)²σ²<sub>A</sub></td><td>' + f2(q.vA) + '</td></tr>' +
+      '<tr><td><span class="pf-sw" style="background:' + CB + '"></span>α²σ²<sub>B</sub></td><td>' + f2(q.vB) + '</td></tr>' +
+      '<tr><td><span class="pf-sw" style="background:#9aa5b1"></span>2α(1−α)Cov</td><td>' + (q.vC < 0 ? '−' : '') + f2(Math.abs(q.vC)) + '</td></tr>' +
+      '<tr><td>Variance (sum)</td><td><b>' + f2(q.v) + '</b></td></tr>';
+    side.appendChild(tbl);
+
+    // ---------- verdict ----------
+    const lowest = Math.min(sdA, sdB);
+    let t = 'With <b>' + Math.round(alpha * 100) + '%</b> in B: mean ' + pcs(q.m) + ', SD ' + pcs(q.sd) + '. ';
+    if (alpha > 0 && alpha < 1 && q.sd < lowest - 1e-9) t += 'Risk is <b>lower than either asset alone</b> (' + pcs(sdA) + ' and ' + pcs(sdB) + ').';
+    else if (alpha > 0 && alpha < 1 && q.sd < chordNow - 1e-9) t += 'Less than the weighted average of the two SDs (' + pcs(chordNow) + '): diversification.';
+    else if (alpha > 0 && alpha < 1) t += 'No benefit: SD equals the weighted average of the two SDs.';
+    else t += 'Holding a single asset.';
+    t += ' Lowest risk: ' + Math.round(mw * 100) + '% in B, SD ' + pcs(qm.sd) + '.';
+    note.innerHTML = t + '<div class="pf-sub">Illustrative numbers, not estimated from data.</div>';
+  }
+  paint();
+})();
+</script>
+```

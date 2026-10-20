@@ -40,8 +40,8 @@
   const FACE = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
   const rA = d => d - 3.5, rB = d => d - 3.5 + SH;       // d = face 1..6
   const VAR1 = 35 / 12, SD1 = Math.sqrt(VAR1);
-  const MODES = [['ind', 'Independent dice'], ['same', 'Same die for both'], ['opp', 'Opposite faces (B = 7 − A)']];
-  const RHO = { ind: 0, same: 1, opp: -1 };
+  const MODES = [['ind', 'Independent dice'], ['opp', 'Opposite faces (B = 7 − A)']];
+  const RHO = { ind: 0, opp: -1 };
   let k = 0, mode = 'ind', frontier = false, visited = new Set([0]), tally = null, last = null;
 
   // ---------- controls ----------
@@ -71,7 +71,7 @@
   // values are kept as integers (return x 12) to avoid rounding trouble
   const pairs = () => { const o = [];
     if (mode === 'ind') for (let a = 1; a <= 6; a++) for (let b = 1; b <= 6; b++) o.push([a, b, 1 / 36]);
-    else for (let d = 1; d <= 6; d++) o.push([d, mode === 'same' ? d : 7 - d, 1 / 6]);
+    else for (let d = 1; d <= 6; d++) o.push([d, 7 - d, 1 / 6]);
     return o; };
   const val12 = (a, b) => (NU - k) * 2 * (a - 3.5) + k * 2 * (b - 3.5 + SH);   // 12 x [(1-α)rA + α rB]
   function pmf() { const m = new Map();
@@ -90,7 +90,7 @@
   function roll(n) {
     if (!tally) tally = { n: 0, c: new Map(), s: 0, s2: 0 };
     for (let i = 0; i < n; i++) {
-      const a = 1 + Math.floor(Math.random() * 6), b = mode === 'ind' ? 1 + Math.floor(Math.random() * 6) : mode === 'same' ? a : 7 - a;
+      const a = 1 + Math.floor(Math.random() * 6), b = mode === 'ind' ? 1 + Math.floor(Math.random() * 6) : 7 - a;
       const v = val12(a, b); tally.n++; tally.c.set(v, (tally.c.get(v) || 0) + 1); tally.s += v / 12; tally.s2 += (v / 12) ** 2;
       last = [a, b, v / 12];
     }
@@ -110,11 +110,11 @@
     chartDiv.innerHTML = '';
     const W = 520, H = 310, m = { l: 40, r: 10, t: 30, b: 34 }, pw = W - m.l - m.r, ph = H - m.t - m.b;
     const x0 = -3.2, x1 = 3.8, xs = v => m.l + (v - x0) / (x1 - x0) * pw;
-    const ymax = mode === 'opp' ? 1.05 : 0.2, ys = p => m.t + ph - p / ymax * ph;
+    const ymax = 1.05, ys = p => m.t + ph - p / ymax * ph;
     const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': 'Probability distribution of the weekly portfolio return' }, chartDiv);
-    (mode === 'opp' ? [0, 0.25, 0.5, 0.75, 1] : [0, 0.05, 0.1, 0.15, 0.2]).forEach(p => {
+    [0, 0.25, 0.5, 0.75, 1].forEach(p => {
       el('line', { x1: m.l, x2: m.l + pw, y1: ys(p), y2: ys(p), stroke: '#edf0f3' }, svg);
-      el('text', { x: m.l - 6, y: ys(p) + 4, 'text-anchor': 'end', class: P + '-tick' }, svg).textContent = p.toFixed(mode === 'opp' ? 2 : 2); });
+      el('text', { x: m.l - 6, y: ys(p) + 4, 'text-anchor': 'end', class: P + '-tick' }, svg).textContent = p.toFixed(2); });
     for (let v = -3; v <= 3; v++) {
       el('line', { x1: xs(v), x2: xs(v), y1: m.t, y2: m.t + ph, stroke: v === 0 ? '#cbd2d9' : '#f3f5f7' }, svg);
       el('text', { x: xs(v), y: m.t + ph + 16, 'text-anchor': 'middle', class: P + '-tick' }, svg).textContent = (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v) + '%'; }
@@ -127,12 +127,8 @@
     // realised frequencies from rolling
     if (tally) tally.c.forEach((c, v) => { const f = c / tally.n, x = xs(v / 12), y = ys(f);
       el('path', { d: `M${x},${y - 6} l6,6 l-6,6 l-6,-6 z`, fill: '#1f2933', opacity: 0.85 }, svg); });
-    // mean + 1 SD bracket
-    const yb = ys(ymax * 0.93);
+    // mean
     el('line', { x1: xs(mean), x2: xs(mean), y1: m.t, y2: ys(0), stroke: '#1f2933', 'stroke-width': 1.4, 'stroke-dasharray': '4 3' }, svg);
-    if (sd > 0.01) { el('line', { x1: xs(mean - sd), x2: xs(mean + sd), y1: yb, y2: yb, stroke: '#1f2933', 'stroke-width': 2 }, svg);
-      [mean - sd, mean + sd].forEach(v => el('line', { x1: xs(v), x2: xs(v), y1: yb - 5, y2: yb + 5, stroke: '#1f2933', 'stroke-width': 2 }, svg));
-      el('text', { x: xs(mean + sd) + 6, y: yb + 4, style: 'font-size:12.5px;font-weight:600;fill:#1f2933' }, svg).textContent = '±1 SD'; }
     // legend
     const lg = [['Asset A alone', 'o', CA], ['Asset B alone', 'o', CB], ['Your portfolio', 'l', CP]].concat(tally ? [['Rolled so far', 'd', '#1f2933']] : []);
     let lx = m.l;
@@ -189,11 +185,10 @@
     let t = '';
     if (k === 0) t = 'All in A: return = face − 3.5, so the mean is 0 and the SD is ' + SD1.toFixed(2) + '%.';
     else if (k === NU) t = 'All in B: the same spread as A, but every outcome is ' + SH + ' point higher. B beats A, so nobody holds only A.';
-    else if (mode === 'same') t = 'The two assets move together, so mixing them changes nothing about risk: SD stays ' + sd.toFixed(2) + '%. Only the mean rises.';
     else if (mode === 'opp') t = k * 2 === NU ? 'The assets offset each other exactly: the return is always +' + (SH / 2).toFixed(1) + '%, with <b>no risk</b>.'
       : 'Opposite faces: SD ' + sd.toFixed(2) + '%, mean ' + sgn2(mean) + '%.';
     else t = 'Independent dice: risk falls to <b>' + sd.toFixed(2) + '%</b>, below either asset alone (' + SD1.toFixed(2) + '%). Extreme outcomes become much less likely.';
-    if (mode !== 'same' && k > 0 && k < NU / 2) t += ' <b>Inefficient:</b> with ' + (NU - k) + ' units in B you would have the same risk and a higher mean.';
+    if (k > 0 && k < NU / 2) t += ' <b>Inefficient:</b> with ' + (NU - k) + ' units in B you would have the same risk and a higher mean.';
     note.innerHTML = t;
   }
   resetTally(); paint();

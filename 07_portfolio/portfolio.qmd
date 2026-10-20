@@ -1,0 +1,280 @@
+```{=html}
+<div id="bm-root"></div>
+<style>
+  #bm-root { max-width:780px; margin:0 auto; padding:2px 0; color:#1f2933; text-align:left;
+             font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; font-size:16px; line-height:1.3; }
+  #bm-root .bm-row { display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between; margin-bottom:6px; }
+  #bm-root .bm-seg { display:inline-flex; flex-wrap:wrap; background:#eef1f4; border-radius:9px; padding:3px; }
+  #bm-root .bm-seg button { border:0; margin:0; background:transparent; padding:5px 12px; border-radius:7px; cursor:pointer;
+                font-family:inherit; font-size:15px; line-height:1.2; color:#7b8794; text-transform:none; letter-spacing:normal;
+                transition:background .25s, color .25s, box-shadow .25s; }
+  #bm-root .bm-seg button.bm-on { background:#ffffff; color:#1f2933; box-shadow:0 1px 3px rgba(0,0,0,.14); }
+  #bm-root .bm-act { display:flex; gap:10px; align-items:center; }
+  #bm-root .bm-act button { border:0; margin:0; border-radius:9px; padding:8px 18px; cursor:pointer; font-family:inherit; font-size:16px;
+                font-weight:600; line-height:1.2; text-transform:none; letter-spacing:normal; transition:opacity .2s, filter .2s; }
+  #bm-root .bm-buy { background:#2f855a; color:#fff; }
+  #bm-root .bm-skip { background:#e4e7eb; color:#323f4b; }
+  #bm-root .bm-flip { background:#2b6cb0; color:#fff; }
+  #bm-root .bm-again { background:#e4e7eb; color:#323f4b; }
+  #bm-root .bm-act button:hover { filter:brightness(.94); }
+  #bm-root .bm-act button:disabled { opacity:.35; cursor:default; filter:none; }
+  #bm-root .bm-status { font-size:15px; color:#52606d; }
+  #bm-root svg { width:100%; height:auto; display:block; margin:0; max-height:none; }
+  #bm-root .bm-tick { font-size:12.5px; fill:#7b8794; }
+  #bm-root .bm-lab { font-size:13.5px; fill:#52606d; }
+  #bm-root .bm-tiles { display:flex; gap:10px; margin:4px 0; }
+  #bm-root .bm-tile { flex:1; background:#f5f7fa; border-radius:9px; padding:6px 12px; }
+  #bm-root .bm-tile .bm-k { font-size:13px; color:#7b8794; }
+  #bm-root .bm-tile .bm-v { font-size:22px; font-weight:600; }
+  #bm-root .bm-pips { display:flex; gap:6px; margin:2px 0 0; }
+  #bm-root .bm-pip { flex:1; text-align:center; font-size:12.5px; border-radius:6px; padding:3px 0; background:#f5f7fa; color:#9aa5b1; }
+  #bm-root .bm-note { font-size:14.5px; color:#323f4b; margin:2px 2px 0; min-height:38px; }
+</style>
+<script>
+(function () {
+  const CFG = {"nHist": 40, "rounds": 10, "assets": [{"key": "TSLA", "label": "Tesla", "name": "Tesla (TSLA)", "cur": "$", "step": 1000, "pcur": "$", "pdec": 2, "dates": ["2025-11-03", "2025-11-10", "2025-11-17", "2025-11-24", "2025-12-01", "2025-12-08", "2025-12-15", "2025-12-22", "2025-12-29", "2026-01-05", "2026-01-12", "2026-01-19", "2026-01-26", "2026-02-02", "2026-02-09", "2026-02-16", "2026-02-23", "2026-03-02", "2026-03-09", "2026-03-16", "2026-03-23", "2026-03-30", "2026-04-06", "2026-04-13", "2026-04-20", "2026-04-27", "2026-05-04", "2026-05-11", "2026-05-18", "2026-05-25", "2026-06-01", "2026-06-08", "2026-06-15", "2026-06-22", "2026-06-29", "2026-07-06", "2026-07-13", "2026-07-20", "2026-07-27", "2026-08-03", "2026-08-10", "2026-08-17", "2026-08-24", "2026-08-31", "2026-09-07", "2026-09-14", "2026-09-21", "2026-09-28", "2026-10-05", "2026-10-12"], "prices": [429.52, 404.35, 391.09, 430.17, 455.0, 458.96, 481.2, 475.19, 438.07, 445.01, 437.5, 449.06, 430.41, 411.11, 417.44, 411.82, 402.51, 396.73, 391.2, 367.96, 361.83, 360.59, 348.95, 400.62, 376.3, 390.82, 428.35, 422.24, 426.01, 435.79, 391.0, 406.43, 400.49, 379.71, 393.45, 407.76, 380.84, 313.03, 311.21, 328.58, 342.27, 362.86, 348.75, 354.08, 365.44, 364.27, 372.11, 370.59, 382.7, 354.72]}, {"key": "BTC", "label": "Bitcoin", "name": "Bitcoin (BTC-USD)", "cur": "$", "step": 1000, "pcur": "$", "pdec": 0, "dates": ["2025-11-03", "2025-11-10", "2025-11-17", "2025-11-24", "2025-12-01", "2025-12-08", "2025-12-15", "2025-12-22", "2025-12-29", "2026-01-05", "2026-01-12", "2026-01-19", "2026-01-26", "2026-02-02", "2026-02-09", "2026-02-16", "2026-02-23", "2026-03-02", "2026-03-09", "2026-03-16", "2026-03-23", "2026-03-30", "2026-04-06", "2026-04-13", "2026-04-20", "2026-04-27", "2026-05-04", "2026-05-11", "2026-05-18", "2026-05-25", "2026-06-01", "2026-06-08", "2026-06-15", "2026-06-22", "2026-06-29", "2026-07-06", "2026-07-13", "2026-07-20", "2026-07-27", "2026-08-03", "2026-08-10", "2026-08-17", "2026-08-24", "2026-08-31", "2026-09-07", "2026-09-14", "2026-09-21", "2026-09-28", "2026-10-05", "2026-10-12"], "prices": [104719.6406, 94177.0781, 86805.0078, 90394.3125, 90405.6406, 88175.1797, 88621.75, 87835.8359, 91413.4922, 90827.4609, 93634.4297, 86572.2188, 76974.4453, 70264.7266, 68788.1875, 67659.3906, 65738.1016, 65969.7812, 72789.9141, 67845.2109, 65954.9219, 68981.8984, 70753.4062, 73856.3516, 78657.5391, 78538.2266, 82138.9297, 77429.3516, 76981.125, 73579.6875, 63239.5195, 65710.3984, 63237.5391, 59532.3398, 63547.8828, 63758.2188, 64690.8047, 65340.3008, 63482.0, 64844.8867, 62818.6523, 77755.2656, 77667.5703, 80350.0469, 76838.1562, 81142.6094, 84458.0859, 86480.3047, 83679.4688, 82017.6016]}, {"key": "GOLD", "label": "Gold", "name": "Gold (futures)", "cur": "$", "step": 1000, "pcur": "$", "pdec": 0, "dates": ["2025-11-03", "2025-11-10", "2025-11-17", "2025-11-24", "2025-12-01", "2025-12-08", "2025-12-15", "2025-12-22", "2025-12-29", "2026-01-05", "2026-01-12", "2026-01-19", "2026-01-26", "2026-02-02", "2026-02-09", "2026-02-16", "2026-02-23", "2026-03-02", "2026-03-09", "2026-03-16", "2026-03-23", "2026-03-30", "2026-04-06", "2026-04-13", "2026-04-20", "2026-04-27", "2026-05-04", "2026-05-11", "2026-05-18", "2026-05-25", "2026-06-01", "2026-06-08", "2026-06-15", "2026-06-22", "2026-06-29", "2026-07-06", "2026-07-13", "2026-07-20", "2026-07-27", "2026-08-03", "2026-08-10", "2026-08-17", "2026-08-24", "2026-08-31", "2026-09-07", "2026-09-14", "2026-09-21", "2026-09-28", "2026-10-05", "2026-10-12"], "prices": [4009.8, 4094.2, 4079.5, 4254.8999, 4243.0, 4328.2998, 4387.2998, 4552.7002, 4329.6001, 4500.8999, 4595.3999, 4979.7002, 4745.1001, 4979.7998, 5046.2998, 5080.8999, 5247.8999, 5158.7002, 5061.7002, 4574.8999, 4492.5, 4679.7002, 4787.3999, 4879.6001, 4740.8999, 4644.5, 4730.7002, 4561.8999, 4523.2002, 4593.0, 4365.2998, 4238.7998, 4172.8999, 4096.2998, 4187.2998, 4113.7002, 4018.8, 4070.8, 4107.0, 4399.7002, 4437.2998, 4680.6001, 4529.8999, 4476.6001, 4408.8999, 4424.8999, 4321.2002, 4162.2998, 4216.2998, 4181.1001]}, {"key": "SPX", "label": "S&P 500", "name": "S&P 500 index", "cur": "$", "step": 1000, "pcur": "", "pdec": 0, "dates": ["2025-11-03", "2025-11-10", "2025-11-17", "2025-11-24", "2025-12-01", "2025-12-08", "2025-12-15", "2025-12-22", "2025-12-29", "2026-01-05", "2026-01-12", "2026-01-19", "2026-01-26", "2026-02-02", "2026-02-09", "2026-02-16", "2026-02-23", "2026-03-02", "2026-03-09", "2026-03-16", "2026-03-23", "2026-03-30", "2026-04-06", "2026-04-13", "2026-04-20", "2026-04-27", "2026-05-04", "2026-05-11", "2026-05-18", "2026-05-25", "2026-06-01", "2026-06-08", "2026-06-15", "2026-06-22", "2026-06-29", "2026-07-06", "2026-07-13", "2026-07-20", "2026-07-27", "2026-08-03", "2026-08-10", "2026-08-17", "2026-08-24", "2026-08-31", "2026-09-07", "2026-09-14", "2026-09-21", "2026-09-28", "2026-10-05", "2026-10-12"], "prices": [6728.7998, 6734.1099, 6602.9902, 6849.0898, 6870.3999, 6827.4102, 6834.5, 6929.9399, 6858.4702, 6966.2798, 6940.0098, 6915.6099, 6939.0298, 6932.2998, 6836.1699, 6909.5098, 6878.8799, 6740.02, 6632.1899, 6506.48, 6368.8501, 6582.6899, 6816.8901, 7126.0601, 7165.0801, 7230.1201, 7398.9302, 7408.5, 7473.4702, 7580.0601, 7383.7402, 7431.46, 7500.5801, 7354.02, 7483.2402, 7575.3901, 7457.6899, 7411.98, 7489.7202, 7757.6401, 7785.7598, 7674.3701, 7711.7598, 7718.6001, 7656.98, 7650.5, 7743.4102, 7722.7202, 7811.54, 7659.4399]}, {"key": "KZT", "label": "USD/KZT", "name": "USD/KZT exchange rate", "cur": "₸", "step": 100000, "pcur": "₸", "pdec": 1, "dates": ["2025-11-03", "2025-11-10", "2025-11-17", "2025-11-24", "2025-12-01", "2025-12-08", "2025-12-15", "2025-12-22", "2025-12-29", "2026-01-05", "2026-01-12", "2026-01-19", "2026-01-26", "2026-02-02", "2026-02-09", "2026-02-16", "2026-02-23", "2026-03-02", "2026-03-09", "2026-03-16", "2026-03-23", "2026-03-30", "2026-04-06", "2026-04-13", "2026-04-20", "2026-04-27", "2026-05-04", "2026-05-11", "2026-05-18", "2026-05-25", "2026-06-01", "2026-06-08", "2026-06-15", "2026-06-22", "2026-06-29", "2026-07-06", "2026-07-13", "2026-07-20", "2026-07-27", "2026-08-03", "2026-08-10", "2026-08-17", "2026-08-24", "2026-08-31", "2026-09-07", "2026-09-14", "2026-09-21", "2026-09-28", "2026-10-05", "2026-10-12"], "prices": [523.5279, 521.3105, 517.865, 509.2124, 503.1383, 518.1559, 514.9738, 506.6951, 504.6672, 508.3737, 509.3964, 496.9945, 504.3075, 490.7945, 492.3641, 495.4678, 494.7248, 491.5555, 487.1466, 478.0513, 480.883, 471.3328, 469.298, 466.3332, 461.1985, 460.7624, 459.5725, 467.0869, 469.7963, 480.7295, 482.7868, 474.0109, 472.7685, 470.1353, 458.2164, 456.7701, 456.9381, 460.4156, 457.4351, 452.3116, 448.5155, 445.5028, 451.0379, 440.5361, 435.7066, 431.4576, 427.9721, 432.95, 439.0007, 437.1588]}]};
+  const P = 'bm', root = document.getElementById(P + '-root');
+  const NH = CFG.nHist, NR = CFG.rounds, NT = NH + NR;
+  const W = 760, H = 340, m = { l: 66, r: 16, t: 12, b: 30 };
+  const pw = W - m.l - m.r, ph = H - m.t - m.b;
+  const NS = 'http://www.w3.org/2000/svg';
+  const el = (t, a, p) => { const e = document.createElementNS(NS, t);
+    for (const k in a) e.setAttribute(k, a[k]); if (p) p.appendChild(e); return e; };
+  const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  const MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const fdate = s => { const d = s.split('-'); return MON[+d[1] - 1] + ' ' + (+d[2]) + ', ' + d[0]; };
+  const fmtN = (v, dec) => v.toLocaleString('en-US', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+  const money = (v, A) => (v < 0 ? '−' : '') + A.cur + fmtN(Math.abs(v), 0);
+
+  let A = CFG.assets[0], k = 0, dec = [], view = 'price', busy = false, coin = null, raf = 0;
+
+  // ---------- controls ----------
+  const r1 = document.createElement('div'); r1.className = P + '-row'; root.appendChild(r1);
+  const sgA = document.createElement('div'); sgA.className = P + '-seg'; r1.appendChild(sgA);
+  const bA = {};
+  CFG.assets.forEach(a => { const b = document.createElement('button'); b.textContent = a.label;
+    b.onclick = () => { A = a; reset(); }; bA[a.key] = b; sgA.appendChild(b); });
+  const sgV = document.createElement('div'); sgV.className = P + '-seg'; r1.appendChild(sgV);
+  const bV = {};
+  [['price', 'Price'], ['ret', 'Weekly % change']].forEach(([key, lab]) => {
+    const b = document.createElement('button'); b.textContent = lab;
+    b.onclick = () => { view = key; paint(); }; bV[key] = b; sgV.appendChild(b); });
+
+  const r2 = document.createElement('div'); r2.className = P + '-row'; root.appendChild(r2);
+  const st = document.createElement('div'); st.className = P + '-status'; r2.appendChild(st);
+  const act = document.createElement('div'); act.className = P + '-act'; r2.appendChild(act);
+  const mk = (cls, txt, fn) => { const b = document.createElement('button'); b.className = P + '-' + cls; b.textContent = txt;
+    b.onclick = fn; act.appendChild(b); return b; };
+  const btnBuy = mk('buy', '', () => decide(1));
+  const btnSkip = mk('skip', 'Skip', () => decide(0));
+  const btnFlip = mk('flip', 'Flip a coin', () => flipCoin());
+  const btnAgain = mk('again', 'Play again', () => reset());
+
+  const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': 'Weekly price chart' }, root);
+  const gStatic = el('g', {}, svg), gDyn = el('g', {}, svg);
+
+  const tiles = document.createElement('div'); tiles.className = P + '-tiles'; root.appendChild(tiles);
+  const tile = (name) => { const d = document.createElement('div'); d.className = P + '-tile';
+    d.innerHTML = '<div class="bm-k">' + name + '</div><div class="bm-v">–</div>'; tiles.appendChild(d); return d.querySelector('.bm-v'); };
+  const tInv = tile('Invested'), tVal = tile('Worth now'), tPnl = tile('Profit');
+  const pips = document.createElement('div'); pips.className = P + '-pips'; root.appendChild(pips);
+  const hsvg = el('svg', { viewBox: '0 0 ' + W + ' 150', role: 'img', 'aria-label': 'Distribution of coin-flip strategies' }, root);
+  const note = document.createElement('div'); note.className = P + '-note'; root.appendChild(note);
+
+  // ---------- helpers ----------
+  const P_ = i => A.prices[i];
+  const pnl = (nVis, d) => { let inv = 0, val = 0;
+    d.forEach((b, j) => { if (b) { inv += A.step; val += A.step * P_(nVis - 1) / P_(NH - 1 + j); } });
+    return { inv, val, pnl: val - inv }; };
+  // exact enumeration of all 2^NR buy/skip strategies (= every outcome of NR fair coin flips)
+  function allProfits() {
+    const out = new Float64Array(1 << NR), g = [];
+    for (let j = 0; j < NR; j++) g.push(A.step * (P_(NT - 1) / P_(NH - 1 + j) - 1));
+    for (let s = 0; s < (1 << NR); s++) { let t = 0; for (let j = 0; j < NR; j++) if (s >> j & 1) t += g[j]; out[s] = t; }
+    return out;
+  }
+  const xOf = i => m.l + i / (NT - 1) * pw;
+
+  // y-domain of current view for k revealed rounds
+  function domain(kk) {
+    const n = NH + kk;
+    if (view === 'price') {
+      let lo = Infinity, hi = -Infinity;
+      for (let i = 0; i < n; i++) { lo = Math.min(lo, P_(i)); hi = Math.max(hi, P_(i)); }
+      const pad = (hi - lo) * 0.12 || 1; return [lo - pad, hi + pad];
+    }
+    let mx = 0; for (let i = 1; i < n; i++) mx = Math.max(mx, Math.abs(P_(i) / P_(i - 1) - 1));
+    mx = Math.max(mx * 1.15, 0.02); return [-mx, mx];
+  }
+  function niceTicks(lo, hi, cnt) {
+    const raw = (hi - lo) / cnt, mag = Math.pow(10, Math.floor(Math.log10(raw))), r = raw / mag;
+    const step = (r < 1.5 ? 1 : r < 3.5 ? 2 : r < 7.5 ? 5 : 10) * mag, out = [];
+    for (let v = Math.ceil(lo / step) * step; v <= hi + 1e-9; v += step) out.push(+v.toFixed(10));
+    return { ticks: out, step };
+  }
+
+  // ---------- chart ----------
+  // draws the chart with kk rounds revealed; frac in [0,1] is the progress of drawing the newest week
+  function draw(dom, kk, frac) {
+    gDyn.innerHTML = '';
+    const sy = v => m.t + ph - (v - dom[0]) / (dom[1] - dom[0]) * ph;
+    // grid + y ticks
+    const nt = niceTicks(dom[0], dom[1], 5);
+    nt.ticks.forEach(v => {
+      el('line', { x1: m.l, x2: m.l + pw, y1: sy(v), y2: sy(v), stroke: v === 0 && view === 'ret' ? '#9aa5b1' : '#edf0f3' }, gDyn);
+      const lab = view === 'price' ? (A.step >= 1000 && v >= 1000 ? fmtN(v, 0) : fmtN(v, nt.step < 1 ? 1 : 0)) : (v * 100).toFixed(0) + '%';
+      el('text', { x: m.l - 8, y: sy(v) + 4, 'text-anchor': 'end', class: P + '-tick' }, gDyn).textContent = lab;
+    });
+    const n = NH + kk;                       // visible weeks
+    const lastI = n - 1 + (frac < 1 && kk > 0 ? frac - 1 : 0);   // x-index of the drawing head
+    // unknown future
+    el('rect', { x: xOf(lastI), y: m.t, width: m.l + pw - xOf(lastI), height: ph, fill: '#f5f7fa' }, gDyn);
+    if (kk < NR) el('text', { x: (xOf(lastI) + m.l + pw) / 2, y: m.t + ph / 2, 'text-anchor': 'middle', class: P + '-lab', fill: '#9aa5b1',
+      style: 'font-size:34px;fill:#cbd2d9;font-weight:600' }, gDyn).textContent = '?';
+    // start-of-game line
+    el('line', { x1: xOf(NH - 1), x2: xOf(NH - 1), y1: m.t, y2: m.t + ph, stroke: '#9aa5b1', 'stroke-dasharray': '4 4' }, gDyn);
+    el('text', { x: xOf(NH - 1) - 6, y: m.t + 12, 'text-anchor': 'end', class: P + '-tick' }, gDyn).textContent = 'history';
+    el('text', { x: xOf(NH - 1) + 6, y: m.t + 12, class: P + '-tick' }, gDyn).textContent = 'game';
+    if (view === 'price') {
+      const pts = [];
+      for (let i = 0; i < n; i++) {
+        const isHead = i === n - 1 && frac < 1 && kk > 0;
+        const x = isHead ? xOf(i - 1 + frac) : xOf(i);
+        const v = isHead ? P_(i - 1) + (P_(i) - P_(i - 1)) * frac : P_(i);
+        pts.push([x, sy(v)]);
+      }
+      const hist = pts.slice(0, Math.min(n, NH)), play = pts.slice(NH - 1);
+      el('polyline', { points: hist.map(p => p.join(',')).join(' '), fill: 'none', stroke: '#2b6cb0', 'stroke-width': 2.2, 'stroke-linejoin': 'round' }, gDyn);
+      if (play.length > 1) el('polyline', { points: play.map(p => p.join(',')).join(' '), fill: 'none', stroke: '#1a365d', 'stroke-width': 2.8, 'stroke-linejoin': 'round' }, gDyn);
+      // decision markers
+      dec.forEach((b, j) => { const p = pts[NH - 1 + j];
+        if (b) el('path', { d: `M${p[0]},${p[1] - 11} l7,13 h-14 z`, fill: '#2f855a', stroke: '#fff', 'stroke-width': 1 }, gDyn);
+        else { el('line', { x1: p[0] - 5, x2: p[0] + 5, y1: p[1] - 5, y2: p[1] + 5, stroke: '#7b8794', 'stroke-width': 2.2 }, gDyn);
+               el('line', { x1: p[0] - 5, x2: p[0] + 5, y1: p[1] + 5, y2: p[1] - 5, stroke: '#7b8794', 'stroke-width': 2.2 }, gDyn); } });
+      const hd = pts[pts.length - 1];
+      if (kk < NR && frac >= 1) el('circle', { cx: hd[0], cy: hd[1], r: 7, fill: 'none', stroke: '#c05621', 'stroke-width': 2.5 }, gDyn);
+      else el('circle', { cx: hd[0], cy: hd[1], r: 3.5, fill: '#1a365d' }, gDyn);
+    } else {
+      const bw = Math.max(3, pw / NT * 0.7);
+      for (let i = 1; i < n; i++) {
+        const grow = (i === n - 1 && frac < 1 && kk > 0) ? frac : 1;
+        const r = (P_(i) / P_(i - 1) - 1) * grow, y0 = sy(0), y1 = sy(r);
+        el('rect', { x: xOf(i) - bw / 2, y: Math.min(y0, y1), width: bw, height: Math.max(1, Math.abs(y1 - y0)),
+          fill: r >= 0 ? (i >= NH ? '#1a365d' : '#2b6cb0') : (i >= NH ? '#9c4221' : '#dd8a5a'), opacity: i >= NH ? 1 : 0.8 }, gDyn);
+      }
+    }
+    // x ticks: a label every 8 weeks
+    for (let i = 0; i < NT; i += 8) {
+      const d = A.dates[i].split('-');
+      el('text', { x: xOf(i), y: m.t + ph + 18, 'text-anchor': 'middle', class: P + '-tick' }, gDyn).textContent = MON[+d[1] - 1] + " '" + d[0].slice(2);
+    }
+    el('line', { x1: m.l, x2: m.l + pw, y1: m.t + ph, y2: m.t + ph, stroke: '#9aa5b1' }, gDyn);
+  }
+
+  let curDom = null;
+  function paint() {
+    for (const key in bV) bV[key].classList.toggle(P + '-on', key === view);
+    curDom = domain(k); draw(curDom, k, 1); panels();
+  }
+
+  // ---------- ledger / pips / end screen ----------
+  function panels() {
+    for (const key in bA) bA[key].classList.toggle(P + '-on', key === A.key);
+    const done = k >= NR, nVis = NH + k, L = pnl(nVis, dec);
+    tInv.textContent = money(L.inv, A);
+    tVal.textContent = money(L.val, A);
+    tPnl.textContent = (L.pnl > 0.5 ? '+' : '') + money(L.pnl, A);
+    tPnl.style.color = L.pnl > 0.5 ? '#2f855a' : L.pnl < -0.5 ? '#c05621' : '#1f2933';
+    btnBuy.textContent = 'Buy ' + A.cur + fmtN(A.step, 0);
+    btnBuy.style.display = btnSkip.style.display = done ? 'none' : '';
+    btnFlip.style.display = btnAgain.style.display = done ? '' : 'none';
+    btnBuy.disabled = btnSkip.disabled = busy;
+    st.innerHTML = done ? '<b>' + A.name + '</b> · week of ' + fdate(A.dates[NT - 1])
+      : '<b>' + A.name + '</b> · week of ' + fdate(A.dates[nVis - 1]) + ' · price <b>' + A.pcur + fmtN(P_(nVis - 1), A.pdec) + '</b>'
+        + ' · round ' + (k + 1) + ' of ' + NR;
+    pips.innerHTML = '';
+    for (let j = 0; j < NR; j++) {
+      const d = document.createElement('div'); d.className = P + '-pip';
+      if (j < k) { const r = P_(NH + j) / P_(NH - 1 + j) - 1;
+        d.textContent = (dec[j] ? 'bought ' : 'skipped ') + (r >= 0 ? '+' : '−') + Math.abs(r * 100).toFixed(1) + '%';
+        d.style.background = dec[j] ? (r >= 0 ? '#c6f6d5' : '#fed7c3') : '#e4e7eb';
+        d.style.color = '#1f2933';
+      } else d.textContent = 'week ' + (j + 1);
+      pips.appendChild(d);
+    }
+    pips.style.display = done ? 'none' : 'flex';
+    hsvg.style.display = done ? '' : 'none';
+    if (done) endScreen(L); else {
+      hsvg.innerHTML = '';
+      note.textContent = k === 0 ? 'Looking at the last 40 weeks, would you put ' + A.cur + fmtN(A.step, 0) + ' into ' + A.name + ' this week?'
+        : 'Each week you either buy a fixed amount at the current price or skip. Next week’s price is revealed after you decide.';
+    }
+  }
+
+  function endScreen(L) {
+    const prof = allProfits(), N = prof.length;
+    let lo = Infinity, hi = -Infinity, sum = 0;
+    for (const v of prof) { lo = Math.min(lo, v); hi = Math.max(hi, v); sum += v; }
+    const mean = sum / N;
+    let less = 0, eq = 0; for (const v of prof) { if (v < L.pnl - 1e-9) less++; else if (Math.abs(v - L.pnl) <= 1e-9) eq++; }
+    const pct = (less + eq / 2) / N * 100;
+    // histogram
+    const HW = 760, HH = 150, hm = { l: 16, r: 16, t: 20, b: 34 };
+    const span = (hi - lo) || 1, NB = 26, cnt = new Array(NB).fill(0);
+    for (const v of prof) cnt[Math.min(NB - 1, Math.floor((v - lo) / span * NB))]++;
+    const cm = Math.max(...cnt), hx = v => hm.l + (v - lo) / span * (HW - hm.l - hm.r),
+          hy = c => HH - hm.b - c / cm * (HH - hm.b - hm.t);
+    hsvg.innerHTML = '';
+    cnt.forEach((c, i) => el('rect', { x: hm.l + i / NB * (HW - hm.l - hm.r) + 1, y: hy(c), width: (HW - hm.l - hm.r) / NB - 2,
+      height: HH - hm.b - hy(c), fill: '#cbd5e0' }, hsvg));
+    el('line', { x1: hm.l, x2: HW - hm.r, y1: HH - hm.b, y2: HH - hm.b, stroke: '#9aa5b1' }, hsvg);
+    niceTicks(lo, hi, 5).ticks.forEach(v => { if (v < lo || v > hi) return;
+      el('text', { x: hx(v), y: HH - hm.b + 14, 'text-anchor': 'middle', class: P + '-tick' }, hsvg).textContent = (v > 0 ? '+' : '') + money(v, A).replace('−', '−'); });
+    el('text', { x: HW / 2, y: HH - 4, 'text-anchor': 'middle', class: P + '-lab' }, hsvg).textContent =
+      'Profit of each of the ' + N.toLocaleString('en-US') + ' possible coin-flip strategies';
+    const mark = (v, col, lab, dash, dy, anchor) => {
+      el('line', { x1: hx(v), x2: hx(v), y1: hm.t - 4, y2: HH - hm.b, stroke: col, 'stroke-width': 2.6, 'stroke-dasharray': dash || '' }, hsvg);
+      el('text', { x: hx(v) + (anchor === 'end' ? -4 : 4), y: hm.t + dy, 'text-anchor': anchor || 'start', style: 'font-size:13px;font-weight:600;fill:' + col }, hsvg).textContent = lab; };
+    const left = hx(L.pnl) < hx(mean);
+    mark(mean, '#52606d', 'average coin-flipper', '5 4', 4, left ? 'start' : 'end');
+    mark(L.pnl, '#c05621', 'you', '', 4, left ? 'end' : 'start');
+    if (coin !== null) mark(coin, '#2b6cb0', 'coin flip', '2 3', 18, coin < L.pnl ? 'end' : 'start');
+    let buyAll = 0; for (let j = 0; j < NR; j++) buyAll += A.step * (P_(NT - 1) / P_(NH - 1 + j) - 1);
+    const nb = dec.reduce((a, b) => a + b, 0);
+    note.innerHTML = 'You bought in <b>' + nb + '</b> of ' + NR + ' weeks and made <b>' + (L.pnl > 0.5 ? '+' : '') + money(L.pnl, A) + '</b>. '
+      + 'Buying every week would have made ' + (buyAll > 0 ? '+' : '') + money(buyAll, A) + '. '
+      + 'You did better than <b>' + pct.toFixed(0) + '%</b> of coin-flip strategies'
+      + (coin !== null ? '; this flip made ' + (coin > 0 ? '+' : '') + money(coin, A) + '.' : '.');
+  }
+
+  function flipCoin() {
+    const g = []; for (let j = 0; j < NR; j++) g.push(A.step * (P_(NT - 1) / P_(NH - 1 + j) - 1));
+    coin = 0; for (let j = 0; j < NR; j++) if (Math.random() < 0.5) coin += g[j];
+    panels();
+  }
+
+  // ---------- game flow ----------
+  function decide(b) {
+    if (busy || k >= NR) return;
+    dec.push(b); busy = true;
+    const from = curDom, to = domain(k + 1), t0 = performance.now(), dur = 650;
+    cancelAnimationFrame(raf);
+    const step = now => {
+      const u = Math.min(1, (now - t0) / dur), e = ease(u);
+      const dm = [from[0] + (to[0] - from[0]) * e, from[1] + (to[1] - from[1]) * e];
+      draw(dm, k + 1, e);
+      if (u < 1) raf = requestAnimationFrame(step);
+      else { k++; busy = false; curDom = to; coin = null; draw(curDom, k, 1); panels(); }
+    };
+    btnBuy.disabled = btnSkip.disabled = true;
+    raf = requestAnimationFrame(step);
+  }
+  function reset() { cancelAnimationFrame(raf); k = 0; dec = []; busy = false; coin = null; paint(); }
+
+  // static axis title
+  el('text', { x: 14, y: m.t + ph / 2, 'text-anchor': 'middle', class: P + '-lab',
+    transform: `rotate(-90 14 ${m.t + ph / 2})` }, gStatic).textContent = '';
+  reset();
+})();
+</script>
+```

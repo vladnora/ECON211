@@ -8,4 +8,4 @@ for k,l,n,cur,step,pc,pd in meta:
     assets.append(dict(key=k,label=l,name=n,cur=cur,step=step,pcur=pc,pdec=pd,dates=[r[0] for r in rows],prices=[round(r[1],4) for r in rows]))
 cfg=dict(nHist=40,rounds=10,assets=assets)
 t=open('tpl.html').read().replace('__CFG__',json.dumps(cfg,ensure_ascii=False))
-open('../portfolio.qmd','w').write(t)
+open('../applications.qmd','w').write(t)

@@ -451,6 +451,211 @@
 ---
 
 ```{=html}
+<div id="dc-root"></div>
+<style>
+  #dc-root { max-width:780px; margin:0 auto; padding:2px 0; color:#1f2933; text-align:left;
+             font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; font-size:16px; line-height:1.3; }
+  #dc-root .dc-row { display:flex; flex-wrap:wrap; gap:8px 16px; align-items:center; margin-bottom:6px; }
+  #dc-root .dc-sl { display:flex; align-items:center; gap:10px; flex:1; min-width:260px; }
+  #dc-root .dc-sl b { white-space:nowrap; min-width:170px; font-size:16px; }
+  #dc-root input[type=range] { flex:1; margin:0; }
+  #dc-root button { border:0; margin:0; border-radius:8px; padding:5px 13px; cursor:pointer; font-family:inherit; font-size:14.5px;
+                line-height:1.2; text-transform:none; letter-spacing:normal; background:#e4e7eb; color:#323f4b; }
+  #dc-root button:hover { filter:brightness(.94); }
+  #dc-root .dc-seg { display:inline-flex; flex-wrap:wrap; background:#eef1f4; border-radius:9px; padding:3px; }
+  #dc-root .dc-seg button { background:transparent; color:#7b8794; padding:5px 12px; transition:background .25s, color .25s, box-shadow .25s; }
+  #dc-root .dc-seg button.dc-on { background:#fff; color:#1f2933; box-shadow:0 1px 3px rgba(0,0,0,.14); }
+  #dc-root .dc-roll { background:#2b6cb0; color:#fff; font-weight:600; }
+  #dc-root .dc-chk { font-size:14.5px; color:#52606d; display:flex; align-items:center; gap:6px; cursor:pointer; user-select:none; }
+  #dc-root .dc-body { display:flex; gap:14px; align-items:flex-start; }
+  #dc-root .dc-chart { flex:1.75; min-width:0; }
+  #dc-root .dc-side { flex:1; min-width:0; }
+  #dc-root svg { width:100%; height:auto; display:block; margin:0; max-height:none; }
+  #dc-root .dc-tick { font-size:12px; fill:#7b8794; }
+  #dc-root .dc-lab { font-size:13px; fill:#52606d; }
+  #dc-root table { border-collapse:collapse; width:100%; font-size:14px; margin:4px 0 0; }
+  #dc-root td { padding:3px 4px; border:0; border-top:1px solid #edf0f3; background:none; text-align:right; white-space:nowrap; }
+  #dc-root td:first-child { text-align:left; color:#52606d; }
+  #dc-root .dc-sw { display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:6px; }
+  #dc-root .dc-note { font-size:14.5px; color:#323f4b; margin:6px 2px 0; min-height:40px; }
+  #dc-root .dc-sub { font-size:12.5px; color:#7b8794; }
+  #dc-root .dc-die { font-size:30px; line-height:1; vertical-align:-4px; }
+</style>
+<script>
+(function () {
+  const P = 'dc', root = document.getElementById(P + '-root');
+  const NS = 'http://www.w3.org/2000/svg';
+  const el = (t, a, p) => { const e = document.createElementNS(NS, t);
+    for (const k in a) e.setAttribute(k, a[k]); if (p) p.appendChild(e); return e; };
+  const CA = '#2b6cb0', CB = '#c05621', CP = '#2f855a';
+  const NU = 6, SH = 1;                        // units of wealth; asset B is asset A shifted up by SH
+  const FACE = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
+  const rA = d => d - 3.5, rB = d => d - 3.5 + SH;       // d = face 1..6
+  const VAR1 = 35 / 12, SD1 = Math.sqrt(VAR1);
+  const MODES = [['ind', 'Independent dice'], ['same', 'Same die for both'], ['opp', 'Opposite faces (B = 7 − A)']];
+  const RHO = { ind: 0, same: 1, opp: -1 };
+  let k = 0, mode = 'ind', frontier = false, visited = new Set([0]), tally = null, last = null;
+
+  // ---------- controls ----------
+  const r1 = document.createElement('div'); r1.className = P + '-row'; root.appendChild(r1);
+  const sl = document.createElement('div'); sl.className = P + '-sl'; r1.appendChild(sl);
+  const l1 = document.createElement('b'); sl.appendChild(l1);
+  const sK = document.createElement('input'); sK.type = 'range'; sK.min = 0; sK.max = NU; sK.step = 1; sK.value = 0;
+  sK.oninput = () => { k = +sK.value; visited.add(k); resetTally(); paint(); }; sl.appendChild(sK);
+  const mkBtn = (txt, cls, fn, parent) => { const b = document.createElement('button'); b.textContent = txt; if (cls) b.className = cls; b.onclick = fn; parent.appendChild(b); return b; };
+  mkBtn('Roll once', P + '-roll', () => roll(1), r1);
+  mkBtn('Roll 100', P + '-roll', () => roll(100), r1);
+  const r2 = document.createElement('div'); r2.className = P + '-row'; root.appendChild(r2);
+  const sg = document.createElement('div'); sg.className = P + '-seg'; r2.appendChild(sg);
+  const mb = {};
+  MODES.forEach(([key, lab]) => { mb[key] = mkBtn(lab, '', () => { mode = key; visited = new Set([k]); resetTally(); paint(); }, sg); });
+  const lab = document.createElement('label'); lab.className = P + '-chk';
+  const cb = document.createElement('input'); cb.type = 'checkbox'; cb.onchange = () => { frontier = cb.checked; paint(); };
+  lab.appendChild(cb); lab.appendChild(document.createTextNode('Show all portfolios')); r2.appendChild(lab);
+
+  const body = document.createElement('div'); body.className = P + '-body'; root.appendChild(body);
+  const chartDiv = document.createElement('div'); chartDiv.className = P + '-chart'; body.appendChild(chartDiv);
+  const side = document.createElement('div'); side.className = P + '-side'; body.appendChild(side);
+  const rollLine = document.createElement('div'); rollLine.className = P + '-note'; rollLine.style.minHeight = '24px'; root.appendChild(rollLine);
+  const note = document.createElement('div'); note.className = P + '-note'; root.appendChild(note);
+
+  // ---------- exact PMF of the portfolio return, by counting ----------
+  // values are kept as integers (return x 12) to avoid rounding trouble
+  const pairs = () => { const o = [];
+    if (mode === 'ind') for (let a = 1; a <= 6; a++) for (let b = 1; b <= 6; b++) o.push([a, b, 1 / 36]);
+    else for (let d = 1; d <= 6; d++) o.push([d, mode === 'same' ? d : 7 - d, 1 / 6]);
+    return o; };
+  const val12 = (a, b) => (NU - k) * 2 * (a - 3.5) + k * 2 * (b - 3.5 + SH);   // 12 x [(1-α)rA + α rB]
+  function pmf() { const m = new Map();
+    pairs().forEach(([a, b, p]) => { const v = val12(a, b); m.set(v, (m.get(v) || 0) + p); });
+    return m; }
+  const ghost = f => { const m = new Map(); for (let d = 1; d <= 6; d++) m.set(Math.round(12 * f(d)), 1 / 6); return m; };
+  const alpha = () => k / NU;
+  const moments = al => { const c = RHO[mode] * VAR1, vA = (1 - al) ** 2 * VAR1, vB = al * al * VAR1, vC = 2 * al * (1 - al) * c;
+    return { m: al * SH, vA, vB, vC, c, v: Math.max(0, vA + vB + vC), sd: Math.sqrt(Math.max(0, vA + vB + vC)) }; };
+  const f2 = v => (Math.abs(v) < 0.005 ? 0 : v).toFixed(2);
+  const sgn2 = v => (v < -0.005 ? '−' : '') + Math.abs(v).toFixed(2);
+  const pct = v => (v * 100).toFixed(1) + '%';
+
+  // ---------- rolling ----------
+  function resetTally() { tally = null; last = null; }
+  function roll(n) {
+    if (!tally) tally = { n: 0, c: new Map(), s: 0, s2: 0 };
+    for (let i = 0; i < n; i++) {
+      const a = 1 + Math.floor(Math.random() * 6), b = mode === 'ind' ? 1 + Math.floor(Math.random() * 6) : mode === 'same' ? a : 7 - a;
+      const v = val12(a, b); tally.n++; tally.c.set(v, (tally.c.get(v) || 0) + 1); tally.s += v / 12; tally.s2 += (v / 12) ** 2;
+      last = [a, b, v / 12];
+    }
+    paint();
+  }
+
+  function paint() {
+    for (const key in mb) mb[key].classList.toggle(P + '-on', key === mode);
+    const al = alpha(), q = moments(al);
+    l1.textContent = 'In B: ' + k + ' of ' + NU + ' units (' + (NU - k) + ' in A)';
+    const dist = pmf(), P0 = ghost(rA), P1 = ghost(rB);
+    let pLoss = 0, pBig = 0, mean = 0, ex2 = 0;
+    dist.forEach((p, v) => { if (v < 0) pLoss += p; if (v <= -18) pBig += p; mean += p * v / 12; ex2 += p * (v / 12) ** 2; });
+    const sd = Math.sqrt(Math.max(0, ex2 - mean * mean));
+
+    // ---------- PMF chart ----------
+    chartDiv.innerHTML = '';
+    const W = 520, H = 310, m = { l: 40, r: 10, t: 30, b: 34 }, pw = W - m.l - m.r, ph = H - m.t - m.b;
+    const x0 = -3.2, x1 = 3.8, xs = v => m.l + (v - x0) / (x1 - x0) * pw;
+    const ymax = mode === 'opp' ? 1.05 : 0.2, ys = p => m.t + ph - p / ymax * ph;
+    const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': 'Probability distribution of the weekly portfolio return' }, chartDiv);
+    (mode === 'opp' ? [0, 0.25, 0.5, 0.75, 1] : [0, 0.05, 0.1, 0.15, 0.2]).forEach(p => {
+      el('line', { x1: m.l, x2: m.l + pw, y1: ys(p), y2: ys(p), stroke: '#edf0f3' }, svg);
+      el('text', { x: m.l - 6, y: ys(p) + 4, 'text-anchor': 'end', class: P + '-tick' }, svg).textContent = p.toFixed(mode === 'opp' ? 2 : 2); });
+    for (let v = -3; v <= 3; v++) {
+      el('line', { x1: xs(v), x2: xs(v), y1: m.t, y2: m.t + ph, stroke: v === 0 ? '#cbd2d9' : '#f3f5f7' }, svg);
+      el('text', { x: xs(v), y: m.t + ph + 16, 'text-anchor': 'middle', class: P + '-tick' }, svg).textContent = (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v) + '%'; }
+    el('text', { x: W / 2, y: H - 3, 'text-anchor': 'middle', class: P + '-lab' }, svg).textContent = 'Portfolio return in one period';
+    el('text', { x: 12, y: m.t + ph / 2, 'text-anchor': 'middle', class: P + '-lab', transform: `rotate(-90 12 ${m.t + ph / 2})` }, svg).textContent = 'Probability';
+    // ghosts: the two single-asset distributions
+    [[P0, CA], [P1, CB]].forEach(([g, c]) => g.forEach((p, v) => el('circle', { cx: xs(v / 12), cy: ys(p), r: 5, fill: 'none', stroke: c, 'stroke-width': 2, opacity: 0.7 }, svg)));
+    // portfolio sticks
+    dist.forEach((p, v) => { el('line', { x1: xs(v / 12), x2: xs(v / 12), y1: ys(0), y2: ys(p), stroke: CP, 'stroke-width': 5, 'stroke-linecap': 'round', opacity: 0.85 }, svg); });
+    // realised frequencies from rolling
+    if (tally) tally.c.forEach((c, v) => { const f = c / tally.n, x = xs(v / 12), y = ys(f);
+      el('path', { d: `M${x},${y - 6} l6,6 l-6,6 l-6,-6 z`, fill: '#1f2933', opacity: 0.85 }, svg); });
+    // mean + 1 SD bracket
+    const yb = ys(ymax * 0.93);
+    el('line', { x1: xs(mean), x2: xs(mean), y1: m.t, y2: ys(0), stroke: '#1f2933', 'stroke-width': 1.4, 'stroke-dasharray': '4 3' }, svg);
+    if (sd > 0.01) { el('line', { x1: xs(mean - sd), x2: xs(mean + sd), y1: yb, y2: yb, stroke: '#1f2933', 'stroke-width': 2 }, svg);
+      [mean - sd, mean + sd].forEach(v => el('line', { x1: xs(v), x2: xs(v), y1: yb - 5, y2: yb + 5, stroke: '#1f2933', 'stroke-width': 2 }, svg));
+      el('text', { x: xs(mean + sd) + 6, y: yb + 4, style: 'font-size:12.5px;font-weight:600;fill:#1f2933' }, svg).textContent = '±1 SD'; }
+    // legend
+    const lg = [['Asset A alone', 'o', CA], ['Asset B alone', 'o', CB], ['Your portfolio', 'l', CP]].concat(tally ? [['Rolled so far', 'd', '#1f2933']] : []);
+    let lx = m.l;
+    lg.forEach(([t, s, c]) => { const y = 14, x = lx;
+      if (s === 'o') el('circle', { cx: x + 6, cy: y - 4, r: 5, fill: 'none', stroke: c, 'stroke-width': 2 }, svg);
+      else if (s === 'l') el('line', { x1: x + 6, x2: x + 6, y1: y - 9, y2: y + 1, stroke: c, 'stroke-width': 5, 'stroke-linecap': 'round' }, svg);
+      else el('path', { d: `M${x + 6},${y - 10} l5,6 l-5,6 l-5,-6 z`, fill: c }, svg);
+      el('text', { x: x + 18, y: y, class: P + '-lab' }, svg).textContent = t; lx += 18 + t.length * 6.6 + 14; });
+
+    // ---------- side: risk-return plane ----------
+    side.innerHTML = '';
+    const SW = 250, SHt = 215, sm = { l: 34, r: 12, t: 10, b: 34 }, spw = SW - sm.l - sm.r, sph = SHt - sm.t - sm.b;
+    const sx = v => sm.l + v / 2.0 * spw, sy = v => sm.t + sph - (v + 0.1) / 1.2 * sph;
+    const s2 = el('svg', { viewBox: `0 0 ${SW} ${SHt}`, role: 'img', 'aria-label': 'Risk and expected return of each portfolio' }, side);
+    [0, 0.5, 1].forEach(v => { el('line', { x1: sm.l, x2: sm.l + spw, y1: sy(v), y2: sy(v), stroke: '#edf0f3' }, s2);
+      el('text', { x: sm.l - 5, y: sy(v) + 4, 'text-anchor': 'end', class: P + '-tick' }, s2).textContent = v; });
+    [0, 1, 2].forEach(v => el('text', { x: sx(v), y: SHt - 18, 'text-anchor': 'middle', class: P + '-tick' }, s2).textContent = v);
+    el('text', { x: sm.l + spw / 2, y: SHt - 3, 'text-anchor': 'middle', class: P + '-lab' }, s2).textContent = 'Risk (SD)';
+    el('text', { x: 9, y: sm.t + sph / 2, 'text-anchor': 'middle', class: P + '-lab', transform: `rotate(-90 9 ${sm.t + sph / 2})` }, s2).textContent = 'Mean return';
+    const aMin = (() => { const c = RHO[mode] * VAR1, den = 2 * VAR1 - 2 * c; return den < 1e-9 ? 1 : Math.min(1, Math.max(0, (VAR1 - c) / den)); })();
+    const effOf = a => (RHO[mode] === 1 ? a > 0.9999 : a >= aMin - 1e-9);
+    if (frontier) {
+      let ineff = [], eff = [];
+      for (let i = 0; i <= 200; i++) { const a = i / 200, qq = moments(a), pt = sx(qq.sd) + ',' + sy(qq.m);
+        (effOf(a) ? eff : ineff).push(pt); if (i / 200 < aMin && (i + 1) / 200 >= aMin) { ineff.push(sx(moments(aMin).sd) + ',' + sy(moments(aMin).m)); eff.push(sx(moments(aMin).sd) + ',' + sy(moments(aMin).m)); } }
+      if (ineff.length > 1) el('polyline', { points: ineff.join(' '), fill: 'none', stroke: '#9aa5b1', 'stroke-width': 2.4, 'stroke-dasharray': '5 4' }, s2);
+      if (eff.length > 1) el('polyline', { points: eff.join(' '), fill: 'none', stroke: CP, 'stroke-width': 3 }, s2);
+    }
+    for (let i = 0; i <= NU; i++) { const qq = moments(i / NU), shown = frontier || visited.has(i);
+      if (shown && i !== k) el('circle', { cx: sx(qq.sd), cy: sy(qq.m), r: 4, fill: frontier && effOf(i / NU) ? CP : '#9aa5b1', stroke: '#fff', 'stroke-width': 1.2 }, s2); }
+    [[0, CA, 'A'], [1, CB, 'B']].forEach(([a, c, t]) => { const qq = moments(a);
+      el('text', { x: sx(qq.sd) + (a ? 9 : 9), y: sy(qq.m) + 4, style: 'font-size:13px;font-weight:700;fill:' + c }, s2).textContent = t; });
+    el('circle', { cx: sx(q.sd), cy: sy(q.m), r: 6.5, fill: CP, stroke: '#fff', 'stroke-width': 2 }, s2);
+
+    const tbl = document.createElement('table');
+    tbl.innerHTML =
+      '<tr><td>Mean return</td><td><b>' + sgn2(mean) + '%</b></td></tr>' +
+      '<tr><td>SD (risk)</td><td><b>' + sd.toFixed(2) + '%</b></td></tr>' +
+      '<tr><td>P(loss) = P(R &lt; 0)</td><td>' + pct(pLoss) + '</td></tr>' +
+      '<tr><td>P(R ≤ −1.5%)</td><td>' + pct(pBig) + '</td></tr>' +
+      '<tr><td><span class="dc-sw" style="background:' + CA + '"></span>(1−α)²σ²<sub>A</sub></td><td>' + f2(q.vA) + '</td></tr>' +
+      '<tr><td><span class="dc-sw" style="background:' + CB + '"></span>α²σ²<sub>B</sub></td><td>' + f2(q.vB) + '</td></tr>' +
+      '<tr><td><span class="dc-sw" style="background:#9aa5b1"></span>2α(1−α)Cov</td><td>' + sgn2(q.vC) + '</td></tr>' +
+      '<tr><td>Variance (sum)</td><td><b>' + f2(q.v) + '</b></td></tr>';
+    side.appendChild(tbl);
+
+    // ---------- roll read-out and verdict ----------
+    if (tally) {
+      const tm = tally.s / tally.n, tv = tally.n > 1 ? Math.sqrt(Math.max(0, (tally.s2 - tally.n * tm * tm) / (tally.n - 1))) : 0;
+      rollLine.innerHTML = (last ? '<span class="dc-die" style="color:' + CA + '">' + FACE[last[0] - 1] + '</span> <span class="dc-die" style="color:' + CB + '">' + FACE[last[1] - 1] + '</span> &nbsp;last roll: return <b>' + sgn2(last[2]) + '%</b>. &nbsp;' : '')
+        + '<span class="dc-sub">' + tally.n + ' roll' + (tally.n > 1 ? 's' : '') + ': average ' + sgn2(tm) + '%, SD ' + tv.toFixed(2) + '%</span>';
+    } else rollLine.innerHTML = '<span class="dc-sub">Roll the dice to see actual outcomes (black diamonds) against the exact probabilities.</span>';
+    const bigRisk = SD1;
+    let t = '';
+    if (k === 0) t = 'All in A: return = face − 3.5, so the mean is 0 and the SD is ' + SD1.toFixed(2) + '%.';
+    else if (k === NU) t = 'All in B: the same spread as A, but every outcome is ' + SH + ' point higher. B beats A, so nobody holds only A.';
+    else if (mode === 'same') t = 'The two assets move together, so mixing them changes nothing about risk: SD stays ' + sd.toFixed(2) + '%. Only the mean rises.';
+    else if (mode === 'opp') t = k * 2 === NU ? 'The assets offset each other exactly: the return is always +' + (SH / 2).toFixed(1) + '%, with <b>no risk</b>.'
+      : 'Opposite faces: SD ' + sd.toFixed(2) + '%, mean ' + sgn2(mean) + '%.';
+    else t = 'Independent dice: risk falls to <b>' + sd.toFixed(2) + '%</b>, below either asset alone (' + SD1.toFixed(2) + '%). Extreme outcomes become much less likely.';
+    if (mode !== 'same' && k > 0 && k < NU / 2) t += ' <b>Inefficient:</b> with ' + (NU - k) + ' units in B you would have the same risk and a higher mean.';
+    note.innerHTML = t;
+  }
+  resetTally(); paint();
+})();
+</script>
+```
+
+---
+
+```{=html}
 <div id="pf-root"></div>
 <style>
   #pf-root { max-width:780px; margin:0 auto; padding:2px 0; color:#1f2933; text-align:left;

@@ -1688,12 +1688,12 @@ line-height:1.2; text-transform:none; letter-spacing:normal; background:#e4e7eb;
   const el = (t, a, p) => { const e = document.createElementNS(NS, t);
     for (const k in a) e.setAttribute(k, a[k]); if (p) p.appendChild(e); return e; };
   const CA = '#2b6cb0', CB = '#c05621', CP = '#2f855a';
-  // illustrative assets: mean and SD of the return (no units)
+  // illustrative assets: gross return X (invest I, get X·I), so X ≥ 0; mean/SD ≥ 3.2 keeps P(X < 0) negligible
   const PRESETS = [
-    ['Equal mean',   { A: { m: 0.6, s: 1 }, B: { m: 0.6, s: 2 }, rho: 0 }],
-    ['Equal risk',   { A: { m: 0.3, s: 2 }, B: { m: 1.0, s: 2 }, rho: 0 }],
-    ['Dominated A',  { A: { m: 0.3, s: 3 }, B: { m: 1.0, s: 2 }, rho: 0.2 }],
-    ['Perfect hedge',{ A: { m: 0.3, s: 2 }, B: { m: 1.0, s: 3 }, rho: -1 }]];
+    ['Equal mean',   { A: { m: 1.10, s: 0.10 }, B: { m: 1.10, s: 0.20 }, rho: 0 }],
+    ['Equal risk',   { A: { m: 1.05, s: 0.15 }, B: { m: 1.15, s: 0.15 }, rho: 0 }],
+    ['Dominated A',  { A: { m: 1.05, s: 0.25 }, B: { m: 1.15, s: 0.15 }, rho: 0.2 }],
+    ['Perfect hedge',{ A: { m: 1.05, s: 0.15 }, B: { m: 1.15, s: 0.25 }, rho: -1 }]];
   let A, B, rho, alpha = 0.5, preset = 0, timer = null, drag = null, showP = false;
   // a preset first shows only the two assets; the portfolio appears once alpha is touched
   const load = i => { const p = PRESETS[i][1]; preset = i; A = { ...p.A }; B = { ...p.B }; rho = p.rho; showP = false; };
@@ -1709,7 +1709,7 @@ line-height:1.2; text-transform:none; letter-spacing:normal; background:#e4e7eb;
   const isEff = a => { const am = aMin(); if (Math.abs(B.m - A.m) < 1e-12) return Math.abs(a - am) < 1e-9;
     return B.m > A.m ? a >= am - 1e-9 : a <= am + 1e-9; };
   const phi = (x, m, s) => Math.exp(-0.5 * ((x - m) / s) ** 2) / (s * Math.sqrt(2 * Math.PI));
-  const n2 = v => (Math.abs(v) < 0.005 ? 0 : v).toFixed(2), sg = v => (v < -0.005 ? '−' : '') + Math.abs(v).toFixed(2);
+  const n2 = v => (Math.abs(v) < 0.00005 ? 0 : v).toFixed(4), sg = v => (v < -0.005 ? '−' : '') + Math.abs(v).toFixed(2);
 
   // ---------- controls ----------
   const row = () => { const r = document.createElement('div'); r.className = P + '-row'; root.appendChild(r); return r; };
@@ -1745,7 +1745,7 @@ line-height:1.2; text-transform:none; letter-spacing:normal; background:#e4e7eb;
 
   // ---------- left panel geometry: x = SD, y = mean ----------
   const mL = { l: 46, r: 14, t: 12, b: 38 }, pwL = W - mL.l - mL.r, phL = H - mL.t - mL.b;
-  const SX = [0, 4], SY = [-0.2, 1.5];
+  const SX = [0, 0.32], SY = [0.95, 1.25];
   const lx = s => mL.l + (s - SX[0]) / (SX[1] - SX[0]) * pwL, ly = m => mL.t + phL - (m - SY[0]) / (SY[1] - SY[0]) * phL;
   const ix = x => SX[0] + (x - mL.l) / pwL * (SX[1] - SX[0]), iy = y => SY[0] + (mL.t + phL - y) / phL * (SY[1] - SY[0]);
 
@@ -1765,8 +1765,8 @@ line-height:1.2; text-transform:none; letter-spacing:normal; background:#e4e7eb;
     if (!drag) return; const pt = svgPt(e);
     if (drag === 'P') alpha = nearestAlpha(pt)[0];
     else { const o = drag === 'A' ? A : B;
-      o.s = Math.min(3.75, Math.max(0.25, Math.round(ix(pt.x) * 4) / 4));
-      o.m = Math.min(1.45, Math.max(-0.15, Math.round(iy(pt.y) * 20) / 20)); preset = -1; }
+      o.s = Math.min(0.30, Math.max(0.02, Math.round(ix(pt.x) * 100) / 100));
+      o.m = Math.min(1.24, Math.max(0.96, Math.round(iy(pt.y) * 100) / 100)); preset = -1; }
     paint();
   });
   const end = () => { drag = null; };
@@ -1785,12 +1785,12 @@ line-height:1.2; text-transform:none; letter-spacing:normal; background:#e4e7eb;
 
     // ===== left: mean vs SD =====
     gL.innerHTML = '';
-    for (let s = 0; s <= 4; s++) { el('line', { x1: lx(s), x2: lx(s), y1: mL.t, y2: mL.t + phL, stroke: '#f0f2f5' }, gL);
-      el('text', { x: lx(s), y: mL.t + phL + 16, 'text-anchor': 'middle', class: P + '-tick' }, gL).textContent = s; }
-    [0, 0.5, 1, 1.5].forEach(m => { el('line', { x1: mL.l, x2: mL.l + pwL, y1: ly(m), y2: ly(m), stroke: m === 0 ? '#cbd2d9' : '#f0f2f5' }, gL);
-      el('text', { x: mL.l - 6, y: ly(m) + 4, 'text-anchor': 'end', class: P + '-tick' }, gL).textContent = m.toFixed(1); });
+    [0, 0.1, 0.2, 0.3].forEach(s => { el('line', { x1: lx(s), x2: lx(s), y1: mL.t, y2: mL.t + phL, stroke: '#f0f2f5' }, gL);
+      el('text', { x: lx(s), y: mL.t + phL + 16, 'text-anchor': 'middle', class: P + '-tick' }, gL).textContent = s.toFixed(1); });
+    [1.0, 1.05, 1.1, 1.15, 1.2].forEach(m => { el('line', { x1: mL.l, x2: mL.l + pwL, y1: ly(m), y2: ly(m), stroke: '#f0f2f5' }, gL);
+      el('text', { x: mL.l - 6, y: ly(m) + 4, 'text-anchor': 'end', class: P + '-tick' }, gL).textContent = m.toFixed(2); });
     el('text', { x: mL.l + pwL / 2, y: H - 4, 'text-anchor': 'middle', class: P + '-lab' }, gL).textContent = 'Risk: standard deviation of the return';
-    el('text', { x: 12, y: mL.t + phL / 2, 'text-anchor': 'middle', class: P + '-lab', transform: `rotate(-90 12 ${mL.t + phL / 2})` }, gL).textContent = 'Mean return';
+    el('text', { x: 12, y: mL.t + phL / 2, 'text-anchor': 'middle', class: P + '-lab', transform: `rotate(-90 12 ${mL.t + phL / 2})` }, gL).textContent = 'Mean gross return';
     // all portfolios, the no-diversification line, and the gap between them (only once alpha is touched)
     if (showP) {
       const pts = []; for (let i = 0; i <= 200; i++) { const a = i / 200, r = mom(a); pts.push([a, lx(r.sd), ly(r.m)]); }
@@ -1813,16 +1813,17 @@ line-height:1.2; text-transform:none; letter-spacing:normal; background:#e4e7eb;
     // ===== right: densities =====
     svgR.innerHTML = '';
     const mR = { l: 14, r: 14, t: 12, b: 38 }, pwR = W - mR.l - mR.r, phR = H - mR.t - mR.b;
-    const x0 = Math.min(A.m - 3.5 * A.s, B.m - 3.5 * B.s), x1 = Math.max(A.m + 3.5 * A.s, B.m + 3.5 * B.s);
+    const x0 = Math.max(0, Math.min(A.m - 3.5 * A.s, B.m - 3.5 * B.s)), x1 = Math.max(A.m + 3.5 * A.s, B.m + 3.5 * B.s);
     const rx = v => mR.l + (v - x0) / (x1 - x0) * pwR;
     // vertical scale set by the two assets only, so moving rho or alpha never rescales their PDFs
     const cap = 1.15 * Math.max(phi(0, 0, A.s), phi(0, 0, B.s));
     const ry = d => mR.t + phR - d / cap * phR;
-    const span = x1 - x0, step = span > 16 ? 5 : span > 8 ? 2 : 1;
-    for (let v = Math.ceil(x0 / step) * step; v <= x1; v += step) {
+    const raw = (x1 - x0) / 6, mag = Math.pow(10, Math.floor(Math.log10(raw))), rr = raw / mag;
+    const step = (rr < 1.5 ? 1 : rr < 3.5 ? 2 : rr < 7.5 ? 5 : 10) * mag, dec = Math.max(0, -Math.floor(Math.log10(step)));
+    for (let i = Math.ceil(x0 / step); i * step <= x1 + 1e-9; i++) { const v = +(i * step).toFixed(10);
       el('line', { x1: rx(v), x2: rx(v), y1: mR.t, y2: mR.t + phR, stroke: v === 0 ? '#cbd2d9' : '#f0f2f5' }, svgR);
-      el('text', { x: rx(v), y: mR.t + phR + 16, 'text-anchor': 'middle', class: P + '-tick' }, svgR).textContent = v; }
-    el('text', { x: W / 2, y: H - 4, 'text-anchor': 'middle', class: P + '-lab' }, svgR).textContent = 'Return';
+      el('text', { x: rx(v), y: mR.t + phR + 16, 'text-anchor': 'middle', class: P + '-tick' }, svgR).textContent = v.toFixed(dec); }
+    el('text', { x: W / 2, y: H - 4, 'text-anchor': 'middle', class: P + '-lab' }, svgR).textContent = 'Gross return X (invest I, get X·I)';
     const curve = (mu, s, close) => { const o = [];
       for (let i = 0; i <= 240; i++) { const v = x0 + (x1 - x0) * i / 240; o.push(rx(v) + ',' + ry(phi(v, mu, s))); }
       return o.join(' ') + (close ? ` ${rx(x1)},${ry(0)} ${rx(x0)},${ry(0)}` : ''); };
@@ -1831,7 +1832,7 @@ line-height:1.2; text-transform:none; letter-spacing:normal; background:#e4e7eb;
     const cp = el('clipPath', { id: clipId }, el('defs', {}, svgR)); el('rect', { x: 0, y: mR.t, width: W, height: phR + 1 }, cp);
     const gP = el('g', { 'clip-path': `url(#${clipId})` }, svgR);
     if (showP) {
-      if (q.sd > 0.03) {
+      if (q.sd > 0.002) {
         el('polygon', { points: curve(q.m, q.sd, true), fill: CP, opacity: 0.16 }, gP);
         el('polyline', { points: curve(q.m, q.sd), fill: 'none', stroke: CP, 'stroke-width': 3 }, gP);
         if (phi(q.m, q.m, q.sd) > cap) el('text', { x: rx(q.m) - 10, y: mR.t + 14, 'text-anchor': 'end', style: 'font-size:12.5px;fill:' + CP }, svgR).textContent = 'peak above the frame ↑';
@@ -1852,13 +1853,13 @@ line-height:1.2; text-transform:none; letter-spacing:normal; background:#e4e7eb;
     nAB.innerHTML = '<table><tr><th></th><th>Mean</th><th>SD</th><th>Variance</th></tr>'
       + '<tr><td>' + sw(CA) + 'Asset A</td><td>' + sg(A.m) + '</td><td>' + A.s.toFixed(2) + '</td><td>' + n2(A.s * A.s) + '</td></tr>'
       + '<tr><td>' + sw(CB) + 'Asset B</td><td>' + sg(B.m) + '</td><td>' + B.s.toFixed(2) + '</td><td>' + n2(B.s * B.s) + '</td></tr>'
-      + '<tr><td>' + sw(CP) + '<b>Portfolio</b></td>' + (showP ? '<td><b>' + sg(q.m) + '</b></td><td><b>' + q.sd.toFixed(2) + '</b></td><td><b>' + n2(q.v) + '</b></td>' : dash + dash + dash) + '</tr>'
-      + '<tr><td>Cov(A, B) = ρσ<sub>A</sub>σ<sub>B</sub></td><td colspan="3">' + sg(cov()) + '</td></tr></table>';
+      + '<tr><td>' + sw(CP) + '<b>Portfolio</b></td>' + (showP ? '<td><b>' + sg(q.m) + '</b></td><td><b>' + q.sd.toFixed(3) + '</b></td><td><b>' + n2(q.v) + '</b></td>' : dash + dash + dash) + '</tr>'
+      + '<tr><td>Cov(A, B) = ρσ<sub>A</sub>σ<sub>B</sub></td><td colspan="3">' + (cov() < 0 ? '−' : '') + n2(Math.abs(cov())) + '</td></tr></table>';
     const cell = v => showP ? '<td>' + v + '</td>' : dash;
     nP.innerHTML = '<table><tr><th>Variance of the portfolio</th><th></th></tr>'
       + '<tr><td>' + sw(CA) + '(1−α)²σ²<sub>A</sub></td>' + cell(n2(q.vA)) + '</tr>'
       + '<tr><td>' + sw(CB) + 'α²σ²<sub>B</sub></td>' + cell(n2(q.vB)) + '</tr>'
-      + '<tr><td>' + sw('#9aa5b1') + '2α(1−α)Cov</td>' + cell(sg(q.vC)) + '</tr>'
+      + '<tr><td>' + sw('#9aa5b1') + '2α(1−α)Cov</td>' + cell((q.vC < -0.00005 ? '−' : '') + n2(Math.abs(q.vC))) + '</tr>'
       + '<tr><td><b>Sum</b></td>' + cell('<b>' + n2(q.v) + '</b>') + '</tr></table>';
 
     // ===== verdict =====
@@ -1866,9 +1867,9 @@ line-height:1.2; text-transform:none; letter-spacing:normal; background:#e4e7eb;
     let t;
     if (!showP) t = 'Two assets: compare their mean and risk. Move the share slider to form a portfolio.';
     else if (alpha < 0.005 || alpha > 0.995) t = 'All in one asset: no diversification.';
-    else if (q.sd < 0.03) t = 'The two assets cancel each other’s risk: a <b>certain return</b> of ' + sg(q.m) + '.';
-    else if (q.sd < Math.min(A.s, B.s) - 1e-9) t = 'Risk <b>' + q.sd.toFixed(2) + '</b> is <b>lower than either asset alone</b> (' + A.s.toFixed(2) + ' and ' + B.s.toFixed(2) + ').';
-    else if (gap > 0.005) t = 'Risk is ' + gap.toFixed(2) + ' below the no-diversification line.';
+    else if (q.sd < 0.002) t = 'The two assets cancel each other’s risk: a <b>certain return</b> of ' + sg(q.m) + '.';
+    else if (q.sd < Math.min(A.s, B.s) - 1e-9) t = 'Risk <b>' + q.sd.toFixed(3) + '</b> is <b>lower than either asset alone</b> (' + A.s.toFixed(2) + ' and ' + B.s.toFixed(2) + ').';
+    else if (gap > 0.0005) t = 'Risk is ' + gap.toFixed(3) + ' below the no-diversification line.';
     else t = 'No diversification benefit: the assets move together perfectly.';
     if (showP && !isEff(alpha)) t += ' <b>Inefficient:</b> another portfolio has the same risk and a higher mean.';
     note.innerHTML = t + ' <span class="mv-hint">Illustrative numbers, not estimated from data.</span>';

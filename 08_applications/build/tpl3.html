@@ -36,7 +36,7 @@
   const NS = 'http://www.w3.org/2000/svg';
   const el = (t, a, p) => { const e = document.createElementNS(NS, t);
     for (const k in a) e.setAttribute(k, a[k]); if (p) p.appendChild(e); return e; };
-  const CA = '#2b6cb0', CB = '#c05621', CP = '#2f855a';
+  const CA = '#2b6cb0', CB = '#c05621', CP = '#2f855a', CU = '#805ad5';
   // illustrative assets: gross return X (invest I, get X·I), so X ≥ 0; mean/SD ≥ 3.2 keeps P(X < 0) negligible
   const PRESETS = [
     ['Equal mean',   { A: { m: 1.10, s: 0.10 }, B: { m: 1.10, s: 0.20 }, rho: 0 }],
@@ -44,8 +44,9 @@
     ['Dominated A',  { A: { m: 1.05, s: 0.25 }, B: { m: 1.15, s: 0.15 }, rho: 0.2 }],
     ['Perfect hedge',{ A: { m: 1.05, s: 0.15 }, B: { m: 1.15, s: 0.25 }, rho: -1 }]];
   let A, B, rho, alpha = 0.5, preset = 0, timer = null, drag = null, showP = false;
+  let gamma = 10, showU = false, bestOn = false;   // mean-variance investor: U = mean − (γ/2)·variance
   // a preset first shows only the two assets; the portfolio appears once alpha is touched
-  const load = i => { const p = PRESETS[i][1]; preset = i; A = { ...p.A }; B = { ...p.B }; rho = p.rho; showP = false; };
+  const load = i => { const p = PRESETS[i][1]; preset = i; A = { ...p.A }; B = { ...p.B }; rho = p.rho; showP = false; bestOn = false; };
   load(0);
 
   // ---------- portfolio algebra (the board formulas) ----------
@@ -57,6 +58,11 @@
     return Math.min(1, Math.max(0, (A.s * A.s - cov()) / den)); };
   const isEff = a => { const am = aMin(); if (Math.abs(B.m - A.m) < 1e-12) return Math.abs(a - am) < 1e-9;
     return B.m > A.m ? a >= am - 1e-9 : a <= am + 1e-9; };
+  // utility of a mix and the best mix (no short sales): U(α) is a concave quadratic in α
+  const U = a => { const r = mom(a); return r.m - gamma / 2 * r.v; };
+  const aBest = () => { const a = A.s * A.s, b = B.s * B.s, c = cov(), den = a + b - 2 * c;
+    if (gamma === 0 || den < 1e-12) return U(1) >= U(0) ? 1 : 0;
+    return Math.min(1, Math.max(0, ((B.m - A.m) / gamma + (a - c)) / den)); };
   const phi = (x, m, s) => Math.exp(-0.5 * ((x - m) / s) ** 2) / (s * Math.sqrt(2 * Math.PI));
   const n2 = v => (Math.abs(v) < 0.00005 ? 0 : v).toFixed(4), sg = v => (v < -0.005 ? '−' : '') + Math.abs(v).toFixed(2);
 
@@ -77,19 +83,24 @@
   const bPlay = btn('▶ Play', () => timer ? stop() : play(), r1);
   btn('Minimum variance', () => { stop(); alpha = aMin(); showP = true; paint(); }, r1);
   const r2 = row();
-  const [lR, sR] = mkSl(r2, -100, 100, 5, Math.round(rho * 100), v => { rho = v / 100; preset = -1; paint(); });
+  const [lR, sR] = mkSl(r2, -100, 100, 5, Math.round(rho * 100), v => { rho = v / 100; preset = -1; bestOn = false; paint(); });
+  const r3 = row();
+  const [lG, sG] = mkSl(r3, 0, 100, 1, gamma * 2, v => { gamma = v / 2; showU = true; bestOn = false; paint(); });
+  const bU = btn('Show indifference curve', () => { showU = !showU; paint(); }, r3);
+  btn('Best portfolio', () => { stop(); showP = true; showU = true; alpha = aBest(); bestOn = true; paint(); }, r3);
 
   const panels = document.createElement('div'); panels.className = P + '-panels'; root.appendChild(panels);
   const mkPanel = title => { const d = document.createElement('div'); d.className = P + '-panel'; panels.appendChild(d);
     const t = document.createElement('div'); t.className = P + '-ptitle'; t.textContent = title; d.appendChild(t); return d; };
   const pL = mkPanel('Risk and mean return of every portfolio'), pR = mkPanel('PDF of return');
-  const W = 480, H = 330;
+  const W = 480, H = 300;
   const svgL = el('svg', { viewBox: `0 0 ${W} ${H}`, class: P + '-drag', role: 'img', 'aria-label': 'Mean against standard deviation' }, pL);
   const gL = el('g', {}, svgL);
   const svgR = el('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': 'Probability density of the returns' }, pR);
   const nums = document.createElement('div'); nums.className = P + '-nums'; root.appendChild(nums);
   const nAB = document.createElement('div'), nP = document.createElement('div');
-  nums.appendChild(nAB); nums.appendChild(nP);
+  const nU = document.createElement('div'); nU.style.flex = '0.85';
+  nums.appendChild(nAB); nums.appendChild(nP); nums.appendChild(nU);
   const note = document.createElement('div'); note.className = P + '-note'; root.appendChild(note);
 
   // ---------- left panel geometry: x = SD, y = mean ----------
@@ -129,6 +140,8 @@
     pb.forEach((b, i) => b.classList.toggle(P + '-on', i === preset));
     sA.value = Math.round(alpha * 100);
     lA.textContent = 'Share in B: α = ' + alpha.toFixed(2);
+    lG.textContent = 'Risk aversion: γ = ' + gamma.toFixed(1);
+    bU.textContent = showU ? 'Hide indifference curve' : 'Show indifference curve';
     lR.textContent = 'Correlation: ρ = ' + (rho < 0 ? '−' : rho > 0 ? '+' : '') + Math.abs(rho).toFixed(2);
     const q = mom(alpha), am = aMin(), qm = mom(am);
 
@@ -157,6 +170,14 @@
     [[A, CA, 'A'], [B, CB, 'B']].forEach(([o, c, t]) => {
       el('circle', { cx: lx(o.s), cy: ly(o.m), r: 10, fill: c, stroke: '#fff', 'stroke-width': 2, style: 'cursor:move' }, gL);
       el('text', { x: lx(o.s), y: ly(o.m) + 4.5, 'text-anchor': 'middle', style: 'font-size:12px;font-weight:700;fill:#fff;pointer-events:none' }, gL).textContent = t; });
+    if (showP && showU) {
+      // indifference curve through the current portfolio: mean = U0 + (γ/2)·SD²
+      const U0 = U(alpha), cpL = el('clipPath', { id: P + '-clipL' }, el('defs', {}, gL));
+      el('rect', { x: mL.l, y: mL.t, width: pwL, height: phL }, cpL);
+      const ic = []; for (let i = 0; i <= 120; i++) { const s = SX[1] * i / 120; ic.push(lx(s) + ',' + ly(U0 + gamma / 2 * s * s)); }
+      el('polyline', { points: ic.join(' '), fill: 'none', stroke: CU, 'stroke-width': 2.4, 'clip-path': `url(#${P}-clipL)` }, gL);
+      el('text', { x: mL.l + 6, y: Math.min(mL.t + phL - 6, Math.max(mL.t + 12, ly(U0) - 6)), style: 'font-size:12.5px;font-weight:600;fill:' + CU }, gL).textContent = 'U = ' + U0.toFixed(4);
+    }
     if (showP) el('circle', { cx: lx(q.sd), cy: ly(q.m), r: 8, fill: CP, stroke: '#fff', 'stroke-width': 2.5, style: 'cursor:grab' }, gL);
 
     // ===== right: densities =====
@@ -221,6 +242,25 @@
     else if (gap > 0.0005) t = 'Risk is ' + gap.toFixed(3) + ' below the no-diversification line.';
     else t = 'No diversification benefit: the assets move together perfectly.';
     if (showP && !isEff(alpha)) t += ' <b>Inefficient:</b> another portfolio has the same risk and a higher mean.';
+    // utility tracker: U as a function of the share in B, with the current mix
+    if (showP && showU) {
+      const UW = 280, UH = 128, um = { l: 8, r: 8, t: 16, b: 22 }, upw = UW - um.l - um.r, uph = UH - um.t - um.b;
+      const us = []; for (let i = 0; i <= 100; i++) us.push(U(i / 100));
+      let lo = Math.min(...us), hi = Math.max(...us); const pad = (hi - lo) * 0.12 || 0.001; lo -= pad; hi += pad;
+      const ux = a => um.l + a * upw, uy = v => um.t + uph - (v - lo) / (hi - lo) * uph;
+      const ab = aBest(), now = U(alpha), best = U(ab);
+      let s = '<svg viewBox="0 0 ' + UW + ' ' + UH + '" role="img" aria-label="Utility of each share in B">';
+      s += '<text x="' + um.l + '" y="11" font-size="12" font-weight="600" fill="' + CU + '">Utility U = mean − (γ/2)·variance</text>';
+      s += '<line x1="' + um.l + '" x2="' + (UW - um.r) + '" y1="' + (um.t + uph) + '" y2="' + (um.t + uph) + '" stroke="#cbd2d9"/>';
+      [0, 0.5, 1].forEach(a => { s += '<text x="' + ux(a) + '" y="' + (UH - 6) + '" font-size="11" fill="#7b8794" text-anchor="middle">' + a.toFixed(1) + '</text>'; });
+      s += '<polyline points="' + us.map((v, i) => ux(i / 100) + ',' + uy(v)).join(' ') + '" fill="none" stroke="#b9a5e6" stroke-width="2"/>';
+      s += '<line x1="' + um.l + '" x2="' + (UW - um.r) + '" y1="' + uy(now) + '" y2="' + uy(now) + '" stroke="' + CU + '" stroke-dasharray="3 3" opacity="0.6"/>';
+      if (bestOn) s += '<circle cx="' + ux(ab) + '" cy="' + uy(best) + '" r="5" fill="#fff" stroke="' + CU + '" stroke-width="2"/>';
+      s += '<circle cx="' + ux(alpha) + '" cy="' + uy(now) + '" r="6" fill="' + CU + '" stroke="#fff" stroke-width="2"/></svg>';
+      nU.innerHTML = s + '<div class="mv-hint">share in B &nbsp;·&nbsp; U now <b style="color:' + CU + '">' + now.toFixed(4) + '</b>'
+        + (bestOn ? ' &nbsp;·&nbsp; best <b>' + best.toFixed(4) + '</b> at α = ' + ab.toFixed(2) : '') + '</div>';
+      t += ' Utility U = ' + now.toFixed(4) + (bestOn && Math.abs(alpha - ab) < 0.005 ? ': the <b>highest indifference curve</b> that touches the set of portfolios.' : '.');
+    } else nU.innerHTML = '<div class="mv-hint" style="padding-top:20px">Move the risk-aversion slider or click “Show indifference curve” to see the investor’s utility.</div>';
     note.innerHTML = t + ' <span class="mv-hint">Illustrative numbers, not estimated from data.</span>';
   }
   paint();

@@ -744,14 +744,14 @@ ul.task-list li input[type="checkbox"] {
   const el = (t, a, p) => { const e = document.createElementNS(NS, t);
     for (const k in a) e.setAttribute(k, a[k]); if (p) p.appendChild(e); return e; };
   const CA = '#2b6cb0', CB = '#c05621', CP = '#2f855a', CU = '#805ad5';
-  // illustrative assets: gross return X (invest I, get X·I), so X ≥ 0; mean/SD ≥ 3.2 keeps P(X < 0) negligible
+  // illustrative assets: gross return X (invest I, get X·I), so X ≥ 0; mean/SD ≥ 3.7 keeps P(X < 0) negligible
   const PRESETS = [
     ['Equal mean',   { A: { m: 1.10, s: 0.10 }, B: { m: 1.10, s: 0.20 }, rho: 0 }],
     ['Equal risk',   { A: { m: 1.05, s: 0.15 }, B: { m: 1.15, s: 0.15 }, rho: 0 }],
     ['Dominated A',  { A: { m: 1.05, s: 0.25 }, B: { m: 1.15, s: 0.15 }, rho: 0.2 }],
     ['Perfect hedge',{ A: { m: 1.05, s: 0.15 }, B: { m: 1.15, s: 0.25 }, rho: -1 }]];
   let A, B, rho, alpha = 0.5, preset = 0, timer = null, drag = null, showP = false;
-  let gamma = 10, showU = false, bestOn = false;   // mean-variance investor: U = mean − (γ/2)·variance
+  let gamma = 10, showU = false, bestOn = false, xmode = 'var';   // x-axis: 'var' or 'sd'   // mean-variance investor: U = mean − (γ/2)·variance
   // a preset first shows only the two assets; the portfolio appears once alpha is touched
   const load = i => { const p = PRESETS[i][1]; preset = i; A = { ...p.A }; B = { ...p.B }; rho = p.rho; showP = false; bestOn = false; };
   load(0);
@@ -780,7 +780,10 @@ ul.task-list li input[type="checkbox"] {
   const pb = PRESETS.map(([name], i) => { const b = document.createElement('button'); b.textContent = name;
     b.onclick = () => { stop(); load(i); sR.value = Math.round(rho * 100); paint(); }; segP.appendChild(b); return b; });
   const hint = document.createElement('span'); hint.className = P + '-hint'; r0.appendChild(hint);
-  hint.textContent = 'Drag A and B to choose the assets; drag the green dot along the curve.';
+  hint.textContent = 'Drag A, B and the green dot.';
+  const segX = document.createElement('div'); segX.className = P + '-seg'; r0.appendChild(segX);
+  const xb = [['var', 'x-axis: variance'], ['sd', 'x-axis: SD']].map(([k, lab]) => { const b = document.createElement('button'); b.textContent = lab;
+    b.onclick = () => { xmode = k; paint(); }; b._k = k; segX.appendChild(b); return b; });
   const mkSl = (parent, min, max, step, val, on) => { const w = document.createElement('div'); w.className = P + '-sl'; parent.appendChild(w);
     const l = document.createElement('b'); w.appendChild(l); const s = document.createElement('input'); s.type = 'range';
     s.min = min; s.max = max; s.step = step; s.value = val; s.oninput = () => on(+s.value); w.appendChild(s); return [l, s]; };
@@ -812,18 +815,20 @@ ul.task-list li input[type="checkbox"] {
 
   // ---------- left panel geometry: x = SD, y = mean ----------
   const mL = { l: 46, r: 14, t: 12, b: 38 }, pwL = W - mL.l - mL.r, phL = H - mL.t - mL.b;
-  const SX = [0, 0.32], SY = [0.95, 1.25];
+  const SY = [0.95, 1.25], SXR = { sd: [0, 0.28], var: [0, 0.07] };
+  let SX = SXR[xmode];
+  const xv = s => xmode === 'var' ? s * s : s;                 // SD -> plotted x value
   const lx = s => mL.l + (s - SX[0]) / (SX[1] - SX[0]) * pwL, ly = m => mL.t + phL - (m - SY[0]) / (SY[1] - SY[0]) * phL;
   const ix = x => SX[0] + (x - mL.l) / pwL * (SX[1] - SX[0]), iy = y => SY[0] + (mL.t + phL - y) / phL * (SY[1] - SY[0]);
 
   // ---------- dragging (one pointer capture on the svg, so redraws don't break it) ----------
   const svgPt = e => { const p = svgL.createSVGPoint(); p.x = e.clientX; p.y = e.clientY; return p.matrixTransform(svgL.getScreenCTM().inverse()); };
   const nearestAlpha = pt => { let best = 0, bd = Infinity;
-    for (let i = 0; i <= 400; i++) { const a = i / 400, q = mom(a), d = (lx(q.sd) - pt.x) ** 2 + (ly(q.m) - pt.y) ** 2; if (d < bd) { bd = d; best = a; } }
+    for (let i = 0; i <= 400; i++) { const a = i / 400, q = mom(a), d = (lx(xv(q.sd)) - pt.x) ** 2 + (ly(q.m) - pt.y) ** 2; if (d < bd) { bd = d; best = a; } }
     return [best, Math.sqrt(bd)]; };
   svgL.addEventListener('pointerdown', e => {
     const pt = svgPt(e), q = mom(alpha), d = (x, y) => Math.hypot(pt.x - x, pt.y - y);
-    const cand = [['A', d(lx(A.s), ly(A.m))], ['B', d(lx(B.s), ly(B.m))]].concat(showP ? [['P', d(lx(q.sd), ly(q.m))]] : []).sort((u, v) => u[1] - v[1]);
+    const cand = [['A', d(lx(xv(A.s)), ly(A.m))], ['B', d(lx(xv(B.s)), ly(B.m))]].concat(showP ? [['P', d(lx(xv(q.sd)), ly(q.m))]] : []).sort((u, v) => u[1] - v[1]);
     if (cand[0][1] < 16) drag = cand[0][0];
     else if (showP) { const [a, dist] = nearestAlpha(pt); if (dist < 12) { drag = 'P'; alpha = a; } }
     if (drag) { stop(); svgL.setPointerCapture(e.pointerId); e.preventDefault(); e.stopPropagation(); paint(); }
@@ -832,7 +837,8 @@ ul.task-list li input[type="checkbox"] {
     if (!drag) return; const pt = svgPt(e);
     if (drag === 'P') alpha = nearestAlpha(pt)[0];
     else { const o = drag === 'A' ? A : B;
-      o.s = Math.min(0.30, Math.max(0.02, Math.round(ix(pt.x) * 100) / 100));
+      const xx = ix(pt.x), sd = xmode === 'var' ? Math.sqrt(Math.max(0, xx)) : xx;
+      o.s = Math.min(0.26, Math.max(0.02, Math.round(sd * 100) / 100));
       o.m = Math.min(1.24, Math.max(0.96, Math.round(iy(pt.y) * 100) / 100)); preset = -1; }
     paint();
   });
@@ -845,6 +851,7 @@ ul.task-list li input[type="checkbox"] {
 
   function paint() {
     pb.forEach((b, i) => b.classList.toggle(P + '-on', i === preset));
+    xb.forEach(b => b.classList.toggle(P + '-on', b._k === xmode));
     sA.value = Math.round(alpha * 100);
     lA.textContent = 'Share in B: α = ' + alpha.toFixed(2);
     lG.textContent = 'Risk aversion: γ = ' + gamma.toFixed(1);
@@ -854,38 +861,40 @@ ul.task-list li input[type="checkbox"] {
 
     // ===== left: mean vs SD =====
     gL.innerHTML = '';
-    [0, 0.1, 0.2, 0.3].forEach(s => { el('line', { x1: lx(s), x2: lx(s), y1: mL.t, y2: mL.t + phL, stroke: '#f0f2f5' }, gL);
-      el('text', { x: lx(s), y: mL.t + phL + 16, 'text-anchor': 'middle', class: P + '-tick' }, gL).textContent = s.toFixed(1); });
+    SX = SXR[xmode];
+    (xmode === 'var' ? [0, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07] : [0, 0.05, 0.1, 0.15, 0.2, 0.25]).forEach(s => { el('line', { x1: lx(s), x2: lx(s), y1: mL.t, y2: mL.t + phL, stroke: '#f0f2f5' }, gL);
+      el('text', { x: lx(s), y: mL.t + phL + 16, 'text-anchor': 'middle', class: P + '-tick' }, gL).textContent = s.toFixed(2); });
     [1.0, 1.05, 1.1, 1.15, 1.2].forEach(m => { el('line', { x1: mL.l, x2: mL.l + pwL, y1: ly(m), y2: ly(m), stroke: '#f0f2f5' }, gL);
       el('text', { x: mL.l - 6, y: ly(m) + 4, 'text-anchor': 'end', class: P + '-tick' }, gL).textContent = m.toFixed(2); });
-    el('text', { x: mL.l + pwL / 2, y: H - 4, 'text-anchor': 'middle', class: P + '-lab' }, gL).textContent = 'Risk: standard deviation of the return';
+    el('text', { x: mL.l + pwL / 2, y: H - 4, 'text-anchor': 'middle', class: P + '-lab' }, gL).textContent = xmode === 'var' ? 'Risk: variance of the return' : 'Risk: standard deviation of the return';
     el('text', { x: 12, y: mL.t + phL / 2, 'text-anchor': 'middle', class: P + '-lab', transform: `rotate(-90 12 ${mL.t + phL / 2})` }, gL).textContent = 'Mean gross return';
     // all portfolios, the no-diversification line, and the gap between them (only once alpha is touched)
     if (showP) {
-      const pts = []; for (let i = 0; i <= 200; i++) { const a = i / 200, r = mom(a); pts.push([a, lx(r.sd), ly(r.m)]); }
-      const chord = [[lx(A.s), ly(A.m)], [lx(B.s), ly(B.m)]];
-      el('polygon', { points: pts.map(p => p[1] + ',' + p[2]).join(' ') + ` ${chord[1][0]},${chord[1][1]} ${chord[0][0]},${chord[0][1]}`, fill: CP, opacity: 0.12 }, gL);
-      el('line', { x1: chord[0][0], y1: chord[0][1], x2: chord[1][0], y2: chord[1][1], stroke: '#9aa5b1', 'stroke-width': 1.6, 'stroke-dasharray': '5 4' }, gL);
-      const mid = [(chord[0][0] + chord[1][0]) / 2, (chord[0][1] + chord[1][1]) / 2];
+      const pts = []; for (let i = 0; i <= 200; i++) { const a = i / 200, r = mom(a); pts.push([a, lx(xv(r.sd)), ly(r.m)]); }
+      // no-diversification benchmark (ρ = 1): SD is the weighted average of the SDs — a straight line in SD space, a curve in variance space
+      const bm = []; for (let i = 0; i <= 200; i++) { const a = i / 200; bm.push([lx(xv((1 - a) * A.s + a * B.s)), ly((1 - a) * A.m + a * B.m)]); }
+      el('polygon', { points: pts.map(p => p[1] + ',' + p[2]).join(' ') + ' ' + bm.slice().reverse().map(p => p.join(',')).join(' '), fill: CP, opacity: 0.12 }, gL);
+      el('polyline', { points: bm.map(p => p.join(',')).join(' '), fill: 'none', stroke: '#9aa5b1', 'stroke-width': 1.6, 'stroke-dasharray': '5 4' }, gL);
+      const mid = bm[100];
       el('text', { x: mid[0] + 8, y: mid[1] - 6, class: P + '-tick' }, gL).textContent = 'ρ = 1: no diversification';
       const eff = pts.filter(p => isEff(p[0])), ineff = pts.filter(p => !isEff(p[0]));
       if (ineff.length > 1) el('polyline', { points: ineff.map(p => p[1] + ',' + p[2]).join(' '), fill: 'none', stroke: '#7b8794', 'stroke-width': 2.2, 'stroke-dasharray': '4 4' }, gL);
       if (eff.length > 1) el('polyline', { points: eff.map(p => p[1] + ',' + p[2]).join(' '), fill: 'none', stroke: CP, 'stroke-width': 3 }, gL);
-      el('circle', { cx: lx(qm.sd), cy: ly(qm.m), r: 4.5, fill: '#fff', stroke: CP, 'stroke-width': 2 }, gL);
-      el('line', { x1: lx(0), x2: lx(q.sd), y1: ly(q.m), y2: ly(q.m), stroke: CP, 'stroke-width': 2, opacity: 0.55 }, gL);
+      el('circle', { cx: lx(xv(qm.sd)), cy: ly(qm.m), r: 4.5, fill: '#fff', stroke: CP, 'stroke-width': 2 }, gL);
+      el('line', { x1: lx(0), x2: lx(xv(q.sd)), y1: ly(q.m), y2: ly(q.m), stroke: CP, 'stroke-width': 2, opacity: 0.55 }, gL);
     }
     [[A, CA, 'A'], [B, CB, 'B']].forEach(([o, c, t]) => {
-      el('circle', { cx: lx(o.s), cy: ly(o.m), r: 10, fill: c, stroke: '#fff', 'stroke-width': 2, style: 'cursor:move' }, gL);
-      el('text', { x: lx(o.s), y: ly(o.m) + 4.5, 'text-anchor': 'middle', style: 'font-size:12px;font-weight:700;fill:#fff;pointer-events:none' }, gL).textContent = t; });
+      el('circle', { cx: lx(xv(o.s)), cy: ly(o.m), r: 10, fill: c, stroke: '#fff', 'stroke-width': 2, style: 'cursor:move' }, gL);
+      el('text', { x: lx(xv(o.s)), y: ly(o.m) + 4.5, 'text-anchor': 'middle', style: 'font-size:12px;font-weight:700;fill:#fff;pointer-events:none' }, gL).textContent = t; });
     if (showP && showU) {
       // indifference curve through the current portfolio: mean = U0 + (γ/2)·SD²
       const U0 = U(alpha), cpL = el('clipPath', { id: P + '-clipL' }, el('defs', {}, gL));
       el('rect', { x: mL.l, y: mL.t, width: pwL, height: phL }, cpL);
-      const ic = []; for (let i = 0; i <= 120; i++) { const s = SX[1] * i / 120; ic.push(lx(s) + ',' + ly(U0 + gamma / 2 * s * s)); }
+      const ic = []; for (let i = 0; i <= 120; i++) { const x = SX[1] * i / 120, v = xmode === 'var' ? x : x * x; ic.push(lx(x) + ',' + ly(U0 + gamma / 2 * v)); }
       el('polyline', { points: ic.join(' '), fill: 'none', stroke: CU, 'stroke-width': 2.4, 'clip-path': `url(#${P}-clipL)` }, gL);
       el('text', { x: mL.l + 6, y: Math.min(mL.t + phL - 6, Math.max(mL.t + 12, ly(U0) - 6)), style: 'font-size:12.5px;font-weight:600;fill:' + CU }, gL).textContent = 'U = ' + U0.toFixed(4);
     }
-    if (showP) el('circle', { cx: lx(q.sd), cy: ly(q.m), r: 8, fill: CP, stroke: '#fff', 'stroke-width': 2.5, style: 'cursor:grab' }, gL);
+    if (showP) el('circle', { cx: lx(xv(q.sd)), cy: ly(q.m), r: 8, fill: CP, stroke: '#fff', 'stroke-width': 2.5, style: 'cursor:grab' }, gL);
 
     // ===== right: densities =====
     svgR.innerHTML = '';

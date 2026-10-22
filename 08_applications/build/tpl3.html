@@ -1,163 +1,230 @@
 ```{=html}
-<div id="pf-root"></div>
+<div id="mv-root"></div>
 <style>
-  #pf-root { max-width:780px; margin:0 auto; padding:2px 0; color:#1f2933; text-align:left;
-             font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; font-size:16px; line-height:1.3; }
-  #pf-root .pf-row { display:flex; flex-wrap:wrap; gap:10px 18px; align-items:center; margin-bottom:6px; }
-  #pf-root .pf-sl { display:flex; align-items:center; gap:10px; flex:1; min-width:260px; }
-  #pf-root .pf-sl b { white-space:nowrap; min-width:150px; font-size:16px; }
-  #pf-root input[type=range] { flex:1; margin:0; }
-  #pf-root button { border:0; margin:0; border-radius:8px; padding:5px 13px; cursor:pointer; font-family:inherit; font-size:14.5px;
+  #mv-root { max-width:1000px; margin:0 auto; padding:2px 0; color:#1f2933; text-align:left;
+             font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; font-size:15px; line-height:1.3; }
+  #mv-root .mv-row { display:flex; flex-wrap:wrap; gap:8px 16px; align-items:center; margin-bottom:6px; }
+  #mv-root .mv-sl { display:flex; align-items:center; gap:10px; flex:1; min-width:280px; }
+  #mv-root .mv-sl b { white-space:nowrap; min-width:150px; font-size:15.5px; }
+  #mv-root input[type=range] { flex:1; margin:0; }
+  #mv-root button { border:0; margin:0; border-radius:8px; padding:5px 12px; cursor:pointer; font-family:inherit; font-size:14px;
                 line-height:1.2; text-transform:none; letter-spacing:normal; background:#e4e7eb; color:#323f4b; }
-  #pf-root button:hover { filter:brightness(.94); }
-  #pf-root .pf-chk { font-size:14.5px; color:#52606d; display:flex; align-items:center; gap:6px; cursor:pointer; user-select:none; }
-  #pf-root .pf-body { display:flex; gap:14px; align-items:flex-start; }
-  #pf-root .pf-chart { flex:1.75; min-width:0; }
-  #pf-root .pf-side { flex:1; min-width:0; }
-  #pf-root svg { width:100%; height:auto; display:block; margin:0; max-height:none; }
-  #pf-root .pf-tick { font-size:12px; fill:#7b8794; }
-  #pf-root .pf-lab { font-size:13px; fill:#52606d; }
-  #pf-root table { border-collapse:collapse; width:100%; font-size:14px; margin:4px 0 0; }
-  #pf-root td { padding:3px 4px; border:0; border-top:1px solid #edf0f3; background:none; text-align:right; white-space:nowrap; }
-  #pf-root td:first-child { text-align:left; color:#52606d; }
-  #pf-root .pf-sw { display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:6px; }
-  #pf-root .pf-note { font-size:14.5px; color:#323f4b; margin:8px 2px 0; min-height:40px; }
-  #pf-root .pf-sub { font-size:12px; color:#9aa5b1; }
+  #mv-root button:hover { filter:brightness(.94); }
+  #mv-root .mv-seg { display:inline-flex; flex-wrap:wrap; background:#eef1f4; border-radius:9px; padding:3px; }
+  #mv-root .mv-seg button { background:transparent; color:#7b8794; padding:5px 11px; }
+  #mv-root .mv-seg button.mv-on { background:#fff; color:#1f2933; box-shadow:0 1px 3px rgba(0,0,0,.14); }
+  #mv-root .mv-hint { font-size:13px; color:#7b8794; }
+  #mv-root .mv-panels { display:flex; gap:16px; }
+  #mv-root .mv-panel { flex:1; min-width:0; }
+  #mv-root .mv-ptitle { font-size:14px; font-weight:600; color:#323f4b; margin:0 0 2px 4px; }
+  #mv-root svg { width:100%; height:auto; display:block; margin:0; max-height:none; }
+  #mv-root svg.mv-drag { touch-action:none; user-select:none; }
+  #mv-root .mv-tick { font-size:12px; fill:#7b8794; }
+  #mv-root .mv-lab { font-size:13px; fill:#52606d; }
+  #mv-root .mv-nums { display:flex; flex-wrap:wrap; gap:8px 18px; margin-top:6px; align-items:flex-start; }
+  #mv-root .mv-nums > div { flex:1; min-width:280px; }
+  #mv-root table { border-collapse:collapse; width:100%; font-size:13.5px; margin:0; }
+  #mv-root th { font-weight:500; color:#7b8794; text-align:right; padding:2px 5px; border:0; background:none; font-size:12.5px; }
+  #mv-root td { padding:2px 5px; border:0; border-top:1px solid #edf0f3; background:none; text-align:right; white-space:nowrap; }
+  #mv-root th:first-child, #mv-root td:first-child { text-align:left; }
+  #mv-root .mv-sw { display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:6px; }
+  #mv-root .mv-nums svg { max-width:300px; }
+  #mv-root .mv-note { font-size:14.5px; color:#323f4b; margin:4px 0 0; }
+  @media (max-width: 700px) { #mv-root .mv-panels, #mv-root .mv-nums { flex-direction:column; } }
 </style>
 <script>
 (function () {
-  const CFG = __CFG__;
-  const P = 'pf', root = document.getElementById(P + '-root');
+  const P = 'mv', root = document.getElementById(P + '-root');
   const NS = 'http://www.w3.org/2000/svg';
   const el = (t, a, p) => { const e = document.createElementNS(NS, t);
     for (const k in a) e.setAttribute(k, a[k]); if (p) p.appendChild(e); return e; };
   const CA = '#2b6cb0', CB = '#c05621', CP = '#2f855a';
-  const { muA, sdA, muB, sdB } = CFG, N = CFG.z1.length;
-  let alpha = 0, rho = CFG.rho, bars = false, timer = null;
-
-  // ---------- controls ----------
-  const mkSlider = (min, max, step, val, on) => { const s = document.createElement('input'); s.type = 'range';
-    s.min = min; s.max = max; s.step = step; s.value = val; s.oninput = () => on(+s.value); return s; };
-  const r1 = document.createElement('div'); r1.className = P + '-row'; root.appendChild(r1);
-  const sl1 = document.createElement('div'); sl1.className = P + '-sl'; r1.appendChild(sl1);
-  const l1 = document.createElement('b'); sl1.appendChild(l1);
-  const sA = mkSlider(0, 100, 1, 0, v => { stop(); alpha = v / 100; paint(); }); sl1.appendChild(sA);
-  const bPlay = document.createElement('button'); bPlay.textContent = '▶ Play'; bPlay.onclick = () => timer ? stop() : play(); r1.appendChild(bPlay);
-  const bMin = document.createElement('button'); bMin.textContent = 'Minimum variance'; bMin.onclick = () => { stop(); alpha = minW(); sA.value = Math.round(alpha * 100); paint(); }; r1.appendChild(bMin);
-  const r2 = document.createElement('div'); r2.className = P + '-row'; root.appendChild(r2);
-  const sl2 = document.createElement('div'); sl2.className = P + '-sl'; r2.appendChild(sl2);
-  const l2 = document.createElement('b'); sl2.appendChild(l2);
-  const sR = mkSlider(-80, 80, 5, Math.round(rho * 100), v => { rho = v / 100; paint(); }); sl2.appendChild(sR);
-  const lab = document.createElement('label'); lab.className = P + '-chk';
-  const cb = document.createElement('input'); cb.type = 'checkbox'; cb.onchange = () => { bars = cb.checked; paint(); };
-  lab.appendChild(cb); lab.appendChild(document.createTextNode('Show 1,000 simulated weeks')); r2.appendChild(lab);
-
-  const body = document.createElement('div'); body.className = P + '-body'; root.appendChild(body);
-  const chartDiv = document.createElement('div'); chartDiv.className = P + '-chart'; body.appendChild(chartDiv);
-  const side = document.createElement('div'); side.className = P + '-side'; body.appendChild(side);
-  const note = document.createElement('div'); note.className = P + '-note'; root.appendChild(note);
+  // illustrative assets: weekly mean and SD in %
+  const PRESETS = [
+    ['Textbook',     { A: { m: 0.1, s: 2 }, B: { m: 0.4, s: 3 }, rho: -0.3 }],
+    ['Equal risk',   { A: { m: 0.1, s: 2 }, B: { m: 0.4, s: 2 }, rho: 0 }],
+    ['Dominated A',  { A: { m: 0.1, s: 3 }, B: { m: 0.4, s: 2 }, rho: 0.2 }],
+    ['Perfect hedge',{ A: { m: 0.1, s: 2 }, B: { m: 0.4, s: 3 }, rho: -1 }]];
+  let A, B, rho, alpha = 0.5, preset = 0, timer = null, drag = null;
+  const load = i => { const p = PRESETS[i][1]; preset = i; A = { ...p.A }; B = { ...p.B }; rho = p.rho; };
+  load(0);
 
   // ---------- portfolio algebra (the board formulas) ----------
-  const cov = () => rho * sdA * sdB;
-  const moments = a => { const m = (1 - a) * muA + a * muB,
-      vA = (1 - a) * (1 - a) * sdA * sdA, vB = a * a * sdB * sdB, vC = 2 * a * (1 - a) * cov();
-    return { m, vA, vB, vC, v: vA + vB + vC, sd: Math.sqrt(vA + vB + vC) }; };
-  const minW = () => Math.min(1, Math.max(0, (sdA * sdA - cov()) / (sdA * sdA + sdB * sdB - 2 * cov())));
+  const cov = () => rho * A.s * B.s;
+  const mom = a => { const vA = (1 - a) ** 2 * A.s * A.s, vB = a * a * B.s * B.s, vC = 2 * a * (1 - a) * cov(), v = Math.max(0, vA + vB + vC);
+    return { m: (1 - a) * A.m + a * B.m, vA, vB, vC, v, sd: Math.sqrt(v) }; };
+  const aMin = () => { const den = A.s * A.s + B.s * B.s - 2 * cov();
+    if (den < 1e-12) return B.m >= A.m ? 1 : 0;              // identical risk at every mix: take the higher mean
+    return Math.min(1, Math.max(0, (A.s * A.s - cov()) / den)); };
+  const isEff = a => { const am = aMin(); if (Math.abs(B.m - A.m) < 1e-12) return Math.abs(a - am) < 1e-9;
+    return B.m > A.m ? a >= am - 1e-9 : a <= am + 1e-9; };
   const phi = (x, m, s) => Math.exp(-0.5 * ((x - m) / s) ** 2) / (s * Math.sqrt(2 * Math.PI));
-  const f2 = v => (Math.abs(v) < 0.005 ? 0 : v).toFixed(2);
-  const pcs = v => (v < 0 ? '−' : '') + Math.abs(v).toFixed(2) + '%';
+  const n2 = v => (Math.abs(v) < 0.005 ? 0 : v).toFixed(2), sg = v => (v < -0.005 ? '−' : '') + Math.abs(v).toFixed(2);
 
-  function play() {
-    if (alpha >= 1) alpha = 0;
-    bPlay.textContent = '❚❚ Pause';
-    timer = setInterval(() => { alpha = Math.min(1, alpha + 0.005); sA.value = Math.round(alpha * 100); paint();
-      if (alpha >= 1) stop(); }, 30);
-  }
+  // ---------- controls ----------
+  const row = () => { const r = document.createElement('div'); r.className = P + '-row'; root.appendChild(r); return r; };
+  const r0 = row();
+  const segP = document.createElement('div'); segP.className = P + '-seg'; r0.appendChild(segP);
+  const pb = PRESETS.map(([name], i) => { const b = document.createElement('button'); b.textContent = name;
+    b.onclick = () => { stop(); load(i); sR.value = Math.round(rho * 100); paint(); }; segP.appendChild(b); return b; });
+  const hint = document.createElement('span'); hint.className = P + '-hint'; r0.appendChild(hint);
+  hint.textContent = 'Drag A and B to choose the assets; drag the green dot along the curve.';
+  const mkSl = (parent, min, max, step, val, on) => { const w = document.createElement('div'); w.className = P + '-sl'; parent.appendChild(w);
+    const l = document.createElement('b'); w.appendChild(l); const s = document.createElement('input'); s.type = 'range';
+    s.min = min; s.max = max; s.step = step; s.value = val; s.oninput = () => on(+s.value); w.appendChild(s); return [l, s]; };
+  const r1 = row();
+  const [lA, sA] = mkSl(r1, 0, 100, 1, 50, v => { stop(); alpha = v / 100; paint(); });
+  const btn = (txt, fn, parent) => { const b = document.createElement('button'); b.textContent = txt; b.onclick = fn; parent.appendChild(b); return b; };
+  const bPlay = btn('▶ Play', () => timer ? stop() : play(), r1);
+  btn('Minimum variance', () => { stop(); alpha = aMin(); paint(); }, r1);
+  const r2 = row();
+  const [lR, sR] = mkSl(r2, -100, 100, 5, Math.round(rho * 100), v => { rho = v / 100; preset = -1; paint(); });
+
+  const panels = document.createElement('div'); panels.className = P + '-panels'; root.appendChild(panels);
+  const mkPanel = title => { const d = document.createElement('div'); d.className = P + '-panel'; panels.appendChild(d);
+    const t = document.createElement('div'); t.className = P + '-ptitle'; t.textContent = title; d.appendChild(t); return d; };
+  const pL = mkPanel('Risk and mean return of every mix'), pR = mkPanel('Distribution of the return');
+  const W = 480, H = 330;
+  const svgL = el('svg', { viewBox: `0 0 ${W} ${H}`, class: P + '-drag', role: 'img', 'aria-label': 'Mean against standard deviation' }, pL);
+  const gL = el('g', {}, svgL);
+  const svgR = el('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': 'Probability density of the returns' }, pR);
+  const nums = document.createElement('div'); nums.className = P + '-nums'; root.appendChild(nums);
+  const nAB = document.createElement('div'), nP = document.createElement('div'), nV = document.createElement('div');
+  nums.appendChild(nAB); nums.appendChild(nP); nums.appendChild(nV);
+  const note = document.createElement('div'); note.className = P + '-note'; root.appendChild(note);
+
+  // ---------- left panel geometry: x = SD, y = mean ----------
+  const mL = { l: 46, r: 14, t: 12, b: 38 }, pwL = W - mL.l - mL.r, phL = H - mL.t - mL.b;
+  const SX = [0, 4], SY = [-0.2, 0.7];
+  const lx = s => mL.l + (s - SX[0]) / (SX[1] - SX[0]) * pwL, ly = m => mL.t + phL - (m - SY[0]) / (SY[1] - SY[0]) * phL;
+  const ix = x => SX[0] + (x - mL.l) / pwL * (SX[1] - SX[0]), iy = y => SY[0] + (mL.t + phL - y) / phL * (SY[1] - SY[0]);
+
+  // ---------- dragging (one pointer capture on the svg, so redraws don't break it) ----------
+  const svgPt = e => { const p = svgL.createSVGPoint(); p.x = e.clientX; p.y = e.clientY; return p.matrixTransform(svgL.getScreenCTM().inverse()); };
+  const nearestAlpha = pt => { let best = 0, bd = Infinity;
+    for (let i = 0; i <= 400; i++) { const a = i / 400, q = mom(a), d = (lx(q.sd) - pt.x) ** 2 + (ly(q.m) - pt.y) ** 2; if (d < bd) { bd = d; best = a; } }
+    return [best, Math.sqrt(bd)]; };
+  svgL.addEventListener('pointerdown', e => {
+    const pt = svgPt(e), q = mom(alpha), d = (x, y) => Math.hypot(pt.x - x, pt.y - y);
+    const cand = [['A', d(lx(A.s), ly(A.m))], ['B', d(lx(B.s), ly(B.m))], ['P', d(lx(q.sd), ly(q.m))]].sort((u, v) => u[1] - v[1]);
+    if (cand[0][1] < 16) drag = cand[0][0];
+    else { const [a, dist] = nearestAlpha(pt); if (dist < 12) { drag = 'P'; alpha = a; } }
+    if (drag) { stop(); svgL.setPointerCapture(e.pointerId); e.preventDefault(); e.stopPropagation(); paint(); }
+  });
+  svgL.addEventListener('pointermove', e => {
+    if (!drag) return; const pt = svgPt(e);
+    if (drag === 'P') alpha = nearestAlpha(pt)[0];
+    else { const o = drag === 'A' ? A : B;
+      o.s = Math.min(3.75, Math.max(0.25, Math.round(ix(pt.x) * 4) / 4));
+      o.m = Math.min(0.65, Math.max(-0.15, Math.round(iy(pt.y) * 20) / 20)); preset = -1; }
+    paint();
+  });
+  const end = () => { drag = null; };
+  svgL.addEventListener('pointerup', end); svgL.addEventListener('pointercancel', end);
+
+  function play() { if (alpha >= 1) alpha = 0; bPlay.textContent = '❚❚ Pause';
+    timer = setInterval(() => { alpha = Math.min(1, alpha + 0.005); paint(); if (alpha >= 1) stop(); }, 30); }
   function stop() { if (timer) { clearInterval(timer); timer = null; } bPlay.textContent = '▶ Play'; }
 
   function paint() {
-    l1.textContent = 'Share in B: ' + Math.round(alpha * 100) + '%';
-    l2.textContent = 'Correlation: ' + (rho < 0 ? '−' : rho > 0 ? '+' : '') + Math.abs(rho).toFixed(2);
-    const q = moments(alpha), mw = minW(), qm = moments(mw);
+    pb.forEach((b, i) => b.classList.toggle(P + '-on', i === preset));
+    sA.value = Math.round(alpha * 100);
+    lA.textContent = 'Share in B: α = ' + Math.round(alpha * 100) + '%';
+    lR.textContent = 'Correlation: ρ = ' + (rho < 0 ? '−' : rho > 0 ? '+' : '') + Math.abs(rho).toFixed(2);
+    const q = mom(alpha), am = aMin(), qm = mom(am);
 
-    // ---------- distribution chart ----------
-    chartDiv.innerHTML = '';
-    const W = 520, H = 330, m = { l: 12, r: 10, t: 12, b: 36 }, pw = W - m.l - m.r, ph = H - m.t - m.b;
-    const x0 = -10, x1 = 11, xs = v => m.l + (v - x0) / (x1 - x0) * pw;
-    const ymax = 1.12 * Math.max(phi(0, 0, qm.sd), phi(0, 0, sdA));
-    const ys = d => m.t + ph - d / ymax * ph;
-    const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': 'Distribution of weekly portfolio return' }, chartDiv);
-    for (let v = -10; v <= 10; v += 5) {
-      el('line', { x1: xs(v), x2: xs(v), y1: m.t, y2: m.t + ph, stroke: v === 0 ? '#cbd2d9' : '#edf0f3' }, svg);
-      el('text', { x: xs(v), y: m.t + ph + 16, 'text-anchor': 'middle', class: P + '-tick' }, svg).textContent = v + '%';
+    // ===== left: mean vs SD =====
+    gL.innerHTML = '';
+    for (let s = 0; s <= 4; s++) { el('line', { x1: lx(s), x2: lx(s), y1: mL.t, y2: mL.t + phL, stroke: '#f0f2f5' }, gL);
+      el('text', { x: lx(s), y: mL.t + phL + 16, 'text-anchor': 'middle', class: P + '-tick' }, gL).textContent = s + '%'; }
+    [-0.2, 0, 0.2, 0.4, 0.6].forEach(m => { el('line', { x1: mL.l, x2: mL.l + pwL, y1: ly(m), y2: ly(m), stroke: m === 0 ? '#cbd2d9' : '#f0f2f5' }, gL);
+      el('text', { x: mL.l - 6, y: ly(m) + 4, 'text-anchor': 'end', class: P + '-tick' }, gL).textContent = sg(m) + '%'; });
+    el('text', { x: mL.l + pwL / 2, y: H - 4, 'text-anchor': 'middle', class: P + '-lab' }, gL).textContent = 'Risk: standard deviation of the return';
+    el('text', { x: 12, y: mL.t + phL / 2, 'text-anchor': 'middle', class: P + '-lab', transform: `rotate(-90 12 ${mL.t + phL / 2})` }, gL).textContent = 'Mean return';
+    // all mixes, the no-diversification line, and the gap between them
+    const pts = []; for (let i = 0; i <= 200; i++) { const a = i / 200, r = mom(a); pts.push([a, lx(r.sd), ly(r.m)]); }
+    const chord = [[lx(A.s), ly(A.m)], [lx(B.s), ly(B.m)]];
+    el('polygon', { points: pts.map(p => p[1] + ',' + p[2]).join(' ') + ` ${chord[1][0]},${chord[1][1]} ${chord[0][0]},${chord[0][1]}`, fill: CP, opacity: 0.12 }, gL);
+    el('line', { x1: chord[0][0], y1: chord[0][1], x2: chord[1][0], y2: chord[1][1], stroke: '#9aa5b1', 'stroke-width': 1.6, 'stroke-dasharray': '5 4' }, gL);
+    const mid = [(chord[0][0] + chord[1][0]) / 2, (chord[0][1] + chord[1][1]) / 2];
+    el('text', { x: mid[0] + 8, y: mid[1] - 6, class: P + '-tick' }, gL).textContent = 'ρ = 1: no diversification';
+    const eff = pts.filter(p => isEff(p[0])), ineff = pts.filter(p => !isEff(p[0]));
+    if (ineff.length > 1) el('polyline', { points: ineff.map(p => p[1] + ',' + p[2]).join(' '), fill: 'none', stroke: '#7b8794', 'stroke-width': 2.2, 'stroke-dasharray': '4 4' }, gL);
+    if (eff.length > 1) el('polyline', { points: eff.map(p => p[1] + ',' + p[2]).join(' '), fill: 'none', stroke: CP, 'stroke-width': 3 }, gL);
+    el('circle', { cx: lx(qm.sd), cy: ly(qm.m), r: 4.5, fill: '#fff', stroke: CP, 'stroke-width': 2 }, gL);
+    // the portfolio's SD drawn as a bar: same width idea as the ±1 SD band on the right
+    el('line', { x1: lx(0), x2: lx(q.sd), y1: ly(q.m), y2: ly(q.m), stroke: CP, 'stroke-width': 2, opacity: 0.55 }, gL);
+    [[A, CA, 'A'], [B, CB, 'B']].forEach(([o, c, t]) => {
+      el('circle', { cx: lx(o.s), cy: ly(o.m), r: 10, fill: c, stroke: '#fff', 'stroke-width': 2, style: 'cursor:move' }, gL);
+      el('text', { x: lx(o.s), y: ly(o.m) + 4.5, 'text-anchor': 'middle', style: 'font-size:12px;font-weight:700;fill:#fff;pointer-events:none' }, gL).textContent = t; });
+    el('circle', { cx: lx(q.sd), cy: ly(q.m), r: 8, fill: CP, stroke: '#fff', 'stroke-width': 2.5, style: 'cursor:grab' }, gL);
+
+    // ===== right: densities =====
+    svgR.innerHTML = '';
+    const mR = { l: 14, r: 14, t: 12, b: 38 }, pwR = W - mR.l - mR.r, phR = H - mR.t - mR.b;
+    const x0 = Math.min(A.m - 3.5 * A.s, B.m - 3.5 * B.s), x1 = Math.max(A.m + 3.5 * A.s, B.m + 3.5 * B.s);
+    const rx = v => mR.l + (v - x0) / (x1 - x0) * pwR;
+    const cap = 1.15 * Math.max(phi(0, 0, A.s), phi(0, 0, B.s), phi(0, 0, Math.max(qm.sd, 0.45 * Math.min(A.s, B.s))));
+    const ry = d => mR.t + phR - Math.min(d, cap * 1.02) / cap * phR;
+    const span = x1 - x0, step = span > 16 ? 5 : span > 8 ? 2 : 1;
+    for (let v = Math.ceil(x0 / step) * step; v <= x1; v += step) {
+      el('line', { x1: rx(v), x2: rx(v), y1: mR.t, y2: mR.t + phR, stroke: v === 0 ? '#cbd2d9' : '#f0f2f5' }, svgR);
+      el('text', { x: rx(v), y: mR.t + phR + 16, 'text-anchor': 'middle', class: P + '-tick' }, svgR).textContent = v + '%'; }
+    el('text', { x: W / 2, y: H - 4, 'text-anchor': 'middle', class: P + '-lab' }, svgR).textContent = 'Return in one period';
+    const curve = (mu, s, close, lo, hi) => { const o = []; lo = lo == null ? x0 : lo; hi = hi == null ? x1 : hi;
+      for (let i = 0; i <= 240; i++) { const v = lo + (hi - lo) * i / 240; o.push(rx(v) + ',' + ry(phi(v, mu, s))); }
+      return o.join(' ') + (close ? ` ${rx(hi)},${ry(0)} ${rx(lo)},${ry(0)}` : ''); };
+    if (q.sd > 0.03) {
+      el('polygon', { points: curve(q.m, q.sd, true), fill: CP, opacity: 0.16 }, svgR);
+      el('polygon', { points: curve(q.m, q.sd, true, q.m - q.sd, q.m + q.sd), fill: CP, opacity: 0.22 }, svgR);
+      el('polyline', { points: curve(q.m, q.sd), fill: 'none', stroke: CP, 'stroke-width': 3 }, svgR);
+      if (phi(q.m, q.m, q.sd) > cap) el('text', { x: rx(q.m) + 8, y: mR.t + 12, style: 'font-size:12.5px;fill:' + CP }, svgR).textContent = '↑ taller than shown';
+      const yb = mR.t + phR + 0;
+      el('line', { x1: rx(q.m - q.sd), x2: rx(q.m + q.sd), y1: yb - 3, y2: yb - 3, stroke: CP, 'stroke-width': 3 }, svgR);
+    } else {
+      el('line', { x1: rx(q.m), x2: rx(q.m), y1: ry(0), y2: mR.t + 6, stroke: CP, 'stroke-width': 4 }, svgR);
+      el('text', { x: rx(q.m) + 8, y: mR.t + 16, style: 'font-size:13px;font-weight:600;fill:' + CP }, svgR).textContent = 'certain return ' + sg(q.m) + '%';
     }
-    el('text', { x: W / 2, y: H - 4, 'text-anchor': 'middle', class: P + '-lab' }, svg).textContent = 'Weekly return';
-    const curve = (mu, sd, close) => { const pts = [];
-      for (let i = 0; i <= 200; i++) { const v = x0 + (x1 - x0) * i / 200; pts.push([xs(v), ys(phi(v, mu, sd))]); }
-      return pts.map(p => p.join(',')).join(' ') + (close ? ` ${xs(x1)},${ys(0)} ${xs(x0)},${ys(0)}` : ''); };
-    if (bars) {
-      const bw = 0.5, nb = Math.round((x1 - x0) / bw), c = new Array(nb).fill(0), a = alpha;
-      const zb = CFG.z1.map((_, i) => { const xa = muA + sdA * CFG.z1[i], xb = muB + sdB * (rho * CFG.z1[i] + Math.sqrt(1 - rho * rho) * CFG.z2[i]);
-        return (1 - a) * xa + a * xb; });
-      zb.forEach(v => { const k = Math.floor((v - x0) / bw); if (k >= 0 && k < nb) c[k]++; });
-      c.forEach((n, i) => { if (n) { const d = n / (N * bw), x = xs(x0 + i * bw);
-        el('rect', { x: x + 0.5, y: ys(d), width: Math.max(1, xs(x0 + (i + 1) * bw) - x - 1), height: ys(0) - ys(d), fill: CP, opacity: 0.45 }, svg); } });
-    }
-    // ghosts of the two assets
-    el('polyline', { points: curve(muA, sdA), fill: 'none', stroke: CA, 'stroke-width': 2, opacity: 0.55, 'stroke-dasharray': '6 4' }, svg);
-    el('polyline', { points: curve(muB, sdB), fill: 'none', stroke: CB, 'stroke-width': 2, opacity: 0.55, 'stroke-dasharray': '6 4' }, svg);
-    // portfolio
-    if (!bars) el('polygon', { points: curve(q.m, q.sd, true), fill: CP, opacity: 0.28 }, svg);
-    el('polyline', { points: curve(q.m, q.sd), fill: 'none', stroke: CP, 'stroke-width': 3 }, svg);
-    // mean line + 1 SD bracket
-    el('line', { x1: xs(q.m), x2: xs(q.m), y1: ys(phi(q.m, q.m, q.sd)), y2: ys(0), stroke: '#1f2933', 'stroke-width': 1.6 }, svg);
-    const yb = ys(phi(q.m + q.sd, q.m, q.sd));
-    el('line', { x1: xs(q.m - q.sd), x2: xs(q.m + q.sd), y1: yb, y2: yb, stroke: '#1f2933', 'stroke-width': 2 }, svg);
-    el('line', { x1: xs(q.m - q.sd), x2: xs(q.m - q.sd), y1: yb - 5, y2: yb + 5, stroke: '#1f2933', 'stroke-width': 2 }, svg);
-    el('line', { x1: xs(q.m + q.sd), x2: xs(q.m + q.sd), y1: yb - 5, y2: yb + 5, stroke: '#1f2933', 'stroke-width': 2 }, svg);
-    el('text', { x: xs(q.m + q.sd) + 6, y: yb + 4, style: 'font-size:13px;font-weight:600;fill:#1f2933' }, svg).textContent = '±1 SD';
-    // legend
-    [['Asset A', CA, 0.55, '6 4'], ['Asset B', CB, 0.55, '6 4'], ['Your portfolio', CP, 1, '']].forEach(([t, c, o, d], i) => {
-      el('line', { x1: W - 140, x2: W - 118, y1: m.t + 12 + i * 18, y2: m.t + 12 + i * 18, stroke: c, 'stroke-width': 2.6, opacity: o, 'stroke-dasharray': d }, svg);
-      el('text', { x: W - 112, y: m.t + 16 + i * 18, class: P + '-lab' }, svg).textContent = t; });
+    el('polyline', { points: curve(A.m, A.s), fill: 'none', stroke: CA, 'stroke-width': 2, 'stroke-dasharray': '6 4', opacity: 0.8 }, svgR);
+    el('polyline', { points: curve(B.m, B.s), fill: 'none', stroke: CB, 'stroke-width': 2, 'stroke-dasharray': '6 4', opacity: 0.8 }, svgR);
+    el('line', { x1: rx(q.m), x2: rx(q.m), y1: ry(Math.min(phi(q.m, q.m, Math.max(q.sd, 1e-6)), cap)), y2: ry(0), stroke: '#1f2933', 'stroke-width': 1.4 }, svgR);
+    [['Asset A', CA, '6 4'], ['Asset B', CB, '6 4'], ['Portfolio (shaded: ±1 SD)', CP, '']].forEach(([t, c, d], i) => {
+      el('line', { x1: W - 196, x2: W - 174, y1: mR.t + 10 + i * 17, y2: mR.t + 10 + i * 17, stroke: c, 'stroke-width': 2.6, 'stroke-dasharray': d }, svgR);
+      el('text', { x: W - 168, y: mR.t + 14 + i * 17, class: P + '-lab' }, svgR).textContent = t; });
 
-    // ---------- side: SD(alpha) curve + read-outs ----------
-    side.innerHTML = '';
-    const SW = 250, SH = 190, sm = { l: 34, r: 16, t: 10, b: 34 }, spw = SW - sm.l - sm.r, sph = SH - sm.t - sm.b;
-    const smax = Math.max(sdA, sdB) * 1.08, sx = a => sm.l + a * spw, sy = v => sm.t + sph - v / smax * sph;
-    const s2 = el('svg', { viewBox: `0 0 ${SW} ${SH}`, role: 'img', 'aria-label': 'Portfolio SD as a function of the share in B' }, side);
-    [0, 1, 2, 3].forEach(v => { el('line', { x1: sm.l, x2: sm.l + spw, y1: sy(v), y2: sy(v), stroke: '#edf0f3' }, s2);
-      el('text', { x: sm.l - 5, y: sy(v) + 4, 'text-anchor': 'end', class: P + '-tick' }, s2).textContent = v + '%'; });
-    [0, 0.5, 1].forEach(a => el('text', { x: sx(a), y: SH - 18, 'text-anchor': 'middle', class: P + '-tick' }, s2).textContent = Math.round(a * 100) + '%');
-    el('text', { x: sm.l + spw / 2, y: SH - 1, 'text-anchor': 'middle', class: P + '-lab' }, s2).textContent = 'share in B';
-    const line = [], chord = [];
-    for (let i = 0; i <= 100; i++) { const a = i / 100; line.push([sx(a), sy(moments(a).sd)]); chord.push([sx(a), sy((1 - a) * sdA + a * sdB)]); }
-    el('polygon', { points: line.map(p => p.join(',')).join(' ') + ' ' + chord.slice().reverse().map(p => p.join(',')).join(' '), fill: CP, opacity: 0.18 }, s2);
-    el('polyline', { points: chord.map(p => p.join(',')).join(' '), fill: 'none', stroke: '#7b8794', 'stroke-width': 1.6, 'stroke-dasharray': '5 4' }, s2);
-    el('polyline', { points: line.map(p => p.join(',')).join(' '), fill: 'none', stroke: CP, 'stroke-width': 2.6 }, s2);
-    el('circle', { cx: sx(mw), cy: sy(qm.sd), r: 3.5, fill: '#fff', stroke: CP, 'stroke-width': 2 }, s2);
-    el('circle', { cx: sx(alpha), cy: sy(q.sd), r: 6, fill: CP, stroke: '#fff', 'stroke-width': 2 }, s2);
-    const chordNow = (1 - alpha) * sdA + alpha * sdB;
-    const tbl = document.createElement('table');
-    tbl.innerHTML =
-      '<tr><td>Mean return</td><td><b>' + pcs(q.m) + '</b></td></tr>' +
-      '<tr><td>SD (risk)</td><td><b>' + pcs(q.sd) + '</b></td></tr>' +
-      '<tr><td>5% of weeks are worse than</td><td>' + pcs(q.m - 1.645 * q.sd) + '</td></tr>' +
-      '<tr><td><span class="pf-sw" style="background:' + CA + '"></span>(1−α)²σ²<sub>A</sub></td><td>' + f2(q.vA) + '</td></tr>' +
-      '<tr><td><span class="pf-sw" style="background:' + CB + '"></span>α²σ²<sub>B</sub></td><td>' + f2(q.vB) + '</td></tr>' +
-      '<tr><td><span class="pf-sw" style="background:#9aa5b1"></span>2α(1−α)Cov</td><td>' + (q.vC < 0 ? '−' : '') + f2(Math.abs(q.vC)) + '</td></tr>' +
-      '<tr><td>Variance (sum)</td><td><b>' + f2(q.v) + '</b></td></tr>';
-    side.appendChild(tbl);
+    // ===== numbers =====
+    const sw = c => '<span class="mv-sw" style="background:' + c + '"></span>';
+    nAB.innerHTML = '<table><tr><th></th><th>Mean</th><th>SD</th><th>Variance</th></tr>'
+      + '<tr><td>' + sw(CA) + 'Asset A</td><td>' + sg(A.m) + '%</td><td>' + A.s.toFixed(2) + '%</td><td>' + n2(A.s * A.s) + '</td></tr>'
+      + '<tr><td>' + sw(CB) + 'Asset B</td><td>' + sg(B.m) + '%</td><td>' + B.s.toFixed(2) + '%</td><td>' + n2(B.s * B.s) + '</td></tr>'
+      + '<tr><td>' + sw(CP) + '<b>Portfolio</b></td><td><b>' + sg(q.m) + '%</b></td><td><b>' + q.sd.toFixed(2) + '%</b></td><td><b>' + n2(q.v) + '</b></td></tr>'
+      + '<tr><td>Cov(A, B) = ρσ<sub>A</sub>σ<sub>B</sub></td><td colspan="3">' + sg(cov()) + '</td></tr></table>';
+    nP.innerHTML = '<table><tr><th>Variance of the portfolio</th><th></th></tr>'
+      + '<tr><td>' + sw(CA) + '(1−α)²σ²<sub>A</sub></td><td>' + n2(q.vA) + '</td></tr>'
+      + '<tr><td>' + sw(CB) + 'α²σ²<sub>B</sub></td><td>' + n2(q.vB) + '</td></tr>'
+      + '<tr><td>' + sw('#9aa5b1') + '2α(1−α)Cov</td><td>' + sg(q.vC) + '</td></tr>'
+      + '<tr><td><b>Sum</b></td><td><b>' + n2(q.v) + '</b></td></tr></table>';
+    // stacked bar: own-variance terms, then the covariance term added or taken away
+    const tot = Math.max(q.vA + q.vB + Math.max(q.vC, 0), 1e-9), BW = 230, bx = v => 4 + v / tot * BW;
+    let bar = '<svg viewBox="0 0 240 64" role="img" aria-label="Variance split into its three terms">';
+    bar += '<rect x="4" y="8" width="' + (bx(q.vA) - 4) + '" height="16" fill="' + CA + '"/>';
+    bar += '<rect x="' + bx(q.vA) + '" y="8" width="' + (bx(q.vA + q.vB) - bx(q.vA)) + '" height="16" fill="' + CB + '"/>';
+    if (q.vC >= 0) bar += '<rect x="' + bx(q.vA + q.vB) + '" y="8" width="' + (bx(q.vA + q.vB + q.vC) - bx(q.vA + q.vB)) + '" height="16" fill="#9aa5b1"/>';
+    else bar += '<rect x="' + bx(q.v) + '" y="8" width="' + (bx(q.vA + q.vB) - bx(q.v)) + '" height="16" fill="#fff" opacity="0.75" stroke="#7b8794" stroke-dasharray="3 2"/>';
+    bar += '<rect x="4" y="34" width="' + (bx(q.v) - 4) + '" height="16" fill="' + CP + '"/>';
+    bar += '<text x="4" y="62" font-size="11" fill="#7b8794">' + (q.vC < 0 ? 'dashed: removed by negative covariance' : q.vC > 0 ? 'grey: added by positive covariance' : 'no covariance term') + '</text></svg>';
+    nV.innerHTML = '<div class="mv-hint" style="margin:2px 0 2px">Own terms, covariance term, and the total (green)</div>' + bar;
 
-    // ---------- verdict ----------
-    const lowest = Math.min(sdA, sdB);
-    let t = 'With <b>' + Math.round(alpha * 100) + '%</b> in B: mean ' + pcs(q.m) + ', SD ' + pcs(q.sd) + '. ';
-    if (alpha > 0 && alpha < 1 && q.sd < lowest - 1e-9) t += 'Risk is <b>lower than either asset alone</b> (' + pcs(sdA) + ' and ' + pcs(sdB) + ').';
-    else if (alpha > 0 && alpha < 1 && q.sd < chordNow - 1e-9) t += 'Less than the weighted average of the two SDs (' + pcs(chordNow) + '): diversification.';
-    else if (alpha > 0 && alpha < 1) t += 'No benefit: SD equals the weighted average of the two SDs.';
-    else t += 'Holding a single asset.';
-    t += ' Lowest risk: ' + Math.round(mw * 100) + '% in B, SD ' + pcs(qm.sd) + '.';
-    note.innerHTML = t + '<div class="pf-sub">Illustrative numbers, not estimated from data.</div>';
+    // ===== verdict =====
+    const line = (1 - alpha) * A.s + alpha * B.s, gap = line - q.sd;
+    let t;
+    if (alpha < 0.005 || alpha > 0.995) t = 'All in one asset: no diversification.';
+    else if (q.sd < 0.03) t = 'The two assets cancel each other’s risk: a <b>certain return</b> of ' + sg(q.m) + '%.';
+    else if (q.sd < Math.min(A.s, B.s) - 1e-9) t = 'Risk <b>' + q.sd.toFixed(2) + '%</b> is <b>lower than either asset alone</b> (' + A.s.toFixed(2) + '% and ' + B.s.toFixed(2) + '%).';
+    else if (gap > 0.005) t = 'Risk is ' + gap.toFixed(2) + ' points below the no-diversification line.';
+    else t = 'No diversification benefit: the assets move together perfectly.';
+    if (!isEff(alpha)) t += ' <b>Inefficient:</b> another mix has the same risk and a higher mean.';
+    note.innerHTML = t + ' <span class="mv-hint">Illustrative numbers, not estimated from data.</span>';
   }
   paint();
 })();

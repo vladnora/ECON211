@@ -1,0 +1,14 @@
+<script>
+window.SD = (function () {
+  function erf(x) { // Abramowitz-Stegun 7.1.26
+    var s = x < 0 ? -1 : 1; x = Math.abs(x);
+    var t = 1 / (1 + 0.3275911 * x);
+    var y = 1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x);
+    return s * y;
+  }
+  return {
+    Phi: function (z) { return 0.5 * (1 + erf(z / Math.SQRT2)); },
+    phi: function (z) { return Math.exp(-z * z / 2) / Math.sqrt(2 * Math.PI); }
+  };
+})();
+</script>

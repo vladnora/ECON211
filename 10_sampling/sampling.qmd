@@ -42,7 +42,7 @@ P(X_i = x) =
 Recall that we treat population as a probability distribution from where we draw the sample. So, our sample $X_1,\dots, X_n$ consists of iid random variables distributed as above.
 
 If we were to draw a histogram of values in population it will look like a theoretical pmf: 
-![pmf of dice roll](01_sampling_dist/Code_Generated_Image%20(5)%20copy.png)
+![pmf of dice roll](Code_Generated_Image%20(5)%20copy.png)
 We shall derive distribution of $\bar{x}=\frac{\sum X_i}{n}$ for couple of values of $n$.
 
 **$n=1$**
@@ -65,15 +65,15 @@ $P(\bar{X} = 3) = \frac{5}{36}$
 
 Generally we get the following pmf:
 
-![mean of two rolls pmf](01_sampling_dist/Code_Generated_Image%20(4)%20copy.png)
+![mean of two rolls pmf](Code_Generated_Image%20(4)%20copy.png)
 
 **n=3**
 
 Similar computations result in the pmf:
-![mean of three rolls pmf](01_sampling_dist/Code_Generated_Image%20(4)%20copy%202.png)
+![mean of three rolls pmf](Code_Generated_Image%20(4)%20copy%202.png)
 
 **n=4**
-![mean of four rolls pmf](01_sampling_dist/Code_Generated_Image%20(4)%20copy%202.png)
+![mean of four rolls pmf](Code_Generated_Image%20(4)%20copy%202.png)
 
 **Interesting:
 **
@@ -84,9 +84,9 @@ Similar computations result in the pmf:
 
 Abobe are theoretically derived pmfs. For large n these are hard to derive. But we can simulate. Below we used Python (and Gemini!) to simulate taking 1000 samples of size n=20 and n=200. For each of the samples we compute $\bar{x}$ and here is the histograms of its values:
 
-![simulated distributions for n=20 rolls](01_sampling_dist/Code_Generated_Image%20(5)%20copy%202.png)
+![simulated distributions for n=20 rolls](Code_Generated_Image%20(5)%20copy%202.png)
 
-![simulated distributions for n=200 rolls](01_sampling_dist/Code_Generated_Image%20(5)%20copy%203.png)
+![simulated distributions for n=200 rolls](Code_Generated_Image%20(5)%20copy%203.png)
 
 **Main observations:**
 
@@ -137,7 +137,7 @@ Plot.plot({
 
 Coming back to our example with 1000 simulations of sample mean for n=200 we can see that it is indeed very close to theoretical normal pdf.!
 
-![Simulated distribution for n=200 rolls](01_sampling_dist/Code_Generated_Image%20(5)%20copy%204.png)
+![Simulated distribution for n=200 rolls](Code_Generated_Image%20(5)%20copy%204.png)
 
 So summurize our main result so far which will be a foundation of the entire statistical analysis:
 
@@ -209,36 +209,36 @@ $$P(X<x)=P(\mu+\sigma Z<x)=P(Z<\frac{x-\mu}{\sigma})=\Phi(\frac{x-\mu}{\sigma})$
 ### Normal in Real Life
 
 This is the histogram of proportion of heads in simulation of 1,000 coin tosses repeated 10,000 times. 
-![coin tosses](01_sampling_dist/Code_Generated_Image%20(5)%20copy%205.png)
+![coin tosses](Code_Generated_Image%20(5)%20copy%205.png)
 
 In 1885 Francis Galton collected a dataset which is one of the most famous examples in the history of statistics. It demonstrates that human height follows a Normal distribution, providing a biological illustration of the Central Limit Theorem (where height is the result of many small, independent genetic and environmental factors added together). 
 
 Below is Height Distribution of ECON211 Female Students ($n=185$). Mean ($\mu$): $165.9$ cm; Standard Deviation ($\sigma$): $5.7$ cm.
 
-![Height Distribution](01_sampling_dist/Code_Generated_Image%20(5)%20copy%206.png)
+![Height Distribution](Code_Generated_Image%20(5)%20copy%206.png)
 
-![weight distribution](01_sampling_dist/Code_Generated_Image%20(5)%20copy%207.png)
+![weight distribution](Code_Generated_Image%20(5)%20copy%207.png)
 
 
 Some exams,like SAT, are specifically designed to have the Normal distribution of scores, so SAT scores are exactly normal. Below is the distribution for 2023 with 1.9 million test-takers. For example, a student with a score of 1550 will be higher than 0.9935 fraction of test takers. That is a score of 1550 is in the 99.35th percentile. In a room of 1,000 students, only about 6 or 7 would be expected to have a higher score.
 
-![SAT scores](01_sampling_dist/Code_Generated_Image%20(5)%20copy%208.png)
+![SAT scores](Code_Generated_Image%20(5)%20copy%208.png)
 
 Here is the screenshot from Garmin app with distribution of sleeping times for the users.
 
-![sleeping from Garmin](01_sampling_dist/Screenshot%202026-04-14%20at%2018.12.09.png)
+![sleeping from Garmin](Screenshot%202026-04-14%20at%2018.12.09.png)
 
 And the distribution of steps per day. Notice the **right skew** (positive skew) in the distribution of daily steps. Unlike height or SAT scores, this data is not exactly Normal; the right tail is "heavier," extending much further from the mean than the left tail.
 
-![steps distribution](01_sampling_dist/Screenshot%202026-04-14%20at%2018.14.17.png)
+![steps distribution](Screenshot%202026-04-14%20at%2018.14.17.png)
 
 Ukrainian medical students are passing KROK test since 1999. Here are some fishy-looking results from 2015. Can you guess the issue?  
-![cheating in KROK](01_sampling_dist/green_k1_2015.png)
+![cheating in KROK](green_k1_2015.png)
 
 Below is the histogram of first names lengths of students in this class for a couple of years. Again, notice the scew.
-![First names](01_sampling_dist/download.png)
+![First names](download.png)
 
-![gym statistics](01_sampling_dist/gym%20normal.jpeg)
+![gym statistics](gym%20normal.jpeg)
 
 ### Using Normal distribution to find approximate probabilities
 
@@ -306,146 +306,5 @@ $$P\left( \frac{k - 0.5}{n} \leq \hat{p} \leq \frac{k + 0.5}{n} \right)$$
 Using the Normal CDF over this range approximates the probability of the exact discrete outcome.
 :::
 
-![Alt text](01_sampling_dist/Code_Generated_Image%20(6)%20copy%202.png)
+![Alt text](Code_Generated_Image%20(6)%20copy%202.png)
 
-## Point Estimation
-
-Now as we know a lot about sample mean distribution, we come back to our main question - **how to use it to learn something about population mean**.
-
-::: {.callout-note}
-## Point estimator
-Let $\theta$ be a statistic used to guess the value of population parameter $y$. We say that $\theta$ is an **estimator** of $y$.
-:::
-
-**Examples**
-
-* $\bar{x}$ is an estimator of $\mu$
-* $s^2$ is an estimator of $\sigma^2$
-
-A good estimator must be a good guess. What is the good guess? 
-
-::: {.callout-note}
-## Unbiased estimator
-If $E(\theta)=y$, then $\theta$ is called unbiased estimator of $y$
-:::
-
-**Examples**
-
-* $\bar{x}$ is an unbiased estimator of $\mu$
-* $s^2$ is an unbiased estimator of $\sigma^2$ (but if you divide by $n$ instead of $n-1$ then it becomes biased!)
-
-### Example: The German Tank Problem & Estimator Efficiency
-
-To motivate the study of **estimation**, we look at a famous historical case from WWII. The Allies needed to estimate German tank production ($a$) using serial numbers ($x_i$) from captured tanks.
-
-#### Historical Context: Intelligence vs. Statistics
-Allied intelligence used traditional methods (spies), while statisticians used serial number analysis. The statistical estimates were significantly more accurate.
-
-| Date | Intelligence Estimate | Statistical Estimate | Actual Production |
-| :--- | :---: | :---: | :---: |
-| June 1941 | 1,550 | 244 | **271** |
-| August 1942 | 1,550 | 327 | **342** |
-
----
-
-#### 1. The Simplified Model
-Assume serial numbers are distributed uniformly: $x_i \sim U[0, a]$. We want to estimate the maximum value $a$.
-
-**Case $n=1$:** Suppose we capture one tank, $x_1$.
-
-* Since $E[x_1] = \frac{a}{2}$, the estimator $\hat{\theta} = x_1$ is **biased** because $E[x_1] \neq a$.
-* To fix this, we define $\hat{\theta}_{single} = 2x_1$. 
-* Check for unbiasedness: $E[2x_1] = 2 E[x_1] = 2(\frac{a}{2}) = a$. It is **unbiased**.
-
-**Case $n > 1$:** If we have many tanks, we can use the sample mean $\bar{x}$.
-
-* Define $\hat{\theta}_{mean} = 2\bar{x}$.
-* $E[2\bar{x}] = 2 E[\bar{x}] = 2(\frac{a}{2}) = a$. This is also **unbiased**.
-
----
-
-#### 2. Relative Efficiency
-We have two unbiased estimators: $2x_1$ and $2\bar{x}$. Which is "better"? We define "better" as having a smaller **Variance** (the "Relative Efficiency" criterion).
-
-
-
-**Calculating Variances:**
-
-* For the single observation: 
-    $$Var(2x_1) = 4 Var(x_1) = 4 \left( \frac{a^2}{12} \right) = \frac{a^2}{3}$$
-* For the sample mean: 
-    $$Var(2\bar{x}) = 4 Var(\bar{x}) = 4 \left( \frac{\sigma^2}{n} \right) = 4 \left( \frac{a^2/12}{n} \right) = \frac{a^2}{3n}$$
-
-**Conclusion:** Since $Var(2\bar{x}) = \frac{1}{n} Var(2x_1)$, the estimator using the sample mean is $n$ times more efficient. Using all available data reduces our **Expected Squared Error**, providing a much more reliable "guess" of enemy production.
-
-::: {.callout-tip}
-## Intuition: why variance?
-Variance measures the "risk" of your guess. Even if both methods are right *on average* (unbiased), the one with lower variance is much more likely to be close to the true value in any single sample.
-:::
-
-::: {.callout-note}
-#### Efficiency of an estimator
-An unbiased estimator is called more efficient than another if it has a smaller variance.
-::: 
-
-In our example, the estimator based on the sample mean is more efficient than the one based on a single observation, making it a superior choice for estimating the population parameter $a$.
-
-#### Simulating the German Tank Problem
-
-We compare two unbiased estimators for the true population maximum $a = 1$. Both estimators are based on a sample of size $n=10$. We repeat the estimation process 1,000 times to visualize their sampling distributions.
-
-* **Estimator 1 (Blue):** Based on only the first observation ($2 \cdot X_1$).
-* **Estimator 2 (Green):** Based on the sample mean ($2 \cdot \bar{x}$).
-  
-![Simulated Distributions for tanks](01_sampling_dist/Code_Generated_Image%20(6).png)
-
-In fact, there is even better estimator than $2\bar{x}$ which is $$\hat{\theta}_{max} = \frac{n+1}{n} \cdot \max(X_i).$$ Here is the histogram of its values across 1,000 simulations:
-
-![Simulated Distributions for tanks](01_sampling_dist/Code_Generated_Image%20(6)%20copy.png)
-
-### The Sample Mean as an Estimator of the Population Mean
-
-While the sample mean $\bar{x}$ is a "standard" estimator of $\mu$, it is not always the "best."
-
-::: {.callout-tip}
-### Comparison
-* **Bias:** $\bar{x}$ is always unbiased for the population mean $\mu$, regardless of whether the population is Normal, Binomial, or Poisson etc.
-* **Efficiency:** $\bar{x}$ is not always the most efficient estimator. For example, if the population is Uniform, the estimator based on the maximum observation can be more efficient than $\bar{x}$. This depends on the assumption about the underlying distribution of the population.
-:::
-
-### Consistency
-
-::: {.callout-important}
-### Consistency
-An estimator is **consistent** if it converges to the true population parameter as the sample size $n$ increases toward infinity. 
-
-For this to happen, both the **bias** and the **variance** of the estimator must shrink to zero as $n \to \infty$.
-:::
-
-#### Remarks
-* **Biased but Consistent:** The estimator may have a systematic error in small samples, but that error disappears as you collect more data. For example, the sample variance estimator that divides by $n$ instead of $n-1$ is biased for finite samples, but it becomes consistent as $n$ grows large.
-  
-* **Unbiased but Inconsistent:** The estimator is centered on the truth, but its uncertainty never shrinks. Collecting more data doesn't make the estimate more precise (trivial example is using only the first observation $X_1$ to estimate $\mu$).
-
-
-**The Bottom Line:** Consistency is the "large sample minimum." In modern econometrics, we often tolerate small-sample bias as long as we are guaranteed to reach the truth with enough data.
-
-### The Trio of Properties: Bias, Consistency, and Efficiency
-
-::: {.callout-note}
-### The Ideal Estimator
-An "ideal" estimator is **Unbiased**, **Consistent**, and **Efficient**. 
-:::
-
-### Comparison
-
-| Property | Focus | Purpose |
-| :--- | :--- | :--- |
-| **Unbiasedness** | Accuracy | Ensuring we are "on target" on average. |
-| **Consistency** | Reliability | Ensuring error disappears as $n \to \infty$. |
-| **Efficiency** | Precision | Ensuring we have the **smallest possible error** among competitors. |
-
-::: {.callout-important}
-### Why Efficiency Matters
-If $\hat{\theta}_1$ and $\hat{\theta}_2$ are both unbiased and consistent, we choose the one that is more **efficient**. Higher efficiency means your confidence intervals will be narrower and your hypothesis tests more powerful.
-:::

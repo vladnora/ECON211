@@ -111,3 +111,4 @@
 .reveal .scatter-row svg.plane { max-height:470px; }
 .reveal svg.selplot { display:block; width:100%; max-height:330px; margin:0; }
 .reveal svg.famplot { display:block; width:100%; margin:0 auto; }
+.reveal .scatter-row svg.star { max-height:230px; }

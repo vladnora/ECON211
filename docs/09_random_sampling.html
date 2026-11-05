@@ -587,6 +587,7 @@ align-items:center; justify-content:center; gap:10px; border-top:4px solid var(-
 .reveal .scatter-row svg.plane { max-height:470px; }
 .reveal svg.selplot { display:block; width:100%; max-height:330px; margin:0; }
 .reveal svg.famplot { display:block; width:100%; margin:0 auto; }
+.reveal .scatter-row svg.star { max-height:230px; }
 </style>
   
   <script>
@@ -1722,16 +1723,21 @@ X\sim \text{Bernoulli}(p),\qquad p=\text{proportion of girls}
 <svg id="sc-res" viewbox="0 0 520 380">
 </svg>
 <div class="box">
-<p>We want the <strong>line that fits best</strong>. To be precise, we measure the <strong>deviation</strong> from the actual values: <span class="math display">e_i=y_i-\hat{y}_i</span> and make the deviations small overall.</p>
+<p>We want the <strong>line that fits best</strong>. We measure the <strong>deviation</strong> from the actual values: <span class="math inline">e_i=y_i-\hat{y}_i</span>.</p>
+<p><strong>Drag the line</strong>: the ends rotate it, the middle moves it.</p>
+<button class="act ghost" id="sc-fit">
+Least squares line
+</button>
+<p><button class="act ghost" id="sc-lad">Least absolute line</button></p>
 </div>
 </div>
 <div class="fragment">
 <div class="cards">
 <div class="box c">
-<p><strong>Absolute</strong> deviations <span class="math inline">\sum|e_i|</span></p>
+<p><span class="tag">Absolute deviations</span> <span class="math inline">\sum|e_i|=</span> <b class="hb" id="sc-sae">–</b><br><span style="font-size:0.7em;color:#52606d">least absolute: <span id="sc-sae0"></span></span></p>
 </div>
 <div class="box key c">
-<p><strong>Squared</strong> deviations <span class="math inline">\sum e_i^2</span><br>the standard approach</p>
+<p><span class="tag">Squared deviations</span> <span class="math inline">\sum e_i^2=</span> <b class="hl" id="sc-sse">–</b><br><span style="font-size:0.7em;color:#52606d">least squares: <span id="sc-sse0"></span> · the standard approach</span></p>
 </div>
 </div>
 <script>
@@ -1740,8 +1746,9 @@ X\sim \text{Bernoulli}(p),\qquad p=\text{proportion of girls}
   function rnd() { seed = (seed + 0x6D2B79F5) | 0; var t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
     t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }
   function gauss() { return Math.sqrt(-2 * Math.log(1 - rnd())) * Math.cos(2 * Math.PI * rnd()); }
-  var n = 25, xs = [], ys = [];
-  for (var i = 0; i < n; i++) { var h = 171 + 9 * gauss(); xs.push(h); ys.push(70 + 0.85 * (h - 171) + 6 * gauss()); }
+  var n = 20, xs = [], ys = [];                       // heights spread out so the deviation segments do not merge
+  for (var i = 0; i < n; i++) { var h = 154 + 36 / n * (i + 0.2 + 0.6 * rnd()); xs.push(h); ys.push(70 + 0.85 * (h - 172) + 6 * gauss()); }
+  ys[n - 3] = 47;                                    // one light, tall student: an outlier that pulls the least squares line
   var mx = xs.reduce(function (a, b) { return a + b; }, 0) / n, my = ys.reduce(function (a, b) { return a + b; }, 0) / n;
   var sxy = 0, sxx = 0;
   for (i = 0; i < n; i++) { sxy += (xs[i] - mx) * (ys[i] - my); sxx += (xs[i] - mx) * (xs[i] - mx); }
@@ -1763,7 +1770,68 @@ X\sim \text{Bernoulli}(p),\qquad p=\text{proportion of girls}
     for (i = 0; i < n; i++) s += '<circle cx="' + px(xs[i]) + '" cy="' + py(ys[i]) + '" r="6" fill="#2b6cb0"/>';
     document.getElementById(id).innerHTML = s;
   }
-  draw("sc-pts", false); draw("sc-res", true);
+  function interactive(id) {
+    var XL = 150, XR = 194, yL = b0 + b1 * XL, yR = b0 + b1 * XR, svg = document.getElementById(id), drag = null, y0 = 0, sL = 0, sR = 0;
+    var sse0 = 0; for (var i = 0; i < n; i++) { var e0 = ys[i] - (b0 + b1 * xs[i]); sse0 += e0 * e0; }
+    var best = null;                                   // least absolute deviations: the best line passes through two data points
+    for (var a = 0; a < n; a++) for (var c = a + 1; c < n; c++) {
+      if (xs[a] === xs[c]) continue;
+      var sl0 = (ys[c] - ys[a]) / (xs[c] - xs[a]), ic0 = ys[a] - sl0 * xs[a], t = 0;
+      for (var k = 0; k < n; k++) t += Math.abs(ys[k] - ic0 - sl0 * xs[k]);
+      if (!best || t < best.sae) best = { sae: t, sl: sl0, ic: ic0 };
+    }
+    document.getElementById("sc-sae0").textContent = best.sae.toFixed(0);
+    var eA = document.getElementById("sc-sae"), eS = document.getElementById("sc-sse");
+    document.getElementById("sc-sse0").textContent = sse0.toFixed(0);
+    function axes() {
+      var s = '<line x1="' + L + '" y1="' + B + '" x2="' + R + '" y2="' + B + '" stroke="#52606d" stroke-width="2"/>' +
+              '<line x1="' + L + '" y1="' + T + '" x2="' + L + '" y2="' + B + '" stroke="#52606d" stroke-width="2"/>';
+      for (var x = 150; x <= 195; x += 15) s += '<text x="' + px(x) + '" y="' + (B + 24) + '" text-anchor="middle" font-size="17" fill="#52606d">' + x + '</text>';
+      for (var y = 50; y <= 100; y += 25) s += '<text x="' + (L - 10) + '" y="' + (py(y) + 6) + '" text-anchor="end" font-size="17" fill="#52606d">' + y + '</text>';
+      return s + '<text x="' + ((L + R) / 2) + '" y="' + (B + 52) + '" text-anchor="middle" font-size="18" fill="#1f2933">height, cm</text>' +
+             '<text transform="translate(16,' + ((T + B) / 2) + ') rotate(-90)" text-anchor="middle" font-size="18" fill="#1f2933">weight, kg</text>';
+    }
+    function render() {
+      var sl = (yR - yL) / (XR - XL), ic = yL - sl * XL, sse = 0, sae = 0, s = axes();
+      for (var i = 0; i < n; i++) {
+        var yh = ic + sl * xs[i], e = ys[i] - yh; sse += e * e; sae += Math.abs(e);
+        s += '<line x1="' + px(xs[i]) + '" y1="' + py(ys[i]) + '" x2="' + px(xs[i]) + '" y2="' + py(yh) + '" stroke="#c53030" stroke-width="2.5"/>';
+      }
+      s += '<line x1="' + px(XL) + '" y1="' + py(yL) + '" x2="' + px(XR) + '" y2="' + py(yR) + '" stroke="#dd6b20" stroke-width="4" stroke-linecap="round"/>' +
+           '<line data-h="M" x1="' + px(XL) + '" y1="' + py(yL) + '" x2="' + px(XR) + '" y2="' + py(yR) + '" stroke="#000" stroke-opacity="0" stroke-width="30" style="cursor:grab"/>';
+      for (i = 0; i < n; i++) s += '<circle cx="' + px(xs[i]) + '" cy="' + py(ys[i]) + '" r="6" fill="#2b6cb0" pointer-events="none"/>';
+      s += '<circle data-h="L" cx="' + px(XL) + '" cy="' + py(yL) + '" r="11" fill="#fff" stroke="#dd6b20" stroke-width="4" style="cursor:ns-resize"/>' +
+           '<circle data-h="R" cx="' + px(XR) + '" cy="' + py(yR) + '" r="11" fill="#fff" stroke="#dd6b20" stroke-width="4" style="cursor:ns-resize"/>';
+      svg.innerHTML = s;
+      eA.textContent = sae.toFixed(0); eS.textContent = sse.toFixed(0);
+    }
+    function toData(e) {
+      var pt = svg.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY;
+      var p = pt.matrixTransform(svg.getScreenCTM().inverse());
+      return Y0 + (B - p.y) / (B - T) * (Y1 - Y0);
+    }
+    function clampY(v) { return Math.max(Y0 - 10, Math.min(Y1 + 10, v)); }
+    svg.style.touchAction = "none";
+    svg.addEventListener("pointerdown", function (e) {
+      var h = e.target.getAttribute && e.target.getAttribute("data-h");
+      if (!h) return;
+      drag = h; y0 = toData(e); sL = yL; sR = yR; svg.setPointerCapture(e.pointerId); e.preventDefault(); e.stopPropagation();
+    });
+    svg.addEventListener("pointermove", function (e) {
+      if (!drag) return;
+      var y = toData(e);
+      if (drag === "L") yL = clampY(y); else if (drag === "R") yR = clampY(y);
+      else { var d = y - y0; d = Math.max(Y0 - 10 - Math.min(sL, sR), Math.min(Y1 + 10 - Math.max(sL, sR), d)); yL = sL + d; yR = sR + d; }
+      render();
+    });
+    function stop() { drag = null; }
+    svg.addEventListener("pointerup", stop); svg.addEventListener("pointercancel", stop);
+    document.getElementById("sc-fit").onclick = function () { yL = b0 + b1 * XL; yR = b0 + b1 * XR; render(); };
+    document.getElementById("sc-lad").onclick = function () { yL = best.ic + best.sl * XL; yR = best.ic + best.sl * XR; render(); };
+    window.__scRender = render; window.__scSet = function (a, b) { yL = a; yR = b; render(); };
+    render();
+  }
+  draw("sc-pts", false); interactive("sc-res");
 })();
 </script>
 </div>
@@ -2358,6 +2426,52 @@ X\sim \text{Bernoulli}(p),\qquad p=\text{proportion of girls}
 <div class="box key">
 <p>This estimates the average family size among families with <strong>at least one child</strong>. To correct a bias we must <strong>know how the sample was selected</strong>.</p>
 </div>
+</div>
+</section>
+<section id="the-friendship-paradox" class="slide level2">
+<h2>The friendship paradox</h2>
+<div class="box key">
+<p>On average, <strong>your friends have more friends than you do</strong>.</p>
+</div>
+<div class="fragment">
+<div class="box warn">
+<p><strong>Why?</strong></p>
+</div>
+</div>
+</section>
+<section id="example-a-star-network" class="slide level2">
+<h2>Example: a star network</h2>
+<div class="scatter-row">
+<svg id="fr-star" viewbox="0 30 300 200" class="star">
+</svg>
+<div class="box">
+<p>Numbers show how many friends each person has.</p>
+</div>
+</div>
+<div class="fragment">
+<div class="box">
+<p>A person with <span class="math inline">d</span> friends appears in <strong><span class="math inline">d</span> friend lists</strong>. Picking a random friend picks people with probability <strong>proportional to <span class="math inline">d</span></strong>: size-biased sampling again.</p>
+</div>
+</div>
+<div class="fragment">
+<div class="box good">
+<p>Here: a typical person has <span class="math inline">\frac{4+1+1+1+1}{5}=1.6</span> friends, a typical friend has <span class="math inline">\frac{4\cdot 4+4\cdot 1}{8}=2.5</span>.</p>
+</div>
+<script>
+(function () {
+  var cx = 150, cy = 130, R = 92, s = "";
+  var ang = [45, 135, 225, 315].map(function (a) { return a * Math.PI / 180; });
+  ang.forEach(function (a) {
+    s += '<line x1="' + cx + '" y1="' + cy + '" x2="' + (cx + R * Math.cos(a)).toFixed(1) + '" y2="' + (cy + R * Math.sin(a)).toFixed(1) + '" stroke="#52606d" stroke-width="3"/>';
+  });
+  ang.forEach(function (a) {
+    var x = cx + R * Math.cos(a), y = cy + R * Math.sin(a);
+    s += '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="19" fill="#2b6cb0"/><text x="' + x.toFixed(1) + '" y="' + (y + 7).toFixed(1) + '" text-anchor="middle" font-size="22" font-weight="700" fill="#fff">1</text>';
+  });
+  s += '<circle cx="' + cx + '" cy="' + cy + '" r="28" fill="#dd6b20"/><text x="' + cx + '" y="' + (cy + 9) + '" text-anchor="middle" font-size="26" font-weight="700" fill="#fff">4</text>';
+  document.getElementById("fr-star").innerHTML = s;
+})();
+</script>
 
 </div>
 </section></section>

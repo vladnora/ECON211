@@ -92,3 +92,16 @@
 .reveal button.act:hover { filter:brightness(.92); }
 .reveal button.act.ghost { background:#e4e7eb; color:#323f4b; }
 .reveal .ctl label { cursor:pointer; }
+
+/* ---------- click-to-answer quizzes ---------- */
+.reveal .quiz { margin:0.2em 0 0.35em; }
+.reveal .quiz > p:first-child { margin:0 0 0.3em; }
+.reveal .quiz ol { list-style:none; margin:0; padding:0; display:grid; grid-template-columns:1fr 1fr; gap:0.35em 0.6em; }
+.reveal .quiz li { margin:0; padding:0.25em 0.6em; border:2px solid #d9e2ec; border-radius:8px; background:#fff; cursor:pointer; font-size:0.85em; }
+.reveal .quiz li::before { content:attr(data-k) ") "; font-weight:700; color:var(--blue); }
+.reveal .quiz li:hover { border-color:var(--blue); }
+.reveal .quiz li.right { border-color:var(--green); background:var(--green-soft); }
+.reveal .quiz li.wrong { border-color:var(--red); background:var(--red-soft); }
+.reveal .quiz .expl { display:none; font-size:0.75em; color:var(--muted); margin-top:0.2em; }
+.reveal .quiz.done .expl { display:block; }
+.reveal .quiz.compact { font-size:0.9em; }

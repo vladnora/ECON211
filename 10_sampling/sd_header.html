@@ -12,3 +12,19 @@ window.SD = (function () {
   };
 })();
 </script>
+<script>
+// Click-to-answer quizzes: <div class="quiz" data-answer="b"> with an ordered list of options and an optional .expl div
+document.addEventListener('DOMContentLoaded', function () {
+  document.querySelectorAll('.quiz').forEach(function (q) {
+    var ans = q.dataset.answer;
+    q.querySelectorAll('ol > li').forEach(function (li, i) {
+      var k = String.fromCharCode(97 + i);
+      li.dataset.k = k;
+      li.addEventListener('click', function () {
+        li.classList.add(k === ans ? 'right' : 'wrong');
+        if (k === ans) q.classList.add('done');
+      });
+    });
+  });
+});
+</script>

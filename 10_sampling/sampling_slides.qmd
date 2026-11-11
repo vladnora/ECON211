@@ -33,14 +33,28 @@ Take a sample of $n=20$ student heights. We can compute the sample mean $\bar{x}
 **How is $\bar{x}$ related to $\mu$?**
 :::
 
+## Predict first
+
+::: {.box .key}
+<span class="tag">Write down your answers</span>
+Population: heights of **373 students** from our class surveys. We draw random samples and compute the sample mean.
+:::
+
+::: {.incremental}
+1. What is the **average height** $\mu$ of all 373 students?
+2. For a sample of $n=20$, how far is $\bar{x}$ from $\mu$, typically: about **0.5, 2, 5 or 10 cm**?
+3. With $n=5$ instead of $n=20$: is the histogram of $\bar{x}$ **wider or narrower**? By how much?
+4. The heights of girls and boys form **two humps**. Will the histogram of $\bar{x}$ also have two humps?
+:::
+
 ## Try it: sample student heights
 
 ::: {.cap}
-Population: the heights of **373 students** from our class surveys (cm). Each draw picks $n$ students at random (with replacement).
+Population: **373 student heights** from our class surveys (cm). Draws are random, with replacement.
 :::
 
 ```{=html}
-<div class="ctl" style="gap:0.8em">
+<div class="ctl" style="gap:0.6em;font-size:0.72em">
   <span class="seg" id="hs-grp" style="margin-left:0">
     <button data-v="all" class="on">All</button><button data-v="girls">Girls</button><button data-v="boys">Boys</button>
   </span>
@@ -52,9 +66,10 @@ Population: the heights of **373 students** from our class surveys (cm). Each dr
   <button class="act" id="hs-add1000">+ 1000</button>
   <button class="act ghost" id="hs-reset">Reset</button>
   <label><input type="checkbox" id="hs-mu"> Reveal μ</label>
+  <label><input type="checkbox" id="hs-thr"> x̄ &gt; 175</label>
 </div>
 <div id="hs-grid" style="font-size:0.78em;min-height:2.6em;margin:0.2em 0;line-height:1.5"></div>
-<svg id="hs-svg" viewBox="0 0 900 370" style="width:100%;height:auto;display:block"></svg>
+<svg id="hs-svg" viewBox="0 0 900 345" style="width:100%;height:auto;display:block"></svg>
 <div class="readout" id="hs-out"></div>
 <script>
 (function(){
@@ -66,19 +81,19 @@ Population: the heights of **373 students** from our class surveys (cm). Each dr
     MU=pool.reduce(function(a,b){return a+b;},0)/pool.length;
   }
   setGroup('all');
-  var svg=document.getElementById('hs-svg'), out=document.getElementById('hs-out'), grid=document.getElementById('hs-grid'), muBox=document.getElementById('hs-mu');
+  var svg=document.getElementById('hs-svg'), out=document.getElementById('hs-out'), grid=document.getElementById('hs-grid'), muBox=document.getElementById('hs-mu'), thrBox=document.getElementById('hs-thr'), THR=175;
   var W=900,L=50,R=20, X0=145, X1=205, BWP=3, PB0=147.5, BWM=0.5;
   var P1={t:14,b:120}, P2={t:175,b:315};
   function sx(x){return L+(x-X0)/(X1-X0)*(W-L-R);}
   function binCounts(arr){var c=new Array(19).fill(0); arr.forEach(function(v){var b=Math.floor((v-PB0)/BWP); if(b>=0&&b<c.length)c[b]++;}); return c;}
   var popCounts=binCounts(DATA);
-  var NB=(X1-X0)/BWM, counts, N, sum, sumsq, last=null;
-  function reset(){counts=new Array(NB).fill(0);N=0;sum=0;sumsq=0;last=null;render();}
+  var NB=(X1-X0)/BWM, counts, N, sum, sumsq, above, last=null;
+  function reset(){counts=new Array(NB).fill(0);N=0;sum=0;sumsq=0;above=0;last=null;render();}
   function one(keep){
     var tot=0, arr=keep?[]:null;
     for(var j=0;j<n;j++){var v=pool[Math.floor(Math.random()*pool.length)]; tot+=v; if(arr)arr.push(v);}
     var m=tot/n, b=Math.floor((m-X0)/BWM); if(b>=0&&b<NB)counts[b]++;
-    N++; sum+=m; sumsq+=m*m;
+    N++; sum+=m; sumsq+=m*m; if(m>THR) above++;
     if(keep) last={xs:arr,mean:m};
   }
   function add(k,keep){for(var i=0;i<k;i++) one(keep&&i===k-1); if(!keep) last=null; render();}
@@ -108,7 +123,8 @@ Population: the heights of **373 students** from our class surveys (cm). Each dr
     function sy2(v){return P2.b-v/ym*(P2.b-P2.t);}
     h=axis(h,P2.b);
     h+='<text x="'+(L+6)+'" y="'+(P2.t-6)+'" font-size="17" font-weight="700" fill="'+(gc?gcol:'#2b6cb0')+'">Sample means x̄ (n = '+n+')'+(gc?', '+(grp==='girls'?'girls':'boys'):'')+', density histogram</text>';
-    dens.forEach(function(v,k){ if(!v)return; h+='<rect x="'+(sx(X0+k*BWM)+0.5)+'" y="'+sy2(v)+'" width="'+(sx(X0+BWM)-sx(X0)-1)+'" height="'+(P2.b-sy2(v))+'" fill="'+COL[grp]+'" fill-opacity="0.85"/>'; });
+    dens.forEach(function(v,k){ if(!v)return; h+='<rect x="'+(sx(X0+k*BWM)+0.5)+'" y="'+sy2(v)+'" width="'+(sx(X0+BWM)-sx(X0)-1)+'" height="'+(P2.b-sy2(v))+'" fill="'+(thrBox.checked&&X0+k*BWM>=THR?'#dd6b20':COL[grp])+'" fill-opacity="0.85"/>'; });
+    if(thrBox.checked) h+='<line x1="'+sx(THR)+'" x2="'+sx(THR)+'" y1="'+P2.t+'" y2="'+P2.b+'" stroke="#dd6b20" stroke-width="2"/>';
     if(muBox.checked){
       h+='<line x1="'+sx(MU)+'" x2="'+sx(MU)+'" y1="'+P2.t+'" y2="'+P2.b+'" stroke="#dd6b20" stroke-width="2" stroke-dasharray="6,4"/>';
       h+='<text x="'+(sx(MU)+8)+'" y="'+(P2.t+16)+'" font-size="17" fill="#dd6b20" font-weight="700">μ = '+MU.toFixed(2)+'</text>';
@@ -121,7 +137,7 @@ Population: the heights of **373 students** from our class surveys (cm). Each dr
         +' &nbsp;⇒&nbsp; <b>x̄ = '+last.mean.toFixed(2)+'</b>';
     } else grid.innerHTML='<i style="color:#7b8794">Press <b>Draw sample</b> to pick '+n+' students.</i>';
     if(N){var m=sum/N, sd=Math.sqrt(Math.max(0,sumsq/N-m*m));
-      out.innerHTML='<b>'+N.toLocaleString()+'</b> sample'+(N>1?'s':'')+' &nbsp;|&nbsp; mean of x̄ = <b>'+m.toFixed(2)+'</b> &nbsp;|&nbsp; SD of x̄ = <b>'+sd.toFixed(2)+'</b>'+(muBox.checked?' &nbsp;|&nbsp; μ = '+MU.toFixed(2):'');
+      out.innerHTML='<b>'+N.toLocaleString()+'</b> sample'+(N>1?'s':'')+' &nbsp;|&nbsp; mean of x̄ = <b>'+m.toFixed(2)+'</b> &nbsp;|&nbsp; SD of x̄ = <b>'+sd.toFixed(2)+'</b>'+(muBox.checked?' &nbsp;|&nbsp; μ = '+MU.toFixed(2):'')+(thrBox.checked?' &nbsp;|&nbsp; share x̄ &gt; 175: <b>'+(100*above/N).toFixed(1)+'%</b>':'');
     } else out.innerHTML='';
   }
   document.getElementById('hs-add1').onclick=function(){add(1,true);};
@@ -133,6 +149,7 @@ Population: the heights of **373 students** from our class surveys (cm). Each dr
   var gEl=document.getElementById('hs-grp');
   gEl.addEventListener('click',function(e){var b=e.target.closest('button'); if(!b)return; gEl.querySelectorAll('button').forEach(function(x){x.classList.remove('on');}); b.classList.add('on'); setGroup(b.dataset.v); reset();});
   muBox.addEventListener('change',render);
+  thrBox.addEventListener('change',render);
   reset();
 })();
 </script>
@@ -143,14 +160,14 @@ Population: the heights of **373 students** from our class surveys (cm). Each dr
 ::: {.incremental}
 - They **don't have to be equal**
 - Every new sample gives a **different** $\bar{x}$
-- It is useful to view $\bar{x}$ as a random variable (before we actually take the sample)
+- Before we take the sample, the sample mean is a **random variable** $\bar{X}$; after, we observe a number $\bar{x}$
 - **How close is it to the true mean?**
 :::
 
 ## Key observation
 
 ::: {.box .key}
-To answer, we need the **probability distribution** of $\bar{x}$.
+To answer, we need the **probability distribution** of $\bar{X}$.
 :::
 
 . . .
@@ -191,7 +208,7 @@ The population is a **probability distribution** we draw from. The sample $X_1,\
 . . .
 
 ::: {.box .key}
-**Goal:** find the distribution of $\;\bar{x}=\frac{X_1+\dots+X_n}{n}$
+**Goal:** find the distribution of $\;\bar{X}=\frac{X_1+\dots+X_n}{n}$
 :::
 
 ## Histogram of the population
@@ -302,10 +319,6 @@ The **shape stabilizes**.
 Draw 1000 samples of size $n$, compute $\bar{x}$ for each, and plot the histogram.
 :::
 
-::: {.cap}
-Done with Python (and Gemini!)
-:::
-
 ## Simulation: $n=20$
 
 ::: {.figure-slide}
@@ -327,7 +340,7 @@ All distributions are **symmetric** and centered at $\mu=3.5$.
 :::
 ::: {.box .key .fragment}
 <span class="tag">2 · Spread</span>
-The **spread shrinks** as $n$ grows: $\bar{x}$ lands closer to $\mu$.
+The **spread shrinks** as $n$ grows: $\bar{X}$ lands closer to $\mu$.
 :::
 ::: {.box .good .fragment}
 <span class="tag">3 · Shape</span>
@@ -338,7 +351,7 @@ For large $n$ the shape becomes **bell-like**.
 ## Proof of (1): the center
 
 $$
-E(\bar{x}) = E\!\left(\frac{\sum X_i}{n}\right)
+E(\bar{X}) = E\!\left(\frac{\sum X_i}{n}\right)
 $$
 
 . . .
@@ -359,10 +372,25 @@ $$
 On average, the sample mean equals the population mean.
 :::
 
+## Predict: how much more data?
+
+::: {.quiz data-answer="b"}
+To cut the **standard deviation** of $\bar{X}$ in half, you need:
+
+1. $2\times$ the data
+2. $4\times$ the data
+3. $\sqrt{2}\times$ the data
+4. $10\times$ the data
+
+::: {.expl}
+$SD(\bar{X})=\sigma/\sqrt{n}$, and $\sqrt{4n}=2\sqrt{n}$. Doubling $n$ halves the **variance**, not the SD. Let's prove it.
+:::
+:::
+
 ## Proof of (2): the spread
 
 $$
-Var(\bar{x}) = Var\!\left(\frac{\sum X_i}{n}\right)
+Var(\bar{X}) = Var\!\left(\frac{\sum X_i}{n}\right)
 $$
 
 . . .
@@ -388,18 +416,46 @@ The variance of one observation divided by $n$.
 ::: {.cards}
 ::: {.box .key}
 <span class="tag">Center</span>
-$$E(\bar{x})=\mu$$
+$$E(\bar{X})=\mu$$
 The sample mean is **right on average**.
 :::
 ::: {.box .key}
 <span class="tag">Spread</span>
-$$Var(\bar{x})=\frac{\sigma^2}{n}$$
-More data means a **tighter** distribution: $2\times$ the data halves the variance.
+$$Var(\bar{X})=\frac{\sigma^2}{n}$$
+More data means a **tighter** distribution: $SD(\bar{X})=\sigma/\sqrt{n}$, so $4\times$ the data halves the SD.
 :::
 :::
 
 ::: {.box .fragment}
 True for **any** population and **any** $n$: the derivation never used the shape.
+:::
+
+## Quick check
+
+::: {.quiz .compact data-answer="c"}
+A fair die has $\mu=3.5$ and $\sigma\approx1.71$. You roll it $n=25$ times. What is $SD(\bar{X})$?
+
+1. $1.71$
+2. $2.92$
+3. $0.34$
+4. $0.12$
+
+::: {.expl}
+$\sigma/\sqrt{n}=1.71/5\approx0.34$. $0.12=\sigma^2/n$ is the **variance**, and $1.71$ is the SD of a single roll.
+:::
+:::
+
+::: {.quiz .compact data-answer="c"}
+Which of these changes when the sample size $n$ grows?
+
+1. The population distribution
+2. The population mean $\mu$
+3. The distribution of $\bar{X}$
+4. The population SD $\sigma$
+
+::: {.expl}
+The population is fixed. Only the distribution of $\bar{X}$ depends on $n$.
+:::
 :::
 
 ## Central Limit Theorem
@@ -415,7 +471,7 @@ Draw a **large random sample** from **any** population (finite mean and variance
 ::: {.box .c}
 <span class="tag">In symbols</span>
 If $X_1,\dots,X_n$ are i.i.d. with mean $\mu$ and variance $\sigma^2$, then
-$$\bar{x}\ \approx\ N\!\left(\mu,\ \frac{\sigma^2}{n}\right)$$
+$$\bar{X}\ \approx\ N\!\left(\mu,\ \frac{\sigma^2}{n}\right)$$
 :::
 ::: {.box .c .good}
 <span class="tag">The bigger the $n$</span>
@@ -838,6 +894,159 @@ Share of observations within $\pm1\sigma$, $\pm2\sigma$, $\pm3\sigma$ of the mea
 $$P(X<x)=P\!\left(Z<\frac{x-\mu}{\sigma}\right)=\Phi\!\left(\frac{x-\mu}{\sigma}\right)$$
 :::
 
+## Back to heights: $P(\bar{X}>175)$
+
+::: {.box}
+Population: $\mu=171.24$ cm, $\sigma=8.76$ cm. Sample $n=20$ students. **How likely is a sample average above 175 cm?**
+:::
+
+::: {.cards}
+::: {.box .c .fragment}
+<span class="tag">CLT</span>
+$\bar{X}\approx N\!\left(\mu,\ \frac{\sigma^2}{n}\right)$
+:::
+::: {.box .c .key .fragment}
+<span class="tag">SD of $\bar{X}$</span>
+$\frac{8.76}{\sqrt{20}}\approx1.96$
+:::
+::: {.box .c .good .fragment}
+<span class="tag">z-score</span>
+$\frac{175-171.24}{1.96}\approx1.92$
+:::
+:::
+
+::: {.box .key .fragment}
+<span class="tag">Probability</span>
+$$P(\bar{X}>175)\approx 1-\Phi(1.92)\approx 1-0.9726=0.027$$
+:::
+
+## One student vs. an average of 20
+
+::: {.cards}
+::: {.box .c}
+<span class="tag">One student</span>
+$z=\frac{175-171.24}{8.76}\approx0.43$
+
+$P(X>175)\approx0.33$
+:::
+::: {.box .c .key}
+<span class="tag">Average of 20</span>
+$z=\frac{175-171.24}{1.96}\approx1.92$
+
+$P(\bar{X}>175)\approx0.027$
+:::
+:::
+
+. . .
+
+::: {.box .good}
+<span class="tag">Check it yourself</span>
+Go back to the heights widget: **All**, $n=20$, tick **$\bar{x}>175$**, press **+ 1000** a few times. The share should settle near $2.7\%$.
+:::
+
+::: {.cap}
+A tall student is common. A tall **average** of 20 students is rare: averaging cancels out the extremes.
+:::
+
+## Practice: z-scores
+
+```{=html}
+<div class="ctl" style="gap:0.8em">
+  <button class="act" id="zp-new">New problem</button>
+  <span>Your answer: <input id="zp-in" type="text" inputmode="decimal" placeholder="0.123" style="width:6.5em;font:inherit;padding:2px 6px;border:2px solid #d9e2ec;border-radius:7px"></span>
+  <button class="act" id="zp-check">Check</button>
+  <button class="act ghost" id="zp-sol">Show solution</button>
+</div>
+<div class="box" id="zp-q" style="font-size:0.95em;min-height:3.2em"></div>
+<div id="zp-fb" style="font-size:0.85em;min-height:1.4em;font-weight:700"></div>
+<div class="box good" id="zp-s" style="display:none;font-size:0.85em"></div>
+<script>
+(function(){
+  var CTX=[
+    {what:'height', one:'a randomly chosen student is', unit:'cm', mu:171, sd:9, avg:'the average height of', who:'students', step:1},
+    {what:'a SAT score', one:'a randomly chosen test-taker scores', unit:'points', mu:1030, sd:200, avg:'the average SAT score of', who:'test-takers', step:10},
+    {what:'a midterm score', one:'a randomly chosen student scores', unit:'points', mu:43, sd:16, avg:'the average midterm score of', who:'students', step:1},
+    {what:'nightly sleep', one:'sleep on a random night is', unit:'hours', mu:7, sd:1.2, avg:'the average nightly sleep over', who:'nights', step:0.1}
+  ];
+  var q=document.getElementById('zp-q'), fb=document.getElementById('zp-fb'), sol=document.getElementById('zp-s'), inp=document.getElementById('zp-in');
+  var cur=null;
+  function pick(a){return a[Math.floor(Math.random()*a.length)];}
+  function rnd(x,st){return Math.round(x/st)*st;}
+  function fmt(x,st){return st<1?x.toFixed(1):String(Math.round(x));}
+  function make(){
+    var c=pick(CTX), isMean=Math.random()<0.5, n=isMean?pick([4,9,16,25,36,100]):1;
+    var se=c.sd/Math.sqrt(n), type=pick(['lt','gt','gt','btw']);
+    var a=rnd(c.mu+(Math.random()*2.6-1.3)*se, c.step), b=rnd(c.mu+(0.3+Math.random()*1.5)*se, c.step);
+    if(type==='btw'){a=rnd(c.mu-(0.3+Math.random()*1.5)*se,c.step);}
+    if(a===c.mu) a+=c.step;
+    var za=Math.round((a-c.mu)/se*100)/100, zb=Math.round((b-c.mu)/se*100)/100, ans;
+    if(type==='lt') ans=SD.Phi(za); else if(type==='gt') ans=1-SD.Phi(za); else ans=SD.Phi(zb)-SD.Phi(za);
+    cur={c:c,isMean:isMean,n:n,se:se,type:type,a:a,b:b,za:za,zb:zb,ans:ans};
+    var pop='In a population, '+c.what+' has mean μ = '+fmt(c.mu,c.step)+' and SD σ = '+c.sd+' '+c.unit+'. ';
+    var rv=isMean?(c.avg+' a random sample of n = '+n+' '+c.who+' is'):c.one;
+    var ev=type==='lt'?'below '+fmt(a,c.step):type==='gt'?'above '+fmt(a,c.step):'between '+fmt(a,c.step)+' and '+fmt(b,c.step);
+    q.innerHTML=pop+'<br><b>Find the probability that '+rv+' '+ev+' '+c.unit+'.</b>'+(isMean?' <span style="color:#7b8794">(use the CLT)</span>':'');
+    fb.innerHTML=''; sol.style.display='none'; inp.value='';
+  }
+  function solution(){
+    var c=cur.c, h='';
+    if(cur.isMean) h+='SD of the mean: σ/√n = '+c.sd+'/√'+cur.n+' = <b>'+cur.se.toFixed(3)+'</b><br>';
+    var s=cur.isMean?cur.se.toFixed(3):String(c.sd);
+    h+='z = ('+fmt(cur.a,c.step)+' − '+fmt(c.mu,c.step)+')/'+s+' = <b>'+cur.za.toFixed(2)+'</b>';
+    if(cur.type==='btw') h+=', &nbsp; z = ('+fmt(cur.b,c.step)+' − '+fmt(c.mu,c.step)+')/'+s+' = <b>'+cur.zb.toFixed(2)+'</b>';
+    h+='<br>';
+    if(cur.type==='lt') h+='P = Φ('+cur.za.toFixed(2)+')';
+    else if(cur.type==='gt') h+='P = 1 − Φ('+cur.za.toFixed(2)+') = 1 − '+SD.Phi(cur.za).toFixed(4);
+    else h+='P = Φ('+cur.zb.toFixed(2)+') − Φ('+cur.za.toFixed(2)+') = '+SD.Phi(cur.zb).toFixed(4)+' − '+SD.Phi(cur.za).toFixed(4);
+    h+=' = <b>'+cur.ans.toFixed(4)+'</b>';
+    sol.innerHTML=h; sol.style.display='block';
+  }
+  document.getElementById('zp-new').onclick=make;
+  document.getElementById('zp-sol').onclick=solution;
+  document.getElementById('zp-check').onclick=function(){
+    var v=parseFloat(inp.value.replace(',','.'));
+    if(isNaN(v)){fb.innerHTML='<span style="color:#c53030">Type a probability, e.g. 0.123</span>';return;}
+    if(Math.abs(v-cur.ans)<=0.005) fb.innerHTML='<span style="color:#2f855a">Correct! ('+cur.ans.toFixed(4)+')</span>';
+    else fb.innerHTML='<span style="color:#c53030">Not quite. Check your z-score'+(cur.isMean?' and the SD of the mean':'')+', then try again.</span>';
+  };
+  inp.addEventListener('keydown',function(e){e.stopPropagation(); if(e.key==='Enter')document.getElementById('zp-check').click();});
+  make();
+})();
+</script>
+```
+
+::: {.cap}
+Half the problems are about one observation, half about a **sample mean** (use $\sigma/\sqrt{n}$). Answers within $\pm0.005$ count as correct.
+:::
+
+## Quick check
+
+::: {.quiz .compact data-answer="c"}
+$X\sim N(170,\ 8^2)$. Approximately, $P(X>186)=$
+
+1. $0.50$
+2. $0.16$
+3. $0.025$
+4. $0.0015$
+
+::: {.expl}
+$186$ is $2\sigma$ above the mean. By the 68–95–99.7 rule, $5\%$ is outside $\pm2\sigma$, so $2.5\%$ is above.
+:::
+:::
+
+::: {.quiz .compact data-answer="b"}
+Heights: $\sigma=8.76$. Compared with $n=20$, the SD of $\bar{X}$ for $n=80$ is:
+
+1. $4\times$ smaller
+2. $2\times$ smaller
+3. the same
+4. $2\times$ larger
+
+::: {.expl}
+$\sigma/\sqrt{80}=\sigma/(2\sqrt{20})$: four times the data halves the SD.
+:::
+:::
+
 # Normal in real life {.section-slide}
 
 ## Coin tosses
@@ -853,11 +1062,11 @@ Proportion of heads in 1,000 tosses, repeated 10,000 times
 ## Human height
 
 ::: {.figure-slide}
-![](Code_Generated_Image%20(5)%20copy%206.png){fig-align="center"}
+![](girls_height.svg){fig-align="center" height="440"}
 :::
 
 ::: {.cap}
-ECON211 female students, $n=185$, $\mu=165.9$ cm, $\sigma=5.7$ cm.<br>Galton (1885): height is the sum of many small independent factors, so the **CLT** is at work.
+ECON211 female students, $n=226$, $\mu=166.0$ cm, $\sigma=5.6$ cm.<br>Galton (1885): height is the sum of many small independent factors, so the **CLT** is at work.
 :::
 
 ## Weight
@@ -954,7 +1163,7 @@ $$P(K\le 449)=\sum_{k=0}^{449}\binom{1000}{k}(0.5)^{1000}$$
 
 ::: {.box .good}
 <span class="tag">Exact</span>
-$$P\approx 0.000635$$
+$$P\approx 0.000696$$
 :::
 
 ## Normal approximation: Step A
@@ -989,15 +1198,16 @@ $$Z=\frac{0.45-0.5}{0.0158}\approx -3.16$$
 
 ::: {.box .key}
 <span class="tag">C · probability</span>
-$$P(\hat{p}<0.45)\approx\Phi(-3.16)\approx 0.000789$$
+$$P(\hat{p}<0.45)\approx\Phi(-3.16)\approx 0.00079$$
 :::
 
 ## Exact vs. approximate
 
 | Method | Probability | Comment |
 |:--|:-:|:--|
-| **Binomial** (exact) | $0.000635$ | precise, heavy to compute |
-| **Normal** (CLT) | $0.000789$ | accurate for $n=1000$, just a Z-table |
+| **Binomial** (exact) | $0.000696$ | precise, heavy to compute |
+| **Normal** (CLT) | $0.00079$ | right order of magnitude, about 13% too high |
+| **Normal, continuity correction** | $0.00070$ | almost exact; see next slides |
 
 . . .
 
@@ -1084,4 +1294,58 @@ $$P(z_1\le Z\le z_2)\approx 0.8682-0.7488=0.1194$$
 
 ::: {.box .good}
 With the correction the Normal is within $0.001$ of the exact answer, even for $n=20$.
+:::
+
+## Exit ticket
+
+::: {.quiz .compact data-answer="b"}
+Steps per day are **right-skewed**. You average steps over $n=100$ random days. The distribution of $\bar{X}$ is approximately:
+
+1. right-skewed, like the population
+2. Normal
+3. uniform
+4. impossible to say
+
+::: {.expl}
+CLT: for large $n$, $\bar{X}$ is approximately Normal whatever the population looks like.
+:::
+:::
+
+::: {.quiz .compact data-answer="b"}
+$K\sim B(20,\,0.5)$. With the continuity correction, $P(K\le 8)\approx$
+
+1. $P(X\le 8)$
+2. $P(X\le 8.5)$
+3. $P(X\le 7.5)$
+4. $P(X\le 9.5)$
+
+::: {.expl}
+The value $8$ occupies $[7.5,\ 8.5]$, so "$\le 8$" ends at $8.5$.
+:::
+:::
+
+## Exit ticket (continued)
+
+::: {.quiz .compact data-answer="b"}
+"$E(\bar{X})=\mu$ holds only for large $n$."
+
+1. True: it comes from the CLT
+2. False: it holds for any $n$
+
+::: {.expl}
+The proof only used linearity of expectation; the CLT is about the **shape**.
+:::
+:::
+
+::: {.quiz .compact data-answer="b"}
+With $n=50$, $SD(\bar{X})=2$ cm. With $n=200$ from the same population it becomes:
+
+1. $0.5$ cm
+2. $1$ cm
+3. $2$ cm
+4. $4$ cm
+
+::: {.expl}
+$4\times$ the data: $SD(\bar{X})=\sigma/\sqrt{n}$ falls by $\sqrt4=2$.
+:::
 :::

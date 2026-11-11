@@ -2143,17 +2143,38 @@ Var(\bar{x}) = Var\!\left(\frac{\sum X_i}{n}\right)
 </div>
 </div>
 </section>
-<section id="exact-vs.-normal-for-pk12" class="slide level2">
-<h2>Exact vs. Normal for <span class="math inline">P(K=12)</span></h2>
+<section id="exact-pk12" class="slide level2">
+<h2>Exact: <span class="math inline">P(K=12)</span></h2>
 <div class="box good">
-<p><span class="tag">Exact</span> <span class="math display">P(K=12)=\binom{20}{12}(0.5)^{20}=\frac{125970}{1048576}\approx 0.1201</span></p>
+<p><span class="tag">Exact (Binomial)</span> <span class="math display">P(K=12)=\binom{20}{12}(0.5)^{20}=\frac{125970}{1048576}\approx 0.1201</span></p>
+</div>
+</section>
+<section id="normal-approximation-with-correction" class="slide level2">
+<h2>Normal approximation with correction</h2>
+<div class="cards">
+<div class="box c">
+<p><span class="tag">Mean</span> <span class="math inline">\mu=np=10</span></p>
+</div>
+<div class="box c key">
+<p><span class="tag">Variance</span> <span class="math inline">np(1-p)=5</span></p>
+</div>
+<div class="box c good">
+<p><span class="tag">Std. deviation</span> <span class="math inline">\sigma=\sqrt5\approx2.236</span></p>
+</div>
 </div>
 <div class="fragment">
 <div class="box">
-<p><span class="tag">Normal with correction</span> <span class="math inline">\ \mu=np=10,\ \ \sigma=\sqrt{np(1-p)}=\sqrt5\approx2.236</span> <span class="math display">\begin{aligned}P(11.5\le X\le 12.5)&amp;=\Phi\!\left(\tfrac{12.5-10}{2.236}\right)-\Phi\!\left(\tfrac{11.5-10}{2.236}\right)\\&amp;=\Phi(1.118)-\Phi(0.671)\approx 0.8682-0.7488=0.1194\end{aligned}</span></p>
+<p><span class="tag">z-scores</span> <span class="math display">z_1=\frac{11.5-10}{2.236}\approx0.671,\qquad z_2=\frac{12.5-10}{2.236}\approx1.118</span></p>
 </div>
 </div>
 <div class="fragment">
+<div class="box key">
+<p><span class="tag">Probability</span> <span class="math display">P(z_1\le Z\le z_2)\approx 0.8682-0.7488=0.1194</span></p>
+</div>
+</div>
+</section>
+<section id="exact-vs.-normal-for-pk12" class="slide level2">
+<h2>Exact vs. Normal for <span class="math inline">P(K=12)</span></h2>
 <table class="caption-top">
 <thead>
 <tr class="header">
@@ -2176,6 +2197,10 @@ Var(\bar{x}) = Var\!\left(\frac{\sum X_i}{n}\right)
 </tr>
 </tbody>
 </table>
+<div class="fragment">
+<div class="box good">
+<p>With the correction the Normal is within <span class="math inline">0.001</span> of the exact answer, even for <span class="math inline">n=20</span>.</p>
+</div>
 
 </div>
 </section></section>

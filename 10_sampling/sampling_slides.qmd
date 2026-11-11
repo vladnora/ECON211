@@ -1034,24 +1034,54 @@ In terms of $\hat p=K/n$: $\ P\!\left(\hat p=\tfrac{k}{n}\right)\approx P\!\left
 ![](Code_Generated_Image%20(6)%20copy%202.png){fig-align="center" height="520"}
 :::
 
-## Exact vs. Normal for $P(K=12)$
+## Exact: $P(K=12)$
 
 ::: {.box .good}
-<span class="tag">Exact</span>
+<span class="tag">Exact (Binomial)</span>
 $$P(K=12)=\binom{20}{12}(0.5)^{20}=\frac{125970}{1048576}\approx 0.1201$$
+:::
+
+## Normal approximation with correction
+
+::: {.cards}
+::: {.box .c}
+<span class="tag">Mean</span>
+$\mu=np=10$
+:::
+::: {.box .c .key}
+<span class="tag">Variance</span>
+$np(1-p)=5$
+:::
+::: {.box .c .good}
+<span class="tag">Std. deviation</span>
+$\sigma=\sqrt5\approx2.236$
+:::
 :::
 
 . . .
 
 ::: {.box}
-<span class="tag">Normal with correction</span> $\ \mu=np=10,\ \ \sigma=\sqrt{np(1-p)}=\sqrt5\approx2.236$
-$$\begin{aligned}P(11.5\le X\le 12.5)&=\Phi\!\left(\tfrac{12.5-10}{2.236}\right)-\Phi\!\left(\tfrac{11.5-10}{2.236}\right)\\&=\Phi(1.118)-\Phi(0.671)\approx 0.8682-0.7488=0.1194\end{aligned}$$
+<span class="tag">z-scores</span>
+$$z_1=\frac{11.5-10}{2.236}\approx0.671,\qquad z_2=\frac{12.5-10}{2.236}\approx1.118$$
 :::
 
 . . .
+
+::: {.box .key}
+<span class="tag">Probability</span>
+$$P(z_1\le Z\le z_2)\approx 0.8682-0.7488=0.1194$$
+:::
+
+## Exact vs. Normal for $P(K=12)$
 
 | Method | $P(K=12)$ |
 |:--|:-:|
 | **Binomial** (exact) | $0.1201$ |
 | **Normal, with correction** | $0.1194$ |
 | **Normal, no correction** | $0$ |
+
+. . .
+
+::: {.box .good}
+With the correction the Normal is within $0.001$ of the exact answer, even for $n=20$.
+:::

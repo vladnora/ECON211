@@ -1156,6 +1156,108 @@ margin-right: 0; }
 </div>
 </div>
 </section>
+<section id="try-it-sample-student-heights" class="slide level2">
+<h2>Try it: sample student heights</h2>
+<div class="cap">
+<p>Population: the heights of <strong>373 students</strong> from our class surveys (cm). Each draw picks <span class="math inline">n</span> students at random (with replacement).</p>
+</div>
+<div class="ctl" style="gap:0.8em">
+  <span class="seg" id="hs-grp" style="margin-left:0">
+    <button data-v="all" class="on">All</button><button data-v="girls">Girls</button><button data-v="boys">Boys</button>
+  </span>
+  <span class="seg" id="hs-n" style="margin-left:0">
+    <button data-v="5">n = 5</button><button data-v="20" class="on">n = 20</button>
+  </span>
+  <button class="act" id="hs-add1">Draw sample</button>
+  <button class="act" id="hs-add10">+ 10</button>
+  <button class="act" id="hs-add1000">+ 1000</button>
+  <button class="act ghost" id="hs-reset">Reset</button>
+  <label><input type="checkbox" id="hs-mu"> Reveal μ</label>
+</div>
+<div id="hs-grid" style="font-size:0.78em;min-height:2.6em;margin:0.2em 0;line-height:1.5"></div>
+<svg id="hs-svg" viewbox="0 0 900 370" style="width:100%;height:auto;display:block"></svg>
+<div class="readout" id="hs-out"></div>
+<script>
+(function(){
+  var DATA=[168,162,180,170,169,163,165,179,162,166,183,163,163,190,184,171,169,190,174,186,188,170,174,183,162,175,163,165,172,178,158,165,163,170,181,176,175,180,186,160,165,184,164,155,188,160,173,182,168,168,175,169,160,170,170,162,165,163,161,178,168,159,162,162,158,170,164,160,168,173,162,170,170,167,163,167,170,162,167,163,178,167,184,165,165,161,185,170,177,176,170,153,178,173,166,155,183,180,173,180,165,170,183,165,173,157,172,173,163,170,174,157,171,180,170,168,170,163,155,158,175,173,168,170,174,178,168,179,173,186,189,182,172,157,179,188,165,167,170,174,181,162,156,181,170,175,170,168,167,168,170,165,172,177,175,166,164,159,160,178,183,164,165,168,184,176,168,183,180,177,160,175,168,180,181,173,176,167,163,160,173,175,178,186,163,178,162,173,180,159,153,169,178,171,186,158,157,169,170,160,189,183,165,172,173,181,169,197,178,168,164,170,180,186,175,158,162,184,186,172,160,183,163,158,170,175,185,183,170,171,165,186,175,189,173,167,169,182,183,160,185,173,163,167,169,160,177,170,162,165,170,178,197,163,177,177,169,167,190,165,175,175,168,165,169,176,168,162,163,174,182,168,163,175,159,171,175,175,183,174,170,158,192,155,153,173,167,159,180,181,173,185,172,173,178,165,160,166,181,165,163,152,180,168,173,160,169,161,192,183,193,175,171,170,172,185,183,183,172,180,175,167,182,163,173,158,180,169,178,169,167,175,172,180,170,164,160,170,178,167,174,170,171,168,163,185,155,167,173,175,160,179,180,175,161,170,162,168,180,182,171,172,180,160,170,164,165,185,168,160,165,165,178];
+  var SEX=[1,1,0,1,1,1,1,0,1,1,0,1,0,0,0,1,0,0,0,0,0,1,0,0,1,0,1,1,1,1,1,1,1,0,0,0,0,0,0,1,1,0,1,1,0,1,0,0,1,1,0,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,0,0,0,0,0,1,0,0,1,1,0,0,0,0,1,1,0,1,0,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,0,1,1,0,1,0,1,0,1,0,0,0,0,1,0,0,1,1,1,0,0,1,1,0,1,0,0,1,1,1,1,0,1,0,0,1,1,1,1,0,0,1,1,1,0,0,1,0,0,1,1,0,1,1,0,1,0,1,1,1,0,0,1,0,1,0,1,1,0,1,1,1,0,1,0,1,1,1,1,1,0,0,1,1,0,0,1,0,0,1,1,1,0,0,1,1,1,0,0,0,1,0,1,1,1,1,0,0,1,1,1,0,0,0,1,1,1,1,0,1,0,1,1,1,1,1,0,1,1,1,1,0,0,1,0,0,1,1,0,0,1,0,1,1,1,0,1,1,1,0,0,1,1,0,1,0,1,0,0,0,1,1,0,1,1,1,1,1,0,1,0,0,0,1,0,1,1,1,0,1,1,1,0,1,1,1,1,1,0,0,0,1,1,0,1,0,0,0,1,0,1,1,0,1,1,1,0,1,0,1,1,1,1,0,1,1,1,1,0,1,0,1,1,0,1,0,1,1,0,1,1,0,0,0,1,1,1,1,0,0,0,0,0,1,1,0,1,0,1,1,1,1,0]; // 1 = woman, 0 = man (same order as DATA)
+  var n=20, N0=DATA.length, MU, pool=DATA, grp='all', COL={all:'#63b3ed',girls:'#d53f8c',boys:'#319795'};
+  function setGroup(g){
+    grp=g; pool=DATA.filter(function(v,i){return g==='all'||(g==='girls'?SEX[i]===1:SEX[i]===0);});
+    MU=pool.reduce(function(a,b){return a+b;},0)/pool.length;
+  }
+  setGroup('all');
+  var svg=document.getElementById('hs-svg'), out=document.getElementById('hs-out'), grid=document.getElementById('hs-grid'), muBox=document.getElementById('hs-mu');
+  var W=900,L=50,R=20, X0=145, X1=205, BWP=3, PB0=147.5, BWM=0.5;
+  var P1={t:14,b:120}, P2={t:175,b:315};
+  function sx(x){return L+(x-X0)/(X1-X0)*(W-L-R);}
+  function binCounts(arr){var c=new Array(19).fill(0); arr.forEach(function(v){var b=Math.floor((v-PB0)/BWP); if(b>=0&&b<c.length)c[b]++;}); return c;}
+  var popCounts=binCounts(DATA);
+  var NB=(X1-X0)/BWM, counts, N, sum, sumsq, last=null;
+  function reset(){counts=new Array(NB).fill(0);N=0;sum=0;sumsq=0;last=null;render();}
+  function one(keep){
+    var tot=0, arr=keep?[]:null;
+    for(var j=0;j<n;j++){var v=pool[Math.floor(Math.random()*pool.length)]; tot+=v; if(arr)arr.push(v);}
+    var m=tot/n, b=Math.floor((m-X0)/BWM); if(b>=0&&b<NB)counts[b]++;
+    N++; sum+=m; sumsq+=m*m;
+    if(keep) last={xs:arr,mean:m};
+  }
+  function add(k,keep){for(var i=0;i<k;i++) one(keep&&i===k-1); if(!keep) last=null; render();}
+  function axis(h,y){
+    h+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+y+'" y2="'+y+'" stroke="#9aa5b1"/>';
+    for(var t=150;t<=X1-5;t+=10) h+='<text x="'+sx(t)+'" y="'+(y+22)+'" text-anchor="middle" font-size="16" fill="#7b8794">'+t+'</text>';
+    return h;
+  }
+  function render(){
+    var h='', i;
+    var dp=popCounts.map(function(c){return c/(N0*BWP);}), pm=Math.max.apply(null,dp)*1.12;
+    function sy1(v){return P1.b-v/pm*(P1.b-P1.t);}
+    var gc=grp==='all'?null:binCounts(pool), gcol=COL[grp];
+    function bar(k,v,fill,stroke,op){ if(!v)return ''; return '<rect x="'+(sx(PB0+k*BWP)+1)+'" y="'+sy1(v)+'" width="'+(sx(X0+BWP)-sx(X0)-2)+'" height="'+(P1.b-sy1(v))+'" fill="'+fill+'" stroke="'+stroke+'"'+(op?' fill-opacity="'+op+'"':'')+'/>'; }
+    dp.forEach(function(v,k){ h+=gc?bar(k,v,'#eef0f2','#d3d9df'):bar(k,v,'#e4e7eb','#7b8794'); });
+    if(gc) gc.forEach(function(c,k){ h+=bar(k,c/(N0*BWP),gcol,gcol,0.85); });
+    h=axis(h,P1.b);
+    h+='<text x="'+(L+6)+'" y="'+(P1.t+14)+'" font-size="17" font-weight="700" fill="'+(gc?gcol:'#52606d')+'">Population: '+(gc?(grp==='girls'?'girls, ':'boys, ')+pool.length+' of ':'')+'373 heights (density histogram)</text>';
+    if(muBox.checked) h+='<line x1="'+sx(MU)+'" x2="'+sx(MU)+'" y1="'+P1.t+'" y2="'+P1.b+'" stroke="#dd6b20" stroke-width="2" stroke-dasharray="6,4"/>';
+    if(last){
+      var seen={};
+      last.xs.forEach(function(v){var c=seen[v]=(seen[v]||0)+1; h+='<circle cx="'+sx(v).toFixed(1)+'" cy="'+(P1.b-7-(c-1)*9)+'" r="4.5" fill="'+(gc?gcol:'#2b6cb0')+'" fill-opacity="0.85"/>';});
+      h+='<path d="M'+sx(last.mean)+' '+(P1.b+2)+' l-8 -13 h16 z" fill="#dd6b20"/>';
+    }
+    var dens=counts.map(function(c){return N?c/(N*BWM):0;});
+    var ym=Math.max(Math.max.apply(null,dens),0.05)*1.15;
+    function sy2(v){return P2.b-v/ym*(P2.b-P2.t);}
+    h=axis(h,P2.b);
+    h+='<text x="'+(L+6)+'" y="'+(P2.t-6)+'" font-size="17" font-weight="700" fill="'+(gc?gcol:'#2b6cb0')+'">Sample means x̄ (n = '+n+')'+(gc?', '+(grp==='girls'?'girls':'boys'):'')+', density histogram</text>';
+    dens.forEach(function(v,k){ if(!v)return; h+='<rect x="'+(sx(X0+k*BWM)+0.5)+'" y="'+sy2(v)+'" width="'+(sx(X0+BWM)-sx(X0)-1)+'" height="'+(P2.b-sy2(v))+'" fill="'+COL[grp]+'" fill-opacity="0.85"/>'; });
+    if(muBox.checked){
+      h+='<line x1="'+sx(MU)+'" x2="'+sx(MU)+'" y1="'+P2.t+'" y2="'+P2.b+'" stroke="#dd6b20" stroke-width="2" stroke-dasharray="6,4"/>';
+      h+='<text x="'+(sx(MU)+8)+'" y="'+(P2.t+16)+'" font-size="17" fill="#dd6b20" font-weight="700">μ = '+MU.toFixed(2)+'</text>';
+    }
+    if(last) h+='<path d="M'+sx(last.mean)+' '+(P2.b+2)+' l-8 -13 h16 z" fill="#dd6b20"/>';
+    svg.innerHTML=h;
+    if(last){
+      var s=last.xs.slice().sort(function(a,b){return a-b;});
+      grid.innerHTML=s.map(function(v){return '<span style="display:inline-block;background:'+(grp==='girls'?'#fbe4ef':grp==='boys'?'#dff3f2':'#ebf4fc')+';border-radius:6px;padding:0 7px;margin:2px 3px">'+v+'</span>';}).join('')
+        +' &nbsp;⇒&nbsp; <b>x̄ = '+last.mean.toFixed(2)+'</b>';
+    } else grid.innerHTML='<i style="color:#7b8794">Press <b>Draw sample</b> to pick '+n+' students.</i>';
+    if(N){var m=sum/N, sd=Math.sqrt(Math.max(0,sumsq/N-m*m));
+      out.innerHTML='<b>'+N.toLocaleString()+'</b> sample'+(N>1?'s':'')+' &nbsp;|&nbsp; mean of x̄ = <b>'+m.toFixed(2)+'</b> &nbsp;|&nbsp; SD of x̄ = <b>'+sd.toFixed(2)+'</b>'+(muBox.checked?' &nbsp;|&nbsp; μ = '+MU.toFixed(2):'');
+    } else out.innerHTML='';
+  }
+  document.getElementById('hs-add1').onclick=function(){add(1,true);};
+  document.getElementById('hs-add10').onclick=function(){add(10,true);};
+  document.getElementById('hs-add1000').onclick=function(){add(1000,false);};
+  document.getElementById('hs-reset').onclick=reset;
+  var nEl=document.getElementById('hs-n');
+  nEl.addEventListener('click',function(e){var b=e.target.closest('button'); if(!b)return; nEl.querySelectorAll('button').forEach(function(x){x.classList.remove('on');}); b.classList.add('on'); n=+b.dataset.v; reset();});
+  var gEl=document.getElementById('hs-grp');
+  gEl.addEventListener('click',function(e){var b=e.target.closest('button'); if(!b)return; gEl.querySelectorAll('button').forEach(function(x){x.classList.remove('on');}); b.classList.add('on'); setGroup(b.dataset.v); reset();});
+  muBox.addEventListener('change',render);
+  reset();
+})();
+</script>
+</section>
 <section id="barx-is-not-mu" class="slide level2">
 <h2><span class="math inline">\bar{x}</span> is not <span class="math inline">\mu</span></h2>
 <ul>

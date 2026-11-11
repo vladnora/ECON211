@@ -1008,10 +1008,50 @@ A sum or average of many iid variables is approximately **Normal**, whatever the
 ## Continuity correction
 
 ::: {.box}
-The Normal is continuous, so $P(\hat{p}=a)=0$. For a discrete value, widen it by $\pm 0.5$:
-$$P\!\left(\frac{k-0.5}{n}\le\hat{p}\le\frac{k+0.5}{n}\right)$$
+Flip a fair coin $n=20$ times. $K$ = number of heads, so $K\sim B(20,\,0.5)$.
 :::
 
-::: {.figure-slide}
-![](Code_Generated_Image%20(6)%20copy%202.png){fig-align="center" height="330"}
+::: {.box .key}
+<span class="tag">Goal</span>
+$$P(K=12)=\ ?$$
 :::
+
+. . .
+
+::: {.box}
+The Normal is continuous: $P(X=12)=0$. Fix: the integer $k$ occupies the interval $[k-0.5,\ k+0.5]$:
+$$P(K=k)\approx P\big(k-0.5\le X\le k+0.5\big),\qquad X\sim N\big(np,\ np(1-p)\big)$$
+Here $k$ is the specific number of heads we ask about ($k=12$).
+:::
+
+::: {.cap}
+In terms of $\hat p=K/n$: $\ P\!\left(\hat p=\tfrac{k}{n}\right)\approx P\!\left(\tfrac{k-0.5}{n}\le\hat p\le\tfrac{k+0.5}{n}\right)$ with $\hat p\sim N\!\left(p,\tfrac{p(1-p)}{n}\right)$.
+:::
+
+## Continuity correction: the picture
+
+::: {.figure-slide}
+![](Code_Generated_Image%20(6)%20copy%202.png){fig-align="center" height="520"}
+:::
+
+## Exact vs. Normal for $P(K=12)$
+
+::: {.box .good}
+<span class="tag">Exact</span>
+$$P(K=12)=\binom{20}{12}(0.5)^{20}=\frac{125970}{1048576}\approx 0.1201$$
+:::
+
+. . .
+
+::: {.box}
+<span class="tag">Normal with correction</span> $\ \mu=np=10,\ \ \sigma=\sqrt{np(1-p)}=\sqrt5\approx2.236$
+$$\begin{aligned}P(11.5\le X\le 12.5)&=\Phi\!\left(\tfrac{12.5-10}{2.236}\right)-\Phi\!\left(\tfrac{11.5-10}{2.236}\right)\\&=\Phi(1.118)-\Phi(0.671)\approx 0.8682-0.7488=0.1194\end{aligned}$$
+:::
+
+. . .
+
+| Method | $P(K=12)$ |
+|:--|:-:|
+| **Binomial** (exact) | $0.1201$ |
+| **Normal, with correction** | $0.1194$ |
+| **Normal, no correction** | $0$ |

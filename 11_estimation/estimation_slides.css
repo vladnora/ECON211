@@ -1,0 +1,114 @@
+/* Sampling lecture slides: design layer on top of revealjs "simple" */
+:root {
+  --navy:#1b3a5c; --blue:#2b6cb0; --blue-soft:#eef4fb;
+  --orange:#dd6b20; --orange-soft:#fff4e5;
+  --green:#2f855a; --green-soft:#e8f6ee;
+  --red:#c53030; --red-soft:#fdecec;
+  --ink:#1f2933; --muted:#52606d;
+}
+
+/* ONE type scale for the whole deck */
+.reveal { font-size:30px; color:var(--ink); line-height:1.3;
+  font-family:"Source Sans Pro", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+.reveal .slides section { text-align:left; }
+.reveal .katex { font-size:1em; }                       /* inline math = text size */
+.reveal .katex-display { margin:0.35em 0; }
+.reveal .katex-display > .katex { font-size:1.12em; }   /* display math: same size everywhere */
+
+/* ---------- slide titles: identical box on every slide ---------- */
+.reveal h1, .reveal h2 { color:var(--navy); font-family:inherit; text-transform:none; letter-spacing:-0.01em; }
+.reveal h2 {
+  font-size:1.5em; line-height:1.2; height:1.2em; box-sizing:content-box;
+  margin:0 0 0.55em 0; padding:0 0 0.15em 0;
+  border-bottom:4px solid var(--blue);
+  white-space:nowrap; overflow:visible; text-align:left;
+}
+.reveal h2 .katex { font-size:1em; }
+
+/* ---------- title / section slides ---------- */
+.reveal .title-slide { text-align:center !important; }
+.reveal .title-slide h1 { font-size:2.2em; }
+.reveal .title-slide .subtitle { color:var(--blue); font-size:1.1em; }
+.reveal section.section-slide { text-align:center; }
+.reveal section.section-slide h1 { font-size:2.2em; color:var(--blue); }
+.reveal section.section-slide p { color:var(--muted); }
+
+/* ---------- lists ---------- */
+.reveal ul, .reveal ol { margin-left:0.9em; }
+.reveal li { margin:0.3em 0; }
+.reveal li::marker { color:var(--blue); }
+
+/* ---------- boxes: one look, one padding, one font size ---------- */
+.reveal .box {
+  background:var(--blue-soft); border-left:8px solid var(--blue); border-radius:8px;
+  padding:0.5em 0.8em; margin:0.5em 0; text-align:left; box-sizing:border-box;
+  overflow-wrap:anywhere;
+}
+.reveal .box p { margin:0.2em 0; }
+.reveal .box.key  { background:var(--orange-soft); border-color:var(--orange); }
+.reveal .box.good { background:var(--green-soft);  border-color:var(--green); }
+.reveal .box.warn { background:var(--red-soft);    border-color:var(--red); }
+.reveal .box.c { text-align:center; }
+.reveal .box .tag {
+  display:block; font-size:0.62em; font-weight:800; letter-spacing:0.08em; text-transform:uppercase;
+  color:var(--blue); margin-bottom:0.2em;
+}
+.reveal .box.key .tag  { color:var(--orange); }
+.reveal .box.good .tag { color:var(--green); }
+.reveal .box.warn .tag { color:var(--red); }
+
+/* rows of equal-size, aligned boxes */
+.reveal .cards { display:flex; gap:0.6em; align-items:stretch; margin:0.5em 0; }
+.reveal .cards > .box { flex:1 1 0; min-width:0; margin:0; }
+.reveal .cards.stack { flex-direction:column; }
+
+/* inline emphasis, all at body size */
+.reveal .stmt { text-align:center; font-weight:700; color:var(--navy); margin:0.5em 0; }
+.reveal .hl { color:var(--orange); font-weight:700; }
+.reveal .hb { color:var(--blue); font-weight:700; }
+.reveal .cap { font-size:0.72em; color:var(--muted); text-align:center; margin-top:0.3em; }
+
+/* ---------- figures ---------- */
+.reveal img { border:none; box-shadow:none; margin:0 auto; }
+.reveal .figure-slide img { max-height:500px; }
+
+/* ---------- tables ---------- */
+.reveal table { font-size:0.8em; margin:0.4em auto; border-collapse:collapse; width:100%; }
+.reveal table th { background:var(--navy); color:#fff; padding:0.4em 0.8em; }
+.reveal table td { padding:0.4em 0.8em; border-bottom:1px solid #d9e2ec; }
+
+/* ---------- widgets ---------- */
+.reveal .ctl { font-size:0.8em; display:flex; gap:1.6em; flex-wrap:wrap; align-items:center; margin:0.1em 0; }
+.reveal .ctl input[type=range] { width:190px; vertical-align:middle; }
+.reveal .readout { font-size:0.8em; color:var(--muted); min-height:1.4em; margin-top:0.2em; text-align:center; }
+
+/* ---------- CLT simulator controls ---------- */
+.reveal .seg { display:inline-flex; background:#eef1f4; border-radius:9px; padding:3px; margin-left:0.3em; vertical-align:middle; }
+.reveal .seg button { border:0; margin:0; background:transparent; padding:3px 12px; border-radius:7px; cursor:pointer;
+  font-family:inherit; font-size:0.95em; line-height:1.3; color:#7b8794; text-transform:none; letter-spacing:normal; }
+.reveal .seg button.on { background:#fff; color:#1f2933; font-weight:700; box-shadow:0 1px 3px rgba(0,0,0,.18); }
+.reveal button.act { border:0; margin:0; background:var(--blue); color:#fff; border-radius:9px; padding:5px 14px; cursor:pointer;
+  font-family:inherit; font-size:0.95em; font-weight:600; line-height:1.3; text-transform:none; letter-spacing:normal; }
+.reveal button.act:hover { filter:brightness(.92); }
+.reveal button.act.ghost { background:#e4e7eb; color:#323f4b; }
+.reveal .ctl label { cursor:pointer; }
+
+/* ---------- population vs. sample dots ---------- */
+.reveal section.dots-slide { padding:0 !important; }
+.reveal .dots-wrap { position:absolute; left:0; top:0; width:1050px; height:700px; background:#fff; }
+.reveal .dots-wrap svg { display:block; width:100%; height:calc(100% - 90px); }
+.reveal .dots-wrap .dots-title { position:absolute; left:34px; top:26px; background:#fff; border:3px solid var(--blue);
+  border-radius:12px; padding:2px 16px; font-weight:800; color:var(--navy); font-size:1.15em; }
+.reveal .dots-wrap .dots-bar { position:absolute; left:0; right:0; bottom:0; height:90px; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:10px; border-top:4px solid var(--blue); background:#fff; }
+.reveal .dots-wrap .readout { margin:0; font-size:0.85em; }
+.reveal .dots-wrap .dots-btns { display:flex; gap:12px; }
+
+/* ---------- scatter plots ---------- */
+.reveal .scatter-row { display:flex; gap:0.6em; align-items:center; margin:0.3em 0; }
+.reveal .scatter-row svg { flex:1.25 1 0; min-width:0; }
+.reveal .scatter-row > .box { flex:1 1 0; min-width:0; margin:0; }
+.reveal .scatter-row svg.plane { max-height:470px; }
+.reveal svg.selplot { display:block; width:100%; max-height:330px; margin:0; }
+.reveal svg.famplot { display:block; width:100%; margin:0 auto; }
+.reveal .scatter-row svg.star { max-height:230px; }

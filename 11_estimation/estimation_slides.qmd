@@ -1,0 +1,909 @@
+---
+title: "Estimation"
+subtitle: "ECON211 · Probability & Statistics"
+format:
+  revealjs:
+    theme: simple
+    css: estimation_slides.css
+    html-math-method: katex
+    center: false
+    slide-number: true
+    embed-resources: true
+    width: 1050
+    height: 700
+    margin: 0.05
+    transition: fade
+    transition-speed: fast
+    chalkboard: false
+---
+
+# Point Estimation {.section-slide}
+
+Guessing a parameter from a sample.
+
+## Main question
+
+::: {.box .key}
+<span class="tag">Main question</span>
+We know a lot about the distribution of $\bar{x}$. How do we use it to learn about the **population mean** $\mu$?
+:::
+
+## Point estimator
+
+::: {.box .key}
+<span class="tag">Definition</span>
+Let $\theta$ be a population parameter. A statistic $\hat{\theta}$ used to guess $\theta$ is called an **estimator** of $\theta$.
+:::
+
+. . .
+
+::: {.cards}
+::: {.box .c}
+$\bar{x}$ is an estimator of $\mu$
+:::
+::: {.box .c}
+$s^2$ is an estimator of $\sigma^2$
+:::
+:::
+
+. . .
+
+::: {.box}
+A good estimator must be a **good guess**. What is a good guess?
+:::
+
+## Unbiased estimator
+
+::: {.box .key}
+<span class="tag">Definition</span>
+If $E(\hat{\theta})=\theta$, then $\hat{\theta}$ is an **unbiased** estimator of $\theta$.
+:::
+
+. . .
+
+::: {.cards}
+::: {.box .c}
+$\bar{x}$ is unbiased for $\mu$
+:::
+::: {.box .c}
+$s^2$ is unbiased for $\sigma^2$
+:::
+:::
+
+. . .
+
+::: {.box .warn}
+If we divide by $n$ instead of $n-1$, the variance estimator becomes **biased**.
+:::
+
+# Example: German tanks {.section-slide}
+
+World War II
+
+## Estimating tank production
+
+::: {.box}
+The Allies wanted to estimate German tank production $a$ from the **serial numbers** $x_i$ of captured tanks.
+:::
+
+. . .
+
+::: {.box}
+Allied intelligence used traditional methods (spies). Statisticians analyzed serial numbers.
+:::
+
+. . .
+
+| Date | Intelligence | Statisticians | Actual |
+|:--|:-:|:-:|:-:|
+| June 1941 | 1,550 | 244 | **271** |
+| August 1942 | 1,550 | 327 | **342** |
+
+## A simple model
+
+::: {.box}
+Serial numbers are uniform: $x_i\sim U[0,a]$. We want to estimate the maximum $a$.
+:::
+
+. . .
+
+::: {.box .key}
+<span class="tag">One tank, $n=1$</span>
+Since $E[x_1]=\frac{a}{2}$, the guess $\hat{\theta}=x_1$ is **biased**.
+:::
+
+. . .
+
+::: {.box .good}
+Fix: $\hat{\theta}_{1}=2x_1$. Then $E[2x_1]=2\cdot\frac{a}{2}=a$: **unbiased**.
+:::
+
+## Many tanks
+
+::: {.box}
+With $n>1$ tanks we can use the sample mean: $\hat{\theta}_{\text{mean}}=2\bar{x}$.
+:::
+
+. . .
+
+::: {.box .good}
+$E[2\bar{x}]=2E[\bar{x}]=2\cdot\frac{a}{2}=a$: also **unbiased**.
+:::
+
+. . .
+
+::: {.box .key}
+Two unbiased estimators: $2x_1$ and $2\bar{x}$. **Which one is better?**
+:::
+
+## Which is better?
+
+::: {.box}
+We say "better" means smaller **variance**.
+:::
+
+. . .
+
+::: {.cards}
+::: {.box .c}
+<span class="tag">One observation</span>
+$$\operatorname{Var}(2x_1)=4\cdot\frac{a^2}{12}=\frac{a^2}{3}$$
+:::
+::: {.box .key .c}
+<span class="tag">Sample mean</span>
+$$\operatorname{Var}(2\bar{x})=4\cdot\frac{a^2/12}{n}=\frac{a^2}{3n}$$
+:::
+:::
+
+. . .
+
+::: {.box .good}
+$\operatorname{Var}(2\bar{x})=\frac{1}{n}\operatorname{Var}(2x_1)$: using all the data is **$n$ times more efficient**.
+:::
+
+## Efficiency
+
+::: {.box .key}
+<span class="tag">Definition</span>
+Among unbiased estimators, the one with the **smaller variance** is more **efficient**.
+:::
+
+. . .
+
+::: {.box}
+<span class="tag">Intuition</span>
+Variance is the **risk** of a guess. Both estimators are right on average, but the one with lower variance is much more likely to be close to the truth in a single sample.
+:::
+
+## Simulating the tank problem
+
+<svg id="tk1-svg" viewBox="0 0 900 330" class="famplot"></svg>
+
+<div class="readout" id="tk1-out"></div>
+
+<div class="ctl" style="justify-content:center">
+  <button class="act" id="tk1-run">Run again</button>
+</div>
+
+## An even better estimator
+
+<svg id="tk2-svg" viewBox="0 0 900 330" class="famplot"></svg>
+
+<div class="readout" id="tk2-out"></div>
+
+<div class="ctl" style="justify-content:center">
+  <button class="act" id="tk2-run">Run again</button>
+</div>
+
+<script>
+(function () {
+  var N = 10, REPS = 1000, X0 = 0, X1 = 2, BW = 0.04, NB = Math.round((X1 - X0) / BW);
+  var EST = {
+    e1: { name: "2X₁", col: "#2b6cb0" },
+    e2: { name: "2x̄", col: "#2f855a" },
+    e3: { name: "(n+1)/n · max", col: "#dd6b20" }
+  };
+  function sim() {
+    var r = { e1: [], e2: [], e3: [] };
+    for (var k = 0; k < REPS; k++) {
+      var s = 0, mx = 0, first = 0;
+      for (var i = 0; i < N; i++) { var u = Math.random(); if (i === 0) first = u; s += u; if (u > mx) mx = u; }
+      r.e1.push(2 * first); r.e2.push(2 * s / N); r.e3.push((N + 1) / N * mx);
+    }
+    return r;
+  }
+  function stats(a) {
+    var m = a.reduce(function (s, x) { return s + x; }, 0) / a.length;
+    var v = a.reduce(function (s, x) { return s + (x - m) * (x - m); }, 0) / (a.length - 1);
+    return [m, Math.sqrt(v)];
+  }
+  function widget(pre, show) {
+    var svg = document.getElementById(pre + "-svg"), out = document.getElementById(pre + "-out");
+    var L = 60, R = 870, T = 40, B = 270;
+    function hx(x) { return L + (x - X0) / (X1 - X0) * (R - L); }
+    function run() {
+      var r = sim(), cnt = {}, mx = 0, g = "";
+      show.forEach(function (k) {
+        var c = []; for (var b = 0; b < NB; b++) c.push(0);
+        r[k].forEach(function (x) { var b = Math.floor((x - X0) / BW); if (b >= 0 && b < NB) c[b]++; });
+        cnt[k] = c; mx = Math.max(mx, Math.max.apply(null, c));
+      });
+      g += '<line x1="' + L + '" y1="' + B + '" x2="' + R + '" y2="' + B + '" stroke="#52606d" stroke-width="2"/>';
+      for (var x = 0; x <= 2; x += 0.5) g += '<text x="' + hx(x) + '" y="' + (B + 24) + '" text-anchor="middle" font-size="17" fill="#52606d">' + x.toFixed(1) + '</text>';
+      g += '<text x="' + ((L + R) / 2) + '" y="' + (B + 52) + '" text-anchor="middle" font-size="18" fill="#1f2933">estimate of a (true a = 1, n = 10)</text>';
+      show.forEach(function (k) {
+        cnt[k].forEach(function (n, b) {
+          var h = n / mx * (B - T - 10);
+          g += '<rect x="' + (hx(X0 + b * BW) + 0.5) + '" y="' + (B - h) + '" width="' + ((R - L) / NB - 1) + '" height="' + h + '" fill="' + EST[k].col + '" opacity="0.55"/>';
+        });
+      });
+      g += '<line x1="' + hx(1) + '" y1="' + (T - 10) + '" x2="' + hx(1) + '" y2="' + B + '" stroke="#1b3a5c" stroke-width="2.5" stroke-dasharray="7 5"/>';
+      show.forEach(function (k, i) {
+        g += '<rect x="' + (R - 190) + '" y="' + (T - 30 + i * 24) + '" width="16" height="16" fill="' + EST[k].col + '" opacity="0.6"/><text x="' + (R - 168) + '" y="' + (T - 17 + i * 24) + '" font-size="18" fill="#1f2933">' + EST[k].name + '</text>';
+      });
+      svg.innerHTML = g;
+      out.innerHTML = show.map(function (k) { var s = stats(r[k]); return EST[k].name + ": mean <b>" + s[0].toFixed(2) + "</b>, SD <b>" + s[1].toFixed(2) + "</b>"; }).join(" &nbsp;·&nbsp; ");
+    }
+    document.getElementById(pre + "-run").onclick = run;
+    run();
+  }
+  widget("tk1", ["e1", "e2"]);
+  widget("tk2", ["e1", "e2", "e3"]);
+})();
+</script>
+
+## Better still
+
+::: {.box .key}
+$$\hat{\theta}_{\max}=\frac{n+1}{n}\cdot\max(X_i)$$
+:::
+
+. . .
+
+::: {.box .good}
+It is also **unbiased**, and its variance is much smaller: $\operatorname{Var}=\frac{a^2}{n(n+2)}$. In the simulation, it is the most efficient of the three.
+:::
+
+. . .
+
+::: {.cap}
+Which estimator is best depends on the assumed population distribution.
+:::
+
+## The sample mean for $\mu$
+
+::: {.cards}
+::: {.box .good}
+<span class="tag">Bias</span>
+$\bar{x}$ is **always unbiased** for $\mu$: Normal, Binomial, Poisson, anything.
+:::
+::: {.box .warn}
+<span class="tag">Efficiency</span>
+$\bar{x}$ is **not always the most efficient**. For a Uniform population, the maximum-based estimator beats it.
+:::
+:::
+
+## Consistency
+
+::: {.box .key}
+<span class="tag">Definition</span>
+An estimator is **consistent** if it converges to the true parameter as $n\to\infty$.
+:::
+
+. . .
+
+::: {.box}
+For this, both the **bias** and the **variance** must shrink to zero as $n\to\infty$.
+:::
+
+## Consistency: remarks
+
+::: {.cards}
+::: {.box}
+<span class="tag">Biased but consistent</span>
+The error in small samples disappears with more data. Example: the variance estimator that divides by $n$.
+:::
+::: {.box .warn}
+<span class="tag">Unbiased but inconsistent</span>
+Centered on the truth, but the uncertainty never shrinks. Example: using only $X_1$ to estimate $\mu$.
+:::
+:::
+
+. . .
+
+::: {.cap}
+Consistency is the "large sample minimum": we often tolerate small-sample bias if we reach the truth with enough data.
+:::
+
+## Three properties
+
+| Property | Focus | Purpose |
+|:--|:--|:--|
+| **Unbiasedness** | Accuracy | On target **on average** |
+| **Consistency** | Reliability | Error disappears as $n\to\infty$ |
+| **Efficiency** | Precision | **Smallest error** among competitors |
+
+. . .
+
+::: {.box .key}
+An ideal estimator is **unbiased, consistent and efficient**. Among unbiased and consistent estimators we pick the most efficient: narrower confidence intervals, more powerful tests.
+:::
+
+## Properties depend on the population
+
+::: {.box .key}
+<span class="tag">Remark</span>
+To **establish** these properties we need **assumptions about the population distribution**. The same estimator may have a property under one model and lose it under another.
+:::
+
+. . .
+
+::: {.cards}
+::: {.box .warn .c}
+<span class="tag">Needs a specific model</span>
+$2x_1$ and $2\bar{x}$ are unbiased for $a$ **assuming** $x_i\sim U[0,a]$. If the population were Normal, $E[2\bar{x}]=2\mu\neq a$.<br><br>Efficiency: $2\bar{x}$ is beaten by $\frac{n+1}{n}\max(X_i)$ for Uniform, but $\bar{x}$ is the most efficient for Normal.
+:::
+::: {.box .good .c}
+<span class="tag">Holds for (almost) any population</span>
+$E[\bar{x}]=\mu$ and $E[s^2]=\sigma^2$: unbiased whenever the mean (variance) exists and the sample is i.i.d.<br><br>$\bar{x}\to\mu$ as $n\to\infty$: consistent for any population with a finite mean (Law of Large Numbers).
+:::
+:::
+
+. . .
+
+::: {.cap}
+Always ask: **under what assumption** is this property true?
+:::
+
+# Interval Estimation {.section-slide}
+
+From a guess to a range of plausible values.
+
+## From point to interval
+
+::: {.box .key}
+<span class="tag">Main question</span>
+What can we infer about $\mu$ from a simple random sample?
+:::
+
+. . .
+
+::: {.cards}
+::: {.box .good}
+Our guess $\bar{x}$ is **unbiased**: on average it equals $\mu$.
+:::
+::: {.box .good}
+It is **consistent**: it becomes more precise as $n$ grows.
+:::
+:::
+
+## Consistency of the sample mean
+
+::: {.figure-slide}
+![](est_Code_Generated_Image%20(6).png){fig-align="center"}
+:::
+
+::: {.cap}
+Fair die: the distribution of $\bar{x}$ narrows around $\mu=3.5$ as $n$ grows.
+:::
+
+## Limits of a point estimate
+
+::: {.box .warn}
+A point estimate is a **single number**. It almost never equals $\mu$.
+:::
+
+. . .
+
+::: {.box .warn}
+It says nothing about the **reliability** of the guess or the **uncertainty**.
+:::
+
+. . .
+
+::: {.box .key}
+An **interval estimate** captures the uncertainty around our guess.
+:::
+
+## Confidence intervals in research
+
+::: {.figure-slide}
+![](est_Screenshot%202026-04-20%20at%2008.57.03.png){fig-align="center"}
+:::
+
+::: {.cap}
+Allcott et al. (2020): effect of deactivating Facebook for one month on well-being.
+:::
+
+## How to read the figure
+
+::: {.cards .stack}
+::: {.box}
+<span class="tag">The zero line</span>
+The baseline: the **control group**, who kept using Facebook as usual.
+:::
+::: {.box}
+<span class="tag">The dots: point estimates</span>
+The average change for the **treatment group** (those who quit). To the right of zero: they felt better.
+:::
+::: {.box}
+<span class="tag">The bars: confidence intervals</span>
+Our uncertainty. If the bar does not cross zero, the effect is "statistically significant" at the 95% level. If it crosses zero, we cannot tell a real change from noise.
+:::
+:::
+
+## Interval estimate
+
+::: {.box .key}
+<span class="tag">Idea</span>
+An **interval estimate** (confidence interval) is a range of values, computed from the sample, that are **reasonable guesses** for an unknown parameter.
+:::
+
+. . .
+
+::: {.box}
+First we **assume $\sigma$ is known**: the only uncertainty is about $\bar{x}$. Later we drop this.
+:::
+
+. . .
+
+::: {.box}
+By the CLT:
+$$\bar{x}\sim N\!\left(\mu,\frac{\sigma^2}{n}\right)\ \text{approximately}$$
+:::
+
+## Which values of $\mu$ are plausible?
+
+::: {.box}
+<span class="tag">Example: a die</span>
+Observed $\bar{x}=3$. Population variance $\sigma^2=2.92$, sample size $n=20$. Standard error: $SE=\sqrt{2.92/20}\approx 0.382$.
+:::
+
+. . .
+
+::: {.box .key}
+<span class="tag">Question</span>
+If the true mean were $\mu$, how likely is it to observe $\bar{x}=3$ **or something more extreme**?
+:::
+
+. . .
+
+::: {.cap}
+"More extreme" = in the tails, at least as far from $\mu$ as $\bar{x}$ is.
+:::
+
+## How surprising is $\bar{x}=3$?
+
+<svg id="pv-svg" viewBox="0 0 900 312" class="famplot"></svg>
+
+<div class="readout" style="color:#c53030;font-weight:700;font-size:0.95em">Probability of $\bar{x}$ at least this far from $\mu$ (shaded area): <span id="pv-p"></span></div>
+
+<div class="ctl" style="justify-content:center">
+  <label>Hypothesized $\mu$: <input type="range" id="pv-mu" min="1" max="5" step="0.01" value="2.2" style="width:420px"> <b id="pv-mu-val">2.20</b></label>
+</div>
+
+<script>
+(function () {
+  var SE = Math.sqrt(2.92 / 20), XO = 3, L = 50, R = 880, XA = 0, XB = 6;
+  var TOP = 10, SC = 270 / 1.4;                                     // y from 1.25 (top) to -0.15
+  function px(x) { return L + (x - XA) / (XB - XA) * (R - L); }
+  function py(y) { return TOP + (1.25 - y) * SC; }
+  function pdf(x, m) { return Math.exp(-0.5 * Math.pow((x - m) / SE, 2)) / (SE * Math.sqrt(2 * Math.PI)); }
+  function erf(x) { var s = x < 0 ? -1 : 1; x = Math.abs(x); var t = 1 / (1 + 0.3275911 * x);
+    return s * (1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x)); }
+  function Phi(z) { return 0.5 * (1 + erf(z / Math.SQRT2)); }
+  var svg = document.getElementById("pv-svg"), sl = document.getElementById("pv-mu"), lab = document.getElementById("pv-mu-val");
+  function path(m, lo, hi) {
+    var d = "M" + px(lo).toFixed(1) + "," + py(0).toFixed(1);
+    for (var x = lo; x <= hi + 1e-9; x += 0.01) d += " L" + px(x).toFixed(1) + "," + py(pdf(x, m)).toFixed(1);
+    return d + " L" + px(hi).toFixed(1) + "," + py(0).toFixed(1) + " Z";
+  }
+  function draw() {
+    var m = +sl.value, dist = Math.abs(XO - m), p = 2 * (1 - Phi(dist / SE)), g = "";
+    lab.textContent = m.toFixed(2);
+    var lo = Math.max(XA, m - 4 * SE), hi = Math.min(XB, m + 4 * SE);
+    g += '<defs><clipPath id="pv-clip"><rect x="' + L + '" y="0" width="' + (R - L) + '" height="260"/></clipPath></defs><g clip-path="url(#pv-clip)">';
+    if (m - dist > lo) g += '<path d="' + path(m, lo, Math.min(m - dist, hi)) + '" fill="#c53030" fill-opacity="0.4"/>';
+    if (m + dist < hi) g += '<path d="' + path(m, Math.max(m + dist, lo), hi) + '" fill="#c53030" fill-opacity="0.4"/>';
+    var d = "";
+    for (var x = lo; x <= hi + 1e-9; x += 0.01) d += (d ? " L" : "M") + px(x).toFixed(1) + "," + py(pdf(x, m)).toFixed(1);
+    g += '<path d="' + d + '" fill="none" stroke="#444" stroke-width="2.5"/></g>';
+    g += '<line x1="' + L + '" y1="' + py(0) + '" x2="' + R + '" y2="' + py(0) + '" stroke="#52606d" stroke-width="2"/>';
+    for (var t = 0; t <= 6; t++) g += '<text x="' + px(t) + '" y="' + (py(0) + 20) + '" text-anchor="middle" font-size="16" fill="#52606d">' + t + '</text>';
+    g += '<line x1="' + px(XO) + '" y1="' + TOP + '" x2="' + px(XO) + '" y2="' + py(0) + '" stroke="#1f2933" stroke-width="3"/>' +
+         '<text x="' + (px(XO) + (m < XO ? 8 : -8)) + '" y="' + (TOP + 14) + '" text-anchor="' + (m < XO ? "start" : "end") + '" font-size="17" font-weight="700" fill="#1f2933">x̄ = 3</text>';
+    g += '<line x1="' + px(m) + '" y1="' + TOP + '" x2="' + px(m) + '" y2="' + py(0) + '" stroke="#2b6cb0" stroke-width="2.5" stroke-dasharray="6 5"/>' +
+         '<text x="' + (px(m) + (m < XO ? -8 : 8)) + '" y="' + (TOP + 14) + '" text-anchor="' + (m < XO ? "end" : "start") + '" font-size="17" font-weight="700" fill="#2b6cb0">μ = ' + m.toFixed(2) + '</text>';
+    document.getElementById("pv-p").textContent = p.toFixed(4);
+    [[1.645, "#440154", "90% CI", 282], [1.96, "#21918c", "95% CI", 292], [2.576, "#fde725", "99% CI", 302]].forEach(function (c) {
+      g += '<line x1="' + px(XO - c[0] * SE) + '" y1="' + c[3] + '" x2="' + px(XO + c[0] * SE) + '" y2="' + c[3] + '" stroke="' + c[1] + '" stroke-width="7"/>';
+    });
+    [["#440154", "90% CI", 24], ["#21918c", "95% CI", 46], ["#fde725", "99% CI", 68]].forEach(function (c) {
+      g += '<circle cx="790" cy="' + c[2] + '" r="6" fill="' + c[0] + '"/><text x="805" y="' + (c[2] + 6) + '" font-size="17" fill="#1f2933">' + c[1] + '</text>';
+    });
+    svg.innerHTML = g;
+  }
+  sl.addEventListener("input", draw); draw();
+})();
+</script>
+
+## Key result
+
+::: {.box}
+The shaded area is the probability of a sample mean **at least as extreme** as $\bar{x}=3$, if the slider value were the true $\mu$.
+:::
+
+. . .
+
+::: {.box .key}
+As $\mu$ moves away from $\bar{x}$, this probability shrinks: such an $\bar{x}$ becomes unlikely, so far-away values of $\mu$ are **less plausible**.
+:::
+
+. . .
+
+::: {.box .good}
+Confidence interval = the values of $\mu$ for which this probability is **larger than $\alpha$**: the plausible values given our data.
+:::
+
+## An interval around $\mu$
+
+::: {.box}
+Find an interval around $\mu$ that contains $\bar{x}$ with probability $1-\alpha$:
+$$P(\mu-\text{margin}\le\bar{x}\le\mu+\text{margin})=1-\alpha$$
+$\alpha$ is the **significance level**: the probability of falling outside.
+:::
+
+. . .
+
+::: {.figure-slide}
+![](est_Code_Generated_Image%20(6)%20copy.png){fig-align="center" height=330}
+:::
+
+## Finding the margin
+
+::: {.box}
+Standardize $\bar{x}$, dividing by the standard error $\sigma/\sqrt{n}$:
+$$P\!\left(-\tfrac{\text{margin}}{\sigma/\sqrt n}\le Z\le\tfrac{\text{margin}}{\sigma/\sqrt n}\right)=1-\alpha$$
+:::
+
+. . .
+
+::: {.box}
+Define $z_{\alpha/2}$ by $P(-z_{\alpha/2}\le Z\le z_{\alpha/2})=1-\alpha$. Then
+$$\text{margin}=z_{\alpha/2}\,\frac{\sigma}{\sqrt n}$$
+:::
+
+## Flipping the inequality
+
+::: {.box}
+$$P\!\left(\mu-z_{\alpha/2}\tfrac{\sigma}{\sqrt n}\le\bar{x}\le\mu+z_{\alpha/2}\tfrac{\sigma}{\sqrt n}\right)=1-\alpha$$
+:::
+
+. . .
+
+::: {.box .key}
+The same event, written for $\mu$:
+$$P\!\left(\bar{x}-z_{\alpha/2}\tfrac{\sigma}{\sqrt n}\le\mu\le\bar{x}+z_{\alpha/2}\tfrac{\sigma}{\sqrt n}\right)=1-\alpha$$
+:::
+
+## Confidence interval for $\mu$
+
+::: {.box .key}
+<span class="tag">$\sigma$ known</span>
+$$CI_{1-\alpha}=\left[\bar{x}-z_{\alpha/2}\frac{\sigma}{\sqrt n},\ \bar{x}+z_{\alpha/2}\frac{\sigma}{\sqrt n}\right]$$
+:::
+
+. . .
+
+::: {.box}
+The random interval $\bar{x}\pm z_{\alpha/2}\sigma/\sqrt n$ contains $\mu$ with probability $1-\alpha$. If we repeat the sampling many times, about a fraction $1-\alpha$ of the intervals contain $\mu$.
+:::
+
+## The parts of the interval
+
+::: {.cards .stack}
+::: {.box}
+<span class="tag">Critical value $z_{\alpha/2}$</span>
+The point of the standard normal $N(0,1)$ with area $\alpha/2$ in each tail.
+:::
+::: {.box}
+<span class="tag">Standard error $\sigma/\sqrt n$</span>
+The standard deviation of $\bar{x}$.
+:::
+::: {.box}
+<span class="tag">Margin of error $z_{\alpha/2}\,\sigma/\sqrt n$</span>
+Half the width of the interval: how many standard errors we go out from $\bar{x}$.
+:::
+:::
+
+## Example: girls' heights
+
+::: {.box}
+Heights of girls in our class:
+$n=185$, $\bar{x}=165.9$ cm, and $\sigma=8.7$ cm is assumed **known**.
+:::
+
+. . .
+
+::: {.box .key}
+Estimate a **90% confidence interval** for the true mean height.
+:::
+
+## Computing the 90% interval
+
+::: {.cards}
+::: {.box}
+<span class="tag">Critical value</span>
+$\alpha=0.10$, so $z_{0.05}\approx1.645$
+:::
+::: {.box}
+<span class="tag">Standard error</span>
+$SE=\frac{8.7}{\sqrt{185}}\approx0.640$
+:::
+:::
+
+. . .
+
+::: {.box}
+<span class="tag">Margin of error</span>
+$ME=1.645\times0.640\approx1.053$
+:::
+
+. . .
+
+::: {.box .key}
+$$CI_{0.90}=165.9\pm1.053=[164.85,\ 166.95]$$
+:::
+
+## Interpreting the interval
+
+::: {.box}
+If we took many samples of 185 girls and built an interval from each, about **90%** of them would contain the true mean height $\mu$.
+:::
+
+. . .
+
+::: {.box .good}
+<span class="tag">Plausibility</span>
+$164$ cm is outside the interval. If the true mean were $164$, a sample mean as high as $165.9$ would be very unlikely, so we exclude it from the plausible values.
+:::
+
+## Common critical values
+
+| Confidence level | $\alpha$ | Tail area $\alpha/2$ | Critical value $z_{\alpha/2}$ |
+|:-:|:-:|:-:|:-:|
+| 90% | 0.10 | 0.05 | **1.645** |
+| 95% | 0.05 | 0.025 | **1.960** |
+| 99% | 0.01 | 0.005 | **2.576** |
+
+. . .
+
+::: {.box}
+The critical value $z_{\alpha/2}$ bounds the upper $\alpha/2$ proportion of the standard normal.
+:::
+
+## Precision vs. confidence
+
+::: {.cards}
+::: {.box .c}
+<span class="tag">95% interval</span>
+$165.9\pm1.96\cdot0.640$<br>$=[164.65,\ 167.15]$
+:::
+::: {.box .c}
+<span class="tag">99% interval</span>
+$165.9\pm2.576\cdot0.640$<br>$=[164.25,\ 167.55]$
+:::
+:::
+
+. . .
+
+::: {.figure-slide}
+![](est_Code_Generated_Image%20(6)%20copy%203.png){fig-align="center" height=220}
+:::
+
+. . .
+
+::: {.box .key}
+More confidence needs a larger critical value, so the interval gets **wider**.
+:::
+
+## What drives the width?
+
+::: {.box}
+The width is set by the margin of error $ME=z_{\alpha/2}\,\dfrac{\sigma}{\sqrt n}$.
+:::
+
+| Factor | Change | Width | Precision |
+|:--|:-:|:-:|:-:|
+| Sample size $n$ | $\uparrow$ | **narrows** | **increases** |
+| Confidence level | $\uparrow$ | **widens** | **decreases** |
+| Population SD $\sigma$ | $\uparrow$ | **widens** | **decreases** |
+
+## The power of $n$
+
+::: {.box .key}
+$n$ is the only lever that raises **both** precision and confidence.
+:::
+
+. . .
+
+::: {.box}
+Since $n$ sits under a square root in the standard error, you must **quadruple $n$** to cut the interval width in half.
+:::
+
+# Example: student weight {.section-slide}
+
+Two confidence intervals, and what their overlap means.
+
+## Look at the data first
+
+<svg id="wh-svg" viewBox="0 0 900 340" class="famplot"></svg>
+
+<script>
+(function () {
+  var svg = document.getElementById("wh-svg"), L = 60, R = 860, T = 30, B = 270, X0 = 35, X1 = 125, BW = 5;
+  var men = [0,0,2,2,8,28,30,21,18,15,8,7,2,2,2,0,0,1], nm = 146;
+  var wom = [1,11,37,68,46,39,11,6,2,2,0,0,0,1,0,0,0,0], nw = 224;
+  var YM = 32;
+  function px(x) { return L + (x - X0) / (X1 - X0) * (R - L); }
+  function py(y) { return B - y / YM * (B - T); }
+  var g = '<line x1="' + L + '" y1="' + B + '" x2="' + R + '" y2="' + B + '" stroke="#52606d" stroke-width="2"/>';
+  for (var y = 0; y <= 30; y += 10) g += '<line x1="' + L + '" y1="' + py(y) + '" x2="' + R + '" y2="' + py(y) + '" stroke="#e4e7eb"/>' +
+    '<text x="' + (L - 8) + '" y="' + (py(y) + 5) + '" text-anchor="end" font-size="15" fill="#52606d">' + y + '%</text>';
+  for (var x = 40; x <= 120; x += 10) g += '<text x="' + px(x) + '" y="' + (B + 24) + '" text-anchor="middle" font-size="16" fill="#52606d">' + x + '</text>';
+  g += '<text x="' + ((L + R) / 2) + '" y="' + (B + 54) + '" text-anchor="middle" font-size="18" fill="#1f2933">weight (kg)</text>';
+  [[wom, nw, "#dd6b20"], [men, nm, "#2b6cb0"]].forEach(function (s) {
+    s[0].forEach(function (c, i) {
+      if (!c) return;
+      var h = c / s[1] * 100, x = X0 + i * BW;
+      g += '<rect x="' + (px(x) + 1) + '" y="' + py(h) + '" width="' + (px(x + BW) - px(x) - 2) + '" height="' + (B - py(h)) + '" fill="' + s[2] + '" opacity="0.55"/>';
+    });
+  });
+  [["#2b6cb0", "Men (n = 146)", 0], ["#dd6b20", "Women (n = 224)", 1]].forEach(function (c) {
+    g += '<rect x="660" y="' + (T + c[2] * 26) + '" width="16" height="16" fill="' + c[0] + '" opacity="0.6"/><text x="684" y="' + (T + 13 + c[2] * 26) + '" font-size="18" fill="#1f2933">' + c[1] + '</text>';
+  });
+  svg.innerHTML = g;
+})();
+</script>
+
+. . .
+
+::: {.cap}
+Share of each group in 5 kg bins. Women's weights are centred lower and are less spread out; men's are centred higher with a longer right tail.
+:::
+
+## The data
+
+::: {.box}
+Self-reported weights (kg) of ECON211 students over several semesters. As before, we **assume $\sigma$ is known** and take it equal to the sample SD of each group.
+:::
+
+| Group | $n$ | $\bar{x}$ | $\sigma$ | $SE=\sigma/\sqrt n$ |
+|:--|:-:|:-:|:-:|:-:|
+| Men | 146 | 72.29 | 12.13 | 1.004 |
+| Women | 224 | 55.16 | 7.93 | 0.530 |
+
+. . .
+
+::: {.box .key}
+Estimate a **95% confidence interval** for the mean weight of men, and one for women.
+:::
+
+## 95% CI for men
+
+::: {.box}
+$z_{0.025}=1.96$, $\ SE=\dfrac{12.13}{\sqrt{146}}\approx1.004$, $\ ME=1.96\times1.004\approx1.97$
+:::
+
+. . .
+
+::: {.box .key}
+$$CI_{0.95}^{\text{men}}=72.29\pm1.97=[70.32,\ 74.26]$$
+:::
+
+. . .
+
+::: {.box .warn}
+<span class="tag">Same data, but only $n=15$</span>
+$SE=\dfrac{12.13}{\sqrt{15}}\approx3.132$, $\ ME=1.96\times3.132\approx6.14$
+$$CI_{0.95}^{\text{men}}=72.29\pm6.14=[66.15,\ 78.43]$$
+:::
+
+## 95% CI for women
+
+::: {.box}
+$z_{0.025}=1.96$, $\ SE=\dfrac{7.93}{\sqrt{224}}\approx0.530$, $\ ME=1.96\times0.530\approx1.04$
+:::
+
+. . .
+
+::: {.box .key}
+$$CI_{0.95}^{\text{women}}=55.16\pm1.04=[54.12,\ 56.20]$$
+:::
+
+. . .
+
+::: {.box .warn}
+<span class="tag">Same data, but only $n=15$</span>
+$SE=\dfrac{7.93}{\sqrt{15}}\approx2.048$, $\ ME=1.96\times2.048\approx4.01$
+$$CI_{0.95}^{\text{women}}=55.16\pm4.01=[51.15,\ 59.17]$$
+:::
+
+. . .
+
+::: {.cap}
+The women's interval is narrower: smaller $\sigma$ and a larger $n$ give a smaller standard error.
+:::
+
+## Comparing the two intervals
+
+<svg id="ci2-svg" viewBox="0 0 900 290" class="famplot"></svg>
+
+<script>
+(function () {
+  var svg = document.getElementById("ci2-svg"), L = 60, R = 860, A = 45, B = 85;
+  function px(x) { return L + (x - A) / (B - A) * (R - L); }
+  var g = '<line x1="' + L + '" y1="245" x2="' + R + '" y2="245" stroke="#52606d" stroke-width="2"/>';
+  for (var t = 45; t <= 85; t += 5) g += '<text x="' + px(t) + '" y="270" text-anchor="middle" font-size="16" fill="#52606d">' + t + '</text>';
+  [[72.29, 1.97, 45, "#2b6cb0", "Men, n = 146", 1],
+   [72.29, 6.14, 100, "#2b6cb0", "Men, n = 15", 0.45],
+   [55.16, 1.04, 155, "#dd6b20", "Women, n = 224", 1],
+   [55.16, 4.01, 210, "#dd6b20", "Women, n = 15", 0.45]].forEach(function (c) {
+    g += '<line x1="' + px(c[0] - c[1]) + '" y1="' + c[2] + '" x2="' + px(c[0] + c[1]) + '" y2="' + c[2] + '" stroke="' + c[3] + '" stroke-width="8" opacity="' + c[5] + '"/>' +
+         '<circle cx="' + px(c[0]) + '" cy="' + c[2] + '" r="9" fill="' + c[3] + '" opacity="' + c[5] + '"/>' +
+         '<text x="' + px(c[0]) + '" y="' + (c[2] - 16) + '" text-anchor="middle" font-size="17" font-weight="700" fill="' + c[3] + '">' + c[4] + '</text>';
+  });
+  svg.innerHTML = g;
+})();
+</script>
+
+. . .
+
+::: {.box .key}
+With the full samples the two intervals **do not overlap**: no value of $\mu$ is plausible for both groups at the same time.
+:::
+
+. . .
+
+::: {.box}
+With $n=15$ the intervals are **much wider** ($\pm6.14$ and $\pm4.01$): less data, less precision. They still do not overlap here, because the two means are about 17 kg apart.
+:::
+
+## What does overlap mean?
+
+::: {.cards}
+::: {.box .good .c}
+<span class="tag">No overlap</span>
+Every plausible mean for men is larger than every plausible mean for women. The means are very likely **different**: a test of equal means at this confidence level would find a **significant difference**.
+:::
+::: {.box .warn .c}
+<span class="tag">Overlap</span>
+Some values are plausible for **both** groups. The data **cannot rule out** equal means: the difference could be just noise.
+:::
+:::
+
+. . .
+
+::: {.box}
+Overlap means "**inconclusive**", not "the means are equal". With more data the intervals shrink and may separate. (Even slightly overlapping intervals can hide a significant difference: non-overlap is a sufficient, not a necessary, sign.)
+:::
+
+. . .
+
+::: {.cap}
+A formal answer ("is the difference real?") comes with hypothesis testing. Intervals give the intuition.
+:::
+
+## Assumptions
+
+::: {.box}
+<span class="tag">What the intervals rely on</span>
+Independent draws, and an approximately normal $\bar{x}$. By the CLT this is fine here ($n=146$ and $224$), even though weights are skewed.
+:::
+
+. . .
+
+::: {.box .warn}
+<span class="tag">What they do not capture</span>
+Weights are **self-reported**, and the sample is **not random** (only ECON211 students). A large $n$ shrinks sampling error but does **not** remove selection or reporting bias.
+:::

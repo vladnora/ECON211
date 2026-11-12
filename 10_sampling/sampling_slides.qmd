@@ -894,6 +894,57 @@ Share of observations within $\pm1\sigma$, $\pm2\sigma$, $\pm3\sigma$ of the mea
 $$P(X<x)=P\!\left(Z<\frac{x-\mu}{\sigma}\right)=\Phi\!\left(\frac{x-\mu}{\sigma}\right)$$
 :::
 
+## Reading the standard Normal table
+
+::: {.cap}
+The table gives $\Phi(z)=P(Z\le z)$. **Row:** $z$ to one decimal. **Column:** the second decimal. (Excerpt for $z$ from $1.50$ to $2.29$.)
+:::
+
+```{=html}
+<table style="font-size:0.66em;width:100%;margin:0.2em 0"><thead><tr><th style="padding:0.22em 0.4em;text-align:center">z</th><th style="padding:0.22em 0.4em;text-align:center">.00</th><th style="padding:0.22em 0.4em;text-align:center">.01</th><th style="padding:0.22em 0.4em;text-align:center;background:#dd6b20">.02</th><th style="padding:0.22em 0.4em;text-align:center">.03</th><th style="padding:0.22em 0.4em;text-align:center">.04</th><th style="padding:0.22em 0.4em;text-align:center">.05</th><th style="padding:0.22em 0.4em;text-align:center">.06</th><th style="padding:0.22em 0.4em;text-align:center">.07</th><th style="padding:0.22em 0.4em;text-align:center">.08</th><th style="padding:0.22em 0.4em;text-align:center">.09</th></tr></thead><tbody><tr><td style="padding:0.22em 0.4em;text-align:center;font-weight:700;background:#eef1f4">1.5</td><td style="padding:0.22em 0.4em;text-align:center">0.9332</td><td style="padding:0.22em 0.4em;text-align:center">0.9345</td><td style="padding:0.22em 0.4em;text-align:center;background:#fff4e5">0.9357</td><td style="padding:0.22em 0.4em;text-align:center">0.9370</td><td style="padding:0.22em 0.4em;text-align:center">0.9382</td><td style="padding:0.22em 0.4em;text-align:center">0.9394</td><td style="padding:0.22em 0.4em;text-align:center">0.9406</td><td style="padding:0.22em 0.4em;text-align:center">0.9418</td><td style="padding:0.22em 0.4em;text-align:center">0.9429</td><td style="padding:0.22em 0.4em;text-align:center">0.9441</td></tr><tr><td style="padding:0.22em 0.4em;text-align:center;font-weight:700;background:#eef1f4">1.6</td><td style="padding:0.22em 0.4em;text-align:center">0.9452</td><td style="padding:0.22em 0.4em;text-align:center">0.9463</td><td style="padding:0.22em 0.4em;text-align:center;background:#fff4e5">0.9474</td><td style="padding:0.22em 0.4em;text-align:center">0.9484</td><td style="padding:0.22em 0.4em;text-align:center">0.9495</td><td style="padding:0.22em 0.4em;text-align:center">0.9505</td><td style="padding:0.22em 0.4em;text-align:center">0.9515</td><td style="padding:0.22em 0.4em;text-align:center">0.9525</td><td style="padding:0.22em 0.4em;text-align:center">0.9535</td><td style="padding:0.22em 0.4em;text-align:center">0.9545</td></tr><tr><td style="padding:0.22em 0.4em;text-align:center;font-weight:700;background:#eef1f4">1.7</td><td style="padding:0.22em 0.4em;text-align:center">0.9554</td><td style="padding:0.22em 0.4em;text-align:center">0.9564</td><td style="padding:0.22em 0.4em;text-align:center;background:#fff4e5">0.9573</td><td style="padding:0.22em 0.4em;text-align:center">0.9582</td><td style="padding:0.22em 0.4em;text-align:center">0.9591</td><td style="padding:0.22em 0.4em;text-align:center">0.9599</td><td style="padding:0.22em 0.4em;text-align:center">0.9608</td><td style="padding:0.22em 0.4em;text-align:center">0.9616</td><td style="padding:0.22em 0.4em;text-align:center">0.9625</td><td style="padding:0.22em 0.4em;text-align:center">0.9633</td></tr><tr><td style="padding:0.22em 0.4em;text-align:center;font-weight:700;background:#eef1f4">1.8</td><td style="padding:0.22em 0.4em;text-align:center">0.9641</td><td style="padding:0.22em 0.4em;text-align:center">0.9649</td><td style="padding:0.22em 0.4em;text-align:center;background:#fff4e5">0.9656</td><td style="padding:0.22em 0.4em;text-align:center">0.9664</td><td style="padding:0.22em 0.4em;text-align:center">0.9671</td><td style="padding:0.22em 0.4em;text-align:center">0.9678</td><td style="padding:0.22em 0.4em;text-align:center">0.9686</td><td style="padding:0.22em 0.4em;text-align:center">0.9693</td><td style="padding:0.22em 0.4em;text-align:center">0.9699</td><td style="padding:0.22em 0.4em;text-align:center">0.9706</td></tr><tr><td style="padding:0.22em 0.4em;text-align:center;font-weight:700;background:#dd6b20;color:#fff">1.9</td><td style="padding:0.22em 0.4em;text-align:center;background:#fff4e5">0.9713</td><td style="padding:0.22em 0.4em;text-align:center;background:#fff4e5">0.9719</td><td style="padding:0.22em 0.4em;text-align:center;background:#dd6b20;color:#fff;font-weight:800">0.9726</td><td style="padding:0.22em 0.4em;text-align:center;background:#fff4e5">0.9732</td><td style="padding:0.22em 0.4em;text-align:center;background:#fff4e5">0.9738</td><td style="padding:0.22em 0.4em;text-align:center;background:#fff4e5">0.9744</td><td style="padding:0.22em 0.4em;text-align:center;background:#fff4e5">0.9750</td><td style="padding:0.22em 0.4em;text-align:center;background:#fff4e5">0.9756</td><td style="padding:0.22em 0.4em;text-align:center;background:#fff4e5">0.9761</td><td style="padding:0.22em 0.4em;text-align:center;background:#fff4e5">0.9767</td></tr><tr><td style="padding:0.22em 0.4em;text-align:center;font-weight:700;background:#eef1f4">2.0</td><td style="padding:0.22em 0.4em;text-align:center">0.9772</td><td style="padding:0.22em 0.4em;text-align:center">0.9778</td><td style="padding:0.22em 0.4em;text-align:center;background:#fff4e5">0.9783</td><td style="padding:0.22em 0.4em;text-align:center">0.9788</td><td style="padding:0.22em 0.4em;text-align:center">0.9793</td><td style="padding:0.22em 0.4em;text-align:center">0.9798</td><td style="padding:0.22em 0.4em;text-align:center">0.9803</td><td style="padding:0.22em 0.4em;text-align:center">0.9808</td><td style="padding:0.22em 0.4em;text-align:center">0.9812</td><td style="padding:0.22em 0.4em;text-align:center">0.9817</td></tr><tr><td style="padding:0.22em 0.4em;text-align:center;font-weight:700;background:#eef1f4">2.1</td><td style="padding:0.22em 0.4em;text-align:center">0.9821</td><td style="padding:0.22em 0.4em;text-align:center">0.9826</td><td style="padding:0.22em 0.4em;text-align:center;background:#fff4e5">0.9830</td><td style="padding:0.22em 0.4em;text-align:center">0.9834</td><td style="padding:0.22em 0.4em;text-align:center">0.9838</td><td style="padding:0.22em 0.4em;text-align:center">0.9842</td><td style="padding:0.22em 0.4em;text-align:center">0.9846</td><td style="padding:0.22em 0.4em;text-align:center">0.9850</td><td style="padding:0.22em 0.4em;text-align:center">0.9854</td><td style="padding:0.22em 0.4em;text-align:center">0.9857</td></tr><tr><td style="padding:0.22em 0.4em;text-align:center;font-weight:700;background:#eef1f4">2.2</td><td style="padding:0.22em 0.4em;text-align:center">0.9861</td><td style="padding:0.22em 0.4em;text-align:center">0.9864</td><td style="padding:0.22em 0.4em;text-align:center;background:#fff4e5">0.9868</td><td style="padding:0.22em 0.4em;text-align:center">0.9871</td><td style="padding:0.22em 0.4em;text-align:center">0.9875</td><td style="padding:0.22em 0.4em;text-align:center">0.9878</td><td style="padding:0.22em 0.4em;text-align:center">0.9881</td><td style="padding:0.22em 0.4em;text-align:center">0.9884</td><td style="padding:0.22em 0.4em;text-align:center">0.9887</td><td style="padding:0.22em 0.4em;text-align:center">0.9890</td></tr></tbody></table>
+```
+
+::: {.box .key .fragment}
+<span class="tag">Example: $\Phi(1.92)$</span>
+Row $1.9$ + column $.02$ $\Rightarrow$ $\Phi(1.92)=P(Z\le1.92)\approx\mathbf{0.9726}$
+:::
+
+## Using the table: four cases
+
+::: {.cards}
+::: {.box .c .fragment}
+<span class="tag">Below</span>
+$P(Z\le1.92)=\Phi(1.92)$
+
+$=0.9726$
+:::
+::: {.box .c .key .fragment}
+<span class="tag">Above</span>
+$P(Z>1.92)=1-\Phi(1.92)$
+
+$=0.0274$
+:::
+:::
+
+::: {.cards}
+::: {.box .c .fragment}
+<span class="tag">Negative z (symmetry)</span>
+$\Phi(-1.92)=1-\Phi(1.92)$
+
+$=0.0274$
+:::
+::: {.box .c .good .fragment}
+<span class="tag">Between</span>
+$P(-1.92\le Z\le1.92)$
+
+$=\Phi(1.92)-\Phi(-1.92)=0.9452$
+:::
+:::
+
+::: {.cap .fragment}
+Tables list only $z\ge0$: for negative $z$ use $\Phi(-z)=1-\Phi(z)$. We will use $\Phi(1.92)$ on the next slide.
+:::
+
 ## Back to heights: $P(\bar{X}>175)$
 
 ::: {.box}

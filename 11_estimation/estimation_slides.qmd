@@ -51,11 +51,35 @@ Let $\theta$ be a population parameter. A statistic $\hat{\theta}$ used to guess
 . . .
 
 ::: {.cards}
-::: {.box .c .xp #xp1-card onclick="xpShow('xp1')"}
+::: {.box .c}
 $\bar{x}$ is an estimator of $\mu$
 :::
-::: {.box .c .xp #xp2-card onclick="xpShow('xp2')"}
+::: {.box .c}
 $s^2$ is an estimator of $\sigma^2$
+:::
+:::
+
+. . .
+
+::: {.box}
+A good estimator must be a **good guess**. What is a good guess?
+:::
+
+## Unbiased estimator
+
+::: {.box .key}
+<span class="tag">Definition</span>
+If $E(\hat{\theta})=\theta$, then $\hat{\theta}$ is an **unbiased** estimator of $\theta$.
+:::
+
+. . .
+
+::: {.cards}
+::: {.box .c .xp #xp1-card onclick="xpShow('xp1')"}
+$\bar{x}$ is unbiased for $\mu$
+:::
+::: {.box .c .xp #xp2-card onclick="xpShow('xp2')"}
+$s^2$ is unbiased for $\sigma^2$
 :::
 :::
 
@@ -64,13 +88,13 @@ Click an example.
 :::
 
 ::: {.box .xpd #xp1}
-$\bar{x}=\frac1n\sum_{i=1}^n x_i$ is a **random variable**: a different sample gives a different $\bar{x}$.
+$\bar{x}=\frac1n\sum_{i=1}^n x_i$ is a **random variable**: a different sample gives a different $\bar{x}$. Its expected value is
+$$E(\bar{x})=E\!\left[\frac1n\sum_{i=1}^n x_i\right]=\mu$$
 :::
 
 ::: {.box .xpd #xp2}
 $s^2=\frac1{n-1}\sum_{i=1}^n (x_i-\bar{x})^2$ is a **random variable**: a different sample gives a different $s^2$. Its expected value is
 $$E(s^2)=E\!\left[\frac1{n-1}\sum_{i=1}^n (x_i-\bar{x})^2\right]=\sigma^2$$
-By expanding the formula, one can show that this equals $\sigma^2$.
 :::
 
 <script>
@@ -81,30 +105,6 @@ function xpShow(id) {
   });
 }
 </script>
-
-## Unbiased estimator
-
-::: {.box}
-A good estimator must be a **good guess**. What is a good guess?
-:::
-
-. . .
-
-::: {.box .key}
-<span class="tag">Definition</span>
-If $E(\hat{\theta})=\theta$, then $\hat{\theta}$ is an **unbiased** estimator of $\theta$.
-:::
-
-. . .
-
-::: {.cards}
-::: {.box .c}
-$\bar{x}$ is unbiased for $\mu$
-:::
-::: {.box .c}
-$s^2$ is unbiased for $\sigma^2$
-:::
-:::
 
 . . .
 

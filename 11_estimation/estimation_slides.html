@@ -1186,21 +1186,42 @@ margin-right: 0; }
 </div>
 <div class="fragment">
 <div class="cards">
-<div id="xp1-card" class="box c xp" onclick="xpShow(&#39;xp1&#39;)">
+<div class="box c">
 <p><span class="math inline">\bar{x}</span> is an estimator of <span class="math inline">\mu</span></p>
 </div>
-<div id="xp2-card" class="box c xp" onclick="xpShow(&#39;xp2&#39;)">
+<div class="box c">
 <p><span class="math inline">s^2</span> is an estimator of <span class="math inline">\sigma^2</span></p>
+</div>
+</div>
+</div>
+<div class="fragment">
+<div class="box">
+<p>A good estimator must be a <strong>good guess</strong>. What is a good guess?</p>
+</div>
+</div>
+</section>
+<section id="unbiased-estimator" class="slide level2">
+<h2>Unbiased estimator</h2>
+<div class="box key">
+<p><span class="tag">Definition</span> If <span class="math inline">E(\hat{\theta})=\theta</span>, then <span class="math inline">\hat{\theta}</span> is an <strong>unbiased</strong> estimator of <span class="math inline">\theta</span>.</p>
+</div>
+<div class="fragment">
+<div class="cards">
+<div id="xp1-card" class="box c xp" onclick="xpShow(&#39;xp1&#39;)">
+<p><span class="math inline">\bar{x}</span> is unbiased for <span class="math inline">\mu</span></p>
+</div>
+<div id="xp2-card" class="box c xp" onclick="xpShow(&#39;xp2&#39;)">
+<p><span class="math inline">s^2</span> is unbiased for <span class="math inline">\sigma^2</span></p>
 </div>
 </div>
 <div class="cap">
 <p>Click an example.</p>
 </div>
 <div id="xp1" class="box xpd">
-<p><span class="math inline">\bar{x}=\frac1n\sum_{i=1}^n x_i</span> is a <strong>random variable</strong>: a different sample gives a different <span class="math inline">\bar{x}</span>.</p>
+<p><span class="math inline">\bar{x}=\frac1n\sum_{i=1}^n x_i</span> is a <strong>random variable</strong>: a different sample gives a different <span class="math inline">\bar{x}</span>. Its expected value is <span class="math display">E(\bar{x})=E\!\left[\frac1n\sum_{i=1}^n x_i\right]=\mu</span></p>
 </div>
 <div id="xp2" class="box xpd">
-<p><span class="math inline">s^2=\frac1{n-1}\sum_{i=1}^n (x_i-\bar{x})^2</span> is a <strong>random variable</strong>: a different sample gives a different <span class="math inline">s^2</span>. Its expected value is <span class="math display">E(s^2)=E\!\left[\frac1{n-1}\sum_{i=1}^n (x_i-\bar{x})^2\right]=\sigma^2</span> By expanding the formula, one can show that this equals <span class="math inline">\sigma^2</span>.</p>
+<p><span class="math inline">s^2=\frac1{n-1}\sum_{i=1}^n (x_i-\bar{x})^2</span> is a <strong>random variable</strong>: a different sample gives a different <span class="math inline">s^2</span>. Its expected value is <span class="math display">E(s^2)=E\!\left[\frac1{n-1}\sum_{i=1}^n (x_i-\bar{x})^2\right]=\sigma^2</span></p>
 </div>
 <script>
 function xpShow(id) {
@@ -1210,27 +1231,6 @@ function xpShow(id) {
   });
 }
 </script>
-</div>
-</section>
-<section id="unbiased-estimator" class="slide level2">
-<h2>Unbiased estimator</h2>
-<div class="box">
-<p>A good estimator must be a <strong>good guess</strong>. What is a good guess?</p>
-</div>
-<div class="fragment">
-<div class="box key">
-<p><span class="tag">Definition</span> If <span class="math inline">E(\hat{\theta})=\theta</span>, then <span class="math inline">\hat{\theta}</span> is an <strong>unbiased</strong> estimator of <span class="math inline">\theta</span>.</p>
-</div>
-</div>
-<div class="fragment">
-<div class="cards">
-<div class="box c">
-<p><span class="math inline">\bar{x}</span> is unbiased for <span class="math inline">\mu</span></p>
-</div>
-<div class="box c">
-<p><span class="math inline">s^2</span> is unbiased for <span class="math inline">\sigma^2</span></p>
-</div>
-</div>
 </div>
 <div class="fragment">
 <div class="box warn">

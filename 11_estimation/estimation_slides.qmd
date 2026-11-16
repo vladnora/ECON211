@@ -714,6 +714,14 @@ If the true mean were $\mu$, how likely is it to observe $\bar{X}=3$ **or someth
 "More extreme" = in the tails, at least as far from $\mu$ as $\bar{X}$ is.
 :::
 
+. . .
+
+::: {.box}
+<span class="tag">CLT</span>
+To answer, we use the distribution of $\bar{X}$ **given $\mu$**. By the CLT it is approximately normal:
+$$\bar{X}\sim N\!\left(\mu,\frac{\sigma^2}{n}\right)$$
+:::
+
 ## How surprising is $\bar{X}=3$?
 
 <svg id="pv-svg" viewBox="0 0 900 312" class="famplot"></svg>

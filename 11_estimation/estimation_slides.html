@@ -588,6 +588,12 @@ align-items:center; justify-content:center; gap:10px; border-top:4px solid var(-
 .reveal svg.selplot { display:block; width:100%; max-height:330px; margin:0; }
 .reveal svg.famplot { display:block; width:100%; margin:0 auto; }
 .reveal .scatter-row svg.star { max-height:230px; }
+
+.reveal .xp { cursor:pointer; transition:box-shadow .15s; }
+.reveal .xp:hover { box-shadow:0 0 0 3px var(--blue-soft), 0 2px 8px rgba(0,0,0,.18); }
+.reveal .xp.sel { box-shadow:0 0 0 3px var(--blue); }
+.reveal .xpd { display:none; }
+.reveal .xpd.on { display:block; }
 </style>
   
   <script>
@@ -1153,10 +1159,24 @@ margin-right: 0; }
 <h1>Point Estimation</h1>
 <p>Guessing a parameter from a sample.</p>
 </section>
-<section id="main-question" class="slide level2">
-<h2>Main question</h2>
-<div class="box key">
-<p><span class="tag">Main question</span> We know a lot about the distribution of <span class="math inline">\bar{x}</span>. How do we use it to learn about the <strong>population mean</strong> <span class="math inline">\mu</span>?</p>
+<section id="where-do-we-need-a-guess" class="slide level2">
+<h2>Where do we need a guess?</h2>
+<div class="cards stack">
+<div class="box">
+<p><strong>Polls.</strong> What share of voters support a candidate?</p>
+</div>
+<div class="box">
+<p><strong>Finance.</strong> What is the expected return of a stock?</p>
+</div>
+<div class="box">
+<p><strong>Ecology.</strong> How many fish are there in a lake?</p>
+</div>
+<div class="box">
+<p><strong>Medicine.</strong> By how much does a new drug lower blood pressure?</p>
+</div>
+<div class="box">
+<p><strong>Demography.</strong> How many children does a woman have on average?</p>
+</div>
 </div>
 </section>
 <section id="point-estimator" class="slide level2">
@@ -1166,24 +1186,41 @@ margin-right: 0; }
 </div>
 <div class="fragment">
 <div class="cards">
-<div class="box c">
+<div id="xp1-card" class="box c xp" onclick="xpShow(&#39;xp1&#39;)">
 <p><span class="math inline">\bar{x}</span> is an estimator of <span class="math inline">\mu</span></p>
 </div>
-<div class="box c">
+<div id="xp2-card" class="box c xp" onclick="xpShow(&#39;xp2&#39;)">
 <p><span class="math inline">s^2</span> is an estimator of <span class="math inline">\sigma^2</span></p>
 </div>
 </div>
+<div class="cap">
+<p>Click an example.</p>
 </div>
-<div class="fragment">
-<div class="box">
-<p>A good estimator must be a <strong>good guess</strong>. What is a good guess?</p>
+<div id="xp1" class="box xpd">
+<p><span class="math inline">\bar{x}=\frac1n\sum_{i=1}^n x_i</span> is a <strong>random variable</strong>: a different sample gives a different <span class="math inline">\bar{x}</span>.</p>
 </div>
+<div id="xp2" class="box xpd">
+<p><span class="math inline">s^2=\frac1{n-1}\sum_{i=1}^n (x_i-\bar{x})^2</span> is a <strong>random variable</strong>: a different sample gives a different <span class="math inline">s^2</span>. Its expected value is <span class="math display">E(s^2)=E\!\left[\frac1{n-1}\sum_{i=1}^n (x_i-\bar{x})^2\right]=\sigma^2</span> By expanding the formula, one can show that this equals <span class="math inline">\sigma^2</span>.</p>
+</div>
+<script>
+function xpShow(id) {
+  ['xp1', 'xp2'].forEach(function (k) {
+    document.getElementById(k).classList.toggle('on', k === id && !document.getElementById(k).classList.contains('on'));
+    document.getElementById(k + '-card').classList.toggle('sel', document.getElementById(k).classList.contains('on'));
+  });
+}
+</script>
 </div>
 </section>
 <section id="unbiased-estimator" class="slide level2">
 <h2>Unbiased estimator</h2>
+<div class="box">
+<p>A good estimator must be a <strong>good guess</strong>. What is a good guess?</p>
+</div>
+<div class="fragment">
 <div class="box key">
 <p><span class="tag">Definition</span> If <span class="math inline">E(\hat{\theta})=\theta</span>, then <span class="math inline">\hat{\theta}</span> is an <strong>unbiased</strong> estimator of <span class="math inline">\theta</span>.</p>
+</div>
 </div>
 <div class="fragment">
 <div class="cards">

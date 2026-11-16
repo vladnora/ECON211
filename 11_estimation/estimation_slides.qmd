@@ -21,11 +21,24 @@ format:
 
 Guessing a parameter from a sample.
 
-## Main question
+## Where do we need a guess?
 
-::: {.box .key}
-<span class="tag">Main question</span>
-We know a lot about the distribution of $\bar{x}$. How do we use it to learn about the **population mean** $\mu$?
+::: {.cards .stack}
+::: {.box}
+**Polls.** What share of voters support a candidate?
+:::
+::: {.box}
+**Finance.** What is the expected return of a stock?
+:::
+::: {.box}
+**Ecology.** How many fish are there in a lake?
+:::
+::: {.box}
+**Medicine.** By how much does a new drug lower blood pressure?
+:::
+::: {.box}
+**Demography.** How many children does a woman have on average?
+:::
 :::
 
 ## Point estimator
@@ -38,21 +51,44 @@ Let $\theta$ be a population parameter. A statistic $\hat{\theta}$ used to guess
 . . .
 
 ::: {.cards}
-::: {.box .c}
+::: {.box .c .xp #xp1-card onclick="xpShow('xp1')"}
 $\bar{x}$ is an estimator of $\mu$
 :::
-::: {.box .c}
+::: {.box .c .xp #xp2-card onclick="xpShow('xp2')"}
 $s^2$ is an estimator of $\sigma^2$
 :::
 :::
 
-. . .
+::: {.cap}
+Click an example.
+:::
+
+::: {.box .xpd #xp1}
+$\bar{x}=\frac1n\sum_{i=1}^n x_i$ is a **random variable**: a different sample gives a different $\bar{x}$.
+:::
+
+::: {.box .xpd #xp2}
+$s^2=\frac1{n-1}\sum_{i=1}^n (x_i-\bar{x})^2$ is a **random variable**: a different sample gives a different $s^2$. Its expected value is
+$$E(s^2)=E\!\left[\frac1{n-1}\sum_{i=1}^n (x_i-\bar{x})^2\right]=\sigma^2$$
+By expanding the formula, one can show that this equals $\sigma^2$.
+:::
+
+<script>
+function xpShow(id) {
+  ['xp1', 'xp2'].forEach(function (k) {
+    document.getElementById(k).classList.toggle('on', k === id && !document.getElementById(k).classList.contains('on'));
+    document.getElementById(k + '-card').classList.toggle('sel', document.getElementById(k).classList.contains('on'));
+  });
+}
+</script>
+
+## Unbiased estimator
 
 ::: {.box}
 A good estimator must be a **good guess**. What is a good guess?
 :::
 
-## Unbiased estimator
+. . .
 
 ::: {.box .key}
 <span class="tag">Definition</span>

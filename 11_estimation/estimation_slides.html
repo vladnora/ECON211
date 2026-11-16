@@ -2279,6 +2279,59 @@ Probability of <span class="math inline">\bar{X}</span> at least this far from <
 <div class="box warn">
 <p><span class="tag">What they do not capture</span> Weights are <strong>self-reported</strong>, and the sample is <strong>not random</strong> (only ECON211 students). A large <span class="math inline">n</span> shrinks sampling error but does <strong>not</strong> remove selection or reporting bias.</p>
 </div>
+</div>
+</section></section>
+<section>
+<section id="beyond-the-mean" class="title-slide slide level1 section-slide center">
+<h1>Beyond the mean</h1>
+<p>The same logic works for other estimators.</p>
+</section>
+<section id="intervals-for-other-estimators" class="slide level2">
+<h2>Intervals for other estimators</h2>
+<div class="box">
+<p>For the mean we used the distribution of <span class="math inline">\bar{X}</span> to build <span class="math inline">\bar{X}\pm z_{\alpha/2}\,\sigma/\sqrt n</span>.</p>
+</div>
+<div class="fragment">
+<div class="box key">
+<p>The same idea works for <strong>any estimator</strong>: use its sampling distribution to say how far from the truth it is likely to be. The interval communicates the <strong>uncertainty</strong> of the guess.</p>
+</div>
+</div>
+<div class="fragment">
+<div class="box good">
+<p>How to derive such intervals is <strong>outside the scope of this course</strong>. Let us just look at two of our examples, with <strong>95%</strong> intervals.</p>
+</div>
+</div>
+</section>
+<section id="cheating-95-interval" class="slide level2">
+<h2>Cheating: 95% interval</h2>
+<div class="box">
+<p>Randomized response: <span class="math inline">n=78</span>, observed share of “Yes” <span class="math inline">\hat{y}=0.40</span>, so <span class="math inline">\hat{p}=\dfrac{0.40-0.25}{0.75}=0.20</span>.</p>
+</div>
+<div class="fragment">
+<div class="box key">
+<p><span class="math display">CI_{0.95}=[\,5.5\%,\ 34.5\%\,]</span></p>
+</div>
+</div>
+<div class="fragment">
+<div class="cap">
+<p>Wide: the forced “Yes” answers add noise. This is the price of privacy.</p>
+</div>
+</div>
+</section>
+<section id="german-tanks-95-interval" class="slide level2">
+<h2>German tanks: 95% interval</h2>
+<div class="box">
+<p><span class="tag">Illustrative sample</span> <span class="math inline">n=10</span> captured tanks, largest serial number <span class="math inline">240</span>. Point estimate: <span class="math inline">\dfrac{n+1}{n}\cdot240=264</span>.</p>
+</div>
+<div class="fragment">
+<div class="box key">
+<p><span class="math display">CI_{0.95}=[\,241,\ 347\,]</span></p>
+</div>
+</div>
+<div class="fragment">
+<div class="cap">
+<p>Not symmetric around the estimate: the largest tank can be at most <span class="math inline">a</span>, so the data say more about the lower side than the upper side.</p>
+</div>
 
 </div>
 </section></section>

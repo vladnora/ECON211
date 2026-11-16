@@ -1149,3 +1149,62 @@ Independent draws, and an approximately normal $\bar{X}$. By the CLT this is fin
 <span class="tag">What they do not capture</span>
 Weights are **self-reported**, and the sample is **not random** (only ECON211 students). A large $n$ shrinks sampling error but does **not** remove selection or reporting bias.
 :::
+
+# Beyond the mean {.section-slide}
+
+The same logic works for other estimators.
+
+## Intervals for other estimators
+
+::: {.box}
+For the mean we used the distribution of $\bar{X}$ to build $\bar{X}\pm z_{\alpha/2}\,\sigma/\sqrt n$.
+:::
+
+. . .
+
+::: {.box .key}
+The same idea works for **any estimator**: use its sampling distribution to say how far from the truth it is likely to be. The interval communicates the **uncertainty** of the guess.
+:::
+
+. . .
+
+::: {.box .good}
+How to derive such intervals is **outside the scope of this course**. Let us just look at two of our examples, with **95%** intervals.
+:::
+
+## Cheating: 95% interval
+
+::: {.box}
+Randomized response: $n=78$, observed share of "Yes" $\hat{y}=0.40$, so $\hat{p}=\dfrac{0.40-0.25}{0.75}=0.20$.
+:::
+
+. . .
+
+::: {.box .key}
+$$CI_{0.95}=[\,5.5\%,\ 34.5\%\,]$$
+:::
+
+. . .
+
+::: {.cap}
+Wide: the forced "Yes" answers add noise. This is the price of privacy.
+:::
+
+## German tanks: 95% interval
+
+::: {.box}
+<span class="tag">Illustrative sample</span>
+$n=10$ captured tanks, largest serial number $240$. Point estimate: $\dfrac{n+1}{n}\cdot240=264$.
+:::
+
+. . .
+
+::: {.box .key}
+$$CI_{0.95}=[\,241,\ 347\,]$$
+:::
+
+. . .
+
+::: {.cap}
+Not symmetric around the estimate: the largest tank can be at most $a$, so the data say more about the lower side than the upper side.
+:::

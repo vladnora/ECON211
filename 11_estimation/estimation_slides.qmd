@@ -361,6 +361,130 @@ $\bar{x}$ is **not always the most efficient**. For a Uniform population, the ma
 **Demography.** How many children does a woman have on average?
 :::
 
+# Example: randomized response {.section-slide}
+
+Asking a sensitive question
+
+## A sensitive question
+
+::: {.box .key}
+<span class="tag">Question</span>
+Have you ever cheated during your studies at NU?
+:::
+
+. . .
+
+::: {.box .warn}
+People may **refuse** to answer, or **lie**. We want **anonymity**, but we have **no technical way** to guarantee it.
+:::
+
+. . .
+
+::: {.box}
+Solution: **randomized response**. Add randomness, so that no single answer reveals the truth.
+:::
+
+## The idea
+
+::: {.box .key}
+<span class="tag">The rule</span>
+If you were born in **January, February or March**, answer **"Yes"**, whatever the truth.<br>
+Otherwise, answer **truthfully**.
+:::
+
+. . .
+
+::: {.box}
+The person who collects the answers **does not know your birth month**. So a "Yes" may be forced by the rule: it does **not** reveal that you cheated.
+:::
+
+. . .
+
+::: {.box .good}
+Each respondent keeps **some anonymity**. But the answers are now a mix of forced and true ones.
+:::
+
+## How do we estimate the truth?
+
+::: {.box}
+We observe only the **share of "Yes" answers**.
+:::
+
+. . .
+
+::: {.box .key}
+<span class="tag">Parameter</span>
+$p=$ the true share of students who **cheated**.
+:::
+
+. . .
+
+::: {.box .warn}
+How do we recover $p$ from the data, when some of the "Yes" answers are not true?
+:::
+
+## Our class survey
+
+::: {.box}
+Question: **Have you ever cheated during your studies at NU?** Rule: born in January, February or March, answer "Yes"; otherwise truthfully.
+:::
+
+. . .
+
+::: {.cards}
+::: {.box .c}
+<span class="tag">Responses</span>
+$n=78$
+:::
+::: {.box .c}
+<span class="tag">"No"</span>
+60%
+:::
+::: {.box .c}
+<span class="tag">"Yes"</span>
+40%
+:::
+:::
+
+. . .
+
+::: {.box .key}
+What is your guess for $p$, the true share of students who cheated? Is it 40%, more, or less?
+:::
+
+## Working out the estimator
+
+::: {.box}
+About $\tfrac{3}{12}=\tfrac14$ of people are forced to say "Yes"; the other $\tfrac34$ answer truthfully:
+$$P(\text{Yes})=\tfrac14\cdot 1+\tfrac34\cdot p$$
+:::
+
+. . .
+
+::: {.box .key}
+Solve for $p$ and replace $P(\text{Yes})$ by the observed share $\hat{y}$:
+$$\hat{p}=\frac{\hat{y}-\frac14}{\frac34}$$
+:::
+
+. . .
+
+::: {.cards}
+::: {.box .good .c}
+<span class="tag">Unbiased</span>
+$E(\hat{y})=P(\text{Yes})$, so $E(\hat{p})=p$
+:::
+::: {.box .key .c}
+<span class="tag">Our data</span>
+$\hat{p}=\dfrac{0.40-0.25}{0.75}=0.20$
+:::
+:::
+
+. . .
+
+::: {.cap}
+About 20% cheated. The price of privacy: the standard error is $\approx7.4$ points, against $\approx4.5$ if we could ask directly.
+:::
+
 ## Consistency
 
 ::: {.box .key}

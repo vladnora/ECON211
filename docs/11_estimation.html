@@ -1478,6 +1478,109 @@ function intToggle() {
 <p><span class="tag">Other estimators are needed</span> <strong>Ecology.</strong> How many fish are there in a lake?<br> <strong>Demography.</strong> How many children does a woman have on average?</p>
 </div>
 </div>
+</section></section>
+<section>
+<section id="example-randomized-response" class="title-slide slide level1 section-slide center">
+<h1>Example: randomized response</h1>
+<p>Asking a sensitive question</p>
+</section>
+<section id="a-sensitive-question" class="slide level2">
+<h2>A sensitive question</h2>
+<div class="box key">
+<p><span class="tag">Question</span> Have you ever cheated during your studies at NU?</p>
+</div>
+<div class="fragment">
+<div class="box warn">
+<p>People may <strong>refuse</strong> to answer, or <strong>lie</strong>. We want <strong>anonymity</strong>, but we have <strong>no technical way</strong> to guarantee it.</p>
+</div>
+</div>
+<div class="fragment">
+<div class="box">
+<p>Solution: <strong>randomized response</strong>. Add randomness, so that no single answer reveals the truth.</p>
+</div>
+</div>
+</section>
+<section id="the-idea" class="slide level2">
+<h2>The idea</h2>
+<div class="box key">
+<p><span class="tag">The rule</span> If you were born in <strong>January, February or March</strong>, answer <strong>“Yes”</strong>, whatever the truth.<br> Otherwise, answer <strong>truthfully</strong>.</p>
+</div>
+<div class="fragment">
+<div class="box">
+<p>The person who collects the answers <strong>does not know your birth month</strong>. So a “Yes” may be forced by the rule: it does <strong>not</strong> reveal that you cheated.</p>
+</div>
+</div>
+<div class="fragment">
+<div class="box good">
+<p>Each respondent keeps <strong>some anonymity</strong>. But the answers are now a mix of forced and true ones.</p>
+</div>
+</div>
+</section>
+<section id="how-do-we-estimate-the-truth" class="slide level2">
+<h2>How do we estimate the truth?</h2>
+<div class="box">
+<p>We observe only the <strong>share of “Yes” answers</strong>.</p>
+</div>
+<div class="fragment">
+<div class="box key">
+<p><span class="tag">Parameter</span> <span class="math inline">p=</span> the true share of students who <strong>cheated</strong>.</p>
+</div>
+</div>
+<div class="fragment">
+<div class="box warn">
+<p>How do we recover <span class="math inline">p</span> from the data, when some of the “Yes” answers are not true?</p>
+</div>
+</div>
+</section>
+<section id="our-class-survey" class="slide level2">
+<h2>Our class survey</h2>
+<div class="box">
+<p>Question: <strong>Have you ever cheated during your studies at NU?</strong> Rule: born in January, February or March, answer “Yes”; otherwise truthfully.</p>
+</div>
+<div class="fragment">
+<div class="cards">
+<div class="box c">
+<p><span class="tag">Responses</span> <span class="math inline">n=78</span></p>
+</div>
+<div class="box c">
+<p><span class="tag">“No”</span> 60%</p>
+</div>
+<div class="box c">
+<p><span class="tag">“Yes”</span> 40%</p>
+</div>
+</div>
+</div>
+<div class="fragment">
+<div class="box key">
+<p>What is your guess for <span class="math inline">p</span>, the true share of students who cheated? Is it 40%, more, or less?</p>
+</div>
+</div>
+</section>
+<section id="working-out-the-estimator" class="slide level2">
+<h2>Working out the estimator</h2>
+<div class="box">
+<p>About <span class="math inline">\tfrac{3}{12}=\tfrac14</span> of people are forced to say “Yes”; the other <span class="math inline">\tfrac34</span> answer truthfully: <span class="math display">P(\text{Yes})=\tfrac14\cdot 1+\tfrac34\cdot p</span></p>
+</div>
+<div class="fragment">
+<div class="box key">
+<p>Solve for <span class="math inline">p</span> and replace <span class="math inline">P(\text{Yes})</span> by the observed share <span class="math inline">\hat{y}</span>: <span class="math display">\hat{p}=\frac{\hat{y}-\frac14}{\frac34}</span></p>
+</div>
+</div>
+<div class="fragment">
+<div class="cards">
+<div class="box good c">
+<p><span class="tag">Unbiased</span> <span class="math inline">E(\hat{y})=P(\text{Yes})</span>, so <span class="math inline">E(\hat{p})=p</span></p>
+</div>
+<div class="box key c">
+<p><span class="tag">Our data</span> <span class="math inline">\hat{p}=\dfrac{0.40-0.25}{0.75}=0.20</span></p>
+</div>
+</div>
+</div>
+<div class="fragment">
+<div class="cap">
+<p>About 20% cheated. The price of privacy: the standard error is <span class="math inline">\approx7.4</span> points, against <span class="math inline">\approx4.5</span> if we could ask directly.</p>
+</div>
+</div>
 </section>
 <section id="consistency" class="slide level2">
 <h2>Consistency</h2>

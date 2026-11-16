@@ -324,6 +324,10 @@ Which estimator is best depends on the assumed population distribution.
 
 ## The sample mean for $\mu$
 
+::: {.box .key}
+In many problems the parameter we want is a mean $\mu$, so we use $\bar{x}$. How good is it?
+:::
+
 ::: {.cards}
 ::: {.box .good}
 <span class="tag">Bias</span>
@@ -333,6 +337,28 @@ $\bar{x}$ is **always unbiased** for $\mu$: Normal, Binomial, Poisson, anything.
 <span class="tag">Efficiency</span>
 $\bar{x}$ is **not always the most efficient**. For a Uniform population, the maximum-based estimator beats it.
 :::
+:::
+
+## Where we use $\bar{x}$
+
+::: {.cards}
+::: {.box}
+**Polls.** The share of supporters is the mean of the 0/1 answers: $\hat{p}=\bar{x}$.
+:::
+::: {.box}
+**Finance.** The expected return $\mu$ of a stock is estimated by the average of past returns.
+:::
+::: {.box}
+**Medicine.** The mean drop in blood pressure is estimated by the average over the patients.
+:::
+:::
+
+. . .
+
+::: {.box .warn}
+<span class="tag">Other estimators are needed</span>
+**Ecology.** How many fish are there in a lake?<br>
+**Demography.** How many children does a woman have on average?
 :::
 
 ## Consistency

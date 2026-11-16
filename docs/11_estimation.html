@@ -1448,12 +1448,34 @@ function intToggle() {
 </section>
 <section id="the-sample-mean-for-mu" class="slide level2">
 <h2>The sample mean for <span class="math inline">\mu</span></h2>
+<div class="box key">
+<p>In many problems the parameter we want is a mean <span class="math inline">\mu</span>, so we use <span class="math inline">\bar{x}</span>. How good is it?</p>
+</div>
 <div class="cards">
 <div class="box good">
 <p><span class="tag">Bias</span> <span class="math inline">\bar{x}</span> is <strong>always unbiased</strong> for <span class="math inline">\mu</span>: Normal, Binomial, Poisson, anything.</p>
 </div>
 <div class="box warn">
 <p><span class="tag">Efficiency</span> <span class="math inline">\bar{x}</span> is <strong>not always the most efficient</strong>. For a Uniform population, the maximum-based estimator beats it.</p>
+</div>
+</div>
+</section>
+<section id="where-we-use-barx" class="slide level2">
+<h2>Where we use <span class="math inline">\bar{x}</span></h2>
+<div class="cards">
+<div class="box">
+<p><strong>Polls.</strong> The share of supporters is the mean of the 0/1 answers: <span class="math inline">\hat{p}=\bar{x}</span>.</p>
+</div>
+<div class="box">
+<p><strong>Finance.</strong> The expected return <span class="math inline">\mu</span> of a stock is estimated by the average of past returns.</p>
+</div>
+<div class="box">
+<p><strong>Medicine.</strong> The mean drop in blood pressure is estimated by the average over the patients.</p>
+</div>
+</div>
+<div class="fragment">
+<div class="box warn">
+<p><span class="tag">Other estimators are needed</span> <strong>Ecology.</strong> How many fish are there in a lake?<br> <strong>Demography.</strong> How many children does a woman have on average?</p>
 </div>
 </div>
 </section>

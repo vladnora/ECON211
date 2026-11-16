@@ -206,29 +206,35 @@ Among unbiased estimators, the one with the **smaller variance** is more **effic
 
 . . .
 
-::: {.box}
-<span class="tag">Intuition</span>
-Variance is the **risk** of a guess. Both estimators are right on average, but the one with lower variance is much more likely to be close to the truth in a single sample.
+::: {.box .xp #int-card onclick="intToggle()"}
+<span class="tag">Intuition (click)</span>
+Variance is the expected **squared error** of a guess. Both estimators are right on average, but the one with lower variance is much more likely to be close to the truth in a single sample.
 :::
+
+::: {.box .good .xpd #int-detail}
+For an unbiased estimator $E(\hat{\theta})=\theta$, so
+$$\operatorname{Var}(\hat{\theta})=E\big[(\hat{\theta}-E(\hat{\theta}))^2\big]=E\big[(\hat{\theta}-\theta)^2\big]$$
+This is the **expected squared mistake** of the guess. To make this mistake as small as possible, we want the **smallest variance**.
+:::
+
+<script>
+function intToggle() {
+  var d = document.getElementById('int-detail'), c = document.getElementById('int-card');
+  d.classList.toggle('on'); c.classList.toggle('sel', d.classList.contains('on'));
+}
+</script>
 
 ## Simulating the tank problem
 
-<svg id="tk1-svg" viewBox="0 0 900 330" class="famplot"></svg>
+<svg id="tk-svg" viewBox="0 0 900 330" class="famplot"></svg>
 
-<div class="readout" id="tk1-out"></div>
-
-<div class="ctl" style="justify-content:center">
-  <button class="act" id="tk1-run">Run again</button>
-</div>
-
-## An even better estimator
-
-<svg id="tk2-svg" viewBox="0 0 900 330" class="famplot"></svg>
-
-<div class="readout" id="tk2-out"></div>
+<div class="readout" id="tk-out"></div>
 
 <div class="ctl" style="justify-content:center">
-  <button class="act" id="tk2-run">Run again</button>
+  <button class="act ghost" id="tk-b1"></button>
+  <button class="act ghost" id="tk-b2"></button>
+  <button class="act ghost" id="tk-b3"></button>
+  <button class="act" id="tk-run">Run again</button>
 </div>
 
 <script>
@@ -239,6 +245,7 @@ Variance is the **risk** of a guess. Both estimators are right on average, but t
     e2: { name: "2x̄", col: "#2f855a" },
     e3: { name: "(n+1)/n · max", col: "#dd6b20" }
   };
+  var KEYS = ["e1", "e2", "e3"], on = { e1: false, e2: false, e3: false }, res = null;
   function sim() {
     var r = { e1: [], e2: [], e3: [] };
     for (var k = 0; k < REPS; k++) {
@@ -253,38 +260,47 @@ Variance is the **risk** of a guess. Both estimators are right on average, but t
     var v = a.reduce(function (s, x) { return s + (x - m) * (x - m); }, 0) / (a.length - 1);
     return [m, Math.sqrt(v)];
   }
-  function widget(pre, show) {
-    var svg = document.getElementById(pre + "-svg"), out = document.getElementById(pre + "-out");
-    var L = 60, R = 870, T = 40, B = 270;
-    function hx(x) { return L + (x - X0) / (X1 - X0) * (R - L); }
-    function run() {
-      var r = sim(), cnt = {}, mx = 0, g = "";
-      show.forEach(function (k) {
-        var c = []; for (var b = 0; b < NB; b++) c.push(0);
-        r[k].forEach(function (x) { var b = Math.floor((x - X0) / BW); if (b >= 0 && b < NB) c[b]++; });
-        cnt[k] = c; mx = Math.max(mx, Math.max.apply(null, c));
+  var svg = document.getElementById("tk-svg"), out = document.getElementById("tk-out");
+  var L = 60, R = 870, T = 40, B = 270;
+  function hx(x) { return L + (x - X0) / (X1 - X0) * (R - L); }
+  function draw() {
+    var cnt = {}, mx = 0, g = "";
+    KEYS.forEach(function (k) {
+      var c = []; for (var b = 0; b < NB; b++) c.push(0);
+      res[k].forEach(function (x) { var b = Math.floor((x - X0) / BW); if (b >= 0 && b < NB) c[b]++; });
+      cnt[k] = c; mx = Math.max(mx, Math.max.apply(null, c));       // common scale: bars don't jump when toggling
+    });
+    g += '<line x1="' + L + '" y1="' + B + '" x2="' + R + '" y2="' + B + '" stroke="#52606d" stroke-width="2"/>';
+    for (var x = 0; x <= 2; x += 0.5) g += '<text x="' + hx(x) + '" y="' + (B + 24) + '" text-anchor="middle" font-size="17" fill="#52606d">' + x.toFixed(1) + '</text>';
+    g += '<text x="' + ((L + R) / 2) + '" y="' + (B + 52) + '" text-anchor="middle" font-size="18" fill="#1f2933">estimate of a (true a = 1, n = 10)</text>';
+    var shown = KEYS.filter(function (k) { return on[k]; });
+    shown.forEach(function (k) {
+      cnt[k].forEach(function (n, b) {
+        var h = n / mx * (B - T - 10);
+        g += '<rect x="' + (hx(X0 + b * BW) + 0.5) + '" y="' + (B - h) + '" width="' + ((R - L) / NB - 1) + '" height="' + h + '" fill="' + EST[k].col + '" opacity="0.55"/>';
       });
-      g += '<line x1="' + L + '" y1="' + B + '" x2="' + R + '" y2="' + B + '" stroke="#52606d" stroke-width="2"/>';
-      for (var x = 0; x <= 2; x += 0.5) g += '<text x="' + hx(x) + '" y="' + (B + 24) + '" text-anchor="middle" font-size="17" fill="#52606d">' + x.toFixed(1) + '</text>';
-      g += '<text x="' + ((L + R) / 2) + '" y="' + (B + 52) + '" text-anchor="middle" font-size="18" fill="#1f2933">estimate of a (true a = 1, n = 10)</text>';
-      show.forEach(function (k) {
-        cnt[k].forEach(function (n, b) {
-          var h = n / mx * (B - T - 10);
-          g += '<rect x="' + (hx(X0 + b * BW) + 0.5) + '" y="' + (B - h) + '" width="' + ((R - L) / NB - 1) + '" height="' + h + '" fill="' + EST[k].col + '" opacity="0.55"/>';
-        });
-      });
-      g += '<line x1="' + hx(1) + '" y1="' + (T - 10) + '" x2="' + hx(1) + '" y2="' + B + '" stroke="#1b3a5c" stroke-width="2.5" stroke-dasharray="7 5"/>';
-      show.forEach(function (k, i) {
-        g += '<rect x="' + (R - 190) + '" y="' + (T - 30 + i * 24) + '" width="16" height="16" fill="' + EST[k].col + '" opacity="0.6"/><text x="' + (R - 168) + '" y="' + (T - 17 + i * 24) + '" font-size="18" fill="#1f2933">' + EST[k].name + '</text>';
-      });
-      svg.innerHTML = g;
-      out.innerHTML = show.map(function (k) { var s = stats(r[k]); return EST[k].name + ": mean <b>" + s[0].toFixed(2) + "</b>, SD <b>" + s[1].toFixed(2) + "</b>"; }).join(" &nbsp;·&nbsp; ");
-    }
-    document.getElementById(pre + "-run").onclick = run;
-    run();
+    });
+    g += '<line x1="' + hx(1) + '" y1="' + (T - 10) + '" x2="' + hx(1) + '" y2="' + B + '" stroke="#1b3a5c" stroke-width="2.5" stroke-dasharray="7 5"/>';
+    shown.forEach(function (k, i) {
+      g += '<rect x="' + (R - 190) + '" y="' + (T - 30 + i * 24) + '" width="16" height="16" fill="' + EST[k].col + '" opacity="0.6"/><text x="' + (R - 168) + '" y="' + (T - 17 + i * 24) + '" font-size="18" fill="#1f2933">' + EST[k].name + '</text>';
+    });
+    svg.innerHTML = g;
+    out.innerHTML = shown.length ? shown.map(function (k) { var s = stats(res[k]); return EST[k].name + ": mean <b>" + s[0].toFixed(2) + "</b>, SD <b>" + s[1].toFixed(2) + "</b>"; }).join(" &nbsp;·&nbsp; ")
+                                 : "Click an estimator to show the histogram of its guesses.";
   }
-  widget("tk1", ["e1", "e2"]);
-  widget("tk2", ["e1", "e2", "e3"]);
+  function paint() {
+    KEYS.forEach(function (k, i) {
+      var b = document.getElementById("tk-b" + (i + 1));
+      b.textContent = EST[k].name;
+      b.style.background = on[k] ? EST[k].col : "#e4e7eb";
+      b.style.color = on[k] ? "#fff" : "#323f4b";
+    });
+  }
+  KEYS.forEach(function (k, i) {
+    document.getElementById("tk-b" + (i + 1)).onclick = function () { on[k] = !on[k]; paint(); draw(); };
+  });
+  document.getElementById("tk-run").onclick = function () { res = sim(); draw(); };
+  res = sim(); paint(); draw();
 })();
 </script>
 

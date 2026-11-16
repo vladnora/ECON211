@@ -1190,7 +1190,7 @@ margin-right: 0; }
 <div class="fragment">
 <div class="cards">
 <div class="box c">
-<p><span class="math inline">\bar{x}</span> is an estimator of <span class="math inline">\mu</span></p>
+<p><span class="math inline">\bar{X}</span> is an estimator of <span class="math inline">\mu</span></p>
 </div>
 <div class="box c">
 <p><span class="math inline">s^2</span> is an estimator of <span class="math inline">\sigma^2</span></p>
@@ -1211,7 +1211,7 @@ margin-right: 0; }
 <div class="fragment">
 <div class="cards">
 <div id="xp1-card" class="box c xp" onclick="xpShow(&#39;xp1&#39;)">
-<p><span class="math inline">\bar{x}</span> is unbiased for <span class="math inline">\mu</span></p>
+<p><span class="math inline">\bar{X}</span> is unbiased for <span class="math inline">\mu</span></p>
 </div>
 <div id="xp2-card" class="box c xp" onclick="xpShow(&#39;xp2&#39;)">
 <p><span class="math inline">s^2</span> is unbiased for <span class="math inline">\sigma^2</span></p>
@@ -1221,10 +1221,10 @@ margin-right: 0; }
 <p>Click an example.</p>
 </div>
 <div id="xp1" class="box xpd">
-<p><span class="math inline">\bar{x}=\frac1n\sum_{i=1}^n x_i</span> is a <strong>random variable</strong>: a different sample gives a different <span class="math inline">\bar{x}</span>. Its expected value is <span class="math display">E(\bar{x})=E\!\left[\frac1n\sum_{i=1}^n x_i\right]=\mu</span></p>
+<p><span class="math inline">\bar{X}=\frac1n\sum_{i=1}^n X_i</span> is a <strong>random variable</strong>: a different sample gives a different <span class="math inline">\bar{X}</span>. Its expected value is <span class="math display">E(\bar{X})=E\!\left[\frac1n\sum_{i=1}^n X_i\right]=\mu</span></p>
 </div>
 <div id="xp2" class="box xpd">
-<p><span class="math inline">s^2=\frac1{n-1}\sum_{i=1}^n (x_i-\bar{x})^2</span> is a <strong>random variable</strong>: a different sample gives a different <span class="math inline">s^2</span>. Its expected value is <span class="math display">E(s^2)=E\!\left[\frac1{n-1}\sum_{i=1}^n (x_i-\bar{x})^2\right]=\sigma^2</span></p>
+<p><span class="math inline">s^2=\frac1{n-1}\sum_{i=1}^n (X_i-\bar{X})^2</span> is a <strong>random variable</strong>: a different sample gives a different <span class="math inline">s^2</span>. Its expected value is <span class="math display">E(s^2)=E\!\left[\frac1{n-1}\sum_{i=1}^n (X_i-\bar{X})^2\right]=\sigma^2</span></p>
 </div>
 <script>
 function xpShow(id) {
@@ -1352,7 +1352,7 @@ function xpShow(id) {
 <section id="estimating-tank-production" class="slide level2">
 <h2>Estimating tank production</h2>
 <div class="box">
-<p>The Allies wanted to estimate German tank production <span class="math inline">a</span> from the <strong>serial numbers</strong> <span class="math inline">x_i</span> of captured tanks.</p>
+<p>The Allies wanted to estimate German tank production <span class="math inline">a</span> from the <strong>serial numbers</strong> <span class="math inline">X_i</span> of captured tanks.</p>
 </div>
 <div class="fragment">
 <div class="box">
@@ -1389,32 +1389,32 @@ function xpShow(id) {
 <section id="a-simple-model" class="slide level2">
 <h2>A simple model</h2>
 <div class="box">
-<p>Serial numbers are uniform: <span class="math inline">x_i\sim U[0,a]</span>. We want to estimate the maximum <span class="math inline">a</span>.</p>
+<p>Serial numbers are uniform: <span class="math inline">X_i\sim U[0,a]</span>. We want to estimate the maximum <span class="math inline">a</span>.</p>
 </div>
 <div class="fragment">
 <div class="box key">
-<p><span class="tag">One tank, <span class="math inline">n=1</span></span> Since <span class="math inline">E[x_1]=\frac{a}{2}</span>, the guess <span class="math inline">\hat{\theta}=x_1</span> is <strong>biased</strong>.</p>
+<p><span class="tag">One tank, <span class="math inline">n=1</span></span> Since <span class="math inline">E[X_1]=\frac{a}{2}</span>, the guess <span class="math inline">\hat{\theta}=X_1</span> is <strong>biased</strong>.</p>
 </div>
 </div>
 <div class="fragment">
 <div class="box good">
-<p>Fix: <span class="math inline">\hat{\theta}_{1}=2x_1</span>. Then <span class="math inline">E[2x_1]=2\cdot\frac{a}{2}=a</span>: <strong>unbiased</strong>.</p>
+<p>Fix: <span class="math inline">\hat{\theta}_{1}=2X_1</span>. Then <span class="math inline">E[2X_1]=2\cdot\frac{a}{2}=a</span>: <strong>unbiased</strong>.</p>
 </div>
 </div>
 </section>
 <section id="many-tanks" class="slide level2">
 <h2>Many tanks</h2>
 <div class="box">
-<p>With <span class="math inline">n&gt;1</span> tanks we can use the sample mean: <span class="math inline">\hat{\theta}_{\text{mean}}=2\bar{x}</span>.</p>
+<p>With <span class="math inline">n&gt;1</span> tanks we can use the sample mean: <span class="math inline">\hat{\theta}_{\text{mean}}=2\bar{X}</span>.</p>
 </div>
 <div class="fragment">
 <div class="box good">
-<p><span class="math inline">E[2\bar{x}]=2E[\bar{x}]=2\cdot\frac{a}{2}=a</span>: also <strong>unbiased</strong>.</p>
+<p><span class="math inline">E[2\bar{X}]=2E[\bar{X}]=2\cdot\frac{a}{2}=a</span>: also <strong>unbiased</strong>.</p>
 </div>
 </div>
 <div class="fragment">
 <div class="box key">
-<p>Two unbiased estimators: <span class="math inline">2x_1</span> and <span class="math inline">2\bar{x}</span>. <strong>Which one is better?</strong></p>
+<p>Two unbiased estimators: <span class="math inline">2X_1</span> and <span class="math inline">2\bar{X}</span>. <strong>Which one is better?</strong></p>
 </div>
 </div>
 </section>
@@ -1426,16 +1426,16 @@ function xpShow(id) {
 <div class="fragment">
 <div class="cards">
 <div class="box c">
-<p><span class="tag">One observation</span> <span class="math display">\operatorname{Var}(2x_1)=4\cdot\frac{a^2}{12}=\frac{a^2}{3}</span></p>
+<p><span class="tag">One observation</span> <span class="math display">\operatorname{Var}(2X_1)=4\cdot\frac{a^2}{12}=\frac{a^2}{3}</span></p>
 </div>
 <div class="box key c">
-<p><span class="tag">Sample mean</span> <span class="math display">\operatorname{Var}(2\bar{x})=4\cdot\frac{a^2/12}{n}=\frac{a^2}{3n}</span></p>
+<p><span class="tag">Sample mean</span> <span class="math display">\operatorname{Var}(2\bar{X})=4\cdot\frac{a^2/12}{n}=\frac{a^2}{3n}</span></p>
 </div>
 </div>
 </div>
 <div class="fragment">
 <div class="box good">
-<p><span class="math inline">\operatorname{Var}(2\bar{x})=\frac{1}{n}\operatorname{Var}(2x_1)</span>: using all the data is <strong><span class="math inline">n</span> times more efficient</strong>.</p>
+<p><span class="math inline">\operatorname{Var}(2\bar{X})=\frac{1}{n}\operatorname{Var}(2X_1)</span>: using all the data is <strong><span class="math inline">n</span> times more efficient</strong>.</p>
 </div>
 </div>
 </section>
@@ -1477,7 +1477,7 @@ Each histogram is scaled to its own peak: compare the widths.
   var N = 10, REPS = 1000, X0 = 0, X1 = 2, BW = 0.02, NB = Math.round((X1 - X0) / BW);
   var EST = {
     e1: { name: "2X₁", col: "#2b6cb0" },
-    e2: { name: "2x̄", col: "#2f855a" },
+    e2: { name: "2X̄", col: "#2f855a" },
     e3: { name: "(n+1)/n · max", col: "#dd6b20" }
   };
   var KEYS = ["e1", "e2", "e3"], on = { e1: false, e2: false, e3: false }, res = null;
@@ -1632,10 +1632,10 @@ Each histogram is scaled to its own peak: compare the widths.
 <div class="fragment">
 <div class="cards">
 <div class="box warn c">
-<p><span class="tag">Needs a specific model</span> <span class="math inline">2x_1</span> and <span class="math inline">2\bar{x}</span> are unbiased for <span class="math inline">a</span> <strong>assuming</strong> <span class="math inline">x_i\sim U[0,a]</span>. If the population were Normal, <span class="math inline">E[2\bar{x}]=2\mu\neq a</span>.<br><br>Efficiency: <span class="math inline">2\bar{x}</span> is beaten by <span class="math inline">\frac{n+1}{n}\max(X_i)</span> for Uniform, but <span class="math inline">\bar{x}</span> is the most efficient for Normal.</p>
+<p><span class="tag">Needs a specific model</span> <span class="math inline">2X_1</span> and <span class="math inline">2\bar{X}</span> are unbiased for <span class="math inline">a</span> <strong>assuming</strong> <span class="math inline">X_i\sim U[0,a]</span>. If the population were Normal, <span class="math inline">E[2\bar{X}]=2\mu\neq a</span>.<br><br>Efficiency: <span class="math inline">2\bar{X}</span> is beaten by <span class="math inline">\frac{n+1}{n}\max(X_i)</span> for Uniform, but <span class="math inline">\bar{X}</span> is the most efficient for Normal.</p>
 </div>
 <div class="box good c">
-<p><span class="tag">Holds for (almost) any population</span> <span class="math inline">E[\bar{x}]=\mu</span> and <span class="math inline">E[s^2]=\sigma^2</span>: unbiased whenever the mean (variance) exists and the sample is i.i.d.<br><br><span class="math inline">\bar{x}\to\mu</span> as <span class="math inline">n\to\infty</span>: consistent for any population with a finite mean (Law of Large Numbers).</p>
+<p><span class="tag">Holds for (almost) any population</span> <span class="math inline">E[\bar{X}]=\mu</span> and <span class="math inline">E[s^2]=\sigma^2</span>: unbiased whenever the mean (variance) exists and the sample is i.i.d.<br><br><span class="math inline">\bar{X}\to\mu</span> as <span class="math inline">n\to\infty</span>: consistent for any population with a finite mean (Law of Large Numbers).</p>
 </div>
 </div>
 </div>
@@ -1648,22 +1648,22 @@ Each histogram is scaled to its own peak: compare the widths.
 <section id="the-sample-mean-for-mu" class="slide level2">
 <h2>The sample mean for <span class="math inline">\mu</span></h2>
 <div class="box key">
-<p>In many problems the parameter we want is a mean <span class="math inline">\mu</span>, so we use <span class="math inline">\bar{x}</span>. How good is it?</p>
+<p>In many problems the parameter we want is a mean <span class="math inline">\mu</span>, so we use <span class="math inline">\bar{X}</span>. How good is it?</p>
 </div>
 <div class="cards">
 <div class="box good">
-<p><span class="tag">Bias</span> <span class="math inline">\bar{x}</span> is <strong>always unbiased</strong> for <span class="math inline">\mu</span>: Normal, Binomial, Poisson, anything.</p>
+<p><span class="tag">Bias</span> <span class="math inline">\bar{X}</span> is <strong>always unbiased</strong> for <span class="math inline">\mu</span>: Normal, Binomial, Poisson, anything.</p>
 </div>
 <div class="box warn">
-<p><span class="tag">Efficiency</span> <span class="math inline">\bar{x}</span> is <strong>not always the most efficient</strong>. For a Uniform population, the maximum-based estimator beats it.</p>
+<p><span class="tag">Efficiency</span> <span class="math inline">\bar{X}</span> is <strong>not always the most efficient</strong>. For a Uniform population, the maximum-based estimator beats it.</p>
 </div>
 </div>
 </section>
 <section id="where-we-use-barx" class="slide level2">
-<h2>Where we use <span class="math inline">\bar{x}</span></h2>
+<h2>Where we use <span class="math inline">\bar{X}</span></h2>
 <div class="cards">
 <div class="box">
-<p><strong>Polls.</strong> The share of supporters is the mean of the 0/1 answers: <span class="math inline">\hat{p}=\bar{x}</span>.</p>
+<p><strong>Polls.</strong> The share of supporters is the mean of the 0/1 answers: <span class="math inline">\hat{p}=\bar{X}</span>.</p>
 </div>
 <div class="box">
 <p><strong>Finance.</strong> The expected return <span class="math inline">\mu</span> of a stock is estimated by the average of past returns.</p>
@@ -1691,7 +1691,7 @@ Each histogram is scaled to its own peak: compare the widths.
 <div class="fragment">
 <div class="cards">
 <div class="box good">
-<p>Our guess <span class="math inline">\bar{x}</span> is <strong>unbiased</strong>: on average it equals <span class="math inline">\mu</span>.</p>
+<p>Our guess <span class="math inline">\bar{X}</span> is <strong>unbiased</strong>: on average it equals <span class="math inline">\mu</span>.</p>
 </div>
 <div class="box good">
 <p>It is <strong>consistent</strong>: it becomes more precise as <span class="math inline">n</span> grows.</p>
@@ -1709,13 +1709,13 @@ Each histogram is scaled to its own peak: compare the widths.
 </div>
 </div>
 <div class="cap">
-<p>Fair die: the distribution of <span class="math inline">\bar{x}</span> narrows around <span class="math inline">\mu=3.5</span> as <span class="math inline">n</span> grows.</p>
+<p>Fair die: the distribution of <span class="math inline">\bar{X}</span> narrows around <span class="math inline">\mu=3.5</span> as <span class="math inline">n</span> grows.</p>
 </div>
 </section>
 <section id="same-estimator-different-precision" class="slide level2">
 <h2>Same estimator, different precision</h2>
 <div class="box">
-<p>For <span class="math inline">n=10</span>, <span class="math inline">20</span> and <span class="math inline">200</span> we use the <strong>same estimator</strong> <span class="math inline">\bar{x}</span>, and it is centred at <span class="math inline">\mu</span> every time.</p>
+<p>For <span class="math inline">n=10</span>, <span class="math inline">20</span> and <span class="math inline">200</span> we use the <strong>same estimator</strong> <span class="math inline">\bar{X}</span>, and it is centred at <span class="math inline">\mu</span> every time.</p>
 </div>
 <div class="fragment">
 <div class="box good">
@@ -1785,36 +1785,36 @@ Each histogram is scaled to its own peak: compare the widths.
 <section id="our-assumption" class="slide level2">
 <h2>Our assumption</h2>
 <div class="box key">
-<p><span class="tag">Assumption</span> The population standard deviation <span class="math inline">\sigma</span> is <strong>known</strong>: the only uncertainty is about <span class="math inline">\bar{x}</span>. Later we drop this.</p>
+<p><span class="tag">Assumption</span> The population standard deviation <span class="math inline">\sigma</span> is <strong>known</strong>: the only uncertainty is about <span class="math inline">\bar{X}</span>. Later we drop this.</p>
 </div>
 <div class="fragment">
 <div class="box">
-<p><span class="tag">Conclusion</span> By the CLT, for a simple random sample of size <span class="math inline">n</span>: <span class="math display">\bar{x}\sim N\!\left(\mu,\frac{\sigma^2}{n}\right)\ \text{approximately}</span></p>
+<p><span class="tag">Conclusion</span> By the CLT, for a simple random sample of size <span class="math inline">n</span>: <span class="math display">\bar{X}\sim N\!\left(\mu,\frac{\sigma^2}{n}\right)\ \text{approximately}</span></p>
 </div>
 </div>
 </section>
 <section id="which-values-of-mu-are-plausible" class="slide level2">
 <h2>Which values of <span class="math inline">\mu</span> are plausible?</h2>
 <div class="box">
-<p><span class="tag">Example: a die</span> Observed <span class="math inline">\bar{x}=3</span>. Population variance <span class="math inline">\sigma^2=2.92</span>, sample size <span class="math inline">n=20</span>. Standard error: <span class="math inline">SE=\sqrt{2.92/20}\approx 0.382</span>.</p>
+<p><span class="tag">Example: a die</span> Observed <span class="math inline">\bar{X}=3</span>. Population variance <span class="math inline">\sigma^2=2.92</span>, sample size <span class="math inline">n=20</span>. Standard error: <span class="math inline">SE=\sqrt{2.92/20}\approx 0.382</span>.</p>
 </div>
 <div class="fragment">
 <div class="box key">
-<p><span class="tag">Question</span> If the true mean were <span class="math inline">\mu</span>, how likely is it to observe <span class="math inline">\bar{x}=3</span> <strong>or something more extreme</strong>?</p>
+<p><span class="tag">Question</span> If the true mean were <span class="math inline">\mu</span>, how likely is it to observe <span class="math inline">\bar{X}=3</span> <strong>or something more extreme</strong>?</p>
 </div>
 </div>
 <div class="fragment">
 <div class="cap">
-<p>“More extreme” = in the tails, at least as far from <span class="math inline">\mu</span> as <span class="math inline">\bar{x}</span> is.</p>
+<p>“More extreme” = in the tails, at least as far from <span class="math inline">\mu</span> as <span class="math inline">\bar{X}</span> is.</p>
 </div>
 </div>
 </section>
 <section id="how-surprising-is-barx3" class="slide level2">
-<h2>How surprising is <span class="math inline">\bar{x}=3</span>?</h2>
+<h2>How surprising is <span class="math inline">\bar{X}=3</span>?</h2>
 <svg id="pv-svg" viewbox="0 0 900 312" class="famplot">
 </svg>
 <div class="readout" style="color:#c53030;font-weight:700;font-size:0.95em">
-Probability of <span class="math inline">\bar{x}</span> at least this far from <span class="math inline">\mu</span> (shaded area): <span id="pv-p"></span>
+Probability of <span class="math inline">\bar{X}</span> at least this far from <span class="math inline">\mu</span> (shaded area): <span id="pv-p"></span>
 </div>
 <div class="ctl" style="justify-content:center">
 <p><label>Hypothesized <span class="math inline">\mu</span>: <input type="range" id="pv-mu" min="1" max="5" step="0.01" value="2.2" style="width:420px"> <b id="pv-mu-val">2.20</b></label></p>
@@ -1848,7 +1848,7 @@ Probability of <span class="math inline">\bar{x}</span> at least this far from <
     g += '<line x1="' + L + '" y1="' + py(0) + '" x2="' + R + '" y2="' + py(0) + '" stroke="#52606d" stroke-width="2"/>';
     for (var t = 0; t <= 6; t++) g += '<text x="' + px(t) + '" y="' + (py(0) + 20) + '" text-anchor="middle" font-size="16" fill="#52606d">' + t + '</text>';
     g += '<line x1="' + px(XO) + '" y1="' + TOP + '" x2="' + px(XO) + '" y2="' + py(0) + '" stroke="#1f2933" stroke-width="3"/>' +
-         '<text x="' + (px(XO) + (m < XO ? 8 : -8)) + '" y="' + (TOP + 14) + '" text-anchor="' + (m < XO ? "start" : "end") + '" font-size="17" font-weight="700" fill="#1f2933">x̄ = 3</text>';
+         '<text x="' + (px(XO) + (m < XO ? 8 : -8)) + '" y="' + (TOP + 14) + '" text-anchor="' + (m < XO ? "start" : "end") + '" font-size="17" font-weight="700" fill="#1f2933">X̄ = 3</text>';
     g += '<line x1="' + px(m) + '" y1="' + TOP + '" x2="' + px(m) + '" y2="' + py(0) + '" stroke="#2b6cb0" stroke-width="2.5" stroke-dasharray="6 5"/>' +
          '<text x="' + (px(m) + (m < XO ? -8 : 8)) + '" y="' + (TOP + 14) + '" text-anchor="' + (m < XO ? "end" : "start") + '" font-size="17" font-weight="700" fill="#2b6cb0">μ = ' + m.toFixed(2) + '</text>';
     document.getElementById("pv-p").textContent = p.toFixed(4);
@@ -1867,11 +1867,11 @@ Probability of <span class="math inline">\bar{x}</span> at least this far from <
 <section id="key-result" class="slide level2">
 <h2>Key result</h2>
 <div class="box">
-<p>The shaded area is the probability of a sample mean <strong>at least as extreme</strong> as <span class="math inline">\bar{x}=3</span>, if the slider value were the true <span class="math inline">\mu</span>.</p>
+<p>The shaded area is the probability of a sample mean <strong>at least as extreme</strong> as <span class="math inline">\bar{X}=3</span>, if the slider value were the true <span class="math inline">\mu</span>.</p>
 </div>
 <div class="fragment">
 <div class="box key">
-<p>As <span class="math inline">\mu</span> moves away from <span class="math inline">\bar{x}</span>, this probability shrinks: such an <span class="math inline">\bar{x}</span> becomes unlikely, so far-away values of <span class="math inline">\mu</span> are <strong>less plausible</strong>.</p>
+<p>As <span class="math inline">\mu</span> moves away from <span class="math inline">\bar{X}</span>, this probability shrinks: such an <span class="math inline">\bar{X}</span> becomes unlikely, so far-away values of <span class="math inline">\mu</span> are <strong>less plausible</strong>.</p>
 </div>
 </div>
 <div class="fragment">
@@ -1883,7 +1883,7 @@ Probability of <span class="math inline">\bar{x}</span> at least this far from <
 <section id="an-interval-around-mu" class="slide level2">
 <h2>An interval around <span class="math inline">\mu</span></h2>
 <div class="box">
-<p>Find an interval around <span class="math inline">\mu</span> that contains <span class="math inline">\bar{x}</span> with probability <span class="math inline">1-\alpha</span>: <span class="math display">P(\mu-\text{margin}\le\bar{x}\le\mu+\text{margin})=1-\alpha</span> <span class="math inline">\alpha</span> is the <strong>significance level</strong>: the probability of falling outside.</p>
+<p>Find an interval around <span class="math inline">\mu</span> that contains <span class="math inline">\bar{X}</span> with probability <span class="math inline">1-\alpha</span>: <span class="math display">P(\mu-\text{margin}\le\bar{X}\le\mu+\text{margin})=1-\alpha</span> <span class="math inline">\alpha</span> is the <strong>significance level</strong>: the probability of falling outside.</p>
 </div>
 <div class="fragment">
 <div class="figure-slide">
@@ -1898,7 +1898,7 @@ Probability of <span class="math inline">\bar{x}</span> at least this far from <
 <section id="finding-the-margin" class="slide level2">
 <h2>Finding the margin</h2>
 <div class="box">
-<p>Standardize <span class="math inline">\bar{x}</span>, dividing by the standard error <span class="math inline">\sigma/\sqrt{n}</span>: <span class="math display">P\!\left(-\tfrac{\text{margin}}{\sigma/\sqrt n}\le Z\le\tfrac{\text{margin}}{\sigma/\sqrt n}\right)=1-\alpha</span></p>
+<p>Standardize <span class="math inline">\bar{X}</span>, dividing by the standard error <span class="math inline">\sigma/\sqrt{n}</span>: <span class="math display">P\!\left(-\tfrac{\text{margin}}{\sigma/\sqrt n}\le Z\le\tfrac{\text{margin}}{\sigma/\sqrt n}\right)=1-\alpha</span></p>
 </div>
 <div class="fragment">
 <div class="box">
@@ -1909,22 +1909,22 @@ Probability of <span class="math inline">\bar{x}</span> at least this far from <
 <section id="flipping-the-inequality" class="slide level2">
 <h2>Flipping the inequality</h2>
 <div class="box">
-<p><span class="math display">P\!\left(\mu-z_{\alpha/2}\tfrac{\sigma}{\sqrt n}\le\bar{x}\le\mu+z_{\alpha/2}\tfrac{\sigma}{\sqrt n}\right)=1-\alpha</span></p>
+<p><span class="math display">P\!\left(\mu-z_{\alpha/2}\tfrac{\sigma}{\sqrt n}\le\bar{X}\le\mu+z_{\alpha/2}\tfrac{\sigma}{\sqrt n}\right)=1-\alpha</span></p>
 </div>
 <div class="fragment">
 <div class="box key">
-<p>The same event, written for <span class="math inline">\mu</span>: <span class="math display">P\!\left(\bar{x}-z_{\alpha/2}\tfrac{\sigma}{\sqrt n}\le\mu\le\bar{x}+z_{\alpha/2}\tfrac{\sigma}{\sqrt n}\right)=1-\alpha</span></p>
+<p>The same event, written for <span class="math inline">\mu</span>: <span class="math display">P\!\left(\bar{X}-z_{\alpha/2}\tfrac{\sigma}{\sqrt n}\le\mu\le\bar{X}+z_{\alpha/2}\tfrac{\sigma}{\sqrt n}\right)=1-\alpha</span></p>
 </div>
 </div>
 </section>
 <section id="confidence-interval-for-mu" class="slide level2">
 <h2>Confidence interval for <span class="math inline">\mu</span></h2>
 <div class="box key">
-<p><span class="tag"><span class="math inline">\sigma</span> known</span> <span class="math display">CI_{1-\alpha}=\left[\bar{x}-z_{\alpha/2}\frac{\sigma}{\sqrt n},\ \bar{x}+z_{\alpha/2}\frac{\sigma}{\sqrt n}\right]</span></p>
+<p><span class="tag"><span class="math inline">\sigma</span> known</span> <span class="math display">CI_{1-\alpha}=\left[\bar{X}-z_{\alpha/2}\frac{\sigma}{\sqrt n},\ \bar{X}+z_{\alpha/2}\frac{\sigma}{\sqrt n}\right]</span></p>
 </div>
 <div class="fragment">
 <div class="box">
-<p>The random interval <span class="math inline">\bar{x}\pm z_{\alpha/2}\sigma/\sqrt n</span> contains <span class="math inline">\mu</span> with probability <span class="math inline">1-\alpha</span>. If we repeat the sampling many times, about a fraction <span class="math inline">1-\alpha</span> of the intervals contain <span class="math inline">\mu</span>.</p>
+<p>The random interval <span class="math inline">\bar{X}\pm z_{\alpha/2}\sigma/\sqrt n</span> contains <span class="math inline">\mu</span> with probability <span class="math inline">1-\alpha</span>. If we repeat the sampling many times, about a fraction <span class="math inline">1-\alpha</span> of the intervals contain <span class="math inline">\mu</span>.</p>
 </div>
 </div>
 </section>
@@ -1935,17 +1935,17 @@ Probability of <span class="math inline">\bar{x}</span> at least this far from <
 <p><span class="tag">Critical value <span class="math inline">z_{\alpha/2}</span></span> The point of the standard normal <span class="math inline">N(0,1)</span> with area <span class="math inline">\alpha/2</span> in each tail.</p>
 </div>
 <div class="box">
-<p><span class="tag">Standard error <span class="math inline">\sigma/\sqrt n</span></span> The standard deviation of <span class="math inline">\bar{x}</span>.</p>
+<p><span class="tag">Standard error <span class="math inline">\sigma/\sqrt n</span></span> The standard deviation of <span class="math inline">\bar{X}</span>.</p>
 </div>
 <div class="box">
-<p><span class="tag">Margin of error <span class="math inline">z_{\alpha/2}\,\sigma/\sqrt n</span></span> Half the width of the interval: how many standard errors we go out from <span class="math inline">\bar{x}</span>.</p>
+<p><span class="tag">Margin of error <span class="math inline">z_{\alpha/2}\,\sigma/\sqrt n</span></span> Half the width of the interval: how many standard errors we go out from <span class="math inline">\bar{X}</span>.</p>
 </div>
 </div>
 </section>
 <section id="example-girls-heights" class="slide level2">
 <h2>Example: girls’ heights</h2>
 <div class="box">
-<p>Heights of girls in our class: <span class="math inline">n=185</span>, <span class="math inline">\bar{x}=165.9</span> cm, and <span class="math inline">\sigma=8.7</span> cm is assumed <strong>known</strong>.</p>
+<p>Heights of girls in our class: <span class="math inline">n=185</span>, <span class="math inline">\bar{X}=165.9</span> cm, and <span class="math inline">\sigma=8.7</span> cm is assumed <strong>known</strong>.</p>
 </div>
 <div class="fragment">
 <div class="box key">
@@ -2152,7 +2152,7 @@ Probability of <span class="math inline">\bar{x}</span> at least this far from <
 <tr class="header">
 <th style="text-align: left;">Group</th>
 <th style="text-align: center;"><span class="math inline">n</span></th>
-<th style="text-align: center;"><span class="math inline">\bar{x}</span></th>
+<th style="text-align: center;"><span class="math inline">\bar{X}</span></th>
 <th style="text-align: center;"><span class="math inline">\sigma</span></th>
 <th style="text-align: center;"><span class="math inline">SE=\sigma/\sqrt n</span></th>
 </tr>
@@ -2273,7 +2273,7 @@ Probability of <span class="math inline">\bar{x}</span> at least this far from <
 <section id="assumptions" class="slide level2">
 <h2>Assumptions</h2>
 <div class="box">
-<p><span class="tag">What the intervals rely on</span> Independent draws, and an approximately normal <span class="math inline">\bar{x}</span>. By the CLT this is fine here (<span class="math inline">n=146</span> and <span class="math inline">224</span>), even though weights are skewed.</p>
+<p><span class="tag">What the intervals rely on</span> Independent draws, and an approximately normal <span class="math inline">\bar{X}</span>. By the CLT this is fine here (<span class="math inline">n=146</span> and <span class="math inline">224</span>), even though weights are skewed.</p>
 </div>
 <div class="fragment">
 <div class="box warn">

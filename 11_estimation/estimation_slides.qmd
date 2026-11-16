@@ -55,7 +55,7 @@ Let $\theta$ be a population parameter. A statistic $\hat{\theta}$ used to guess
 
 ::: {.cards}
 ::: {.box .c}
-$\bar{x}$ is an estimator of $\mu$
+$\bar{X}$ is an estimator of $\mu$
 :::
 ::: {.box .c}
 $s^2$ is an estimator of $\sigma^2$
@@ -79,7 +79,7 @@ If $E(\hat{\theta})=\theta$, then $\hat{\theta}$ is an **unbiased** estimator of
 
 ::: {.cards}
 ::: {.box .c .xp #xp1-card onclick="xpShow('xp1')"}
-$\bar{x}$ is unbiased for $\mu$
+$\bar{X}$ is unbiased for $\mu$
 :::
 ::: {.box .c .xp #xp2-card onclick="xpShow('xp2')"}
 $s^2$ is unbiased for $\sigma^2$
@@ -91,13 +91,13 @@ Click an example.
 :::
 
 ::: {.box .xpd #xp1}
-$\bar{x}=\frac1n\sum_{i=1}^n x_i$ is a **random variable**: a different sample gives a different $\bar{x}$. Its expected value is
-$$E(\bar{x})=E\!\left[\frac1n\sum_{i=1}^n x_i\right]=\mu$$
+$\bar{X}=\frac1n\sum_{i=1}^n X_i$ is a **random variable**: a different sample gives a different $\bar{X}$. Its expected value is
+$$E(\bar{X})=E\!\left[\frac1n\sum_{i=1}^n X_i\right]=\mu$$
 :::
 
 ::: {.box .xpd #xp2}
-$s^2=\frac1{n-1}\sum_{i=1}^n (x_i-\bar{x})^2$ is a **random variable**: a different sample gives a different $s^2$. Its expected value is
-$$E(s^2)=E\!\left[\frac1{n-1}\sum_{i=1}^n (x_i-\bar{x})^2\right]=\sigma^2$$
+$s^2=\frac1{n-1}\sum_{i=1}^n (X_i-\bar{X})^2$ is a **random variable**: a different sample gives a different $s^2$. Its expected value is
+$$E(s^2)=E\!\left[\frac1{n-1}\sum_{i=1}^n (X_i-\bar{X})^2\right]=\sigma^2$$
 :::
 
 <script>
@@ -246,7 +246,7 @@ World War II
 ## Estimating tank production
 
 ::: {.box}
-The Allies wanted to estimate German tank production $a$ from the **serial numbers** $x_i$ of captured tanks.
+The Allies wanted to estimate German tank production $a$ from the **serial numbers** $X_i$ of captured tanks.
 :::
 
 . . .
@@ -265,38 +265,38 @@ Allied intelligence used traditional methods (spies). Statisticians analyzed ser
 ## A simple model
 
 ::: {.box}
-Serial numbers are uniform: $x_i\sim U[0,a]$. We want to estimate the maximum $a$.
+Serial numbers are uniform: $X_i\sim U[0,a]$. We want to estimate the maximum $a$.
 :::
 
 . . .
 
 ::: {.box .key}
 <span class="tag">One tank, $n=1$</span>
-Since $E[x_1]=\frac{a}{2}$, the guess $\hat{\theta}=x_1$ is **biased**.
+Since $E[X_1]=\frac{a}{2}$, the guess $\hat{\theta}=X_1$ is **biased**.
 :::
 
 . . .
 
 ::: {.box .good}
-Fix: $\hat{\theta}_{1}=2x_1$. Then $E[2x_1]=2\cdot\frac{a}{2}=a$: **unbiased**.
+Fix: $\hat{\theta}_{1}=2X_1$. Then $E[2X_1]=2\cdot\frac{a}{2}=a$: **unbiased**.
 :::
 
 ## Many tanks
 
 ::: {.box}
-With $n>1$ tanks we can use the sample mean: $\hat{\theta}_{\text{mean}}=2\bar{x}$.
+With $n>1$ tanks we can use the sample mean: $\hat{\theta}_{\text{mean}}=2\bar{X}$.
 :::
 
 . . .
 
 ::: {.box .good}
-$E[2\bar{x}]=2E[\bar{x}]=2\cdot\frac{a}{2}=a$: also **unbiased**.
+$E[2\bar{X}]=2E[\bar{X}]=2\cdot\frac{a}{2}=a$: also **unbiased**.
 :::
 
 . . .
 
 ::: {.box .key}
-Two unbiased estimators: $2x_1$ and $2\bar{x}$. **Which one is better?**
+Two unbiased estimators: $2X_1$ and $2\bar{X}$. **Which one is better?**
 :::
 
 ## Which is better?
@@ -310,18 +310,18 @@ We say "better" means smaller **variance**.
 ::: {.cards}
 ::: {.box .c}
 <span class="tag">One observation</span>
-$$\operatorname{Var}(2x_1)=4\cdot\frac{a^2}{12}=\frac{a^2}{3}$$
+$$\operatorname{Var}(2X_1)=4\cdot\frac{a^2}{12}=\frac{a^2}{3}$$
 :::
 ::: {.box .key .c}
 <span class="tag">Sample mean</span>
-$$\operatorname{Var}(2\bar{x})=4\cdot\frac{a^2/12}{n}=\frac{a^2}{3n}$$
+$$\operatorname{Var}(2\bar{X})=4\cdot\frac{a^2/12}{n}=\frac{a^2}{3n}$$
 :::
 :::
 
 . . .
 
 ::: {.box .good}
-$\operatorname{Var}(2\bar{x})=\frac{1}{n}\operatorname{Var}(2x_1)$: using all the data is **$n$ times more efficient**.
+$\operatorname{Var}(2\bar{X})=\frac{1}{n}\operatorname{Var}(2X_1)$: using all the data is **$n$ times more efficient**.
 :::
 
 ## Efficiency
@@ -372,7 +372,7 @@ function intToggle() {
   var N = 10, REPS = 1000, X0 = 0, X1 = 2, BW = 0.02, NB = Math.round((X1 - X0) / BW);
   var EST = {
     e1: { name: "2X₁", col: "#2b6cb0" },
-    e2: { name: "2x̄", col: "#2f855a" },
+    e2: { name: "2X̄", col: "#2f855a" },
     e3: { name: "(n+1)/n · max", col: "#dd6b20" }
   };
   var KEYS = ["e1", "e2", "e3"], on = { e1: false, e2: false, e3: false }, res = null;
@@ -518,11 +518,11 @@ To **establish** these properties we need **assumptions about the population dis
 ::: {.cards}
 ::: {.box .warn .c}
 <span class="tag">Needs a specific model</span>
-$2x_1$ and $2\bar{x}$ are unbiased for $a$ **assuming** $x_i\sim U[0,a]$. If the population were Normal, $E[2\bar{x}]=2\mu\neq a$.<br><br>Efficiency: $2\bar{x}$ is beaten by $\frac{n+1}{n}\max(X_i)$ for Uniform, but $\bar{x}$ is the most efficient for Normal.
+$2X_1$ and $2\bar{X}$ are unbiased for $a$ **assuming** $X_i\sim U[0,a]$. If the population were Normal, $E[2\bar{X}]=2\mu\neq a$.<br><br>Efficiency: $2\bar{X}$ is beaten by $\frac{n+1}{n}\max(X_i)$ for Uniform, but $\bar{X}$ is the most efficient for Normal.
 :::
 ::: {.box .good .c}
 <span class="tag">Holds for (almost) any population</span>
-$E[\bar{x}]=\mu$ and $E[s^2]=\sigma^2$: unbiased whenever the mean (variance) exists and the sample is i.i.d.<br><br>$\bar{x}\to\mu$ as $n\to\infty$: consistent for any population with a finite mean (Law of Large Numbers).
+$E[\bar{X}]=\mu$ and $E[s^2]=\sigma^2$: unbiased whenever the mean (variance) exists and the sample is i.i.d.<br><br>$\bar{X}\to\mu$ as $n\to\infty$: consistent for any population with a finite mean (Law of Large Numbers).
 :::
 :::
 
@@ -535,25 +535,25 @@ Always ask: **under what assumption** is this property true?
 ## The sample mean for $\mu$
 
 ::: {.box .key}
-In many problems the parameter we want is a mean $\mu$, so we use $\bar{x}$. How good is it?
+In many problems the parameter we want is a mean $\mu$, so we use $\bar{X}$. How good is it?
 :::
 
 ::: {.cards}
 ::: {.box .good}
 <span class="tag">Bias</span>
-$\bar{x}$ is **always unbiased** for $\mu$: Normal, Binomial, Poisson, anything.
+$\bar{X}$ is **always unbiased** for $\mu$: Normal, Binomial, Poisson, anything.
 :::
 ::: {.box .warn}
 <span class="tag">Efficiency</span>
-$\bar{x}$ is **not always the most efficient**. For a Uniform population, the maximum-based estimator beats it.
+$\bar{X}$ is **not always the most efficient**. For a Uniform population, the maximum-based estimator beats it.
 :::
 :::
 
-## Where we use $\bar{x}$
+## Where we use $\bar{X}$
 
 ::: {.cards}
 ::: {.box}
-**Polls.** The share of supporters is the mean of the 0/1 answers: $\hat{p}=\bar{x}$.
+**Polls.** The share of supporters is the mean of the 0/1 answers: $\hat{p}=\bar{X}$.
 :::
 ::: {.box}
 **Finance.** The expected return $\mu$ of a stock is estimated by the average of past returns.
@@ -586,7 +586,7 @@ What can we infer about $\mu$ from a simple random sample?
 
 ::: {.cards}
 ::: {.box .good}
-Our guess $\bar{x}$ is **unbiased**: on average it equals $\mu$.
+Our guess $\bar{X}$ is **unbiased**: on average it equals $\mu$.
 :::
 ::: {.box .good}
 It is **consistent**: it becomes more precise as $n$ grows.
@@ -600,13 +600,13 @@ It is **consistent**: it becomes more precise as $n$ grows.
 :::
 
 ::: {.cap}
-Fair die: the distribution of $\bar{x}$ narrows around $\mu=3.5$ as $n$ grows.
+Fair die: the distribution of $\bar{X}$ narrows around $\mu=3.5$ as $n$ grows.
 :::
 
 ## Same estimator, different precision
 
 ::: {.box}
-For $n=10$, $20$ and $200$ we use the **same estimator** $\bar{x}$, and it is centred at $\mu$ every time.
+For $n=10$, $20$ and $200$ we use the **same estimator** $\bar{X}$, and it is centred at $\mu$ every time.
 :::
 
 . . .
@@ -683,7 +683,7 @@ Here we consider interval estimates of the **population mean $\mu$** only.
 
 ::: {.box .key}
 <span class="tag">Assumption</span>
-The population standard deviation $\sigma$ is **known**: the only uncertainty is about $\bar{x}$. Later we drop this.
+The population standard deviation $\sigma$ is **known**: the only uncertainty is about $\bar{X}$. Later we drop this.
 :::
 
 . . .
@@ -691,34 +691,34 @@ The population standard deviation $\sigma$ is **known**: the only uncertainty is
 ::: {.box}
 <span class="tag">Conclusion</span>
 By the CLT, for a simple random sample of size $n$:
-$$\bar{x}\sim N\!\left(\mu,\frac{\sigma^2}{n}\right)\ \text{approximately}$$
+$$\bar{X}\sim N\!\left(\mu,\frac{\sigma^2}{n}\right)\ \text{approximately}$$
 :::
 
 ## Which values of $\mu$ are plausible?
 
 ::: {.box}
 <span class="tag">Example: a die</span>
-Observed $\bar{x}=3$. Population variance $\sigma^2=2.92$, sample size $n=20$. Standard error: $SE=\sqrt{2.92/20}\approx 0.382$.
+Observed $\bar{X}=3$. Population variance $\sigma^2=2.92$, sample size $n=20$. Standard error: $SE=\sqrt{2.92/20}\approx 0.382$.
 :::
 
 . . .
 
 ::: {.box .key}
 <span class="tag">Question</span>
-If the true mean were $\mu$, how likely is it to observe $\bar{x}=3$ **or something more extreme**?
+If the true mean were $\mu$, how likely is it to observe $\bar{X}=3$ **or something more extreme**?
 :::
 
 . . .
 
 ::: {.cap}
-"More extreme" = in the tails, at least as far from $\mu$ as $\bar{x}$ is.
+"More extreme" = in the tails, at least as far from $\mu$ as $\bar{X}$ is.
 :::
 
-## How surprising is $\bar{x}=3$?
+## How surprising is $\bar{X}=3$?
 
 <svg id="pv-svg" viewBox="0 0 900 312" class="famplot"></svg>
 
-<div class="readout" style="color:#c53030;font-weight:700;font-size:0.95em">Probability of $\bar{x}$ at least this far from $\mu$ (shaded area): <span id="pv-p"></span></div>
+<div class="readout" style="color:#c53030;font-weight:700;font-size:0.95em">Probability of $\bar{X}$ at least this far from $\mu$ (shaded area): <span id="pv-p"></span></div>
 
 <div class="ctl" style="justify-content:center">
   <label>Hypothesized $\mu$: <input type="range" id="pv-mu" min="1" max="5" step="0.01" value="2.2" style="width:420px"> <b id="pv-mu-val">2.20</b></label>
@@ -753,7 +753,7 @@ If the true mean were $\mu$, how likely is it to observe $\bar{x}=3$ **or someth
     g += '<line x1="' + L + '" y1="' + py(0) + '" x2="' + R + '" y2="' + py(0) + '" stroke="#52606d" stroke-width="2"/>';
     for (var t = 0; t <= 6; t++) g += '<text x="' + px(t) + '" y="' + (py(0) + 20) + '" text-anchor="middle" font-size="16" fill="#52606d">' + t + '</text>';
     g += '<line x1="' + px(XO) + '" y1="' + TOP + '" x2="' + px(XO) + '" y2="' + py(0) + '" stroke="#1f2933" stroke-width="3"/>' +
-         '<text x="' + (px(XO) + (m < XO ? 8 : -8)) + '" y="' + (TOP + 14) + '" text-anchor="' + (m < XO ? "start" : "end") + '" font-size="17" font-weight="700" fill="#1f2933">x̄ = 3</text>';
+         '<text x="' + (px(XO) + (m < XO ? 8 : -8)) + '" y="' + (TOP + 14) + '" text-anchor="' + (m < XO ? "start" : "end") + '" font-size="17" font-weight="700" fill="#1f2933">X̄ = 3</text>';
     g += '<line x1="' + px(m) + '" y1="' + TOP + '" x2="' + px(m) + '" y2="' + py(0) + '" stroke="#2b6cb0" stroke-width="2.5" stroke-dasharray="6 5"/>' +
          '<text x="' + (px(m) + (m < XO ? -8 : 8)) + '" y="' + (TOP + 14) + '" text-anchor="' + (m < XO ? "end" : "start") + '" font-size="17" font-weight="700" fill="#2b6cb0">μ = ' + m.toFixed(2) + '</text>';
     document.getElementById("pv-p").textContent = p.toFixed(4);
@@ -772,13 +772,13 @@ If the true mean were $\mu$, how likely is it to observe $\bar{x}=3$ **or someth
 ## Key result
 
 ::: {.box}
-The shaded area is the probability of a sample mean **at least as extreme** as $\bar{x}=3$, if the slider value were the true $\mu$.
+The shaded area is the probability of a sample mean **at least as extreme** as $\bar{X}=3$, if the slider value were the true $\mu$.
 :::
 
 . . .
 
 ::: {.box .key}
-As $\mu$ moves away from $\bar{x}$, this probability shrinks: such an $\bar{x}$ becomes unlikely, so far-away values of $\mu$ are **less plausible**.
+As $\mu$ moves away from $\bar{X}$, this probability shrinks: such an $\bar{X}$ becomes unlikely, so far-away values of $\mu$ are **less plausible**.
 :::
 
 . . .
@@ -790,8 +790,8 @@ Confidence interval = the values of $\mu$ for which this probability is **larger
 ## An interval around $\mu$
 
 ::: {.box}
-Find an interval around $\mu$ that contains $\bar{x}$ with probability $1-\alpha$:
-$$P(\mu-\text{margin}\le\bar{x}\le\mu+\text{margin})=1-\alpha$$
+Find an interval around $\mu$ that contains $\bar{X}$ with probability $1-\alpha$:
+$$P(\mu-\text{margin}\le\bar{X}\le\mu+\text{margin})=1-\alpha$$
 $\alpha$ is the **significance level**: the probability of falling outside.
 :::
 
@@ -804,7 +804,7 @@ $\alpha$ is the **significance level**: the probability of falling outside.
 ## Finding the margin
 
 ::: {.box}
-Standardize $\bar{x}$, dividing by the standard error $\sigma/\sqrt{n}$:
+Standardize $\bar{X}$, dividing by the standard error $\sigma/\sqrt{n}$:
 $$P\!\left(-\tfrac{\text{margin}}{\sigma/\sqrt n}\le Z\le\tfrac{\text{margin}}{\sigma/\sqrt n}\right)=1-\alpha$$
 :::
 
@@ -818,27 +818,27 @@ $$\text{margin}=z_{\alpha/2}\,\frac{\sigma}{\sqrt n}$$
 ## Flipping the inequality
 
 ::: {.box}
-$$P\!\left(\mu-z_{\alpha/2}\tfrac{\sigma}{\sqrt n}\le\bar{x}\le\mu+z_{\alpha/2}\tfrac{\sigma}{\sqrt n}\right)=1-\alpha$$
+$$P\!\left(\mu-z_{\alpha/2}\tfrac{\sigma}{\sqrt n}\le\bar{X}\le\mu+z_{\alpha/2}\tfrac{\sigma}{\sqrt n}\right)=1-\alpha$$
 :::
 
 . . .
 
 ::: {.box .key}
 The same event, written for $\mu$:
-$$P\!\left(\bar{x}-z_{\alpha/2}\tfrac{\sigma}{\sqrt n}\le\mu\le\bar{x}+z_{\alpha/2}\tfrac{\sigma}{\sqrt n}\right)=1-\alpha$$
+$$P\!\left(\bar{X}-z_{\alpha/2}\tfrac{\sigma}{\sqrt n}\le\mu\le\bar{X}+z_{\alpha/2}\tfrac{\sigma}{\sqrt n}\right)=1-\alpha$$
 :::
 
 ## Confidence interval for $\mu$
 
 ::: {.box .key}
 <span class="tag">$\sigma$ known</span>
-$$CI_{1-\alpha}=\left[\bar{x}-z_{\alpha/2}\frac{\sigma}{\sqrt n},\ \bar{x}+z_{\alpha/2}\frac{\sigma}{\sqrt n}\right]$$
+$$CI_{1-\alpha}=\left[\bar{X}-z_{\alpha/2}\frac{\sigma}{\sqrt n},\ \bar{X}+z_{\alpha/2}\frac{\sigma}{\sqrt n}\right]$$
 :::
 
 . . .
 
 ::: {.box}
-The random interval $\bar{x}\pm z_{\alpha/2}\sigma/\sqrt n$ contains $\mu$ with probability $1-\alpha$. If we repeat the sampling many times, about a fraction $1-\alpha$ of the intervals contain $\mu$.
+The random interval $\bar{X}\pm z_{\alpha/2}\sigma/\sqrt n$ contains $\mu$ with probability $1-\alpha$. If we repeat the sampling many times, about a fraction $1-\alpha$ of the intervals contain $\mu$.
 :::
 
 ## The parts of the interval
@@ -850,11 +850,11 @@ The point of the standard normal $N(0,1)$ with area $\alpha/2$ in each tail.
 :::
 ::: {.box}
 <span class="tag">Standard error $\sigma/\sqrt n$</span>
-The standard deviation of $\bar{x}$.
+The standard deviation of $\bar{X}$.
 :::
 ::: {.box}
 <span class="tag">Margin of error $z_{\alpha/2}\,\sigma/\sqrt n$</span>
-Half the width of the interval: how many standard errors we go out from $\bar{x}$.
+Half the width of the interval: how many standard errors we go out from $\bar{X}$.
 :::
 :::
 
@@ -862,7 +862,7 @@ Half the width of the interval: how many standard errors we go out from $\bar{x}
 
 ::: {.box}
 Heights of girls in our class:
-$n=185$, $\bar{x}=165.9$ cm, and $\sigma=8.7$ cm is assumed **known**.
+$n=185$, $\bar{X}=165.9$ cm, and $\sigma=8.7$ cm is assumed **known**.
 :::
 
 . . .
@@ -1020,7 +1020,7 @@ Share of each group in 5 kg bins. Women's weights are centred lower and are less
 Self-reported weights (kg) of ECON211 students over several semesters. As before, we **assume $\sigma$ is known** and take it equal to the sample SD of each group.
 :::
 
-| Group | $n$ | $\bar{x}$ | $\sigma$ | $SE=\sigma/\sqrt n$ |
+| Group | $n$ | $\bar{X}$ | $\sigma$ | $SE=\sigma/\sqrt n$ |
 |:--|:-:|:-:|:-:|:-:|
 | Men | 146 | 72.29 | 12.13 | 1.004 |
 | Women | 224 | 55.16 | 7.93 | 0.530 |
@@ -1140,7 +1140,7 @@ A formal answer ("is the difference real?") comes with hypothesis testing. Inter
 
 ::: {.box}
 <span class="tag">What the intervals rely on</span>
-Independent draws, and an approximately normal $\bar{x}$. By the CLT this is fine here ($n=146$ and $224$), even though weights are skewed.
+Independent draws, and an approximately normal $\bar{X}$. By the CLT this is fine here ($n=146$ and $224$), even though weights are skewed.
 :::
 
 . . .

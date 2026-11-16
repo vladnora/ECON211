@@ -676,13 +676,21 @@ An **interval estimate** (confidence interval) is a range of values, computed fr
 . . .
 
 ::: {.box}
-First we **assume $\sigma$ is known**: the only uncertainty is about $\bar{x}$. Later we drop this.
+Here we consider interval estimates of the **population mean $\mu$** only.
+:::
+
+## Our assumption
+
+::: {.box .key}
+<span class="tag">Assumption</span>
+The population standard deviation $\sigma$ is **known**: the only uncertainty is about $\bar{x}$. Later we drop this.
 :::
 
 . . .
 
 ::: {.box}
-By the CLT:
+<span class="tag">Conclusion</span>
+By the CLT, for a simple random sample of size $n$:
 $$\bar{x}\sim N\!\left(\mu,\frac{\sigma^2}{n}\right)\ \text{approximately}$$
 :::
 

@@ -39,6 +39,9 @@ Guessing a parameter from a sample.
 ::: {.box}
 **Demography.** How many children does a woman have on average?
 :::
+::: {.box}
+**Sensitive questions.** What share of students have ever cheated?
+:::
 :::
 
 ## Point estimator
@@ -110,255 +113,6 @@ function xpShow(id) {
 
 ::: {.box .warn}
 If we divide by $n$ instead of $n-1$, the variance estimator becomes **biased**.
-:::
-
-# Example: German tanks {.section-slide}
-
-World War II
-
-## Estimating tank production
-
-::: {.box}
-The Allies wanted to estimate German tank production $a$ from the **serial numbers** $x_i$ of captured tanks.
-:::
-
-. . .
-
-::: {.box}
-Allied intelligence used traditional methods (spies). Statisticians analyzed serial numbers.
-:::
-
-. . .
-
-| Date | Intelligence | Statisticians | Actual |
-|:--|:-:|:-:|:-:|
-| June 1941 | 1,550 | 244 | **271** |
-| August 1942 | 1,550 | 327 | **342** |
-
-## A simple model
-
-::: {.box}
-Serial numbers are uniform: $x_i\sim U[0,a]$. We want to estimate the maximum $a$.
-:::
-
-. . .
-
-::: {.box .key}
-<span class="tag">One tank, $n=1$</span>
-Since $E[x_1]=\frac{a}{2}$, the guess $\hat{\theta}=x_1$ is **biased**.
-:::
-
-. . .
-
-::: {.box .good}
-Fix: $\hat{\theta}_{1}=2x_1$. Then $E[2x_1]=2\cdot\frac{a}{2}=a$: **unbiased**.
-:::
-
-## Many tanks
-
-::: {.box}
-With $n>1$ tanks we can use the sample mean: $\hat{\theta}_{\text{mean}}=2\bar{x}$.
-:::
-
-. . .
-
-::: {.box .good}
-$E[2\bar{x}]=2E[\bar{x}]=2\cdot\frac{a}{2}=a$: also **unbiased**.
-:::
-
-. . .
-
-::: {.box .key}
-Two unbiased estimators: $2x_1$ and $2\bar{x}$. **Which one is better?**
-:::
-
-## Which is better?
-
-::: {.box}
-We say "better" means smaller **variance**.
-:::
-
-. . .
-
-::: {.cards}
-::: {.box .c}
-<span class="tag">One observation</span>
-$$\operatorname{Var}(2x_1)=4\cdot\frac{a^2}{12}=\frac{a^2}{3}$$
-:::
-::: {.box .key .c}
-<span class="tag">Sample mean</span>
-$$\operatorname{Var}(2\bar{x})=4\cdot\frac{a^2/12}{n}=\frac{a^2}{3n}$$
-:::
-:::
-
-. . .
-
-::: {.box .good}
-$\operatorname{Var}(2\bar{x})=\frac{1}{n}\operatorname{Var}(2x_1)$: using all the data is **$n$ times more efficient**.
-:::
-
-## Efficiency
-
-::: {.box .key}
-<span class="tag">Definition</span>
-Among unbiased estimators, the one with the **smaller variance** is more **efficient**.
-:::
-
-. . .
-
-::: {.box .xp #int-card onclick="intToggle()"}
-<span class="tag">Intuition (click)</span>
-Variance is the expected **squared error** of a guess. Both estimators are right on average, but the one with lower variance is much more likely to be close to the truth in a single sample.
-:::
-
-::: {.box .good .xpd #int-detail}
-For an unbiased estimator $E(\hat{\theta})=\theta$, so
-$$\operatorname{Var}(\hat{\theta})=E\big[(\hat{\theta}-E(\hat{\theta}))^2\big]=E\big[(\hat{\theta}-\theta)^2\big]$$
-This is the **expected squared mistake** of the guess. To make this mistake as small as possible, we want the **smallest variance**.
-:::
-
-<script>
-function intToggle() {
-  var d = document.getElementById('int-detail'), c = document.getElementById('int-card');
-  d.classList.toggle('on'); c.classList.toggle('sel', d.classList.contains('on'));
-}
-</script>
-
-## Simulating the tank problem
-
-<svg id="tk-svg" viewBox="0 0 900 330" class="famplot"></svg>
-
-<div class="readout" id="tk-out"></div>
-
-<div class="ctl" style="justify-content:center">
-  <button class="act ghost" id="tk-b1"></button>
-  <button class="act ghost" id="tk-b2"></button>
-  <button class="act ghost" id="tk-b3"></button>
-  <button class="act" id="tk-run">Run again</button>
-</div>
-
-<script>
-(function () {
-  var N = 10, REPS = 1000, X0 = 0, X1 = 2, BW = 0.04, NB = Math.round((X1 - X0) / BW);
-  var EST = {
-    e1: { name: "2X₁", col: "#2b6cb0" },
-    e2: { name: "2x̄", col: "#2f855a" },
-    e3: { name: "(n+1)/n · max", col: "#dd6b20" }
-  };
-  var KEYS = ["e1", "e2", "e3"], on = { e1: false, e2: false, e3: false }, res = null;
-  function sim() {
-    var r = { e1: [], e2: [], e3: [] };
-    for (var k = 0; k < REPS; k++) {
-      var s = 0, mx = 0, first = 0;
-      for (var i = 0; i < N; i++) { var u = Math.random(); if (i === 0) first = u; s += u; if (u > mx) mx = u; }
-      r.e1.push(2 * first); r.e2.push(2 * s / N); r.e3.push((N + 1) / N * mx);
-    }
-    return r;
-  }
-  function stats(a) {
-    var m = a.reduce(function (s, x) { return s + x; }, 0) / a.length;
-    var v = a.reduce(function (s, x) { return s + (x - m) * (x - m); }, 0) / (a.length - 1);
-    return [m, Math.sqrt(v)];
-  }
-  var svg = document.getElementById("tk-svg"), out = document.getElementById("tk-out");
-  var L = 60, R = 870, T = 40, B = 270;
-  function hx(x) { return L + (x - X0) / (X1 - X0) * (R - L); }
-  function draw() {
-    var cnt = {}, mx = 0, g = "";
-    KEYS.forEach(function (k) {
-      var c = []; for (var b = 0; b < NB; b++) c.push(0);
-      res[k].forEach(function (x) { var b = Math.floor((x - X0) / BW); if (b >= 0 && b < NB) c[b]++; });
-      cnt[k] = c; mx = Math.max(mx, Math.max.apply(null, c));       // common scale: bars don't jump when toggling
-    });
-    g += '<line x1="' + L + '" y1="' + B + '" x2="' + R + '" y2="' + B + '" stroke="#52606d" stroke-width="2"/>';
-    for (var x = 0; x <= 2; x += 0.5) g += '<text x="' + hx(x) + '" y="' + (B + 24) + '" text-anchor="middle" font-size="17" fill="#52606d">' + x.toFixed(1) + '</text>';
-    g += '<text x="' + ((L + R) / 2) + '" y="' + (B + 52) + '" text-anchor="middle" font-size="18" fill="#1f2933">estimate of a (true a = 1, n = 10)</text>';
-    var shown = KEYS.filter(function (k) { return on[k]; });
-    shown.forEach(function (k) {
-      cnt[k].forEach(function (n, b) {
-        var h = n / mx * (B - T - 10);
-        g += '<rect x="' + (hx(X0 + b * BW) + 0.5) + '" y="' + (B - h) + '" width="' + ((R - L) / NB - 1) + '" height="' + h + '" fill="' + EST[k].col + '" opacity="0.55"/>';
-      });
-    });
-    g += '<line x1="' + hx(1) + '" y1="' + (T - 10) + '" x2="' + hx(1) + '" y2="' + B + '" stroke="#1b3a5c" stroke-width="2.5" stroke-dasharray="7 5"/>';
-    shown.forEach(function (k, i) {
-      g += '<rect x="' + (R - 190) + '" y="' + (T - 30 + i * 24) + '" width="16" height="16" fill="' + EST[k].col + '" opacity="0.6"/><text x="' + (R - 168) + '" y="' + (T - 17 + i * 24) + '" font-size="18" fill="#1f2933">' + EST[k].name + '</text>';
-    });
-    svg.innerHTML = g;
-    out.innerHTML = shown.length ? shown.map(function (k) { var s = stats(res[k]); return EST[k].name + ": mean <b>" + s[0].toFixed(2) + "</b>, SD <b>" + s[1].toFixed(2) + "</b>"; }).join(" &nbsp;·&nbsp; ")
-                                 : "Click an estimator to show the histogram of its guesses.";
-  }
-  function paint() {
-    KEYS.forEach(function (k, i) {
-      var b = document.getElementById("tk-b" + (i + 1));
-      b.textContent = EST[k].name;
-      b.style.background = on[k] ? EST[k].col : "#e4e7eb";
-      b.style.color = on[k] ? "#fff" : "#323f4b";
-    });
-  }
-  KEYS.forEach(function (k, i) {
-    document.getElementById("tk-b" + (i + 1)).onclick = function () { on[k] = !on[k]; paint(); draw(); };
-  });
-  document.getElementById("tk-run").onclick = function () { res = sim(); draw(); };
-  res = sim(); paint(); draw();
-})();
-</script>
-
-## Better still
-
-::: {.box .key}
-$$\hat{\theta}_{\max}=\frac{n+1}{n}\cdot\max(X_i)$$
-:::
-
-. . .
-
-::: {.box .good}
-It is also **unbiased**, and its variance is much smaller: $\operatorname{Var}=\frac{a^2}{n(n+2)}$. In the simulation, it is the most efficient of the three.
-:::
-
-. . .
-
-::: {.cap}
-Which estimator is best depends on the assumed population distribution.
-:::
-
-## The sample mean for $\mu$
-
-::: {.box .key}
-In many problems the parameter we want is a mean $\mu$, so we use $\bar{x}$. How good is it?
-:::
-
-::: {.cards}
-::: {.box .good}
-<span class="tag">Bias</span>
-$\bar{x}$ is **always unbiased** for $\mu$: Normal, Binomial, Poisson, anything.
-:::
-::: {.box .warn}
-<span class="tag">Efficiency</span>
-$\bar{x}$ is **not always the most efficient**. For a Uniform population, the maximum-based estimator beats it.
-:::
-:::
-
-## Where we use $\bar{x}$
-
-::: {.cards}
-::: {.box}
-**Polls.** The share of supporters is the mean of the 0/1 answers: $\hat{p}=\bar{x}$.
-:::
-::: {.box}
-**Finance.** The expected return $\mu$ of a stock is estimated by the average of past returns.
-:::
-::: {.box}
-**Medicine.** The mean drop in blood pressure is estimated by the average over the patients.
-:::
-:::
-
-. . .
-
-::: {.box .warn}
-<span class="tag">Other estimators are needed</span>
-**Ecology.** How many fish are there in a lake?<br>
-**Demography.** How many children does a woman have on average?
 :::
 
 # Example: randomized response {.section-slide}
@@ -485,6 +239,227 @@ $\hat{p}=\dfrac{0.40-0.25}{0.75}=0.20$
 About 20% cheated. The price of privacy: the standard error is $\approx7.4$ points, against $\approx4.5$ if we could ask directly.
 :::
 
+# Example: German tanks {.section-slide}
+
+World War II
+
+## Estimating tank production
+
+::: {.box}
+The Allies wanted to estimate German tank production $a$ from the **serial numbers** $x_i$ of captured tanks.
+:::
+
+. . .
+
+::: {.box}
+Allied intelligence used traditional methods (spies). Statisticians analyzed serial numbers.
+:::
+
+. . .
+
+| Date | Intelligence | Statisticians | Actual |
+|:--|:-:|:-:|:-:|
+| June 1941 | 1,550 | 244 | **271** |
+| August 1942 | 1,550 | 327 | **342** |
+
+## A simple model
+
+::: {.box}
+Serial numbers are uniform: $x_i\sim U[0,a]$. We want to estimate the maximum $a$.
+:::
+
+. . .
+
+::: {.box .key}
+<span class="tag">One tank, $n=1$</span>
+Since $E[x_1]=\frac{a}{2}$, the guess $\hat{\theta}=x_1$ is **biased**.
+:::
+
+. . .
+
+::: {.box .good}
+Fix: $\hat{\theta}_{1}=2x_1$. Then $E[2x_1]=2\cdot\frac{a}{2}=a$: **unbiased**.
+:::
+
+## Many tanks
+
+::: {.box}
+With $n>1$ tanks we can use the sample mean: $\hat{\theta}_{\text{mean}}=2\bar{x}$.
+:::
+
+. . .
+
+::: {.box .good}
+$E[2\bar{x}]=2E[\bar{x}]=2\cdot\frac{a}{2}=a$: also **unbiased**.
+:::
+
+. . .
+
+::: {.box .key}
+Two unbiased estimators: $2x_1$ and $2\bar{x}$. **Which one is better?**
+:::
+
+## Which is better?
+
+::: {.box}
+We say "better" means smaller **variance**.
+:::
+
+. . .
+
+::: {.cards}
+::: {.box .c}
+<span class="tag">One observation</span>
+$$\operatorname{Var}(2x_1)=4\cdot\frac{a^2}{12}=\frac{a^2}{3}$$
+:::
+::: {.box .key .c}
+<span class="tag">Sample mean</span>
+$$\operatorname{Var}(2\bar{x})=4\cdot\frac{a^2/12}{n}=\frac{a^2}{3n}$$
+:::
+:::
+
+. . .
+
+::: {.box .good}
+$\operatorname{Var}(2\bar{x})=\frac{1}{n}\operatorname{Var}(2x_1)$: using all the data is **$n$ times more efficient**.
+:::
+
+## Efficiency
+
+::: {.box .key}
+<span class="tag">Definition</span>
+Among unbiased estimators, the one with the **smaller variance** is more **efficient**.
+:::
+
+. . .
+
+::: {.box .xp #int-card onclick="intToggle()"}
+<span class="tag">Intuition (click)</span>
+Variance is the expected **squared error** of a guess. Both estimators are right on average, but the one with lower variance is much more likely to be close to the truth in a single sample.
+:::
+
+::: {.box .good .xpd #int-detail}
+For an unbiased estimator $E(\hat{\theta})=\theta$, so
+$$\operatorname{Var}(\hat{\theta})=E\big[(\hat{\theta}-E(\hat{\theta}))^2\big]=E\big[(\hat{\theta}-\theta)^2\big]$$
+This is the **expected squared mistake** of the guess. To make this mistake as small as possible, we want the **smallest variance**.
+:::
+
+<script>
+function intToggle() {
+  var d = document.getElementById('int-detail'), c = document.getElementById('int-card');
+  d.classList.toggle('on'); c.classList.toggle('sel', d.classList.contains('on'));
+}
+</script>
+
+## Simulating the tank problem
+
+<svg id="tk-svg" viewBox="0 0 900 330" class="famplot"></svg>
+
+<div class="readout" id="tk-out"></div>
+
+<div class="ctl" style="justify-content:center">
+  <button class="act ghost" id="tk-b1"></button>
+  <button class="act ghost" id="tk-b2"></button>
+  <button class="act ghost" id="tk-b3"></button>
+  <button class="act" id="tk-run">Run again</button>
+  <span>Sample size $n$: <span class="seg" id="tk-n"><button data-n="5">5</button><button data-n="10" class="on">10</button><button data-n="50">50</button><button data-n="100">100</button></span></span>
+</div>
+
+<div class="cap">Each histogram is scaled to its own peak: compare the widths.</div>
+
+<script>
+(function () {
+  var N = 10, REPS = 1000, X0 = 0, X1 = 2, BW = 0.02, NB = Math.round((X1 - X0) / BW);
+  var EST = {
+    e1: { name: "2X₁", col: "#2b6cb0" },
+    e2: { name: "2x̄", col: "#2f855a" },
+    e3: { name: "(n+1)/n · max", col: "#dd6b20" }
+  };
+  var KEYS = ["e1", "e2", "e3"], on = { e1: false, e2: false, e3: false }, res = null;
+  function sim() {
+    var r = { e1: [], e2: [], e3: [] };
+    for (var k = 0; k < REPS; k++) {
+      var s = 0, mx = 0, first = 0;
+      for (var i = 0; i < N; i++) { var u = Math.random(); if (i === 0) first = u; s += u; if (u > mx) mx = u; }
+      r.e1.push(2 * first); r.e2.push(2 * s / N); r.e3.push((N + 1) / N * mx);
+    }
+    return r;
+  }
+  function stats(a) {
+    var m = a.reduce(function (s, x) { return s + x; }, 0) / a.length;
+    var v = a.reduce(function (s, x) { return s + (x - m) * (x - m); }, 0) / (a.length - 1);
+    return [m, Math.sqrt(v)];
+  }
+  var svg = document.getElementById("tk-svg"), out = document.getElementById("tk-out");
+  var L = 60, R = 870, T = 40, B = 270;
+  function hx(x) { return L + (x - X0) / (X1 - X0) * (R - L); }
+  function draw() {
+    var cnt = {}, mxk = {}, g = "";
+    KEYS.forEach(function (k) {
+      var c = []; for (var b = 0; b < NB; b++) c.push(0);
+      res[k].forEach(function (x) { var b = Math.floor((x - X0) / BW); if (b >= 0 && b < NB) c[b]++; });
+      cnt[k] = c; mxk[k] = Math.max.apply(null, c);
+    });
+    g += '<line x1="' + L + '" y1="' + B + '" x2="' + R + '" y2="' + B + '" stroke="#52606d" stroke-width="2"/>';
+    for (var x = 0; x <= 2; x += 0.5) g += '<text x="' + hx(x) + '" y="' + (B + 24) + '" text-anchor="middle" font-size="17" fill="#52606d">' + x.toFixed(1) + '</text>';
+    g += '<text x="' + ((L + R) / 2) + '" y="' + (B + 52) + '" text-anchor="middle" font-size="18" fill="#1f2933">estimate of a (true a = 1, n = ' + N + ')</text>';
+    var shown = KEYS.filter(function (k) { return on[k]; });
+    shown.forEach(function (k) {
+      cnt[k].forEach(function (n, b) {
+        var h = n / mxk[k] * (B - T - 10);
+        g += '<rect x="' + (hx(X0 + b * BW) + 0.5) + '" y="' + (B - h) + '" width="' + ((R - L) / NB - 1) + '" height="' + h + '" fill="' + EST[k].col + '" opacity="0.55"/>';
+      });
+    });
+    g += '<line x1="' + hx(1) + '" y1="' + (T - 10) + '" x2="' + hx(1) + '" y2="' + B + '" stroke="#1b3a5c" stroke-width="2.5" stroke-dasharray="7 5"/>';
+    shown.forEach(function (k, i) {
+      g += '<rect x="' + (R - 190) + '" y="' + (T - 30 + i * 24) + '" width="16" height="16" fill="' + EST[k].col + '" opacity="0.6"/><text x="' + (R - 168) + '" y="' + (T - 17 + i * 24) + '" font-size="18" fill="#1f2933">' + EST[k].name + '</text>';
+    });
+    svg.innerHTML = g;
+    out.innerHTML = shown.length ? shown.map(function (k) { var s = stats(res[k]); return EST[k].name + ": mean <b>" + s[0].toFixed(2) + "</b>, SD <b>" + s[1].toFixed(2) + "</b>"; }).join(" &nbsp;·&nbsp; ")
+                                 : "Click an estimator to show the histogram of its guesses.";
+  }
+  function paint() {
+    KEYS.forEach(function (k, i) {
+      var b = document.getElementById("tk-b" + (i + 1));
+      b.textContent = EST[k].name;
+      b.style.background = on[k] ? EST[k].col : "#e4e7eb";
+      b.style.color = on[k] ? "#fff" : "#323f4b";
+    });
+  }
+  KEYS.forEach(function (k, i) {
+    document.getElementById("tk-b" + (i + 1)).onclick = function () { on[k] = !on[k]; paint(); draw(); };
+  });
+  document.getElementById("tk-run").onclick = function () { res = sim(); draw(); };
+  var nb = document.querySelectorAll("#tk-n button");
+  nb.forEach(function (b) {
+    b.onclick = function () {
+      N = +b.getAttribute("data-n");
+      nb.forEach(function (x) { x.classList.toggle("on", x === b); });
+      res = sim(); draw();
+    };
+  });
+  res = sim(); paint(); draw();
+})();
+</script>
+
+## Better still
+
+::: {.box .key}
+$$\hat{\theta}_{\max}=\frac{n+1}{n}\cdot\max(X_i)$$
+:::
+
+. . .
+
+::: {.box .good}
+It is also **unbiased**, and its variance is much smaller: $\operatorname{Var}=\frac{a^2}{n(n+2)}$. In the simulation, it is the most efficient of the three.
+:::
+
+. . .
+
+::: {.cap}
+Which estimator is best depends on the assumed population distribution.
+:::
+
 ## Consistency
 
 ::: {.box .key}
@@ -555,6 +530,45 @@ $E[\bar{x}]=\mu$ and $E[s^2]=\sigma^2$: unbiased whenever the mean (variance) ex
 
 ::: {.cap}
 Always ask: **under what assumption** is this property true?
+:::
+
+## The sample mean for $\mu$
+
+::: {.box .key}
+In many problems the parameter we want is a mean $\mu$, so we use $\bar{x}$. How good is it?
+:::
+
+::: {.cards}
+::: {.box .good}
+<span class="tag">Bias</span>
+$\bar{x}$ is **always unbiased** for $\mu$: Normal, Binomial, Poisson, anything.
+:::
+::: {.box .warn}
+<span class="tag">Efficiency</span>
+$\bar{x}$ is **not always the most efficient**. For a Uniform population, the maximum-based estimator beats it.
+:::
+:::
+
+## Where we use $\bar{x}$
+
+::: {.cards}
+::: {.box}
+**Polls.** The share of supporters is the mean of the 0/1 answers: $\hat{p}=\bar{x}$.
+:::
+::: {.box}
+**Finance.** The expected return $\mu$ of a stock is estimated by the average of past returns.
+:::
+::: {.box}
+**Medicine.** The mean drop in blood pressure is estimated by the average over the patients.
+:::
+:::
+
+. . .
+
+::: {.box .warn}
+<span class="tag">Other estimators are needed</span>
+**Ecology.** How many fish are there in a lake?<br>
+**Demography.** How many children does a woman have on average?
 :::
 
 # Interval Estimation {.section-slide}

@@ -1177,6 +1177,9 @@ margin-right: 0; }
 <div class="box">
 <p><strong>Demography.</strong> How many children does a woman have on average?</p>
 </div>
+<div class="box">
+<p><strong>Sensitive questions.</strong> What share of students have ever cheated?</p>
+</div>
 </div>
 </section>
 <section id="point-estimator" class="slide level2">
@@ -1235,6 +1238,109 @@ function xpShow(id) {
 <div class="fragment">
 <div class="box warn">
 <p>If we divide by <span class="math inline">n</span> instead of <span class="math inline">n-1</span>, the variance estimator becomes <strong>biased</strong>.</p>
+</div>
+</div>
+</section></section>
+<section>
+<section id="example-randomized-response" class="title-slide slide level1 section-slide center">
+<h1>Example: randomized response</h1>
+<p>Asking a sensitive question</p>
+</section>
+<section id="a-sensitive-question" class="slide level2">
+<h2>A sensitive question</h2>
+<div class="box key">
+<p><span class="tag">Question</span> Have you ever cheated during your studies at NU?</p>
+</div>
+<div class="fragment">
+<div class="box warn">
+<p>People may <strong>refuse</strong> to answer, or <strong>lie</strong>. We want <strong>anonymity</strong>, but we have <strong>no technical way</strong> to guarantee it.</p>
+</div>
+</div>
+<div class="fragment">
+<div class="box">
+<p>Solution: <strong>randomized response</strong>. Add randomness, so that no single answer reveals the truth.</p>
+</div>
+</div>
+</section>
+<section id="the-idea" class="slide level2">
+<h2>The idea</h2>
+<div class="box key">
+<p><span class="tag">The rule</span> If you were born in <strong>January, February or March</strong>, answer <strong>“Yes”</strong>, whatever the truth.<br> Otherwise, answer <strong>truthfully</strong>.</p>
+</div>
+<div class="fragment">
+<div class="box">
+<p>The person who collects the answers <strong>does not know your birth month</strong>. So a “Yes” may be forced by the rule: it does <strong>not</strong> reveal that you cheated.</p>
+</div>
+</div>
+<div class="fragment">
+<div class="box good">
+<p>Each respondent keeps <strong>some anonymity</strong>. But the answers are now a mix of forced and true ones.</p>
+</div>
+</div>
+</section>
+<section id="how-do-we-estimate-the-truth" class="slide level2">
+<h2>How do we estimate the truth?</h2>
+<div class="box">
+<p>We observe only the <strong>share of “Yes” answers</strong>.</p>
+</div>
+<div class="fragment">
+<div class="box key">
+<p><span class="tag">Parameter</span> <span class="math inline">p=</span> the true share of students who <strong>cheated</strong>.</p>
+</div>
+</div>
+<div class="fragment">
+<div class="box warn">
+<p>How do we recover <span class="math inline">p</span> from the data, when some of the “Yes” answers are not true?</p>
+</div>
+</div>
+</section>
+<section id="our-class-survey" class="slide level2">
+<h2>Our class survey</h2>
+<div class="box">
+<p>Question: <strong>Have you ever cheated during your studies at NU?</strong> Rule: born in January, February or March, answer “Yes”; otherwise truthfully.</p>
+</div>
+<div class="fragment">
+<div class="cards">
+<div class="box c">
+<p><span class="tag">Responses</span> <span class="math inline">n=78</span></p>
+</div>
+<div class="box c">
+<p><span class="tag">“No”</span> 60%</p>
+</div>
+<div class="box c">
+<p><span class="tag">“Yes”</span> 40%</p>
+</div>
+</div>
+</div>
+<div class="fragment">
+<div class="box key">
+<p>What is your guess for <span class="math inline">p</span>, the true share of students who cheated? Is it 40%, more, or less?</p>
+</div>
+</div>
+</section>
+<section id="working-out-the-estimator" class="slide level2">
+<h2>Working out the estimator</h2>
+<div class="box">
+<p>About <span class="math inline">\tfrac{3}{12}=\tfrac14</span> of people are forced to say “Yes”; the other <span class="math inline">\tfrac34</span> answer truthfully: <span class="math display">P(\text{Yes})=\tfrac14\cdot 1+\tfrac34\cdot p</span></p>
+</div>
+<div class="fragment">
+<div class="box key">
+<p>Solve for <span class="math inline">p</span> and replace <span class="math inline">P(\text{Yes})</span> by the observed share <span class="math inline">\hat{y}</span>: <span class="math display">\hat{p}=\frac{\hat{y}-\frac14}{\frac34}</span></p>
+</div>
+</div>
+<div class="fragment">
+<div class="cards">
+<div class="box good c">
+<p><span class="tag">Unbiased</span> <span class="math inline">E(\hat{y})=P(\text{Yes})</span>, so <span class="math inline">E(\hat{p})=p</span></p>
+</div>
+<div class="box key c">
+<p><span class="tag">Our data</span> <span class="math inline">\hat{p}=\dfrac{0.40-0.25}{0.75}=0.20</span></p>
+</div>
+</div>
+</div>
+<div class="fragment">
+<div class="cap">
+<p>About 20% cheated. The price of privacy: the standard error is <span class="math inline">\approx7.4</span> points, against <span class="math inline">\approx4.5</span> if we could ask directly.</p>
 </div>
 </div>
 </section></section>
@@ -1361,11 +1467,14 @@ function intToggle() {
 
 </div>
 <div class="ctl" style="justify-content:center">
-<p><button class="act ghost" id="tk-b1"></button> <button class="act ghost" id="tk-b2"></button> <button class="act ghost" id="tk-b3"></button> <button class="act" id="tk-run">Run again</button></p>
+<p><button class="act ghost" id="tk-b1"></button> <button class="act ghost" id="tk-b2"></button> <button class="act ghost" id="tk-b3"></button> <button class="act" id="tk-run">Run again</button> <span>Sample size <span class="math inline">n</span>: <span id="tk-n" class="seg"><button data-n="5">5</button><button data-n="10" class="on">10</button><button data-n="50">50</button><button data-n="100">100</button></span></span></p>
+</div>
+<div class="cap">
+Each histogram is scaled to its own peak: compare the widths.
 </div>
 <script>
 (function () {
-  var N = 10, REPS = 1000, X0 = 0, X1 = 2, BW = 0.04, NB = Math.round((X1 - X0) / BW);
+  var N = 10, REPS = 1000, X0 = 0, X1 = 2, BW = 0.02, NB = Math.round((X1 - X0) / BW);
   var EST = {
     e1: { name: "2X₁", col: "#2b6cb0" },
     e2: { name: "2x̄", col: "#2f855a" },
@@ -1390,19 +1499,19 @@ function intToggle() {
   var L = 60, R = 870, T = 40, B = 270;
   function hx(x) { return L + (x - X0) / (X1 - X0) * (R - L); }
   function draw() {
-    var cnt = {}, mx = 0, g = "";
+    var cnt = {}, mxk = {}, g = "";
     KEYS.forEach(function (k) {
       var c = []; for (var b = 0; b < NB; b++) c.push(0);
       res[k].forEach(function (x) { var b = Math.floor((x - X0) / BW); if (b >= 0 && b < NB) c[b]++; });
-      cnt[k] = c; mx = Math.max(mx, Math.max.apply(null, c));       // common scale: bars don't jump when toggling
+      cnt[k] = c; mxk[k] = Math.max.apply(null, c);
     });
     g += '<line x1="' + L + '" y1="' + B + '" x2="' + R + '" y2="' + B + '" stroke="#52606d" stroke-width="2"/>';
     for (var x = 0; x <= 2; x += 0.5) g += '<text x="' + hx(x) + '" y="' + (B + 24) + '" text-anchor="middle" font-size="17" fill="#52606d">' + x.toFixed(1) + '</text>';
-    g += '<text x="' + ((L + R) / 2) + '" y="' + (B + 52) + '" text-anchor="middle" font-size="18" fill="#1f2933">estimate of a (true a = 1, n = 10)</text>';
+    g += '<text x="' + ((L + R) / 2) + '" y="' + (B + 52) + '" text-anchor="middle" font-size="18" fill="#1f2933">estimate of a (true a = 1, n = ' + N + ')</text>';
     var shown = KEYS.filter(function (k) { return on[k]; });
     shown.forEach(function (k) {
       cnt[k].forEach(function (n, b) {
-        var h = n / mx * (B - T - 10);
+        var h = n / mxk[k] * (B - T - 10);
         g += '<rect x="' + (hx(X0 + b * BW) + 0.5) + '" y="' + (B - h) + '" width="' + ((R - L) / NB - 1) + '" height="' + h + '" fill="' + EST[k].col + '" opacity="0.55"/>';
       });
     });
@@ -1426,6 +1535,14 @@ function intToggle() {
     document.getElementById("tk-b" + (i + 1)).onclick = function () { on[k] = !on[k]; paint(); draw(); };
   });
   document.getElementById("tk-run").onclick = function () { res = sim(); draw(); };
+  var nb = document.querySelectorAll("#tk-n button");
+  nb.forEach(function (b) {
+    b.onclick = function () {
+      N = +b.getAttribute("data-n");
+      nb.forEach(function (x) { x.classList.toggle("on", x === b); });
+      res = sim(); draw();
+    };
+  });
   res = sim(); paint(); draw();
 })();
 </script>
@@ -1443,142 +1560,6 @@ function intToggle() {
 <div class="fragment">
 <div class="cap">
 <p>Which estimator is best depends on the assumed population distribution.</p>
-</div>
-</div>
-</section>
-<section id="the-sample-mean-for-mu" class="slide level2">
-<h2>The sample mean for <span class="math inline">\mu</span></h2>
-<div class="box key">
-<p>In many problems the parameter we want is a mean <span class="math inline">\mu</span>, so we use <span class="math inline">\bar{x}</span>. How good is it?</p>
-</div>
-<div class="cards">
-<div class="box good">
-<p><span class="tag">Bias</span> <span class="math inline">\bar{x}</span> is <strong>always unbiased</strong> for <span class="math inline">\mu</span>: Normal, Binomial, Poisson, anything.</p>
-</div>
-<div class="box warn">
-<p><span class="tag">Efficiency</span> <span class="math inline">\bar{x}</span> is <strong>not always the most efficient</strong>. For a Uniform population, the maximum-based estimator beats it.</p>
-</div>
-</div>
-</section>
-<section id="where-we-use-barx" class="slide level2">
-<h2>Where we use <span class="math inline">\bar{x}</span></h2>
-<div class="cards">
-<div class="box">
-<p><strong>Polls.</strong> The share of supporters is the mean of the 0/1 answers: <span class="math inline">\hat{p}=\bar{x}</span>.</p>
-</div>
-<div class="box">
-<p><strong>Finance.</strong> The expected return <span class="math inline">\mu</span> of a stock is estimated by the average of past returns.</p>
-</div>
-<div class="box">
-<p><strong>Medicine.</strong> The mean drop in blood pressure is estimated by the average over the patients.</p>
-</div>
-</div>
-<div class="fragment">
-<div class="box warn">
-<p><span class="tag">Other estimators are needed</span> <strong>Ecology.</strong> How many fish are there in a lake?<br> <strong>Demography.</strong> How many children does a woman have on average?</p>
-</div>
-</div>
-</section></section>
-<section>
-<section id="example-randomized-response" class="title-slide slide level1 section-slide center">
-<h1>Example: randomized response</h1>
-<p>Asking a sensitive question</p>
-</section>
-<section id="a-sensitive-question" class="slide level2">
-<h2>A sensitive question</h2>
-<div class="box key">
-<p><span class="tag">Question</span> Have you ever cheated during your studies at NU?</p>
-</div>
-<div class="fragment">
-<div class="box warn">
-<p>People may <strong>refuse</strong> to answer, or <strong>lie</strong>. We want <strong>anonymity</strong>, but we have <strong>no technical way</strong> to guarantee it.</p>
-</div>
-</div>
-<div class="fragment">
-<div class="box">
-<p>Solution: <strong>randomized response</strong>. Add randomness, so that no single answer reveals the truth.</p>
-</div>
-</div>
-</section>
-<section id="the-idea" class="slide level2">
-<h2>The idea</h2>
-<div class="box key">
-<p><span class="tag">The rule</span> If you were born in <strong>January, February or March</strong>, answer <strong>“Yes”</strong>, whatever the truth.<br> Otherwise, answer <strong>truthfully</strong>.</p>
-</div>
-<div class="fragment">
-<div class="box">
-<p>The person who collects the answers <strong>does not know your birth month</strong>. So a “Yes” may be forced by the rule: it does <strong>not</strong> reveal that you cheated.</p>
-</div>
-</div>
-<div class="fragment">
-<div class="box good">
-<p>Each respondent keeps <strong>some anonymity</strong>. But the answers are now a mix of forced and true ones.</p>
-</div>
-</div>
-</section>
-<section id="how-do-we-estimate-the-truth" class="slide level2">
-<h2>How do we estimate the truth?</h2>
-<div class="box">
-<p>We observe only the <strong>share of “Yes” answers</strong>.</p>
-</div>
-<div class="fragment">
-<div class="box key">
-<p><span class="tag">Parameter</span> <span class="math inline">p=</span> the true share of students who <strong>cheated</strong>.</p>
-</div>
-</div>
-<div class="fragment">
-<div class="box warn">
-<p>How do we recover <span class="math inline">p</span> from the data, when some of the “Yes” answers are not true?</p>
-</div>
-</div>
-</section>
-<section id="our-class-survey" class="slide level2">
-<h2>Our class survey</h2>
-<div class="box">
-<p>Question: <strong>Have you ever cheated during your studies at NU?</strong> Rule: born in January, February or March, answer “Yes”; otherwise truthfully.</p>
-</div>
-<div class="fragment">
-<div class="cards">
-<div class="box c">
-<p><span class="tag">Responses</span> <span class="math inline">n=78</span></p>
-</div>
-<div class="box c">
-<p><span class="tag">“No”</span> 60%</p>
-</div>
-<div class="box c">
-<p><span class="tag">“Yes”</span> 40%</p>
-</div>
-</div>
-</div>
-<div class="fragment">
-<div class="box key">
-<p>What is your guess for <span class="math inline">p</span>, the true share of students who cheated? Is it 40%, more, or less?</p>
-</div>
-</div>
-</section>
-<section id="working-out-the-estimator" class="slide level2">
-<h2>Working out the estimator</h2>
-<div class="box">
-<p>About <span class="math inline">\tfrac{3}{12}=\tfrac14</span> of people are forced to say “Yes”; the other <span class="math inline">\tfrac34</span> answer truthfully: <span class="math display">P(\text{Yes})=\tfrac14\cdot 1+\tfrac34\cdot p</span></p>
-</div>
-<div class="fragment">
-<div class="box key">
-<p>Solve for <span class="math inline">p</span> and replace <span class="math inline">P(\text{Yes})</span> by the observed share <span class="math inline">\hat{y}</span>: <span class="math display">\hat{p}=\frac{\hat{y}-\frac14}{\frac34}</span></p>
-</div>
-</div>
-<div class="fragment">
-<div class="cards">
-<div class="box good c">
-<p><span class="tag">Unbiased</span> <span class="math inline">E(\hat{y})=P(\text{Yes})</span>, so <span class="math inline">E(\hat{p})=p</span></p>
-</div>
-<div class="box key c">
-<p><span class="tag">Our data</span> <span class="math inline">\hat{p}=\dfrac{0.40-0.25}{0.75}=0.20</span></p>
-</div>
-</div>
-</div>
-<div class="fragment">
-<div class="cap">
-<p>About 20% cheated. The price of privacy: the standard error is <span class="math inline">\approx7.4</span> points, against <span class="math inline">\approx4.5</span> if we could ask directly.</p>
 </div>
 </div>
 </section>
@@ -1661,6 +1642,39 @@ function intToggle() {
 <div class="fragment">
 <div class="cap">
 <p>Always ask: <strong>under what assumption</strong> is this property true?</p>
+</div>
+</div>
+</section>
+<section id="the-sample-mean-for-mu" class="slide level2">
+<h2>The sample mean for <span class="math inline">\mu</span></h2>
+<div class="box key">
+<p>In many problems the parameter we want is a mean <span class="math inline">\mu</span>, so we use <span class="math inline">\bar{x}</span>. How good is it?</p>
+</div>
+<div class="cards">
+<div class="box good">
+<p><span class="tag">Bias</span> <span class="math inline">\bar{x}</span> is <strong>always unbiased</strong> for <span class="math inline">\mu</span>: Normal, Binomial, Poisson, anything.</p>
+</div>
+<div class="box warn">
+<p><span class="tag">Efficiency</span> <span class="math inline">\bar{x}</span> is <strong>not always the most efficient</strong>. For a Uniform population, the maximum-based estimator beats it.</p>
+</div>
+</div>
+</section>
+<section id="where-we-use-barx" class="slide level2">
+<h2>Where we use <span class="math inline">\bar{x}</span></h2>
+<div class="cards">
+<div class="box">
+<p><strong>Polls.</strong> The share of supporters is the mean of the 0/1 answers: <span class="math inline">\hat{p}=\bar{x}</span>.</p>
+</div>
+<div class="box">
+<p><strong>Finance.</strong> The expected return <span class="math inline">\mu</span> of a stock is estimated by the average of past returns.</p>
+</div>
+<div class="box">
+<p><strong>Medicine.</strong> The mean drop in blood pressure is estimated by the average over the patients.</p>
+</div>
+</div>
+<div class="fragment">
+<div class="box warn">
+<p><span class="tag">Other estimators are needed</span> <strong>Ecology.</strong> How many fish are there in a lake?<br> <strong>Demography.</strong> How many children does a woman have on average?</p>
 </div>
 </div>
 </section></section>

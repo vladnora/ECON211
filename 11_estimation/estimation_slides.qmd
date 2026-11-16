@@ -603,6 +603,24 @@ It is **consistent**: it becomes more precise as $n$ grows.
 Fair die: the distribution of $\bar{x}$ narrows around $\mu=3.5$ as $n$ grows.
 :::
 
+## Same estimator, different precision
+
+::: {.box}
+For $n=10$, $20$ and $200$ we use the **same estimator** $\bar{x}$, and it is centred at $\mu$ every time.
+:::
+
+. . .
+
+::: {.box .good}
+But with $n=200$ the guess is **much more precise**: its variance is lower, as we saw before.
+:::
+
+. . .
+
+::: {.box .key}
+A single number does not tell us **how precise** the guess is. We need a way to **communicate the uncertainty** of our guess.
+:::
+
 ## Limits of a point estimate
 
 ::: {.box .warn}

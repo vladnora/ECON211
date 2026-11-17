@@ -53,6 +53,13 @@ Let $\theta$ be a population parameter. A statistic $\hat{\theta}$ used to guess
 
 . . .
 
+::: {.box .key}
+<span class="tag">Note</span>
+Estimator is not a particular numerical guess, but a rule or a procedure of arriving at a guess from the sample. A different sample gives a different guess.
+:::
+
+. . .
+
 ::: {.cards}
 ::: {.box .c}
 $\bar{X}$ is an estimator of $\mu$
@@ -317,7 +324,7 @@ $$\operatorname{Var}(2\bar{X})=4\cdot\frac{a^2/12}{n}=\frac{a^2}{3n}$$
 $\operatorname{Var}(2\bar{X})=\frac{1}{n}\operatorname{Var}(2X_1)$: using all the data is **$n$ times more efficient**.
 :::
 
-## Efficiency
+## Criteria 2: Efficiency
 
 ::: {.box .key}
 <span class="tag">Definition</span>
@@ -455,7 +462,7 @@ It is also **unbiased**, and its variance is much smaller: $\operatorname{Var}=\
 Which estimator is best depends on the assumed population distribution.
 :::
 
-## Consistency
+## Criteria 3: Consistency
 
 ::: {.box .key}
 <span class="tag">Definition</span>
@@ -677,7 +684,7 @@ Here we consider interval estimates of the **population mean $\mu$** only.
 The population standard deviation $\sigma$ is **known**: the only uncertainty is about $\bar{X}$. Later we drop this.
 :::
 
-## Which values of $\mu$ are plausible?
+## Example: Which values of $\mu$ are plausible?
 
 ::: {.box}
 <span class="tag">Example: a die</span>
@@ -800,6 +807,12 @@ $$\bar{X}\sim N\!\left(\mu,\frac{\sigma^2}{n}\right)$$
   draw();
 })();
 </script>
+
+. . .
+
+::: {.box .warn}
+If you understand this figure, then you understand the primary logic of statistical inference.
+:::
 
 ## Key result
 
@@ -1117,15 +1130,23 @@ The women's interval is narrower: smaller $\sigma$ and a larger $n$ give a small
 (function () {
   var svg = document.getElementById("ci2-svg"), L = 60, R = 860, A = 45, B = 85;
   function px(x) { return L + (x - A) / (B - A) * (R - L); }
-  var g = '<line x1="' + L + '" y1="245" x2="' + R + '" y2="245" stroke="#52606d" stroke-width="2"/>';
-  for (var t = 45; t <= 85; t += 5) g += '<text x="' + px(t) + '" y="270" text-anchor="middle" font-size="16" fill="#52606d">' + t + '</text>';
-  [[72.29, 1.97, 45, "#2b6cb0", "Men, n = 146", 1],
-   [72.29, 6.14, 100, "#2b6cb0", "Men, n = 15", 0.45],
-   [55.16, 1.04, 155, "#dd6b20", "Women, n = 224", 1],
-   [55.16, 4.01, 210, "#dd6b20", "Women, n = 15", 0.45]].forEach(function (c) {
-    g += '<line x1="' + px(c[0] - c[1]) + '" y1="' + c[2] + '" x2="' + px(c[0] + c[1]) + '" y2="' + c[2] + '" stroke="' + c[3] + '" stroke-width="8" opacity="' + c[5] + '"/>' +
-         '<circle cx="' + px(c[0]) + '" cy="' + c[2] + '" r="9" fill="' + c[3] + '" opacity="' + c[5] + '"/>' +
-         '<text x="' + px(c[0]) + '" y="' + (c[2] - 16) + '" text-anchor="middle" font-size="17" font-weight="700" fill="' + c[3] + '">' + c[4] + '</text>';
+  var g = '';
+  for (var t = 45; t <= 85; t += 5) g += '<line x1="' + px(t) + '" y1="20" x2="' + px(t) + '" y2="245" stroke="#e4e7eb"/>';
+  g += '<line x1="' + L + '" y1="245" x2="' + R + '" y2="245" stroke="#52606d" stroke-width="2"/>';
+  for (var t2 = 45; t2 <= 85; t2 += 5) g += '<text x="' + px(t2) + '" y="270" text-anchor="middle" font-size="16" fill="#52606d">' + t2 + '</text>';
+  [[72.29, 1.97, 55, "#2b6cb0", "Men, n = 146", 1],
+   [72.29, 6.14, 110, "#2b6cb0", "Men, n = 15", 0.6],
+   [55.16, 1.04, 165, "#dd6b20", "Women, n = 224", 1],
+   [55.16, 4.01, 220, "#dd6b20", "Women, n = 15", 0.6]].forEach(function (c) {
+    var y = c[2], x1 = px(c[0] - c[1]), x2 = px(c[0] + c[1]), col = c[3], o = c[5];
+    g += '<g stroke="' + col + '" stroke-width="2.5" stroke-linecap="round" opacity="' + o + '">' +
+         '<line x1="' + x1 + '" y1="' + y + '" x2="' + x2 + '" y2="' + y + '"/>' +
+         '<line x1="' + x1 + '" y1="' + (y - 9) + '" x2="' + x1 + '" y2="' + (y + 9) + '"/>' +
+         '<line x1="' + x2 + '" y1="' + (y - 9) + '" x2="' + x2 + '" y2="' + (y + 9) + '"/></g>' +
+         '<circle cx="' + px(c[0]) + '" cy="' + y + '" r="5" fill="' + col + '" opacity="' + o + '"/>' +
+         '<text x="' + (x1 - 12) + '" y="' + (y + 5) + '" text-anchor="end" font-size="14" fill="#52606d">' + (c[0] - c[1]).toFixed(2) + '</text>' +
+         '<text x="' + (x2 + 12) + '" y="' + (y + 5) + '" text-anchor="start" font-size="14" fill="#52606d">' + (c[0] + c[1]).toFixed(2) + '</text>' +
+         '<text x="' + px(c[0]) + '" y="' + (y - 17) + '" text-anchor="middle" font-size="17" font-weight="700" fill="' + col + '">' + c[4] + '</text>';
   });
   svg.innerHTML = g;
 })();

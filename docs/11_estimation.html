@@ -1668,7 +1668,7 @@ Each histogram is scaled to its own peak: compare the widths.
 </div>
 <div class="fragment">
 <div class="box warn">
-<p><span class="tag">Other estimators are needed</span> <strong>Ecology.</strong> How many fish are there in a lake?<br> <strong>Demography.</strong> How many children does a woman have on average?</p>
+<p><span class="tag">Other estimators are needed</span> <strong>Ecology.</strong> How many fish are there in a lake?<br> <strong>Demography.</strong> How many children does a woman have on average?<br> <strong>War.</strong> How many weapons does the enemy produce?<br> <strong>Our class.</strong> What share of students have ever cheated?</p>
 </div>
 </div>
 </section></section>
@@ -1721,15 +1721,9 @@ Each histogram is scaled to its own peak: compare the widths.
 <p>A single number does not tell us <strong>how precise</strong> the guess is. We need a way to <strong>communicate the uncertainty</strong> of our guess.</p>
 </div>
 </div>
-</section>
-<section id="limits-of-a-point-estimate" class="slide level2">
-<h2>Limits of a point estimate</h2>
-<div class="box warn">
-<p>A point estimate is a <strong>single number</strong>. It almost never equals <span class="math inline">\mu</span>.</p>
-</div>
 <div class="fragment">
-<div class="box warn">
-<p>It says nothing about the <strong>reliability</strong> of the guess or the <strong>uncertainty</strong>.</p>
+<div class="box key">
+<p>One way is to report also a variance or standard error along with the estimator, but we can do even better with an <strong>interval estimate</strong>.</p>
 </div>
 </div>
 <div class="fragment">
@@ -1805,40 +1799,59 @@ Each histogram is scaled to its own peak: compare the widths.
 </section>
 <section id="how-surprising-is-barx3-given-a-specific-mu" class="slide level2">
 <h2>How surprising is <span class="math inline">\bar{X}=3</span> given a specific <span class="math inline">\mu</span>?</h2>
-<svg id="pv-svg" viewbox="0 0 900 312" class="famplot">
+<svg id="pv-svg" viewbox="0 0 900 283" class="famplot">
 </svg>
 <div class="readout" style="color:#c53030;font-weight:700;font-size:0.95em">
-Probability of <span class="math inline">\bar{X}</span> at least this far from <span class="math inline">\mu</span> (shaded area): <span id="pv-p"></span>
+Probability of <span class="math inline">\bar{X}</span> at least this far from <span class="math inline">\mu</span> (red area): <span id="pv-p"></span>
+</div>
+<div id="pv-st" class="readout" style="min-height:2.6em">
+
 </div>
 <div class="ctl" style="justify-content:center">
-<p><label>Hypothesized <span class="math inline">\mu</span>: <input type="range" id="pv-mu" min="1" max="5" step="0.01" value="2.2" style="width:420px"> <b id="pv-mu-val">2.20</b></label></p>
+<p><label>Hypothesized <span class="math inline">\mu</span>: <input type="range" id="pv-mu" min="1" max="5" step="0.01" value="2.2" style="width:340px"> <b id="pv-mu-val">2.20</b></label> <span>Significance level <span class="math inline">\alpha</span>: <span id="pv-a" class="seg"><button data-a="0" class="on">none</button><button data-a="0.10">10%</button><button data-a="0.05">5%</button><button data-a="0.01">1%</button></span></span></p>
+</div>
+<div id="pv-jump" class="ctl" style="justify-content:center;visibility:hidden">
+<p><button class="act ghost" id="pv-jl"><span class="math inline">\mu</span> → lower end of CI</button> <button class="act ghost" id="pv-ju"><span class="math inline">\mu</span> → upper end of CI</button></p>
 </div>
 <script>
 (function () {
   var SE = Math.sqrt(2.92 / 20), XO = 3, L = 50, R = 880, XA = 0, XB = 6;
   var TOP = 10, SC = 270 / 1.4;                                     // y from 1.25 (top) to -0.15
+  var Z = { "0.1": [1.645, "#440154", "90%"], "0.05": [1.96, "#21918c", "95%"], "0.01": [2.576, "#fde725", "99%"] };
+  var mu = 2.2, alpha = 0;
   function px(x) { return L + (x - XA) / (XB - XA) * (R - L); }
-  function py(y) { return TOP + (1.25 - y) * SC; }
+  function py(y) { return TOP + (1.1 - y) * SC; }
   function pdf(x, m) { return Math.exp(-0.5 * Math.pow((x - m) / SE, 2)) / (SE * Math.sqrt(2 * Math.PI)); }
   function erf(x) { var s = x < 0 ? -1 : 1; x = Math.abs(x); var t = 1 / (1 + 0.3275911 * x);
     return s * (1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x)); }
   function Phi(z) { return 0.5 * (1 + erf(z / Math.SQRT2)); }
-  var svg = document.getElementById("pv-svg"), sl = document.getElementById("pv-mu"), lab = document.getElementById("pv-mu-val");
+  var svg = document.getElementById("pv-svg"), sl = document.getElementById("pv-mu"), lab = document.getElementById("pv-mu-val"),
+      st = document.getElementById("pv-st"), jump = document.getElementById("pv-jump");
   function path(m, lo, hi) {
     var d = "M" + px(lo).toFixed(1) + "," + py(0).toFixed(1);
     for (var x = lo; x <= hi + 1e-9; x += 0.01) d += " L" + px(x).toFixed(1) + "," + py(pdf(x, m)).toFixed(1);
     return d + " L" + px(hi).toFixed(1) + "," + py(0).toFixed(1) + " Z";
   }
   function draw() {
-    var m = +sl.value, dist = Math.abs(XO - m), p = 2 * (1 - Phi(dist / SE)), g = "";
+    var m = mu, dist = Math.abs(XO - m), p = 2 * (1 - Phi(dist / SE)), g = "";
     lab.textContent = m.toFixed(2);
     var lo = Math.max(XA, m - 4 * SE), hi = Math.min(XB, m + 4 * SE);
-    g += '<defs><clipPath id="pv-clip"><rect x="' + L + '" y="0" width="' + (R - L) + '" height="260"/></clipPath></defs><g clip-path="url(#pv-clip)">';
-    if (m - dist > lo) g += '<path d="' + path(m, lo, Math.min(m - dist, hi)) + '" fill="#c53030" fill-opacity="0.4"/>';
-    if (m + dist < hi) g += '<path d="' + path(m, Math.max(m + dist, lo), hi) + '" fill="#c53030" fill-opacity="0.4"/>';
+    g += '<defs><clipPath id="pv-clip"><rect x="' + L + '" y="0" width="' + (R - L) + '" height="232"/></clipPath>' +
+         '<pattern id="pv-hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" fill="#fff4e5"/><line x1="0" y1="0" x2="0" y2="8" stroke="#dd6b20" stroke-width="3.5"/></pattern></defs><g clip-path="url(#pv-clip)">';
+    var zc = alpha ? Z[String(alpha)][0] : 0, cut = zc * SE;
+    if (alpha) {                                                    // fixed-area rejection tails (alpha/2 each)
+      g += '<path d="' + path(m, lo, Math.min(m - cut, hi)) + '" fill="url(#pv-hatch)"/>';
+      g += '<path d="' + path(m, Math.max(m + cut, lo), hi) + '" fill="url(#pv-hatch)"/>';
+    }
+    if (m - dist > lo) g += '<path d="' + path(m, lo, Math.min(m - dist, hi)) + '" fill="#c53030" fill-opacity="0.45"/>';
+    if (m + dist < hi) g += '<path d="' + path(m, Math.max(m + dist, lo), hi) + '" fill="#c53030" fill-opacity="0.45"/>';
     var d = "";
     for (var x = lo; x <= hi + 1e-9; x += 0.01) d += (d ? " L" : "M") + px(x).toFixed(1) + "," + py(pdf(x, m)).toFixed(1);
-    g += '<path d="' + d + '" fill="none" stroke="#444" stroke-width="2.5"/></g>';
+    g += '<path d="' + d + '" fill="none" stroke="#444" stroke-width="2.5"/>';
+    if (alpha) [m - cut, m + cut].forEach(function (c) {
+      g += '<line x1="' + px(c) + '" y1="' + py(pdf(c, m)) + '" x2="' + px(c) + '" y2="' + py(0) + '" stroke="#dd6b20" stroke-width="2.5"/>';
+    });
+    g += '</g>';
     g += '<line x1="' + L + '" y1="' + py(0) + '" x2="' + R + '" y2="' + py(0) + '" stroke="#52606d" stroke-width="2"/>';
     for (var t = 0; t <= 6; t++) g += '<text x="' + px(t) + '" y="' + (py(0) + 20) + '" text-anchor="middle" font-size="16" fill="#52606d">' + t + '</text>';
     g += '<line x1="' + px(XO) + '" y1="' + TOP + '" x2="' + px(XO) + '" y2="' + py(0) + '" stroke="#1f2933" stroke-width="3"/>' +
@@ -1846,15 +1859,35 @@ Probability of <span class="math inline">\bar{X}</span> at least this far from <
     g += '<line x1="' + px(m) + '" y1="' + TOP + '" x2="' + px(m) + '" y2="' + py(0) + '" stroke="#2b6cb0" stroke-width="2.5" stroke-dasharray="6 5"/>' +
          '<text x="' + (px(m) + (m < XO ? -8 : 8)) + '" y="' + (TOP + 14) + '" text-anchor="' + (m < XO ? "end" : "start") + '" font-size="17" font-weight="700" fill="#2b6cb0">μ = ' + m.toFixed(2) + '</text>';
     document.getElementById("pv-p").textContent = p.toFixed(4);
-    [[1.645, "#440154", "90% CI", 282], [1.96, "#21918c", "95% CI", 292], [2.576, "#fde725", "99% CI", 302]].forEach(function (c) {
-      g += '<line x1="' + px(XO - c[0] * SE) + '" y1="' + c[3] + '" x2="' + px(XO + c[0] * SE) + '" y2="' + c[3] + '" stroke="' + c[1] + '" stroke-width="7"/>';
-    });
-    [["#440154", "90% CI", 24], ["#21918c", "95% CI", 46], ["#fde725", "99% CI", 68]].forEach(function (c) {
-      g += '<circle cx="790" cy="' + c[2] + '" r="6" fill="' + c[0] + '"/><text x="805" y="' + (c[2] + 6) + '" font-size="17" fill="#1f2933">' + c[1] + '</text>';
-    });
+    if (!alpha) {
+      st.innerHTML = 'Choose a significance level α to see which values of μ are plausible.';
+    } else {
+      var c = Z[String(alpha)], a = alpha, lowE = XO - cut, upE = XO + cut, edge = Math.abs(dist - cut) < 1e-4, inside = dist < cut && !edge;
+      var y = 267;
+      g += '<line x1="' + px(lowE) + '" y1="' + y + '" x2="' + px(upE) + '" y2="' + y + '" stroke="' + c[1] + '" stroke-width="8"/>';
+      g += '<text x="' + (px(lowE) - 10) + '" y="' + (y + 5) + '" text-anchor="end" font-size="15" fill="#52606d">' + lowE.toFixed(2) + '</text>' +
+           '<text x="' + (px(upE) + 10) + '" y="' + (y + 5) + '" text-anchor="start" font-size="15" fill="#52606d">' + upE.toFixed(2) + '</text>';
+      g += '<circle cx="' + px(Math.min(XB, Math.max(XA, m))) + '" cy="' + y + '" r="9" fill="' + (edge ? "#dd6b20" : (inside ? "#2f855a" : "#c53030")) + '" stroke="#fff" stroke-width="2.5"/>';
+      var verdict = edge ? '<b>on the boundary</b>' :
+        (inside ? '<b style="color:#2f855a">plausible</b>' : '<b style="color:#c53030">not plausible</b>');
+      st.innerHTML = 'α = ' + (a * 100).toFixed(0) + '%: each tail has area ' + (a / 2) + '; cutoffs at μ ± ' + cut.toFixed(2) + '. ' +
+        'X̄ = 3 is ' + (edge ? 'exactly at the cutoff, so p = α' : (inside ? 'inside, so p ≥ α' : 'in the tail, so p &lt; α')) + '.<br>' +
+        'μ = ' + m.toFixed(2) + ' is ' + verdict + ': ' + (edge ? 'at the end of' : (inside ? 'inside' : 'outside')) + ' the ' + c[2] + ' CI [' + lowE.toFixed(2) + ', ' + upE.toFixed(2) + '].';
+    }
     svg.innerHTML = g;
+    jump.style.visibility = alpha ? "visible" : "hidden";
   }
-  sl.addEventListener("input", draw); draw();
+  function setMu(v) { mu = v; sl.value = v; draw(); }
+  sl.addEventListener("input", function () { mu = +sl.value; draw(); });
+  var ab = document.querySelectorAll("#pv-a button");
+  ab.forEach(function (b) { b.onclick = function () {
+    alpha = +b.getAttribute("data-a");
+    ab.forEach(function (x) { x.classList.toggle("on", x === b); });
+    draw();
+  }; });
+  document.getElementById("pv-jl").onclick = function () { if (alpha) setMu(XO - Z[String(alpha)][0] * SE); };
+  document.getElementById("pv-ju").onclick = function () { if (alpha) setMu(XO + Z[String(alpha)][0] * SE); };
+  draw();
 })();
 </script>
 </section>

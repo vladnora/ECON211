@@ -31,16 +31,16 @@ Guessing a parameter from a sample.
 **Finance.** What is the expected return of a stock?
 :::
 ::: {.box}
-**Ecology.** How many fish are there in a lake?
-:::
-::: {.box}
-**Medicine.** By how much does a new drug lower blood pressure?
-:::
-::: {.box}
 **Demography.** How many children does a woman have on average?
 :::
 ::: {.box}
-**Sensitive questions.** What share of students have ever cheated?
+**War.** How many weapons does the enemy produce?
+:::
+::: {.box}
+**Ecology.** How many fish are there in a lake?
+:::
+::: {.box}
+**Our class.** What share of students have ever cheated?
 :::
 :::
 
@@ -48,7 +48,7 @@ Guessing a parameter from a sample.
 
 ::: {.box .key}
 <span class="tag">Definition</span>
-Let $\theta$ be a population parameter. A statistic $\hat{\theta}$ used to guess $\theta$ is called an **estimator** of $\theta$.
+Let $\theta$ be a population parameter. A statistic $\hat{\theta}$ used to guess or estimate $\theta$ is called an **estimator** of $\theta$.
 :::
 
 . . .
@@ -65,14 +65,14 @@ $s^2$ is an estimator of $\sigma^2$
 . . .
 
 ::: {.box}
-A good estimator must be a **good guess**. What is a good guess?
+But you can come up with different guesses. What makes **a good guess**, and when one guess is **better** than another? We need some **criteria** to compare estimators.
 :::
 
-## Unbiased estimator
+## Criteria 1: Unbiased estimator
 
 ::: {.box .key}
 <span class="tag">Definition</span>
-If $E(\hat{\theta})=\theta$, then $\hat{\theta}$ is an **unbiased** estimator of $\theta$.
+If $E(\hat{\theta})=\theta$, then $\hat{\theta}$ is an **unbiased** estimator of $\theta$. That is your guess is unibiased, if it is right on average.
 :::
 
 . . .
@@ -98,6 +98,8 @@ $$E(\bar{X})=E\!\left[\frac1n\sum_{i=1}^n X_i\right]=\mu$$
 ::: {.box .xpd #xp2}
 $s^2=\frac1{n-1}\sum_{i=1}^n (X_i-\bar{X})^2$ is a **random variable**: a different sample gives a different $s^2$. Its expected value is
 $$E(s^2)=E\!\left[\frac1{n-1}\sum_{i=1}^n (X_i-\bar{X})^2\right]=\sigma^2$$
+
+If we divide by $n$ instead of $n-1$, the variance estimator becomes **biased**.
 :::
 
 <script>
@@ -109,11 +111,6 @@ function xpShow(id) {
 }
 </script>
 
-. . .
-
-::: {.box .warn}
-If we divide by $n$ instead of $n-1$, the variance estimator becomes **biased**.
-:::
 
 # Example: randomized response {.section-slide}
 
@@ -143,7 +140,7 @@ Solution: **randomized response**. Add randomness, so that no single answer reve
 ::: {.box .key}
 <span class="tag">The rule</span>
 If you were born in **January, February or March**, answer **"Yes"**, whatever the truth.<br>
-Otherwise, answer **truthfully**.
+Otherwise, answer **truthfully**. Asking respondents to **flip a coin** before answering is another way to randomize.
 :::
 
 . . .
@@ -186,11 +183,7 @@ Question: **Have you ever cheated during your studies at NU?** Rule: born in Jan
 . . .
 
 ::: {.cards}
-::: {.box .c}
-<span class="tag">Responses</span>
-$n=78$
-:::
-::: {.box .c}
+::: {.box .c .warn}
 <span class="tag">"No"</span>
 60%
 :::
@@ -265,7 +258,7 @@ Allied intelligence used traditional methods (spies). Statisticians analyzed ser
 ## A simple model
 
 ::: {.box}
-Serial numbers are uniform: $X_i\sim U[0,a]$. We want to estimate the maximum $a$.
+Serial numbers of captured tanks are uniform: $X_i\sim U[0,a]$. We want to estimate the maximum $a$, which is the total number of tanks.
 :::
 
 . . .
@@ -361,6 +354,7 @@ function intToggle() {
   <button class="act ghost" id="tk-b1"></button>
   <button class="act ghost" id="tk-b2"></button>
   <button class="act ghost" id="tk-b3"></button>
+  <button class="act ghost" id="tk-b4"></button>
   <button class="act" id="tk-run">Run again</button>
   <span>Sample size $n$: <span class="seg" id="tk-n"><button data-n="5">5</button><button data-n="10" class="on">10</button><button data-n="50">50</button><button data-n="100">100</button></span></span>
 </div>
@@ -373,15 +367,16 @@ function intToggle() {
   var EST = {
     e1: { name: "2X₁", col: "#2b6cb0" },
     e2: { name: "2X̄", col: "#2f855a" },
-    e3: { name: "(n+1)/n · max", col: "#dd6b20" }
+    e3: { name: "(n+1)/n · max", col: "#dd6b20" },
+    e4: { name: "max Xᵢ", col: "#805ad5" }
   };
-  var KEYS = ["e1", "e2", "e3"], on = { e1: false, e2: false, e3: false }, res = null;
+  var KEYS = ["e1", "e2", "e3", "e4"], on = { e1: false, e2: false, e3: false, e4: false }, res = null;
   function sim() {
-    var r = { e1: [], e2: [], e3: [] };
+    var r = { e1: [], e2: [], e3: [], e4: [] };
     for (var k = 0; k < REPS; k++) {
       var s = 0, mx = 0, first = 0;
       for (var i = 0; i < N; i++) { var u = Math.random(); if (i === 0) first = u; s += u; if (u > mx) mx = u; }
-      r.e1.push(2 * first); r.e2.push(2 * s / N); r.e3.push((N + 1) / N * mx);
+      r.e1.push(2 * first); r.e2.push(2 * s / N); r.e3.push((N + 1) / N * mx); r.e4.push(mx);
     }
     return r;
   }
@@ -451,7 +446,7 @@ $$\hat{\theta}_{\max}=\frac{n+1}{n}\cdot\max(X_i)$$
 . . .
 
 ::: {.box .good}
-It is also **unbiased**, and its variance is much smaller: $\operatorname{Var}=\frac{a^2}{n(n+2)}$. In the simulation, it is the most efficient of the three.
+It is also **unbiased**, and its variance is much smaller: $\operatorname{Var}=\frac{a^2}{n(n+2)}$. In the simulation, it is the most efficient of the unbiased estimators.
 :::
 
 . . .
@@ -478,11 +473,11 @@ For this, both the **bias** and the **variance** must shrink to zero as $n\to\in
 ::: {.cards}
 ::: {.box}
 <span class="tag">Biased but consistent</span>
-The error in small samples disappears with more data. Example: the variance estimator that divides by $n$.
+The error in small samples disappears with more data. Examples: the variance estimator that divides by $n$; $\max(X_i)$ for the upper bound $a$ of a Uniform, since $E[\max]=\frac{n}{n+1}a<a$, but the bias $-\frac{a}{n+1}$ and the variance both go to $0$.
 :::
 ::: {.box .warn}
 <span class="tag">Unbiased but inconsistent</span>
-Centered on the truth, but the uncertainty never shrinks. Example: using only $X_1$ to estimate $\mu$.
+Centered on the truth, but the uncertainty never shrinks. Example: using only $X_1$ to estimate $a$.
 :::
 :::
 

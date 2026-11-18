@@ -1033,7 +1033,6 @@ Since $n$ sits under a square root in the standard error, you must **quadruple $
 </div>
 
 <div class="cg-ctl">
-  <label>Margin <input type="range" id="cg-w"> <b id="cg-mv"></b></label>
   <button class="act" id="cg-run">Run</button>
   <button class="act ghost" id="cg-match">Match the CI</button>
   <button class="act ghost" id="cg-new">Next example</button>
@@ -1052,7 +1051,7 @@ Since $n$ sits under a square root in the standard error, you must **quadruple $
     { what: "daily screen time", who: "students", unit: "hours", sd: 2, yl: "hours", n: 16, a: 0.01, mu: [4, 6] }
   ];
   var S = { k: -1 }, drag = false, raf = null;
-  var svg = document.getElementById("cg-svg"), sl = document.getElementById("cg-w"), runB = document.getElementById("cg-run");
+  var svg = document.getElementById("cg-svg"), sl = {}, runB = document.getElementById("cg-run");
   function gauss() { var u = 1 - Math.random(), v = Math.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
   function ypu() { return (YC - YT - 6) / (HALF * S.se); }                       // pixels per data unit
   function yv(v) { return YC - (v - S.mu) * ypu(); }
@@ -1063,7 +1062,7 @@ Since $n$ sits under a square root in the standard error, you must **quadruple $
     S.k = (S.k + 1) % EX.length; var e = EX[S.k]; S.e = e;
     S.mu = Math.round((e.mu[0] + Math.random() * (e.mu[1] - e.mu[0])) * 10) / 10;
     S.se = e.sd / Math.sqrt(e.n); S.mci = Z[String(e.a)] * S.se;
-    sl.min = 0; sl.max = 4 * S.se; sl.step = S.se / 50; var f = Math.min([0.5, 0.65, 1.4, 1.6][Math.floor(Math.random() * 4)], 3.4 * S.se / S.mci); sl.value = (f * S.mci).toFixed(4); S.w = +sl.value; S.stage = 0;
+    var f = Math.min([0.5, 0.65, 1.4, 1.6][Math.floor(Math.random() * 4)], 3.4 * S.se / S.mci); S.w = Math.round(f * S.mci / (S.se / 50)) * (S.se / 50); S.stage = 0;
     S.phase = 0; S.done = false; S.busy = false; S.shown = 0; S.g = 0; S.muFrac = 0; S.col = false;
     if (raf) cancelAnimationFrame(raf);
     var pct = Math.round((1 - e.a) * 100);
@@ -1073,19 +1072,15 @@ Since $n$ sits under a square root in the standard error, you must **quadruple $
   }
   function picker() {
     var u = ypu(), m = S.w * u, c = S.mci * u, g = "";
-    g += '<line x1="' + CX + '" y1="' + YT + '" x2="' + CX + '" y2="' + YB + '" stroke="#d9e2ec" stroke-width="2"/>';
-    g += '<rect x="' + (CX - 6) + '" y="' + (YC - m) + '" width="12" height="' + (2 * m) + '" rx="3" fill="#2b6cb0" fill-opacity="0.28"/>';
+    g += '<line x1="' + CX + '" y1="' + (YC - m) + '" x2="' + CX + '" y2="' + (YC + m) + '" stroke="#2b6cb0" stroke-width="3"/>';
     [-1, 1].forEach(function (s) {
-      var y = YC + s * m;
-      g += '<circle cx="' + CX + '" cy="' + y + '" r="14" fill="#2b6cb0" fill-opacity="0.14"/>';
-      g += '<rect x="' + (CX - 24) + '" y="' + (y - 3) + '" width="48" height="6" rx="3" fill="#2b6cb0"/>';
+      g += '<line x1="' + (CX - 11) + '" y1="' + (YC + s * m) + '" x2="' + (CX + 11) + '" y2="' + (YC + s * m) + '" stroke="#2b6cb0" stroke-width="4" stroke-linecap="round"/>';
+      g += '<line x1="' + (CX - 36) + '" y1="' + (YC + s * c) + '" x2="' + (CX + 36) + '" y2="' + (YC + s * c) + '" stroke="#dd6b20" stroke-width="2" stroke-dasharray="5 4"/>';
     });
-    [-1, 1].forEach(function (s) {
-      g += '<line x1="' + (CX - 34) + '" y1="' + (YC + s * c) + '" x2="' + (CX + 34) + '" y2="' + (YC + s * c) + '" stroke="#dd6b20" stroke-width="2.5" stroke-dasharray="5 4"/>';
-    });
-    g += '<text x="' + (CX - 40) + '" y="' + (YC - c + 5) + '" text-anchor="end" font-size="14" font-weight="700" fill="#dd6b20">exact CI</text>';
-    g += '<text x="' + (CX + 40) + '" y="' + (YC - m + 5) + '" font-size="14" font-weight="700" fill="#2b6cb0">yours</text>';
-    g += '<circle cx="' + CX + '" cy="' + YC + '" r="7" fill="#1f2933"/>';
+    g += '<text x="' + (CX - 42) + '" y="' + (YC - c - 3) + '" text-anchor="end" font-size="15" font-weight="700" fill="#dd6b20">exact CI</text>' +
+         '<text x="' + (CX - 42) + '" y="' + (YC - c + 14) + '" text-anchor="end" font-size="15" font-weight="700" fill="#dd6b20">±' + S.mci.toFixed(2) + '</text>';
+    g += '<text x="' + (CX + 18) + '" y="' + (YC - m + 5) + '" font-size="16" font-weight="700" fill="#2b6cb0">m = ' + S.w.toFixed(2) + '</text>';
+    g += '<circle cx="' + CX + '" cy="' + YC + '" r="6" fill="#1f2933"/>';
     g += '<text x="' + (CX + 12) + '" y="' + (YC + 5) + '" font-size="16" font-weight="700" fill="#1f2933">X̄</text>';
     return g;
   }
@@ -1116,9 +1111,11 @@ Since $n$ sits under a square root in the standard error, you must **quadruple $
       g += '<line x1="' + PL + '" y1="' + ym + '" x2="' + xe + '" y2="' + ym + '" stroke="#1f2933" stroke-width="2.2"/>';
       if (S.muFrac >= 1) g += '<text x="' + (PR + 14) + '" y="' + (ym + 6) + '" font-size="18" font-weight="700" fill="#1f2933">μ</text>';
     }
+    g += '<rect x="' + (PL + 2) + '" y="' + (YB - 30) + '" width="' + (S.col ? 372 : 124) + '" height="26" rx="8" fill="#f5f7fa" fill-opacity="0.94"/>';
+    g += '<circle cx="' + (PL + 12) + '" cy="' + (YB - 14) + '" r="3" fill="#1f2933"/><text x="' + (PL + 22) + '" y="' + (YB - 9) + '" font-size="14" fill="#52606d">sample mean</text>';
     if (S.col) {
-      g += '<circle cx="' + (PL + 12) + '" cy="' + (YB - 14) + '" r="5" fill="#5b8fd0"/><text x="' + (PL + 22) + '" y="' + (YB - 9) + '" font-size="14" fill="#52606d">contains μ</text>' +
-           '<circle cx="' + (PL + 112) + '" cy="' + (YB - 14) + '" r="5" fill="#c53030"/><text x="' + (PL + 122) + '" y="' + (YB - 9) + '" font-size="14" fill="#52606d">misses μ</text>';
+      g += '<circle cx="' + (PL + 132) + '" cy="' + (YB - 14) + '" r="5" fill="#5b8fd0"/><text x="' + (PL + 142) + '" y="' + (YB - 9) + '" font-size="14" fill="#52606d">interval contains μ</text>' +
+           '<circle cx="' + (PL + 282) + '" cy="' + (YB - 14) + '" r="5" fill="#c53030"/><text x="' + (PL + 292) + '" y="' + (YB - 9) + '" font-size="14" fill="#52606d">misses μ</text>';
     }
     return g;
   }
@@ -1131,8 +1128,7 @@ Since $n$ sits under a square root in the standard error, you must **quadruple $
     var tg = Math.round((1 - S.e.a) * 100);
     if (S.done) { var h = hits(); p.textContent = Math.round(100 * h / N) + "%"; l.textContent = "of " + N + " intervals contain μ · target " + tg + "%"; }
     else { p.textContent = "?%"; l.textContent = "of " + N + " intervals contain μ · target " + tg + "%"; }
-    document.getElementById("cg-mv").textContent = "m = " + S.w.toFixed(2);
-    var CAP = ["Set your margin with the slider or by dragging the blue bars, then press Run.",
+    var CAP = ["Drag an end of the blue bar to set your margin m, then press Run.",
                "Each dot is the mean X̄ of one random sample.",
                "Your interval X̄ ± m is built around every sample mean.",
                "The true mean μ. Which intervals caught it?",
@@ -1140,7 +1136,7 @@ Since $n$ sits under a square root in the standard error, you must **quadruple $
     document.getElementById("cg-cap").textContent = CAP[S.stage || 0];
     runB.disabled = S.busy; runB.style.opacity = S.busy ? 0.5 : 1;
   }
-  function setW(w) { if (S.busy) return; S.w = Math.max(0, Math.min(4 * S.se, w)); sl.value = S.w; render(); }
+  function setW(w) { if (S.busy) return; S.w = Math.max(0, Math.min(4 * S.se, Math.round(w / (S.se / 50)) * (S.se / 50))); render(); }
   function run() {
     if (S.busy) return;
     sample(); S.phase = 1; S.stage = 1; S.done = false; S.busy = true; S.shown = 0; S.g = 0; S.muFrac = 0; S.col = false;
@@ -1165,7 +1161,6 @@ Since $n$ sits under a square root in the standard error, you must **quadruple $
   svg.addEventListener("pointermove", function (e) { var p = pointerY(e); if (drag) setW(Math.abs(p.y - YC) / ypu()); svg.style.cursor = (drag || p.x < PL - 40) ? "ns-resize" : "default"; });
   svg.addEventListener("pointerup", function () { drag = false; });
   svg.addEventListener("pointercancel", function () { drag = false; });
-  sl.addEventListener("input", function () { setW(+sl.value); });
   runB.onclick = run;
   document.getElementById("cg-match").onclick = function () { setW(S.mci); };
   document.getElementById("cg-new").onclick = nextEx;

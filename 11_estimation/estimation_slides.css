@@ -119,3 +119,25 @@
 .reveal .xp.sel { box-shadow:0 0 0 3px var(--blue); }
 .reveal .xpd { display:none; }
 .reveal .xpd.on { display:block; }
+
+/* ---------- interval game ---------- */
+.reveal .cg-story { font-size:0.78em; line-height:1.35; background:var(--blue-soft); border-left:8px solid var(--blue); border-radius:8px; padding:0.5em 0.8em; margin:0 0 0.4em 0; }
+.reveal .cg-stats { display:flex; align-items:center; justify-content:center; gap:2.2em; margin:0.2em 0 0.1em 0; }
+.reveal .cg-big { display:flex; align-items:baseline; gap:0.5em; }
+.reveal .cg-big b { font-size:2em; color:var(--navy); line-height:1; min-width:2.2em; text-align:right; }
+.reveal .cg-big span { font-size:0.7em; color:var(--muted); }
+.reveal .cg-w { display:flex; align-items:baseline; gap:0.4em; font-size:0.78em; color:var(--muted); }
+.reveal .cg-w b { color:var(--ink); font-size:1.15em; }
+.reveal .cg-w .dot { display:inline-block; width:0.7em; height:0.7em; border-radius:50%; }
+.reveal .cg-w .dot.blue { background:var(--blue); }
+.reveal .cg-w .dot.orange { background:var(--orange); }
+.reveal .cg-ctl { display:flex; align-items:center; justify-content:center; gap:1em; font-size:0.78em; margin:0.2em 0; }
+.reveal .cg-ctl input[type=range] { width:300px; vertical-align:middle; }
+
+.reveal .cg-cap { font-size:0.62em; color:var(--muted); text-align:center; min-height:1.4em; margin:0 0 0.15em 0; }
+.reveal .cg-ctl button { min-width:7.2em; }
+.reveal .cg-ctl label b { display:inline-block; min-width:5em; text-align:left; color:var(--ink); }
+
+.reveal .cg-stats { gap:1.6em; }
+.reveal .cg-big span, .reveal .cg-w, .reveal .cg-w span { white-space:nowrap; }
+.reveal .cg-big span { font-size:0.62em; }

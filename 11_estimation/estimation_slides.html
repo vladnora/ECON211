@@ -594,6 +594,25 @@ align-items:center; justify-content:center; gap:10px; border-top:4px solid var(-
 .reveal .xp.sel { box-shadow:0 0 0 3px var(--blue); }
 .reveal .xpd { display:none; }
 .reveal .xpd.on { display:block; }
+
+.reveal .cg-story { font-size:0.78em; line-height:1.35; background:var(--blue-soft); border-left:8px solid var(--blue); border-radius:8px; padding:0.5em 0.8em; margin:0 0 0.4em 0; }
+.reveal .cg-stats { display:flex; align-items:center; justify-content:center; gap:2.2em; margin:0.2em 0 0.1em 0; }
+.reveal .cg-big { display:flex; align-items:baseline; gap:0.5em; }
+.reveal .cg-big b { font-size:2em; color:var(--navy); line-height:1; min-width:2.2em; text-align:right; }
+.reveal .cg-big span { font-size:0.7em; color:var(--muted); }
+.reveal .cg-w { display:flex; align-items:baseline; gap:0.4em; font-size:0.78em; color:var(--muted); }
+.reveal .cg-w b { color:var(--ink); font-size:1.15em; }
+.reveal .cg-w .dot { display:inline-block; width:0.7em; height:0.7em; border-radius:50%; }
+.reveal .cg-w .dot.blue { background:var(--blue); }
+.reveal .cg-w .dot.orange { background:var(--orange); }
+.reveal .cg-ctl { display:flex; align-items:center; justify-content:center; gap:1em; font-size:0.78em; margin:0.2em 0; }
+.reveal .cg-ctl input[type=range] { width:300px; vertical-align:middle; }
+.reveal .cg-cap { font-size:0.62em; color:var(--muted); text-align:center; min-height:1.4em; margin:0 0 0.15em 0; }
+.reveal .cg-ctl button { min-width:7.2em; }
+.reveal .cg-ctl label b { display:inline-block; min-width:5em; text-align:left; color:var(--ink); }
+.reveal .cg-stats { gap:1.6em; }
+.reveal .cg-big span, .reveal .cg-w, .reveal .cg-w span { white-space:nowrap; }
+.reveal .cg-big span { font-size:0.62em; }
 </style>
   
   <script>
@@ -2138,178 +2157,161 @@ Probability of <span class="math inline">\bar{X}</span> at least this far from <
 </div>
 </div>
 </section>
-<section id="the-interval-game" class="slide level2">
-<h2>The interval game</h2>
-<div class="box key">
-<p><span class="tag">Your task</span> For each population you know <span class="math inline">\sigma</span>, the sample size <span class="math inline">n</span> and a <strong>target</strong>: your interval must contain <span class="math inline">\mu</span> in <strong>at least <span class="math inline">1-\alpha</span></strong> of samples. Choose a margin <span class="math inline">m</span> for <span class="math inline">\bar{X}\pm m</span> that is <strong>as narrow as possible</strong>.</p>
-</div>
-<div class="fragment">
-<div class="box">
-<p><span class="tag">How it is judged</span> We draw <strong>1,000 random samples</strong>, build <span class="math inline">\bar{X}\pm m</span> from each, and count how often the interval contains <span class="math inline">\mu</span>. A second stack does the same with the <strong>exact confidence interval</strong>, on the <strong>same samples</strong>.</p>
-</div>
-</div>
-<div class="fragment">
-<div class="box good">
-<p>Too wide is safe but imprecise. Too narrow misses the target. <strong>Where is the edge?</strong></p>
-</div>
-</div>
-</section>
-<section id="your-interval-vs.-the-ci" class="slide level2">
-<h2>Your interval vs. the CI</h2>
-<div id="cg-info" class="cap" style="margin:0 0 0.2em 0">
+<section id="choose-your-interval" class="slide level2">
+<h2>Choose your interval</h2>
+<div id="cg-story" class="cg-story">
 
 </div>
-<svg id="cg-svg" viewbox="0 0 900 308" class="famplot">
+<div id="cg-cap" class="cg-cap">
+
+</div>
+<svg id="cg-svg" viewbox="0 0 900 250" class="famplot">
 </svg>
-<div class="cards" style="margin:0.2em 0">
-<div id="cg-l" class="box c" style="font-size:0.66em">
-
+<div class="cg-stats">
+<div class="cg-big">
+<b id="cg-pct">–</b><span id="cg-pct-l">of the intervals contain μ</span>
 </div>
-<div id="cg-r" class="box key c" style="font-size:0.66em">
-
+<div class="cg-w">
+<i class="dot blue"></i><span>Your width</span><b id="cg-wy"></b>
+</div>
+<div class="cg-w">
+<i class="dot orange"></i><span>Exact CI width</span><b id="cg-wc"></b>
 </div>
 </div>
-<div class="ctl" style="justify-content:center">
-<p><label>Margin ±m (or drag the handles): <input type="range" id="cg-w" style="width:300px"> <b id="cg-wv"></b></label> <button class="act" id="cg-run">Run</button> <button class="act ghost" id="cg-new">New population</button></p>
-</div>
-<div id="cg-best" class="cap" style="margin:0.1em 0 0 0">
-
+<div class="cg-ctl">
+<p><label>Margin <input type="range" id="cg-w"> <b id="cg-mv"></b></label> <button class="act" id="cg-run">Run</button> <button class="act ghost" id="cg-match">Match the CI</button> <button class="act ghost" id="cg-new">Next example</button></p>
 </div>
 <script>
 (function () {
-  var N = 1000, SHOW = 44, PW = 400, OFFS = [20, 480], PY = 46, PYB = 118, T0 = 78, PITCH = 3.4;
-  var AX = T0 + SHOW * PITCH + 4, GY = AX + 26, GH = 4.4;
+  var N = 240, PL = 215, PR = 850, CX = 105, YC = 125, YT = 12, YB = 238, HALF = 4.5;   // half-range of the axis, in standard errors
   var Z = { "0.1": 1.645, "0.05": 1.96, "0.01": 2.576 };
-  var STORIES = [
-    { t: "Height of women", u: "cm", mu: [155, 172], sd: [6, 8] },
-    { t: "Weight of men", u: "kg", mu: [65, 80], sd: [9, 13] },
-    { t: "Weekly study time", u: "hours", mu: [8, 18], sd: [3, 5] },
-    { t: "Daily commute", u: "min", mu: [20, 60], sd: [10, 15] },
-    { t: "Sleep per night", u: "hours", mu: [6, 8], sd: [1, 1.5] },
-    { t: "Exam score", u: "points", mu: [55, 80], sd: [10, 16] },
-    { t: "Daily screen time", u: "hours", mu: [3, 7], sd: [1.2, 2] }
+  var EX = [
+    { what: "hours of sleep per night", who: "students", unit: "hour", sd: 1, yl: "hours", n: 25, a: 0.10, mu: [6.5, 7.5] },
+    { what: "weekly study time", who: "students", unit: "hours", sd: 4, yl: "hours", n: 16, a: 0.05, mu: [8, 14] },
+    { what: "daily commute to campus", who: "students", unit: "minutes", sd: 10, yl: "minutes", n: 25, a: 0.01, mu: [25, 45] },
+    { what: "score on the final exam", who: "students", unit: "points", sd: 10, yl: "points", n: 100, a: 0.05, mu: [60, 75] },
+    { what: "height", who: "women", unit: "cm", sd: 8, yl: "cm", n: 64, a: 0.10, mu: [160, 170] },
+    { what: "daily screen time", who: "students", unit: "hours", sd: 2, yl: "hours", n: 16, a: 0.01, mu: [4, 6] }
   ];
-  var NS = [9, 16, 25, 49, 100], ALPHAS = [0.10, 0.05, 0.01];
-  var S = {}, drag = false;
-  var svg = document.getElementById("cg-svg"), sl = document.getElementById("cg-w"), wv = document.getElementById("cg-wv");
-  function rnd(a, b) { return a + Math.random() * (b - a); }
-  function r1(x) { return Math.round(x * 10) / 10; }
-  function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+  var S = { k: -1 }, drag = false, raf = null;
+  var svg = document.getElementById("cg-svg"), sl = document.getElementById("cg-w"), runB = document.getElementById("cg-run");
   function gauss() { var u = 1 - Math.random(), v = Math.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
+  function ypu() { return (YC - YT - 6) / (HALF * S.se); }                       // pixels per data unit
+  function yv(v) { return YC - (v - S.mu) * ypu(); }
   function sample() { S.xs = []; for (var i = 0; i < N; i++) S.xs.push(S.mu + S.se * gauss()); }
-  function cover(m) { var c = 0; for (var i = 0; i < N; i++) if (Math.abs(S.xs[i] - S.mu) <= m) c++; return c; }
-  function unit() { return PW / (2.2 * S.sd); }                      // pixels per data unit, same for picker and stacks
-  function newPop() {
-    var st = pick(STORIES);
-    S.story = st; S.mu = r1(rnd(st.mu[0], st.mu[1])); S.sd = r1(rnd(st.sd[0], st.sd[1]));
-    S.n = pick(NS); S.a = pick(ALPHAS); S.se = S.sd / Math.sqrt(S.n); S.mci = Z[String(S.a)] * S.se;
-    sl.min = 0; sl.max = S.sd; sl.step = S.sd / 200; sl.value = (0.3 * S.sd).toFixed(3); S.w = +sl.value;
-    S.revealed = false; S.hs = []; S.hc = []; S.best = null;
-    sample();
-    document.getElementById("cg-info").innerHTML = '<b>' + st.t + '</b> (' + st.u + '): σ = <b>' + S.sd.toFixed(1) + '</b> known · n = <b>' + S.n +
-      '</b> · target: cover μ in at least <b>' + Math.round((1 - S.a) * 100) + '%</b> of samples';
+  function hits() { var c = 0; for (var i = 0; i < N; i++) if (Math.abs(S.xs[i] - S.mu) <= S.w) c++; return c; }
+  function nice(raw) { var mag = Math.pow(10, Math.floor(Math.log(raw) / Math.LN10)), c = [1, 2, 5, 10]; for (var i = 0; i < 4; i++) if (c[i] * mag >= raw) return c[i] * mag; return 10 * mag; }
+  function nextEx() {
+    S.k = (S.k + 1) % EX.length; var e = EX[S.k]; S.e = e;
+    S.mu = Math.round((e.mu[0] + Math.random() * (e.mu[1] - e.mu[0])) * 10) / 10;
+    S.se = e.sd / Math.sqrt(e.n); S.mci = Z[String(e.a)] * S.se;
+    sl.min = 0; sl.max = 4 * S.se; sl.step = S.se / 50; var f = Math.min([0.5, 0.65, 1.4, 1.6][Math.floor(Math.random() * 4)], 3.4 * S.se / S.mci); sl.value = (f * S.mci).toFixed(4); S.w = +sl.value; S.stage = 0;
+    S.phase = 0; S.done = false; S.busy = false; S.shown = 0; S.g = 0; S.muFrac = 0; S.col = false;
+    if (raf) cancelAnimationFrame(raf);
+    var pct = Math.round((1 - e.a) * 100);
+    document.getElementById("cg-story").innerHTML = 'You want to estimate the average <b>' + e.what + '</b> of ' + e.who + '. The population standard deviation is <b>σ = ' + e.sd + ' ' + e.unit + 
+      '</b> (known). You will observe a random sample of <b>n = ' + e.n + '</b>. Choose an interval <b>X̄ ± m</b> that you expect to contain the true mean μ in <b>' + pct + '%</b> of samples.';
     render();
   }
-  function nice(raw) { var mag = Math.pow(10, Math.floor(Math.log(raw) / Math.LN10)); var c = [1, 2, 5, 10]; for (var i = 0; i < 4; i++) if (c[i] * mag >= raw) return c[i] * mag; return 10 * mag; }
-  // the interval drawn around the sample mean: X̄ in the middle, handles at ±m
-  function picker(off, m, col, active, y, big) {
-    var cx = off + PW / 2, u = unit(), a = cx - m * u, b = cx + m * u, g = "", hh = big ? 30 : 14, bh = big ? 9 : 6, r = big ? 9 : 6;
-    if (!big) g += '<rect x="' + off + '" y="26" width="' + PW + '" height="42" rx="8" fill="' + (active ? "#eef4fb" : "#f5f7fa") + '"/>';
-    g += '<line x1="' + off + '" y1="' + y + '" x2="' + (off + PW) + '" y2="' + y + '" stroke="#cbd2d9" stroke-width="1.5"/>';
-    g += '<rect x="' + a + '" y="' + (y - bh) + '" width="' + (b - a) + '" height="' + (2 * bh) + '" fill="' + col + '" fill-opacity="0.35"/>';
-    [a, b].forEach(function (x) {
-      g += '<rect x="' + (x - 3.5) + '" y="' + (y - hh) + '" width="7" height="' + (2 * hh) + '" rx="3" fill="' + col + '"/>';
-      if (active) g += '<circle cx="' + x + '" cy="' + y + '" r="' + (big ? 17 : 11) + '" fill="' + col + '" fill-opacity="0.18"/>';
+  function picker() {
+    var u = ypu(), m = S.w * u, c = S.mci * u, g = "";
+    g += '<line x1="' + CX + '" y1="' + YT + '" x2="' + CX + '" y2="' + YB + '" stroke="#d9e2ec" stroke-width="2"/>';
+    g += '<rect x="' + (CX - 6) + '" y="' + (YC - m) + '" width="12" height="' + (2 * m) + '" rx="3" fill="#2b6cb0" fill-opacity="0.28"/>';
+    [-1, 1].forEach(function (s) {
+      var y = YC + s * m;
+      g += '<circle cx="' + CX + '" cy="' + y + '" r="14" fill="#2b6cb0" fill-opacity="0.14"/>';
+      g += '<rect x="' + (CX - 24) + '" y="' + (y - 3) + '" width="48" height="6" rx="3" fill="#2b6cb0"/>';
     });
-    g += '<circle cx="' + cx + '" cy="' + y + '" r="' + r + '" fill="#1f2933"/>';
-    g += '<text x="' + cx + '" y="' + (y - hh - 6) + '" text-anchor="middle" font-size="' + (big ? 20 : 15) + '" font-weight="700" fill="#1f2933">X̄</text>';
-    if (active) g += '<text x="' + (big ? cx : off + 8) + '" y="' + (big ? y + hh + 24 : 62) + '" text-anchor="' + (big ? "middle" : "start") + '" font-size="' + (big ? 15 : 12) + '" fill="#52606d">drag a handle: both sides move</text>';
+    [-1, 1].forEach(function (s) {
+      g += '<line x1="' + (CX - 34) + '" y1="' + (YC + s * c) + '" x2="' + (CX + 34) + '" y2="' + (YC + s * c) + '" stroke="#dd6b20" stroke-width="2.5" stroke-dasharray="5 4"/>';
+    });
+    g += '<text x="' + (CX - 40) + '" y="' + (YC - c + 5) + '" text-anchor="end" font-size="14" font-weight="700" fill="#dd6b20">exact CI</text>';
+    g += '<text x="' + (CX + 40) + '" y="' + (YC - m + 5) + '" font-size="14" font-weight="700" fill="#2b6cb0">yours</text>';
+    g += '<circle cx="' + CX + '" cy="' + YC + '" r="7" fill="#1f2933"/>';
+    g += '<text x="' + (CX + 12) + '" y="' + (YC + 5) + '" font-size="16" font-weight="700" fill="#1f2933">X̄</text>';
     return g;
   }
-  function panel(k, off, m, title, col, revealed) {
-    var lo = S.mu - 1.1 * S.sd, hi = S.mu + 1.1 * S.sd, g = "";
-    function px(x) { return off + (x - lo) / (hi - lo) * PW; }
-    g += '<text x="' + off + '" y="18" font-size="17" font-weight="700" fill="#1b3a5c">' + title + '</text>';
-    if (revealed) g += picker(off, m, col, k === "l", PY, false);
-    if (!revealed) {
-      g += '<rect x="' + off + '" y="26" width="' + PW + '" height="' + (GY + 30 - 26) + '" fill="#f5f7fa" rx="8"/>';
-      if (k === "l") g += picker(off, m, col, true, PYB, true);
-      var l1 = k === "l" ? "μ and the sample means are hidden." : "Choose your margin, then press Run",
-          l2 = k === "l" ? "Pick ±m, then press Run to test it." : "to reveal the exact CI on the same samples";
-      var ty = k === "l" ? 230 : 150;
-      g += '<text x="' + (off + PW / 2) + '" y="' + ty + '" text-anchor="middle" font-size="17" fill="#52606d">' + l1 + '</text>' +
-           '<text x="' + (off + PW / 2) + '" y="' + (ty + 24) + '" text-anchor="middle" font-size="17" fill="#52606d">' + l2 + '</text>';
+  function plot() {
+    var g = '<rect x="' + (PL - 8) + '" y="4" width="' + (PR - PL + 16) + '" height="' + (YB - 0) + '" rx="12" fill="#f5f7fa"/>';
+    g += '<text x="' + (PL + 4) + '" y="22" font-size="14" fill="#7b8794">' + S.e.yl + '</text>';
+    if (!S.phase) {
+      g += '<text x="' + ((PL + PR) / 2) + '" y="' + (YC + 6) + '" text-anchor="middle" font-size="20" fill="#7b8794">Press Run to draw ' + N + ' random samples</text>';
       return g;
     }
-    g += '<defs><clipPath id="cg-clip' + k + '"><rect x="' + off + '" y="72" width="' + PW + '" height="' + (AX - 72) + '"/></clipPath></defs><g clip-path="url(#cg-clip' + k + ')">';
-    for (var i = 0; i < SHOW; i++) {
-      var xb = S.xs[i], ok = Math.abs(xb - S.mu) <= m, y = T0 + i * PITCH;
-      g += '<line x1="' + px(xb - m).toFixed(1) + '" y1="' + y.toFixed(1) + '" x2="' + px(xb + m).toFixed(1) + '" y2="' + y.toFixed(1) + '" stroke="' + (ok ? "#2f855a" : "#c53030") + '" stroke-width="2.2"/>';
+    var lo = S.mu - HALF * S.se, hi = S.mu + HALF * S.se, step = nice((hi - lo) / 6);
+    for (var t = Math.ceil(lo / step) * step; t <= hi + 1e-9; t += step) {
+      var y = yv(t); if (y < YT + 4 || y > YB - 2) continue;
+      g += '<line x1="' + PL + '" y1="' + y + '" x2="' + PR + '" y2="' + y + '" stroke="#e4e7eb"/>' +
+           '<text x="' + (PL - 14) + '" y="' + (y + 5) + '" text-anchor="end" font-size="14" fill="#7b8794">' + (Math.round(t * 100) / 100) + '</text>';
+    }
+    var pitch = (PR - PL) / N, m = S.w * ypu() * S.g;
+    g += '<defs><clipPath id="cg-clip"><rect x="' + (PL - 8) + '" y="4" width="' + (PR - PL + 16) + '" height="' + YB + '" rx="12"/></clipPath></defs><g clip-path="url(#cg-clip)">';
+    for (var i = 0; i < S.shown; i++) {
+      var x = PL + (i + 0.5) * pitch, yy = yv(S.xs[i]), ok = Math.abs(S.xs[i] - S.mu) <= S.w;
+      var col = S.col ? (ok ? "#5b8fd0" : "#c53030") : "#a9b8cb";
+      if (m > 0.3) g += '<line x1="' + x.toFixed(1) + '" y1="' + (yy - m).toFixed(1) + '" x2="' + x.toFixed(1) + '" y2="' + (yy + m).toFixed(1) + '" stroke="' + col + '" stroke-width="1.5" stroke-linecap="round"/>';
+      g += '<circle cx="' + x.toFixed(1) + '" cy="' + yy.toFixed(1) + '" r="1.6" fill="#1f2933"/>';
     }
     g += '</g>';
-    g += '<line x1="' + px(S.mu) + '" y1="72" x2="' + px(S.mu) + '" y2="' + AX + '" stroke="#1f2933" stroke-width="2" stroke-dasharray="5 4"/>';
-    g += '<text x="' + (px(S.mu) + 5) + '" y="84" font-size="14" font-weight="700" fill="#1f2933" stroke="#fff" stroke-width="3" paint-order="stroke">μ</text>';
-    g += '<line x1="' + off + '" y1="' + AX + '" x2="' + (off + PW) + '" y2="' + AX + '" stroke="#52606d" stroke-width="1.5"/>';
-    var step = nice((hi - lo) / 5);
-    for (var t = Math.ceil(lo / step) * step; t <= hi + 1e-9; t += step)
-      g += '<text x="' + px(t) + '" y="' + (AX + 17) + '" text-anchor="middle" font-size="14" fill="#52606d">' + (Math.round(t * 100) / 100) + '</text>';
-    for (var j = 0; j < N; j++) {
-      var okj = Math.abs(S.xs[j] - S.mu) <= m, row = Math.floor(j / 200), col2 = j % 200;
-      g += '<rect x="' + (off + col2 * 2) + '" y="' + (GY + row * GH) + '" width="2" height="' + GH + '" fill="' + (okj ? "#2f855a" : "#c53030") + '" fill-opacity="0.8"/>';
+    if (S.muFrac > 0) {
+      var ym = yv(S.mu), xe = PL + (PR - PL) * S.muFrac;
+      g += '<line x1="' + PL + '" y1="' + ym + '" x2="' + xe + '" y2="' + ym + '" stroke="#1f2933" stroke-width="2.2"/>';
+      if (S.muFrac >= 1) g += '<text x="' + (PR + 14) + '" y="' + (ym + 6) + '" font-size="18" font-weight="700" fill="#1f2933">μ</text>';
     }
-    g += '<text x="' + off + '" y="' + (GY + 5 * GH + 15) + '" font-size="13" fill="#52606d">top: first ' + SHOW + ' samples · bottom: all ' + N + ' (green = covers μ)</text>';
+    if (S.col) {
+      g += '<circle cx="' + (PL + 12) + '" cy="' + (YB - 14) + '" r="5" fill="#5b8fd0"/><text x="' + (PL + 22) + '" y="' + (YB - 9) + '" font-size="14" fill="#52606d">contains μ</text>' +
+           '<circle cx="' + (PL + 112) + '" cy="' + (YB - 14) + '" r="5" fill="#c53030"/><text x="' + (PL + 122) + '" y="' + (YB - 9) + '" font-size="14" fill="#52606d">misses μ</text>';
+    }
     return g;
   }
-  function stat(m, hist) {
-    var c = cover(m), cov = c / N, t = 1 - S.a, se = Math.sqrt(t * (1 - t) / N), lab, col;
-    if (cov > t + 2 * se) { lab = "above target"; col = "#2f855a"; }
-    else if (cov < t - 2 * se) { lab = "below target"; col = "#c53030"; }
-    else { lab = "≈ target"; col = "#2b6cb0"; }
-    var h = hist.length ? 'Previous runs: ' + hist.map(function (v) { return '<span style="color:' + (v >= t ? "#2f855a" : "#c53030") + '">' + (v * 100).toFixed(1) + '</span>'; }).join(' · ') : '&nbsp;';
-    return 'Covers μ in <b>' + (cov * 100).toFixed(1) + '%</b> (' + c + ' / ' + N + ') · <b style="color:' + col + '">' + lab + '</b><br><span style="color:#52606d">' + h + '</span>';
-  }
   function render() {
-    wv.textContent = S.w.toFixed(2);
-    svg.innerHTML = panel("l", OFFS[0], S.w, "Your interval: X̄ ± " + S.w.toFixed(2), "#2b6cb0", S.revealed) +
-                    panel("r", OFFS[1], S.mci, S.revealed ? "Exact CI: X̄ ± " + S.mci.toFixed(2) : "Exact confidence interval", "#dd6b20", S.revealed);
-    var L = document.getElementById("cg-l"), R = document.getElementById("cg-r");
-    L.innerHTML = 'Width <b>' + (2 * S.w).toFixed(2) + '</b><br>' + (S.revealed ? stat(S.w, S.hs) : '<span style="color:#52606d">Press Run to test it on 1,000 samples</span>');
-    R.innerHTML = S.revealed ? 'Width <b>' + (2 * S.mci).toFixed(2) + '</b><br>' + stat(S.mci, S.hc) : 'Width ?<br><span style="color:#52606d">Press Run to reveal</span>';
-    document.getElementById("cg-best").innerHTML = S.best === null ? 'Narrowest margin that reached the target in a run: none yet.' :
-      'Narrowest margin that reached the target in a run: <b>±' + S.best.toFixed(2) + '</b>.';
+    svg.innerHTML = plot() + picker();
+    var w2 = function (x) { return (2 * x).toFixed(2); };
+    document.getElementById("cg-wy").textContent = w2(S.w);
+    document.getElementById("cg-wc").textContent = w2(S.mci);
+    var p = document.getElementById("cg-pct"), l = document.getElementById("cg-pct-l");
+    var tg = Math.round((1 - S.e.a) * 100);
+    if (S.done) { var h = hits(); p.textContent = Math.round(100 * h / N) + "%"; l.textContent = "of " + N + " intervals contain μ · target " + tg + "%"; }
+    else { p.textContent = "?%"; l.textContent = "of " + N + " intervals contain μ · target " + tg + "%"; }
+    document.getElementById("cg-mv").textContent = "m = " + S.w.toFixed(2);
+    var CAP = ["Set your margin with the slider or by dragging the blue bars, then press Run.",
+               "Each dot is the mean X̄ of one random sample.",
+               "Your interval X̄ ± m is built around every sample mean.",
+               "The true mean μ. Which intervals caught it?",
+               "Each interval either catches μ or not. The percentage describes the method over many samples."];
+    document.getElementById("cg-cap").textContent = CAP[S.stage || 0];
+    runB.disabled = S.busy; runB.style.opacity = S.busy ? 0.5 : 1;
   }
-  function setW(w) { S.w = Math.max(0, Math.min(S.sd, w)); sl.value = S.w; S.hs = []; render(); }
-  function pointerWidth(e) {
-    var pt = svg.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY;
-    var p = pt.matrixTransform(svg.getScreenCTM().inverse());
-    return { x: p.x, y: p.y, w: Math.abs(p.x - (OFFS[0] + PW / 2)) / unit() };
+  function setW(w) { if (S.busy) return; S.w = Math.max(0, Math.min(4 * S.se, w)); sl.value = S.w; render(); }
+  function run() {
+    if (S.busy) return;
+    sample(); S.phase = 1; S.stage = 1; S.done = false; S.busy = true; S.shown = 0; S.g = 0; S.muFrac = 0; S.col = false;
+    var D1 = 1500, D2 = 650, D3 = 600, D4 = 900, t0 = null;
+    function ease(x) { return 1 - Math.pow(1 - x, 2); }
+    function step(ts) {
+      if (t0 === null) t0 = ts; var t = ts - t0;
+      if (t < D1) { S.shown = Math.floor(N * ease(t / D1)); S.stage = 1; }
+      else { S.shown = N;
+        if (t < D1 + D2) { S.g = ease((t - D1) / D2); S.stage = 2; }
+        else { S.g = 1;
+          if (t < D1 + D2 + D3) { S.muFrac = (t - D1 - D2) / D3; S.stage = 3; }
+          else { S.muFrac = 1; S.stage = 3;
+            if (t >= D1 + D2 + D3 + D4) { S.col = true; S.done = true; S.busy = false; S.stage = 4; render(); return; } } } }
+      render(); raf = requestAnimationFrame(step);
+    }
+    raf = requestAnimationFrame(step);
   }
+  function pointerY(e) { var pt = svg.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY; return pt.matrixTransform(svg.getScreenCTM().inverse()); }
   svg.style.touchAction = "none";
-  function inPicker(p) {
-    var y0 = S.revealed ? PY : PYB, half = S.revealed ? 24 : 46;
-    return Math.abs(p.y - y0) < half && p.x >= OFFS[0] - 10 && p.x <= OFFS[0] + PW + 10;
-  }
-  svg.addEventListener("pointerdown", function (e) {
-    var p = pointerWidth(e);
-    if (inPicker(p)) { drag = true; svg.setPointerCapture(e.pointerId); setW(p.w); e.preventDefault(); }
-  });
-  svg.addEventListener("pointermove", function (e) {
-    var p = pointerWidth(e);
-    if (drag) setW(p.w);
-    svg.style.cursor = drag || inPicker(p) ? "ew-resize" : "default";
-  });
+  svg.addEventListener("pointerdown", function (e) { var p = pointerY(e); if (p.x < PL - 40 && !S.busy) { drag = true; svg.setPointerCapture(e.pointerId); setW(Math.abs(p.y - YC) / ypu()); e.preventDefault(); } });
+  svg.addEventListener("pointermove", function (e) { var p = pointerY(e); if (drag) setW(Math.abs(p.y - YC) / ypu()); svg.style.cursor = (drag || p.x < PL - 40) ? "ns-resize" : "default"; });
   svg.addEventListener("pointerup", function () { drag = false; });
   svg.addEventListener("pointercancel", function () { drag = false; });
   sl.addEventListener("input", function () { setW(+sl.value); });
-  document.getElementById("cg-run").onclick = function () {
-    sample(); S.revealed = true;
-    var a = cover(S.w) / N, b = cover(S.mci) / N;
-    S.hs.push(a); S.hc.push(b); if (S.hs.length > 8) S.hs.shift(); if (S.hc.length > 8) S.hc.shift();
-    if (a >= 1 - S.a && (S.best === null || S.w < S.best)) S.best = S.w;
-    render();
-  };
-  document.getElementById("cg-new").onclick = newPop;
-  newPop();
+  runB.onclick = run;
+  document.getElementById("cg-match").onclick = function () { setW(S.mci); };
+  document.getElementById("cg-new").onclick = nextEx;
+  nextEx();
 })();
 </script>
 </section>
@@ -2330,7 +2332,7 @@ Probability of <span class="math inline">\bar{X}</span> at least this far from <
 </div>
 <div class="fragment">
 <div class="box">
-<p><span class="tag">Luck</span> A single run of 1,000 samples is noisy. A slightly narrower interval can look fine once, and even the exact CI can land a little below target. Run again to see the coverage move around.</p>
+<p><span class="tag">Luck</span> A single run of 240 samples is noisy. A slightly narrower interval can look fine once, and even the exact CI can land a little below target. Run again to see the coverage move around.</p>
 </div>
 </div>
 </section></section>

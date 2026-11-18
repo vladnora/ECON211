@@ -21,30 +21,37 @@ format:
 
 ::: {.cards .stack .toc}
 ::: {.box}
+<a class="toc-hit" href="#/conditional-probability" title="Go to section"></a>
 <span class="tag">1 · Conditional Probability</span>
 Updating a probability with new information: definition and examples.
 :::
 ::: {.box}
+<a class="toc-hit" href="#/bayes-rule-total-probability" title="Go to section"></a>
 <span class="tag">2 · Bayes' Rule & Total Probability</span>
 Flipping a conditional; the two-bins example.
 :::
 ::: {.box}
+<a class="toc-hit" href="#/testing-for-a-disease" title="Go to section"></a>
 <span class="tag">3 · Testing for a Disease</span>
 Sensitivity, specificity and what a positive test really says.
 :::
 ::: {.box}
+<a class="toc-hit" href="#/independence" title="Go to section"></a>
 <span class="tag">4 · Independence</span>
 When information does not change a probability.
 :::
 ::: {.box}
+<a class="toc-hit" href="#/the-monty-hall-problem" title="Go to section"></a>
 <span class="tag">5 · The Monty Hall Problem</span>
 Should you switch? A game and a proof.
 :::
 ::: {.box}
+<a class="toc-hit" href="#/simpsons-paradox" title="Go to section"></a>
 <span class="tag">6 · Simpson's Paradox</span>
 COVID-19 fatality rates: better in every group, worse overall.
 :::
 ::: {.box}
+<a class="toc-hit" href="#/sequential-battle" title="Go to section"></a>
 <span class="tag">7 · Sequential Battle</span>
 Conditioning on the first step as a problem-solving tool.
 :::
@@ -1999,3 +2006,16 @@ Alice starts with 3 soldiers, Bob with 1 ($N=4$). Each round is a fair coin flip
 <span class="tag">Question (b)</span>
 Assume a player with $k$ soldiers beats an opponent with $\ell$ soldiers with probability $\dfrac{k}{k+\ell}$. With the same $3$ vs. $1$ start, set up and solve the corresponding system for $P(\text{Alice wins})$.
 :::
+
+<script>
+(function () {
+  function setup() {
+    var r = document.querySelector('.reveal'); if (!r || r.querySelector('.toc-back')) return;
+    var a = document.createElement('a'); a.className = 'toc-back hide'; a.href = '#/contents'; a.textContent = '\u2261 Contents';
+    r.appendChild(a);
+    function upd() { var s = Reveal.getCurrentSlide(); a.classList.toggle('hide', !s || s.id === 'contents' || Reveal.getIndices().h === 0); }
+    Reveal.on('slidechanged', upd); Reveal.on('ready', upd); upd();
+  }
+  if (window.Reveal && Reveal.isReady && Reveal.isReady()) setup(); else document.addEventListener('DOMContentLoaded', function () { if (window.Reveal) Reveal.on('ready', setup); });
+})();
+</script>

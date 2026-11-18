@@ -638,6 +638,16 @@ font-family:inherit; font-size:0.95em; font-weight:600; line-height:1.3; text-tr
 .reveal .scatter-row img { flex:1 1 0; min-width:0; max-height:440px; object-fit:contain; margin:0; }
 .reveal .box ul, .reveal .box ol { margin:0.2em 0 0.2em 0.9em; }
 .reveal .box li { margin:0.15em 0; }
+
+.reveal .cards.stack.toc > .box { position:relative; transition:box-shadow .15s; }
+.reveal .cards.stack.toc > .box:hover { box-shadow:0 0 0 3px var(--blue), 0 2px 8px rgba(0,0,0,.18); }
+.reveal .cards.stack.toc > .box::after { content:"\2192"; position:absolute; right:0.8em; top:50%; transform:translateY(-50%); color:var(--blue); font-weight:700; }
+.reveal .toc-hit { position:absolute; inset:0; z-index:2; border-radius:8px; }
+.reveal a.toc-back { position:fixed; left:58px; bottom:10px; z-index:30; font-size:15px; line-height:1;
+background:#fff; color:var(--blue); border:2px solid var(--blue); border-radius:8px; padding:4px 10px;
+text-decoration:none; font-weight:700; opacity:.85; font-family:inherit; }
+.reveal a.toc-back:hover { opacity:1; background:var(--blue-soft); }
+.reveal a.toc-back.hide { display:none; }
 </style>
   
   <script>
@@ -1202,22 +1212,22 @@ margin-right: 0; }
 <h2>Contents</h2>
 <div class="cards stack toc">
 <div class="box">
-<p><span class="tag">1 · Random Variables &amp; PMFs</span> From outcomes to numbers; PMF, CDF, support, valid PMFs.</p>
+<p><a class="toc-hit" href="#/random-variables-pmfs" title="Go to section"></a> <span class="tag">1 · Random Variables &amp; PMFs</span> From outcomes to numbers; PMF, CDF, support, valid PMFs.</p>
 </div>
 <div class="box">
-<p><span class="tag">2 · Bernoulli &amp; Binomial</span> Two named families, defined by a story.</p>
+<p><a class="toc-hit" href="#/bernoulli-binomial" title="Go to section"></a> <span class="tag">2 · Bernoulli &amp; Binomial</span> Two named families, defined by a story.</p>
 </div>
 <div class="box">
-<p><span class="tag">3 · Hypergeometric</span> Sampling without replacement; why the PMFs sum to one.</p>
+<p><a class="toc-hit" href="#/hypergeometric" title="Go to section"></a> <span class="tag">3 · Hypergeometric</span> Sampling without replacement; why the PMFs sum to one.</p>
 </div>
 <div class="box">
-<p><span class="tag">4 · Functions of One R.V.</span> The distribution of <span class="math inline">g(X)</span>.</p>
+<p><a class="toc-hit" href="#/functions-of-one-r.v." title="Go to section"></a> <span class="tag">4 · Functions of One R.V.</span> The distribution of <span class="math inline">g(X)</span>.</p>
 </div>
 <div class="box">
-<p><span class="tag">5 · Functions of Several R.V.s</span> <span class="math inline">X+Y</span>, <span class="math inline">\max</span>, <span class="math inline">\min</span>, <span class="math inline">|X-Y|</span> and the dice duel.</p>
+<p><a class="toc-hit" href="#/functions-of-several-r.v.s" title="Go to section"></a> <span class="tag">5 · Functions of Several R.V.s</span> <span class="math inline">X+Y</span>, <span class="math inline">\max</span>, <span class="math inline">\min</span>, <span class="math inline">|X-Y|</span> and the dice duel.</p>
 </div>
 <div class="box">
-<p><span class="tag">6 · Independence</span> Independent random variables: one equation per cell.</p>
+<p><a class="toc-hit" href="#/independence" title="Go to section"></a> <span class="tag">6 · Independence</span> Independent random variables: one equation per cell.</p>
 </div>
 </div>
 </section>
@@ -3087,6 +3097,18 @@ min(X, Y)
 <div class="box key">
 <p>Most real-world dependence comes from a <strong>shared cause</strong>: weather, the economy, ability. Variables that are independent <strong>given</strong> the cause are dependent once the cause is unknown.</p>
 </div>
+<script>
+(function () {
+  function setup() {
+    var r = document.querySelector('.reveal'); if (!r || r.querySelector('.toc-back')) return;
+    var a = document.createElement('a'); a.className = 'toc-back hide'; a.href = '#/contents'; a.textContent = '\u2261 Contents';
+    r.appendChild(a);
+    function upd() { var s = Reveal.getCurrentSlide(); a.classList.toggle('hide', !s || s.id === 'contents' || Reveal.getIndices().h === 0); }
+    Reveal.on('slidechanged', upd); Reveal.on('ready', upd); upd();
+  }
+  if (window.Reveal && Reveal.isReady && Reveal.isReady()) setup(); else document.addEventListener('DOMContentLoaded', function () { if (window.Reveal) Reveal.on('ready', setup); });
+})();
+</script>
 
 </section></section>
     </div>

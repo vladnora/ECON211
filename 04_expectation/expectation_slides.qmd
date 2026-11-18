@@ -21,30 +21,37 @@ format:
 
 ::: {.cards .stack .toc}
 ::: {.box}
+<a class="toc-hit" href="#/from-lotteries-to-ex" title="Go to section"></a>
 <span class="tag">1 · From lotteries to E[X]</span>
 Two lotteries, long-run averages, the definition.
 :::
 ::: {.box}
+<a class="toc-hit" href="#/bernoulli-and-binomial" title="Go to section"></a>
 <span class="tag">2 · Bernoulli and Binomial</span>
 $E[X]=np$, by derivation and by intuition.
 :::
 ::: {.box}
+<a class="toc-hit" href="#/linearity-of-expectation" title="Go to section"></a>
 <span class="tag">3 · Linearity of expectation</span>
 $E[X+Y]=E[X]+E[Y]$ and its applications.
 :::
 ::: {.box}
+<a class="toc-hit" href="#/geometric-and-coupon-collector" title="Go to section"></a>
 <span class="tag">4 · Waiting times</span>
 Waiting times and their expected length.
 :::
 ::: {.box}
+<a class="toc-hit" href="#/indicators-the-same-seat-problem" title="Go to section"></a>
 <span class="tag">5 · Indicators: same seat</span>
 Counting matches with indicators.
 :::
 ::: {.box}
+<a class="toc-hit" href="#/expectation-of-a-function" title="Go to section"></a>
 <span class="tag">6 · Functions of an r.v.</span>
 $E(g(X))$ vs. $g(E(X))$, and LOTUS.
 :::
 ::: {.box}
+<a class="toc-hit" href="#/mean-is-not-everything" title="Go to section"></a>
 <span class="tag">7 · Mean is not everything</span>
 Same mean, very different shapes.
 :::
@@ -1744,3 +1751,16 @@ You have $\$100$. A fair bet pays even money. **All-in** bets it all at once; **
 })();
 </script>
 ```
+
+<script>
+(function () {
+  function setup() {
+    var r = document.querySelector('.reveal'); if (!r || r.querySelector('.toc-back')) return;
+    var a = document.createElement('a'); a.className = 'toc-back hide'; a.href = '#/contents'; a.textContent = '\u2261 Contents';
+    r.appendChild(a);
+    function upd() { var s = Reveal.getCurrentSlide(); a.classList.toggle('hide', !s || s.id === 'contents' || Reveal.getIndices().h === 0); }
+    Reveal.on('slidechanged', upd); Reveal.on('ready', upd); upd();
+  }
+  if (window.Reveal && Reveal.isReady && Reveal.isReady()) setup(); else document.addEventListener('DOMContentLoaded', function () { if (window.Reveal) Reveal.on('ready', setup); });
+})();
+</script>

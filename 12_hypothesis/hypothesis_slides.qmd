@@ -21,18 +21,22 @@ format:
 
 ::: {.cards .stack .toc}
 ::: {.box}
+<a class="toc-hit" href="#/from-estimation-to-testing" title="Go to section"></a>
 <span class="tag">1 · From Estimation to Testing</span>
 From a range of plausible values to a yes/no question.
 :::
 ::: {.box}
+<a class="toc-hit" href="#/testing-mu-when-sigma-is-known" title="Go to section"></a>
 <span class="tag">2 · Testing $\mu$ when $\sigma$ is known</span>
 Four steps: hypotheses, test statistic, p-value, decision; link to confidence intervals.
 :::
 ::: {.box}
+<a class="toc-hit" href="#/one-sided-tests" title="Go to section"></a>
 <span class="tag">3 · One-sided tests</span>
 When the alternative points in one direction only.
 :::
 ::: {.box}
+<a class="toc-hit" href="#/testing-mu-when-sigma-is-unknown" title="Go to section"></a>
 <span class="tag">4 · Testing $\mu$ when $\sigma$ is unknown</span>
 The t-statistic, the t-distribution and the cost of not knowing $\sigma$.
 :::
@@ -576,3 +580,16 @@ As $n$ grows, the $t$-distribution converges to the standard normal, so critical
 ::: {.cap}
 Self-study: learn how to use the $t$-table at the end of the book.
 :::
+
+<script>
+(function () {
+  function setup() {
+    var r = document.querySelector('.reveal'); if (!r || r.querySelector('.toc-back')) return;
+    var a = document.createElement('a'); a.className = 'toc-back hide'; a.href = '#/contents'; a.textContent = '\u2261 Contents';
+    r.appendChild(a);
+    function upd() { var s = Reveal.getCurrentSlide(); a.classList.toggle('hide', !s || s.id === 'contents' || Reveal.getIndices().h === 0); }
+    Reveal.on('slidechanged', upd); Reveal.on('ready', upd); upd();
+  }
+  if (window.Reveal && Reveal.isReady && Reveal.isReady()) setup(); else document.addEventListener('DOMContentLoaded', function () { if (window.Reveal) Reveal.on('ready', setup); });
+})();
+</script>

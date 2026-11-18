@@ -656,6 +656,16 @@ align-items:center; justify-content:center; gap:10px; border-top:4px solid var(-
 .reveal .cards.stack.toc > .box { display:flex; align-items:center; gap:0.9em; padding:0.4em 0.8em; font-size:0.85em; }
 .reveal .cards.stack.toc > .box .tag { display:block; flex:0 0 17em; margin:0; font-size:0.7em; }
 .reveal .cards.stack.toc > .box > p { display:flex; align-items:center; gap:0.9em; margin:0; }
+
+.reveal .cards.stack.toc > .box { position:relative; transition:box-shadow .15s; }
+.reveal .cards.stack.toc > .box:hover { box-shadow:0 0 0 3px var(--blue), 0 2px 8px rgba(0,0,0,.18); }
+.reveal .cards.stack.toc > .box::after { content:"\2192"; position:absolute; right:0.8em; top:50%; transform:translateY(-50%); color:var(--blue); font-weight:700; }
+.reveal .toc-hit { position:absolute; inset:0; z-index:2; border-radius:8px; }
+.reveal a.toc-back { position:fixed; left:58px; bottom:10px; z-index:30; font-size:15px; line-height:1;
+background:#fff; color:var(--blue); border:2px solid var(--blue); border-radius:8px; padding:4px 10px;
+text-decoration:none; font-weight:700; opacity:.85; font-family:inherit; }
+.reveal a.toc-back:hover { opacity:1; background:var(--blue-soft); }
+.reveal a.toc-back.hide { display:none; }
 </style>
   
   <script>
@@ -1220,22 +1230,22 @@ margin-right: 0; }
 <h2>Contents</h2>
 <div class="cards stack toc">
 <div class="box">
-<p><span class="tag">1 · Counting Basics</span> Multiplication rule, permutations, factorial, repeated letters.</p>
+<p><a class="toc-hit" href="#/counting-basics" title="Go to section"></a> <span class="tag">1 · Counting Basics</span> Multiplication rule, permutations, factorial, repeated letters.</p>
 </div>
 <div class="box">
-<p><span class="tag">2 · Binomial Coefficient</span> Teams, binary sequences, bijections and <span class="math inline">\binom{n}{k}</span>.</p>
+<p><a class="toc-hit" href="#/binomial-coefficient" title="Go to section"></a> <span class="tag">2 · Binomial Coefficient</span> Teams, binary sequences, bijections and <span class="math inline">\binom{n}{k}</span>.</p>
 </div>
 <div class="box">
-<p><span class="tag">3 · Sampling Table</span> Order vs. replacement: four counting scenarios, stars and bars.</p>
+<p><a class="toc-hit" href="#/sampling-table" title="Go to section"></a> <span class="tag">3 · Sampling Table</span> Order vs. replacement: four counting scenarios, stars and bars.</p>
 </div>
 <div class="box">
-<p><span class="tag">4 · Story Proofs</span> Identities proved by counting one set in two ways.</p>
+<p><a class="toc-hit" href="#/story-proofs" title="Go to section"></a> <span class="tag">4 · Story Proofs</span> Identities proved by counting one set in two ways.</p>
 </div>
 <div class="box">
-<p><span class="tag">5 · Combinatorics in Probability</span> Groups, poker hands, random walk, birthday problem.</p>
+<p><a class="toc-hit" href="#/combinatorics-in-probability" title="Go to section"></a> <span class="tag">5 · Combinatorics in Probability</span> Groups, poker hands, random walk, birthday problem.</p>
 </div>
 <div class="box">
-<p><span class="tag">6 · Probability Spaces</span> Axioms, properties, inclusion-exclusion, four couples.</p>
+<p><a class="toc-hit" href="#/probability-spaces" title="Go to section"></a> <span class="tag">6 · Probability Spaces</span> Axioms, properties, inclusion-exclusion, four couples.</p>
 </div>
 </div>
 </section>
@@ -3001,6 +3011,18 @@ P(E_4\cup E_5\cup E_6) = 3\cdot\frac{125}{216}-3\cdot\frac{64}{216}+\frac{27}{21
 <div class="box good">
 <p>So the probability that nobody sits next to their partner is <span class="math inline">P(A)=1-\frac{23}{35}=\frac{12}{35}\approx 0.343</span>.</p>
 </div>
+<script>
+(function () {
+  function setup() {
+    var r = document.querySelector('.reveal'); if (!r || r.querySelector('.toc-back')) return;
+    var a = document.createElement('a'); a.className = 'toc-back hide'; a.href = '#/contents'; a.textContent = '\u2261 Contents';
+    r.appendChild(a);
+    function upd() { var s = Reveal.getCurrentSlide(); a.classList.toggle('hide', !s || s.id === 'contents' || Reveal.getIndices().h === 0); }
+    Reveal.on('slidechanged', upd); Reveal.on('ready', upd); upd();
+  }
+  if (window.Reveal && Reveal.isReady && Reveal.isReady()) setup(); else document.addEventListener('DOMContentLoaded', function () { if (window.Reveal) Reveal.on('ready', setup); });
+})();
+</script>
 
 </div>
 </section></section>

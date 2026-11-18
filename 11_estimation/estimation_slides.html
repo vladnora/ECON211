@@ -617,6 +617,16 @@ align-items:center; justify-content:center; gap:10px; border-top:4px solid var(-
 .reveal .cards.stack.toc { gap:0.4em; }
 .reveal .cards.stack.toc > .box { display:flex; align-items:center; gap:0.9em; padding:0.4em 0.8em; font-size:0.85em; }
 .reveal .cards.stack.toc > .box .tag { display:block; flex:0 0 17em; margin:0; font-size:0.7em; }
+
+.reveal .cards.stack.toc > .box { position:relative; transition:box-shadow .15s; }
+.reveal .cards.stack.toc > .box:hover { box-shadow:0 0 0 3px var(--blue), 0 2px 8px rgba(0,0,0,.18); }
+.reveal .cards.stack.toc > .box::after { content:"\2192"; position:absolute; right:0.8em; top:50%; transform:translateY(-50%); color:var(--blue); font-weight:700; }
+.reveal .toc-hit { position:absolute; inset:0; z-index:2; border-radius:8px; }
+.reveal a.toc-back { position:fixed; left:58px; bottom:10px; z-index:30; font-size:15px; line-height:1;
+background:#fff; color:var(--blue); border:2px solid var(--blue); border-radius:8px; padding:4px 10px;
+text-decoration:none; font-weight:700; opacity:.85; font-family:inherit; }
+.reveal a.toc-back:hover { opacity:1; background:var(--blue-soft); }
+.reveal a.toc-back.hide { display:none; }
 </style>
   
   <script>
@@ -1181,22 +1191,22 @@ margin-right: 0; }
 <h2>Contents</h2>
 <div class="cards stack toc">
 <div class="box">
-<p><span class="tag">1 · Point Estimation</span> What an estimator is and the first criterion: unbiasedness.</p>
+<p><a class="toc-hit" href="#/point-estimation" title="Go to section"></a> <span class="tag">1 · Point Estimation</span> What an estimator is and the first criterion: unbiasedness.</p>
 </div>
 <div class="box">
-<p><span class="tag">2 · Example: randomized response</span> Estimating a sensitive share when answers are partly forced.</p>
+<p><a class="toc-hit" href="#/example-randomized-response" title="Go to section"></a> <span class="tag">2 · Example: randomized response</span> Estimating a sensitive share when answers are partly forced.</p>
 </div>
 <div class="box">
-<p><span class="tag">3 · Example: German tanks</span> Estimating a maximum from serial numbers; efficiency and consistency.</p>
+<p><a class="toc-hit" href="#/example-german-tanks" title="Go to section"></a> <span class="tag">3 · Example: German tanks</span> Estimating a maximum from serial numbers; efficiency and consistency.</p>
 </div>
 <div class="box">
-<p><span class="tag">4 · Interval Estimation</span> Plausible values of <span class="math inline">\mu</span>, confidence intervals, precision vs. confidence, and a game.</p>
+<p><a class="toc-hit" href="#/interval-estimation" title="Go to section"></a> <span class="tag">4 · Interval Estimation</span> Plausible values of <span class="math inline">\mu</span>, confidence intervals, precision vs. confidence, and a game.</p>
 </div>
 <div class="box">
-<p><span class="tag">5 · Example: student weight</span> Confidence intervals for men and women, and what overlap means.</p>
+<p><a class="toc-hit" href="#/example-student-weight" title="Go to section"></a> <span class="tag">5 · Example: student weight</span> Confidence intervals for men and women, and what overlap means.</p>
 </div>
 <div class="box">
-<p><span class="tag">6 · Beyond the mean</span> The same logic for intervals around other estimators.</p>
+<p><a class="toc-hit" href="#/beyond-the-mean" title="Go to section"></a> <span class="tag">6 · Beyond the mean</span> The same logic for intervals around other estimators.</p>
 </div>
 </div>
 </section>
@@ -2598,6 +2608,18 @@ Probability of <span class="math inline">\bar{X}</span> at least this far from <
 <div class="cap">
 <p>Not symmetric around the estimate: the largest tank can be at most <span class="math inline">a</span>, so the data say more about the lower side than the upper side.</p>
 </div>
+<script>
+(function () {
+  function setup() {
+    var r = document.querySelector('.reveal'); if (!r || r.querySelector('.toc-back')) return;
+    var a = document.createElement('a'); a.className = 'toc-back hide'; a.href = '#/contents'; a.textContent = '\u2261 Contents';
+    r.appendChild(a);
+    function upd() { var s = Reveal.getCurrentSlide(); a.classList.toggle('hide', !s || s.id === 'contents' || Reveal.getIndices().h === 0); }
+    Reveal.on('slidechanged', upd); Reveal.on('ready', upd); upd();
+  }
+  if (window.Reveal && Reveal.isReady && Reveal.isReady()) setup(); else document.addEventListener('DOMContentLoaded', function () { if (window.Reveal) Reveal.on('ready', setup); });
+})();
+</script>
 
 </div>
 </section></section>

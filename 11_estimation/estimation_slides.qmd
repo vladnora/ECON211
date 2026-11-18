@@ -21,26 +21,32 @@ format:
 
 ::: {.cards .stack .toc}
 ::: {.box}
+<a class="toc-hit" href="#/point-estimation" title="Go to section"></a>
 <span class="tag">1 · Point Estimation</span>
 What an estimator is and the first criterion: unbiasedness.
 :::
 ::: {.box}
+<a class="toc-hit" href="#/example-randomized-response" title="Go to section"></a>
 <span class="tag">2 · Example: randomized response</span>
 Estimating a sensitive share when answers are partly forced.
 :::
 ::: {.box}
+<a class="toc-hit" href="#/example-german-tanks" title="Go to section"></a>
 <span class="tag">3 · Example: German tanks</span>
 Estimating a maximum from serial numbers; efficiency and consistency.
 :::
 ::: {.box}
+<a class="toc-hit" href="#/interval-estimation" title="Go to section"></a>
 <span class="tag">4 · Interval Estimation</span>
 Plausible values of $\mu$, confidence intervals, precision vs. confidence, and a game.
 :::
 ::: {.box}
+<a class="toc-hit" href="#/example-student-weight" title="Go to section"></a>
 <span class="tag">5 · Example: student weight</span>
 Confidence intervals for men and women, and what overlap means.
 :::
 ::: {.box}
+<a class="toc-hit" href="#/beyond-the-mean" title="Go to section"></a>
 <span class="tag">6 · Beyond the mean</span>
 The same logic for intervals around other estimators.
 :::
@@ -1466,3 +1472,16 @@ $$CI_{0.95}=[\,241,\ 347\,]$$
 ::: {.cap}
 Not symmetric around the estimate: the largest tank can be at most $a$, so the data say more about the lower side than the upper side.
 :::
+
+<script>
+(function () {
+  function setup() {
+    var r = document.querySelector('.reveal'); if (!r || r.querySelector('.toc-back')) return;
+    var a = document.createElement('a'); a.className = 'toc-back hide'; a.href = '#/contents'; a.textContent = '\u2261 Contents';
+    r.appendChild(a);
+    function upd() { var s = Reveal.getCurrentSlide(); a.classList.toggle('hide', !s || s.id === 'contents' || Reveal.getIndices().h === 0); }
+    Reveal.on('slidechanged', upd); Reveal.on('ready', upd); upd();
+  }
+  if (window.Reveal && Reveal.isReady && Reveal.isReady()) setup(); else document.addEventListener('DOMContentLoaded', function () { if (window.Reveal) Reveal.on('ready', setup); });
+})();
+</script>

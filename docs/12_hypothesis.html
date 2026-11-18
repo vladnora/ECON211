@@ -598,6 +598,16 @@ align-items:center; justify-content:center; gap:10px; border-top:4px solid var(-
 .reveal .cards.stack.toc { gap:0.4em; }
 .reveal .cards.stack.toc > .box { display:flex; align-items:center; gap:0.9em; padding:0.4em 0.8em; font-size:0.85em; }
 .reveal .cards.stack.toc > .box .tag { display:block; flex:0 0 17em; margin:0; font-size:0.7em; }
+
+.reveal .cards.stack.toc > .box { position:relative; transition:box-shadow .15s; }
+.reveal .cards.stack.toc > .box:hover { box-shadow:0 0 0 3px var(--blue), 0 2px 8px rgba(0,0,0,.18); }
+.reveal .cards.stack.toc > .box::after { content:"\2192"; position:absolute; right:0.8em; top:50%; transform:translateY(-50%); color:var(--blue); font-weight:700; }
+.reveal .toc-hit { position:absolute; inset:0; z-index:2; border-radius:8px; }
+.reveal a.toc-back { position:fixed; left:58px; bottom:10px; z-index:30; font-size:15px; line-height:1;
+background:#fff; color:var(--blue); border:2px solid var(--blue); border-radius:8px; padding:4px 10px;
+text-decoration:none; font-weight:700; opacity:.85; font-family:inherit; }
+.reveal a.toc-back:hover { opacity:1; background:var(--blue-soft); }
+.reveal a.toc-back.hide { display:none; }
 </style>
   
   <script>
@@ -1162,16 +1172,16 @@ margin-right: 0; }
 <h2>Contents</h2>
 <div class="cards stack toc">
 <div class="box">
-<p><span class="tag">1 · From Estimation to Testing</span> From a range of plausible values to a yes/no question.</p>
+<p><a class="toc-hit" href="#/from-estimation-to-testing" title="Go to section"></a> <span class="tag">1 · From Estimation to Testing</span> From a range of plausible values to a yes/no question.</p>
 </div>
 <div class="box">
-<p><span class="tag">2 · Testing <span class="math inline">\mu</span> when <span class="math inline">\sigma</span> is known</span> Four steps: hypotheses, test statistic, p-value, decision; link to confidence intervals.</p>
+<p><a class="toc-hit" href="#/testing-mu-when-sigma-is-known" title="Go to section"></a> <span class="tag">2 · Testing <span class="math inline">\mu</span> when <span class="math inline">\sigma</span> is known</span> Four steps: hypotheses, test statistic, p-value, decision; link to confidence intervals.</p>
 </div>
 <div class="box">
-<p><span class="tag">3 · One-sided tests</span> When the alternative points in one direction only.</p>
+<p><a class="toc-hit" href="#/one-sided-tests" title="Go to section"></a> <span class="tag">3 · One-sided tests</span> When the alternative points in one direction only.</p>
 </div>
 <div class="box">
-<p><span class="tag">4 · Testing <span class="math inline">\mu</span> when <span class="math inline">\sigma</span> is unknown</span> The t-statistic, the t-distribution and the cost of not knowing <span class="math inline">\sigma</span>.</p>
+<p><a class="toc-hit" href="#/testing-mu-when-sigma-is-unknown" title="Go to section"></a> <span class="tag">4 · Testing <span class="math inline">\mu</span> when <span class="math inline">\sigma</span> is unknown</span> The t-statistic, the t-distribution and the cost of not knowing <span class="math inline">\sigma</span>.</p>
 </div>
 </div>
 </section>
@@ -1812,6 +1822,18 @@ margin-right: 0; }
 <div class="cap">
 <p>Self-study: learn how to use the <span class="math inline">t</span>-table at the end of the book.</p>
 </div>
+<script>
+(function () {
+  function setup() {
+    var r = document.querySelector('.reveal'); if (!r || r.querySelector('.toc-back')) return;
+    var a = document.createElement('a'); a.className = 'toc-back hide'; a.href = '#/contents'; a.textContent = '\u2261 Contents';
+    r.appendChild(a);
+    function upd() { var s = Reveal.getCurrentSlide(); a.classList.toggle('hide', !s || s.id === 'contents' || Reveal.getIndices().h === 0); }
+    Reveal.on('slidechanged', upd); Reveal.on('ready', upd); upd();
+  }
+  if (window.Reveal && Reveal.isReady && Reveal.isReady()) setup(); else document.addEventListener('DOMContentLoaded', function () { if (window.Reveal) Reveal.on('ready', setup); });
+})();
+</script>
 
 </div>
 </section></section>

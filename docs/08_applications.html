@@ -629,6 +629,16 @@ align-items:center; justify-content:center; gap:10px; border-top:4px solid var(-
 .reveal #mv-root td { padding:0 5px !important; font-size:12.5px; }
 .reveal #mv-root .mv-note { font-size:13.5px; line-height:1.25; }
 .reveal #mv-root .mv-row { margin-bottom:3px; }
+
+.reveal .cards.stack.toc > .box { position:relative; transition:box-shadow .15s; }
+.reveal .cards.stack.toc > .box:hover { box-shadow:0 0 0 3px var(--blue), 0 2px 8px rgba(0,0,0,.18); }
+.reveal .cards.stack.toc > .box::after { content:"\2192"; position:absolute; right:0.8em; top:50%; transform:translateY(-50%); color:var(--blue); font-weight:700; }
+.reveal .toc-hit { position:absolute; inset:0; z-index:2; border-radius:8px; }
+.reveal a.toc-back { position:fixed; left:58px; bottom:10px; z-index:30; font-size:15px; line-height:1;
+background:#fff; color:var(--blue); border:2px solid var(--blue); border-radius:8px; padding:4px 10px;
+text-decoration:none; font-weight:700; opacity:.85; font-family:inherit; }
+.reveal a.toc-back:hover { opacity:1; background:var(--blue-soft); }
+.reveal a.toc-back.hide { display:none; }
 </style>
   <style type="text/css">.reveal
 div.sourceCode
@@ -1140,16 +1150,16 @@ margin-right: 0; }
 <h2>Contents</h2>
 <div class="cards stack toc">
 <div class="box">
-<p><span class="tag">1 · Can we beat the market?</span> A random walk down Wall Street, and a buy-or-skip game against coin flips.</p>
+<p><a class="toc-hit" href="#/can-we-beat-the-market" title="Go to section"></a> <span class="tag">1 · Can we beat the market?</span> A random walk down Wall Street, and a buy-or-skip game against coin flips.</p>
 </div>
 <div class="box">
-<p><span class="tag">2 · Return statistics</span> Weekly returns of real assets: histograms, mean, SD, and stability over time.</p>
+<p><a class="toc-hit" href="#/return-statistics" title="Go to section"></a> <span class="tag">2 · Return statistics</span> Weekly returns of real assets: histograms, mean, SD, and stability over time.</p>
 </div>
 <div class="box">
-<p><span class="tag">3 · Diversification</span> Two dice as two assets: how the mix and the correlation shape the portfolio.</p>
+<p><a class="toc-hit" href="#/diversification" title="Go to section"></a> <span class="tag">3 · Diversification</span> Two dice as two assets: how the mix and the correlation shape the portfolio.</p>
 </div>
 <div class="box">
-<p><span class="tag">4 · Mean–variance frontier</span> Drag two assets and a portfolio; risk aversion picks the best mix.</p>
+<p><a class="toc-hit" href="#/meanvariance-frontier" title="Go to section"></a> <span class="tag">4 · Mean–variance frontier</span> Drag two assets and a portfolio; risk aversion picks the best mix.</p>
 </div>
 </div>
 </section>
@@ -2111,6 +2121,18 @@ line-height:1.2; text-transform:none; letter-spacing:normal; background:#e4e7eb;
     note.innerHTML = t + ' <span class="mv-hint">Illustrative numbers, not estimated from data.</span>';
   }
   paint();
+})();
+</script>
+<script>
+(function () {
+  function setup() {
+    var r = document.querySelector('.reveal'); if (!r || r.querySelector('.toc-back')) return;
+    var a = document.createElement('a'); a.className = 'toc-back hide'; a.href = '#/contents'; a.textContent = '\u2261 Contents';
+    r.appendChild(a);
+    function upd() { var s = Reveal.getCurrentSlide(); a.classList.toggle('hide', !s || s.id === 'contents' || Reveal.getIndices().h === 0); }
+    Reveal.on('slidechanged', upd); Reveal.on('ready', upd); upd();
+  }
+  if (window.Reveal && Reveal.isReady && Reveal.isReady()) setup(); else document.addEventListener('DOMContentLoaded', function () { if (window.Reveal) Reveal.on('ready', setup); });
 })();
 </script>
 

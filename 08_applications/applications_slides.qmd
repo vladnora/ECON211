@@ -21,18 +21,22 @@ format:
 
 ::: {.cards .stack .toc}
 ::: {.box}
+<a class="toc-hit" href="#/can-we-beat-the-market" title="Go to section"></a>
 <span class="tag">1 · Can we beat the market?</span>
 A random walk down Wall Street, and a buy-or-skip game against coin flips.
 :::
 ::: {.box}
+<a class="toc-hit" href="#/return-statistics" title="Go to section"></a>
 <span class="tag">2 · Return statistics</span>
 Weekly returns of real assets: histograms, mean, SD, and stability over time.
 :::
 ::: {.box}
+<a class="toc-hit" href="#/diversification" title="Go to section"></a>
 <span class="tag">3 · Diversification</span>
 Two dice as two assets: how the mix and the correlation shape the portfolio.
 :::
 ::: {.box}
+<a class="toc-hit" href="#/meanvariance-frontier" title="Go to section"></a>
 <span class="tag">4 · Mean–variance frontier</span>
 Drag two assets and a portfolio; risk aversion picks the best mix.
 :::
@@ -998,3 +1002,16 @@ Risk, return and the investor's choice.
 })();
 </script>
 ```
+
+<script>
+(function () {
+  function setup() {
+    var r = document.querySelector('.reveal'); if (!r || r.querySelector('.toc-back')) return;
+    var a = document.createElement('a'); a.className = 'toc-back hide'; a.href = '#/contents'; a.textContent = '\u2261 Contents';
+    r.appendChild(a);
+    function upd() { var s = Reveal.getCurrentSlide(); a.classList.toggle('hide', !s || s.id === 'contents' || Reveal.getIndices().h === 0); }
+    Reveal.on('slidechanged', upd); Reveal.on('ready', upd); upd();
+  }
+  if (window.Reveal && Reveal.isReady && Reveal.isReady()) setup(); else document.addEventListener('DOMContentLoaded', function () { if (window.Reveal) Reveal.on('ready', setup); });
+})();
+</script>

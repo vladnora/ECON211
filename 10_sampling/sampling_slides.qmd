@@ -22,22 +22,27 @@ format:
 
 ::: {.cards .stack .toc}
 ::: {.box}
+<a class="toc-hit" href="#/main-question" title="Go to section"></a>
 <span class="tag">Intro · The sample mean is random</span>
 Predict, try it on student heights, and see that $\bar{x}\neq\mu$.
 :::
 ::: {.box}
+<a class="toc-hit" href="#/example-rolling-a-die" title="Go to section"></a>
 <span class="tag">1 · Example: rolling a die</span>
 Exact distribution of $\bar{X}$, simulation, the three observations and the CLT.
 :::
 ::: {.box}
+<a class="toc-hit" href="#/the-normal-distribution" title="Go to section"></a>
 <span class="tag">2 · The Normal distribution</span>
 Standard and general Normal, 68–95–99.7 rule, tables and z-scores.
 :::
 ::: {.box}
+<a class="toc-hit" href="#/normal-in-real-life" title="Go to section"></a>
 <span class="tag">3 · Normal in real life</span>
 Where the Normal fits (heights, SAT, sleep) and where it does not.
 :::
 ::: {.box}
+<a class="toc-hit" href="#/using-the-normal-to-approximate-probabilities" title="Go to section"></a>
 <span class="tag">4 · Normal approximation</span>
 Approximating Binomial probabilities, with the continuity correction.
 :::
@@ -1425,3 +1430,16 @@ With $n=50$, $SD(\bar{X})=2$ cm. With $n=200$ from the same population it become
 $4\times$ the data: $SD(\bar{X})=\sigma/\sqrt{n}$ falls by $\sqrt4=2$.
 :::
 :::
+
+<script>
+(function () {
+  function setup() {
+    var r = document.querySelector('.reveal'); if (!r || r.querySelector('.toc-back')) return;
+    var a = document.createElement('a'); a.className = 'toc-back hide'; a.href = '#/contents'; a.textContent = '\u2261 Contents';
+    r.appendChild(a);
+    function upd() { var s = Reveal.getCurrentSlide(); a.classList.toggle('hide', !s || s.id === 'contents' || Reveal.getIndices().h === 0); }
+    Reveal.on('slidechanged', upd); Reveal.on('ready', upd); upd();
+  }
+  if (window.Reveal && Reveal.isReady && Reveal.isReady()) setup(); else document.addEventListener('DOMContentLoaded', function () { if (window.Reveal) Reveal.on('ready', setup); });
+})();
+</script>

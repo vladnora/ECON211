@@ -21,22 +21,27 @@ format:
 
 ::: {.cards .stack .toc}
 ::: {.box}
+<a class="toc-hit" href="#/continuous-variables" title="Go to section"></a>
 <span class="tag">1 · Continuous Variables</span>
 A point has probability zero: roulette and sand.
 :::
 ::: {.box}
+<a class="toc-hit" href="#/pdf-and-cdf" title="Go to section"></a>
 <span class="tag">2 · PDF and CDF</span>
 Probability as area; the CDF; densities vs. histograms.
 :::
 ::: {.box}
+<a class="toc-hit" href="#/expectation" title="Go to section"></a>
 <span class="tag">3 · Expectation</span>
 From binned averages to the integral; center of mass.
 :::
 ::: {.box}
+<a class="toc-hit" href="#/median" title="Go to section"></a>
 <span class="tag">4 · Median</span>
 Half the area on each side; median vs. mean; a game.
 :::
 ::: {.box}
+<a class="toc-hit" href="#/location-and-scale" title="Go to section"></a>
 <span class="tag">5 · Location and Scale</span>
 How a linear change shifts and rescales a variable.
 :::
@@ -2133,3 +2138,16 @@ The linear transformation $Y=a+bZ$.
 </script>
 </div>
 ```
+
+<script>
+(function () {
+  function setup() {
+    var r = document.querySelector('.reveal'); if (!r || r.querySelector('.toc-back')) return;
+    var a = document.createElement('a'); a.className = 'toc-back hide'; a.href = '#/contents'; a.textContent = '\u2261 Contents';
+    r.appendChild(a);
+    function upd() { var s = Reveal.getCurrentSlide(); a.classList.toggle('hide', !s || s.id === 'contents' || Reveal.getIndices().h === 0); }
+    Reveal.on('slidechanged', upd); Reveal.on('ready', upd); upd();
+  }
+  if (window.Reveal && Reveal.isReady && Reveal.isReady()) setup(); else document.addEventListener('DOMContentLoaded', function () { if (window.Reveal) Reveal.on('ready', setup); });
+})();
+</script>

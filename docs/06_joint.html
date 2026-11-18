@@ -617,6 +617,16 @@ align-items:center; justify-content:center; gap:10px; border-top:4px solid var(-
 .reveal .cards.stack.toc { gap:0.4em; }
 .reveal .cards.stack.toc > .box { display:flex; align-items:center; gap:0.9em; padding:0.4em 0.8em; font-size:0.85em; }
 .reveal .cards.stack.toc > .box .tag { display:block; flex:0 0 17em; margin:0; font-size:0.7em; }
+
+.reveal .cards.stack.toc > .box { position:relative; transition:box-shadow .15s; }
+.reveal .cards.stack.toc > .box:hover { box-shadow:0 0 0 3px var(--blue), 0 2px 8px rgba(0,0,0,.18); }
+.reveal .cards.stack.toc > .box::after { content:"\2192"; position:absolute; right:0.8em; top:50%; transform:translateY(-50%); color:var(--blue); font-weight:700; }
+.reveal .toc-hit { position:absolute; inset:0; z-index:2; border-radius:8px; }
+.reveal a.toc-back { position:fixed; left:58px; bottom:10px; z-index:30; font-size:15px; line-height:1;
+background:#fff; color:var(--blue); border:2px solid var(--blue); border-radius:8px; padding:4px 10px;
+text-decoration:none; font-weight:700; opacity:.85; font-family:inherit; }
+.reveal a.toc-back:hover { opacity:1; background:var(--blue-soft); }
+.reveal a.toc-back.hide { display:none; }
 </style>
   
   <script>
@@ -1181,13 +1191,13 @@ margin-right: 0; }
 <h2>Contents</h2>
 <div class="cards stack toc">
 <div class="box">
-<p><span class="tag">1 · Joint and Marginal Distributions</span> Each dot is a student; let the dots fall onto an axis to see a marginal.</p>
+<p><a class="toc-hit" href="#/joint-and-marginal-distributions" title="Go to section"></a> <span class="tag">1 · Joint and Marginal Distributions</span> Each dot is a student; let the dots fall onto an axis to see a marginal.</p>
 </div>
 <div class="box">
-<p><span class="tag">2 · Joint PMF</span> A 3D bar chart of <span class="math inline">P(X=x, Y=y)</span>: marginals by stacking, conditionals by slicing.</p>
+<p><a class="toc-hit" href="#/joint-pmf" title="Go to section"></a> <span class="tag">2 · Joint PMF</span> A 3D bar chart of <span class="math inline">P(X=x, Y=y)</span>: marginals by stacking, conditionals by slicing.</p>
 </div>
 <div class="box">
-<p><span class="tag">3 · Strength of Relationship</span> Covariance, correlation, units, and what <span class="math inline">r=0</span> does not mean.</p>
+<p><a class="toc-hit" href="#/strength-of-relationship" title="Go to section"></a> <span class="tag">3 · Strength of Relationship</span> Covariance, correlation, units, and what <span class="math inline">r=0</span> does not mean.</p>
 </div>
 </div>
 </section>
@@ -2111,6 +2121,18 @@ const CFG_P = {"title": "Strength of relationship", "x": [153.0, 155.0, 155.0, 1
     raf = requestAnimationFrame(step);
   }
   show(CFG.pairs[0].key, CFG.pairs[0].units[0].key, true);
+})();
+</script>
+<script>
+(function () {
+  function setup() {
+    var r = document.querySelector('.reveal'); if (!r || r.querySelector('.toc-back')) return;
+    var a = document.createElement('a'); a.className = 'toc-back hide'; a.href = '#/contents'; a.textContent = '\u2261 Contents';
+    r.appendChild(a);
+    function upd() { var s = Reveal.getCurrentSlide(); a.classList.toggle('hide', !s || s.id === 'contents' || Reveal.getIndices().h === 0); }
+    Reveal.on('slidechanged', upd); Reveal.on('ready', upd); upd();
+  }
+  if (window.Reveal && Reveal.isReady && Reveal.isReady()) setup(); else document.addEventListener('DOMContentLoaded', function () { if (window.Reveal) Reveal.on('ready', setup); });
 })();
 </script>
 

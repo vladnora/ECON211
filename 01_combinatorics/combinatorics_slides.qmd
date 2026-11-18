@@ -21,26 +21,32 @@ format:
 
 ::: {.cards .stack .toc}
 ::: {.box}
+<a class="toc-hit" href="#/counting-basics" title="Go to section"></a>
 <span class="tag">1 · Counting Basics</span>
 Multiplication rule, permutations, factorial, repeated letters.
 :::
 ::: {.box}
+<a class="toc-hit" href="#/binomial-coefficient" title="Go to section"></a>
 <span class="tag">2 · Binomial Coefficient</span>
 Teams, binary sequences, bijections and $\binom{n}{k}$.
 :::
 ::: {.box}
+<a class="toc-hit" href="#/sampling-table" title="Go to section"></a>
 <span class="tag">3 · Sampling Table</span>
 Order vs. replacement: four counting scenarios, stars and bars.
 :::
 ::: {.box}
+<a class="toc-hit" href="#/story-proofs" title="Go to section"></a>
 <span class="tag">4 · Story Proofs</span>
 Identities proved by counting one set in two ways.
 :::
 ::: {.box}
+<a class="toc-hit" href="#/combinatorics-in-probability" title="Go to section"></a>
 <span class="tag">5 · Combinatorics in Probability</span>
 Groups, poker hands, random walk, birthday problem.
 :::
 ::: {.box}
+<a class="toc-hit" href="#/probability-spaces" title="Go to section"></a>
 <span class="tag">6 · Probability Spaces</span>
 Axioms, properties, inclusion-exclusion, four couples.
 :::
@@ -1606,3 +1612,16 @@ $$P(A^c) = 4\cdot\tfrac14 - 6\cdot\tfrac{1}{14} + 4\cdot\tfrac{1}{42} - 1\cdot\t
 ::: {.box .good}
 So the probability that nobody sits next to their partner is $P(A)=1-\frac{23}{35}=\frac{12}{35}\approx 0.343$.
 :::
+
+<script>
+(function () {
+  function setup() {
+    var r = document.querySelector('.reveal'); if (!r || r.querySelector('.toc-back')) return;
+    var a = document.createElement('a'); a.className = 'toc-back hide'; a.href = '#/contents'; a.textContent = '\u2261 Contents';
+    r.appendChild(a);
+    function upd() { var s = Reveal.getCurrentSlide(); a.classList.toggle('hide', !s || s.id === 'contents' || Reveal.getIndices().h === 0); }
+    Reveal.on('slidechanged', upd); Reveal.on('ready', upd); upd();
+  }
+  if (window.Reveal && Reveal.isReady && Reveal.isReady()) setup(); else document.addEventListener('DOMContentLoaded', function () { if (window.Reveal) Reveal.on('ready', setup); });
+})();
+</script>

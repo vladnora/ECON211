@@ -21,22 +21,27 @@ format:
 
 ::: {.cards .stack .toc}
 ::: {.box}
+<a class="toc-hit" href="#/course-information" title="Go to section"></a>
 <span class="tag">1 · Course Information</span>
 People, textbooks, grading, attendance, studying, AI policy and course structure.
 :::
 ::: {.box}
+<a class="toc-hit" href="#/prerequisites" title="Go to section"></a>
 <span class="tag">2 · Prerequisites</span>
 Review questions on sets and calculus.
 :::
 ::: {.box}
+<a class="toc-hit" href="#/what-is-probability" title="Go to section"></a>
 <span class="tag">3 · What Is Probability?</span>
 Determinism vs. chance, and a coin-tossing simulation.
 :::
 ::: {.box}
+<a class="toc-hit" href="#/experiments-spaces-events" title="Go to section"></a>
 <span class="tag">4 · Experiments, Spaces, Events</span>
 Random experiments, sample spaces, events, and two coin tosses.
 :::
 ::: {.box}
+<a class="toc-hit" href="#/where-do-probabilities-come-from" title="Go to section"></a>
 <span class="tag">5 · Where Do Probabilities Come From?</span>
 The naive definition, when "equally likely" is reasonable, and two dice.
 :::
@@ -922,3 +927,16 @@ In more complex experiments, like two dice, the events we care about (such as $A
 ::: {.box .good}
 As experiments grow more complex, counting itself becomes the hard part. That is why our next topic is **systematic counting techniques**.
 :::
+
+<script>
+(function () {
+  function setup() {
+    var r = document.querySelector('.reveal'); if (!r || r.querySelector('.toc-back')) return;
+    var a = document.createElement('a'); a.className = 'toc-back hide'; a.href = '#/contents'; a.textContent = '\u2261 Contents';
+    r.appendChild(a);
+    function upd() { var s = Reveal.getCurrentSlide(); a.classList.toggle('hide', !s || s.id === 'contents' || Reveal.getIndices().h === 0); }
+    Reveal.on('slidechanged', upd); Reveal.on('ready', upd); upd();
+  }
+  if (window.Reveal && Reveal.isReady && Reveal.isReady()) setup(); else document.addEventListener('DOMContentLoaded', function () { if (window.Reveal) Reveal.on('ready', setup); });
+})();
+</script>

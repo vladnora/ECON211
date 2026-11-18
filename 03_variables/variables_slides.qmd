@@ -21,26 +21,32 @@ format:
 
 ::: {.cards .stack .toc}
 ::: {.box}
+<a class="toc-hit" href="#/random-variables-pmfs" title="Go to section"></a>
 <span class="tag">1 · Random Variables & PMFs</span>
 From outcomes to numbers; PMF, CDF, support, valid PMFs.
 :::
 ::: {.box}
+<a class="toc-hit" href="#/bernoulli-binomial" title="Go to section"></a>
 <span class="tag">2 · Bernoulli & Binomial</span>
 Two named families, defined by a story.
 :::
 ::: {.box}
+<a class="toc-hit" href="#/hypergeometric" title="Go to section"></a>
 <span class="tag">3 · Hypergeometric</span>
 Sampling without replacement; why the PMFs sum to one.
 :::
 ::: {.box}
+<a class="toc-hit" href="#/functions-of-one-r.v." title="Go to section"></a>
 <span class="tag">4 · Functions of One R.V.</span>
 The distribution of $g(X)$.
 :::
 ::: {.box}
+<a class="toc-hit" href="#/functions-of-several-r.v.s" title="Go to section"></a>
 <span class="tag">5 · Functions of Several R.V.s</span>
 $X+Y$, $\max$, $\min$, $|X-Y|$ and the dice duel.
 :::
 ::: {.box}
+<a class="toc-hit" href="#/independence" title="Go to section"></a>
 <span class="tag">6 · Independence</span>
 Independent random variables: one equation per cell.
 :::
@@ -1784,3 +1790,16 @@ The whole row $S=7$ passes: $P(X=x,S=7)=\frac1{36}=\frac16\cdot\frac16$ for ever
 ::: {.box .key}
 Most real-world dependence comes from a **shared cause**: weather, the economy, ability. Variables that are independent **given** the cause are dependent once the cause is unknown.
 :::
+
+<script>
+(function () {
+  function setup() {
+    var r = document.querySelector('.reveal'); if (!r || r.querySelector('.toc-back')) return;
+    var a = document.createElement('a'); a.className = 'toc-back hide'; a.href = '#/contents'; a.textContent = '\u2261 Contents';
+    r.appendChild(a);
+    function upd() { var s = Reveal.getCurrentSlide(); a.classList.toggle('hide', !s || s.id === 'contents' || Reveal.getIndices().h === 0); }
+    Reveal.on('slidechanged', upd); Reveal.on('ready', upd); upd();
+  }
+  if (window.Reveal && Reveal.isReady && Reveal.isReady()) setup(); else document.addEventListener('DOMContentLoaded', function () { if (window.Reveal) Reveal.on('ready', setup); });
+})();
+</script>

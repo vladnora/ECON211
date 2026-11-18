@@ -2159,7 +2159,7 @@ Probability of <span class="math inline">\bar{X}</span> at least this far from <
 <div id="cg-info" class="cap" style="margin:0 0 0.2em 0">
 
 </div>
-<svg id="cg-svg" viewbox="0 0 900 272" class="famplot">
+<svg id="cg-svg" viewbox="0 0 900 308" class="famplot">
 </svg>
 <div class="cards" style="margin:0.2em 0">
 <div id="cg-l" class="box c" style="font-size:0.66em">
@@ -2170,14 +2170,15 @@ Probability of <span class="math inline">\bar{X}</span> at least this far from <
 </div>
 </div>
 <div class="ctl" style="justify-content:center">
-<p><label>Your margin ±: <input type="range" id="cg-w" style="width:300px"> <b id="cg-wv"></b></label> <button class="act" id="cg-run">Run</button> <button class="act ghost" id="cg-new">New population</button></p>
+<p><label>Margin ±m (or drag the handles): <input type="range" id="cg-w" style="width:300px"> <b id="cg-wv"></b></label> <button class="act" id="cg-run">Run</button> <button class="act ghost" id="cg-new">New population</button></p>
 </div>
 <div id="cg-best" class="cap" style="margin:0.1em 0 0 0">
 
 </div>
 <script>
 (function () {
-  var N = 1000, SHOW = 50, PW = 400, OFFS = [20, 480];
+  var N = 1000, SHOW = 44, PW = 400, OFFS = [20, 480], PY = 46, PYB = 118, T0 = 78, PITCH = 3.4;
+  var AX = T0 + SHOW * PITCH + 4, GY = AX + 26, GH = 4.4;
   var Z = { "0.1": 1.645, "0.05": 1.96, "0.01": 2.576 };
   var STORIES = [
     { t: "Height of women", u: "cm", mu: [155, 172], sd: [6, 8] },
@@ -2189,7 +2190,7 @@ Probability of <span class="math inline">\bar{X}</span> at least this far from <
     { t: "Daily screen time", u: "hours", mu: [3, 7], sd: [1.2, 2] }
   ];
   var NS = [9, 16, 25, 49, 100], ALPHAS = [0.10, 0.05, 0.01];
-  var S = {};
+  var S = {}, drag = false;
   var svg = document.getElementById("cg-svg"), sl = document.getElementById("cg-w"), wv = document.getElementById("cg-wv");
   function rnd(a, b) { return a + Math.random() * (b - a); }
   function r1(x) { return Math.round(x * 10) / 10; }
@@ -2197,6 +2198,7 @@ Probability of <span class="math inline">\bar{X}</span> at least this far from <
   function gauss() { var u = 1 - Math.random(), v = Math.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
   function sample() { S.xs = []; for (var i = 0; i < N; i++) S.xs.push(S.mu + S.se * gauss()); }
   function cover(m) { var c = 0; for (var i = 0; i < N; i++) if (Math.abs(S.xs[i] - S.mu) <= m) c++; return c; }
+  function unit() { return PW / (2.2 * S.sd); }                      // pixels per data unit, same for picker and stacks
   function newPop() {
     var st = pick(STORIES);
     S.story = st; S.mu = r1(rnd(st.mu[0], st.mu[1])); S.sd = r1(rnd(st.sd[0], st.sd[1]));
@@ -2209,33 +2211,53 @@ Probability of <span class="math inline">\bar{X}</span> at least this far from <
     render();
   }
   function nice(raw) { var mag = Math.pow(10, Math.floor(Math.log(raw) / Math.LN10)); var c = [1, 2, 5, 10]; for (var i = 0; i < 4; i++) if (c[i] * mag >= raw) return c[i] * mag; return 10 * mag; }
-  function panel(k, off, m, title, show) {
-    var lo = S.mu - 1.1 * S.sd, hi = S.mu + 1.1 * S.sd, T0 = 30, PITCH = 3.4, AX = T0 + SHOW * PITCH + 4, g = "";
+  // the interval drawn around the sample mean: X̄ in the middle, handles at ±m
+  function picker(off, m, col, active, y, big) {
+    var cx = off + PW / 2, u = unit(), a = cx - m * u, b = cx + m * u, g = "", hh = big ? 30 : 14, bh = big ? 9 : 6, r = big ? 9 : 6;
+    if (!big) g += '<rect x="' + off + '" y="26" width="' + PW + '" height="42" rx="8" fill="' + (active ? "#eef4fb" : "#f5f7fa") + '"/>';
+    g += '<line x1="' + off + '" y1="' + y + '" x2="' + (off + PW) + '" y2="' + y + '" stroke="#cbd2d9" stroke-width="1.5"/>';
+    g += '<rect x="' + a + '" y="' + (y - bh) + '" width="' + (b - a) + '" height="' + (2 * bh) + '" fill="' + col + '" fill-opacity="0.35"/>';
+    [a, b].forEach(function (x) {
+      g += '<rect x="' + (x - 3.5) + '" y="' + (y - hh) + '" width="7" height="' + (2 * hh) + '" rx="3" fill="' + col + '"/>';
+      if (active) g += '<circle cx="' + x + '" cy="' + y + '" r="' + (big ? 17 : 11) + '" fill="' + col + '" fill-opacity="0.18"/>';
+    });
+    g += '<circle cx="' + cx + '" cy="' + y + '" r="' + r + '" fill="#1f2933"/>';
+    g += '<text x="' + cx + '" y="' + (y - hh - 6) + '" text-anchor="middle" font-size="' + (big ? 20 : 15) + '" font-weight="700" fill="#1f2933">X̄</text>';
+    if (active) g += '<text x="' + (big ? cx : off + 8) + '" y="' + (big ? y + hh + 24 : 62) + '" text-anchor="' + (big ? "middle" : "start") + '" font-size="' + (big ? 15 : 12) + '" fill="#52606d">drag a handle: both sides move</text>';
+    return g;
+  }
+  function panel(k, off, m, title, col, revealed) {
+    var lo = S.mu - 1.1 * S.sd, hi = S.mu + 1.1 * S.sd, g = "";
     function px(x) { return off + (x - lo) / (hi - lo) * PW; }
     g += '<text x="' + off + '" y="18" font-size="17" font-weight="700" fill="#1b3a5c">' + title + '</text>';
-    if (!show) {
-      g += '<rect x="' + off + '" y="26" width="' + PW + '" height="' + (AX - 26 + 70) + '" fill="#f5f7fa" rx="8"/>' +
-           '<text x="' + (off + PW / 2) + '" y="130" text-anchor="middle" font-size="17" fill="#52606d">Choose your margin, then press Run</text>' +
-           '<text x="' + (off + PW / 2) + '" y="154" text-anchor="middle" font-size="17" fill="#52606d">to reveal the exact CI on the same samples</text>';
+    if (revealed) g += picker(off, m, col, k === "l", PY, false);
+    if (!revealed) {
+      g += '<rect x="' + off + '" y="26" width="' + PW + '" height="' + (GY + 30 - 26) + '" fill="#f5f7fa" rx="8"/>';
+      if (k === "l") g += picker(off, m, col, true, PYB, true);
+      var l1 = k === "l" ? "μ and the sample means are hidden." : "Choose your margin, then press Run",
+          l2 = k === "l" ? "Pick ±m, then press Run to test it." : "to reveal the exact CI on the same samples";
+      var ty = k === "l" ? 230 : 150;
+      g += '<text x="' + (off + PW / 2) + '" y="' + ty + '" text-anchor="middle" font-size="17" fill="#52606d">' + l1 + '</text>' +
+           '<text x="' + (off + PW / 2) + '" y="' + (ty + 24) + '" text-anchor="middle" font-size="17" fill="#52606d">' + l2 + '</text>';
       return g;
     }
-    g += '<defs><clipPath id="cg-clip' + k + '"><rect x="' + off + '" y="26" width="' + PW + '" height="' + (AX - 26) + '"/></clipPath></defs><g clip-path="url(#cg-clip' + k + ')">';
+    g += '<defs><clipPath id="cg-clip' + k + '"><rect x="' + off + '" y="72" width="' + PW + '" height="' + (AX - 72) + '"/></clipPath></defs><g clip-path="url(#cg-clip' + k + ')">';
     for (var i = 0; i < SHOW; i++) {
       var xb = S.xs[i], ok = Math.abs(xb - S.mu) <= m, y = T0 + i * PITCH;
       g += '<line x1="' + px(xb - m).toFixed(1) + '" y1="' + y.toFixed(1) + '" x2="' + px(xb + m).toFixed(1) + '" y2="' + y.toFixed(1) + '" stroke="' + (ok ? "#2f855a" : "#c53030") + '" stroke-width="2.2"/>';
     }
     g += '</g>';
-    g += '<line x1="' + px(S.mu) + '" y1="26" x2="' + px(S.mu) + '" y2="' + AX + '" stroke="#1f2933" stroke-width="2" stroke-dasharray="5 4"/>';
+    g += '<line x1="' + px(S.mu) + '" y1="72" x2="' + px(S.mu) + '" y2="' + AX + '" stroke="#1f2933" stroke-width="2" stroke-dasharray="5 4"/>';
+    g += '<text x="' + (px(S.mu) + 5) + '" y="84" font-size="14" font-weight="700" fill="#1f2933" stroke="#fff" stroke-width="3" paint-order="stroke">μ</text>';
     g += '<line x1="' + off + '" y1="' + AX + '" x2="' + (off + PW) + '" y2="' + AX + '" stroke="#52606d" stroke-width="1.5"/>';
     var step = nice((hi - lo) / 5);
     for (var t = Math.ceil(lo / step) * step; t <= hi + 1e-9; t += step)
       g += '<text x="' + px(t) + '" y="' + (AX + 17) + '" text-anchor="middle" font-size="14" fill="#52606d">' + (Math.round(t * 100) / 100) + '</text>';
-    var GY = AX + 26;
     for (var j = 0; j < N; j++) {
-      var okj = Math.abs(S.xs[j] - S.mu) <= m, row = Math.floor(j / 200), col = j % 200;
-      g += '<rect x="' + (off + col * 2) + '" y="' + (GY + row * 4.4) + '" width="2" height="4.4" fill="' + (okj ? "#2f855a" : "#c53030") + '" fill-opacity="0.8"/>';
+      var okj = Math.abs(S.xs[j] - S.mu) <= m, row = Math.floor(j / 200), col2 = j % 200;
+      g += '<rect x="' + (off + col2 * 2) + '" y="' + (GY + row * GH) + '" width="2" height="' + GH + '" fill="' + (okj ? "#2f855a" : "#c53030") + '" fill-opacity="0.8"/>';
     }
-    g += '<text x="' + off + '" y="' + (GY + 5 * 4.4 + 15) + '" font-size="13" fill="#52606d">top: first ' + SHOW + ' samples · bottom: all ' + N + ' samples (green = covers μ)</text>';
+    g += '<text x="' + off + '" y="' + (GY + 5 * GH + 15) + '" font-size="13" fill="#52606d">top: first ' + SHOW + ' samples · bottom: all ' + N + ' (green = covers μ)</text>';
     return g;
   }
   function stat(m, hist) {
@@ -2244,20 +2266,41 @@ Probability of <span class="math inline">\bar{X}</span> at least this far from <
     else if (cov < t - 2 * se) { lab = "below target"; col = "#c53030"; }
     else { lab = "≈ target"; col = "#2b6cb0"; }
     var h = hist.length ? 'Previous runs: ' + hist.map(function (v) { return '<span style="color:' + (v >= t ? "#2f855a" : "#c53030") + '">' + (v * 100).toFixed(1) + '</span>'; }).join(' · ') : '&nbsp;';
-    return { cov: cov, c: c, html: 'Covers μ in <b>' + (cov * 100).toFixed(1) + '%</b> (' + c + ' / ' + N + ') · <b style="color:' + col + '">' + lab + '</b><br><span style="color:#52606d">' + h + '</span>' };
+    return 'Covers μ in <b>' + (cov * 100).toFixed(1) + '%</b> (' + c + ' / ' + N + ') · <b style="color:' + col + '">' + lab + '</b><br><span style="color:#52606d">' + h + '</span>';
   }
   function render() {
     wv.textContent = S.w.toFixed(2);
-    svg.innerHTML = panel("l", OFFS[0], S.w, "Your interval: ±" + S.w.toFixed(2), true) +
-                    panel("r", OFFS[1], S.mci, S.revealed ? "Exact CI: ±" + S.mci.toFixed(2) : "Exact confidence interval", S.revealed);
-    var a = stat(S.w, S.hs);
-    document.getElementById("cg-l").innerHTML = 'Width <b>' + (2 * S.w).toFixed(2) + '</b><br>' + a.html;
-    if (S.revealed) { var b = stat(S.mci, S.hc); document.getElementById("cg-r").innerHTML = 'Width <b>' + (2 * S.mci).toFixed(2) + '</b><br>' + b.html; }
-    else document.getElementById("cg-r").innerHTML = 'Width ?<br><span style="color:#52606d">Press Run to reveal</span>';
+    svg.innerHTML = panel("l", OFFS[0], S.w, "Your interval: X̄ ± " + S.w.toFixed(2), "#2b6cb0", S.revealed) +
+                    panel("r", OFFS[1], S.mci, S.revealed ? "Exact CI: X̄ ± " + S.mci.toFixed(2) : "Exact confidence interval", "#dd6b20", S.revealed);
+    var L = document.getElementById("cg-l"), R = document.getElementById("cg-r");
+    L.innerHTML = 'Width <b>' + (2 * S.w).toFixed(2) + '</b><br>' + (S.revealed ? stat(S.w, S.hs) : '<span style="color:#52606d">Press Run to test it on 1,000 samples</span>');
+    R.innerHTML = S.revealed ? 'Width <b>' + (2 * S.mci).toFixed(2) + '</b><br>' + stat(S.mci, S.hc) : 'Width ?<br><span style="color:#52606d">Press Run to reveal</span>';
     document.getElementById("cg-best").innerHTML = S.best === null ? 'Narrowest margin that reached the target in a run: none yet.' :
       'Narrowest margin that reached the target in a run: <b>±' + S.best.toFixed(2) + '</b>.';
   }
-  sl.addEventListener("input", function () { S.w = +sl.value; S.hs = []; render(); });
+  function setW(w) { S.w = Math.max(0, Math.min(S.sd, w)); sl.value = S.w; S.hs = []; render(); }
+  function pointerWidth(e) {
+    var pt = svg.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY;
+    var p = pt.matrixTransform(svg.getScreenCTM().inverse());
+    return { x: p.x, y: p.y, w: Math.abs(p.x - (OFFS[0] + PW / 2)) / unit() };
+  }
+  svg.style.touchAction = "none";
+  function inPicker(p) {
+    var y0 = S.revealed ? PY : PYB, half = S.revealed ? 24 : 46;
+    return Math.abs(p.y - y0) < half && p.x >= OFFS[0] - 10 && p.x <= OFFS[0] + PW + 10;
+  }
+  svg.addEventListener("pointerdown", function (e) {
+    var p = pointerWidth(e);
+    if (inPicker(p)) { drag = true; svg.setPointerCapture(e.pointerId); setW(p.w); e.preventDefault(); }
+  });
+  svg.addEventListener("pointermove", function (e) {
+    var p = pointerWidth(e);
+    if (drag) setW(p.w);
+    svg.style.cursor = drag || inPicker(p) ? "ew-resize" : "default";
+  });
+  svg.addEventListener("pointerup", function () { drag = false; });
+  svg.addEventListener("pointercancel", function () { drag = false; });
+  sl.addEventListener("input", function () { setW(+sl.value); });
   document.getElementById("cg-run").onclick = function () {
     sample(); S.revealed = true;
     var a = cover(S.w) / N, b = cover(S.mci) / N;

@@ -1,0 +1,16 @@
+{
+  "name": "blockX_slides",
+  "title": "Final Prep: Topic name",
+  "subtitle": "ECON211 · Probability & Statistics · practice for Lecture NN (Lecture title)",
+  "css": "final_prep.css",
+  "problem_files": ["prob_topic.js"],
+  "slides": [
+    ["firstproblem", "First problem title"],
+    ["secondproblem", "Second problem title"]
+  ],
+  "toc": [
+    ["firstproblem", "1 · Section name", "One-line description of the section."],
+    ["quiz", "2 · Timed quiz", "Five random questions, a timer, answers at the end."]
+  ],
+  "howto": true
+}

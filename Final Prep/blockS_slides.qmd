@@ -1,0 +1,147 @@
+---
+title: "Final Prep: Statistics"
+subtitle: "ECON211 · Probability & Statistics · practice for Lecture 09 (Random Sampling)"
+format:
+  revealjs:
+    theme: simple
+    css: final_prep.css
+    center: false
+    slide-number: true
+    embed-resources: true
+    width: 1050
+    height: 700
+    margin: 0.05
+    transition: fade
+    transition-speed: fast
+    chalkboard: false
+    include-after-body: scripts.html
+---
+
+## How to use this deck {#howto}
+
+::: {.cards .stack}
+::: {.box}
+<span class="tag">Practice slides</span>
+Each slide is **one type of problem**. Press **New variant** to get a different version: not just new numbers, but a different structure (the variant pills show which one you have, and you can click them). Work it out on paper first.
+:::
+::: {.box .good}
+<span class="tag">Solutions</span>
+Press **Show solution** for the answers and a worked solution. It stays hidden until you ask.
+:::
+::: {.box .key}
+<span class="tag">Quiz</span>
+The last slide is a **timed quiz** of five random questions from these topics. Answers appear only after the last question, together with your time compared to a target.
+:::
+:::
+
+## Contents {#contents}
+
+::: {.cards .stack .toc}
+::: {.box}
+<a class="toc-hit" href="#/stats1" title="Go to section"></a>
+<span class="tag">1 · Statistics from data</span>
+Mean, median, mode, variance, covariance and correlation.
+:::
+::: {.box}
+<a class="toc-hit" href="#/ols3" title="Go to section"></a>
+<span class="tag">2 · Least squares</span>
+OLS by hand, squares vs absolute errors, first-order conditions, interpretation.
+:::
+::: {.box}
+<a class="toc-hit" href="#/finite" title="Go to section"></a>
+<span class="tag">3 · Random sampling</span>
+Draws with and without replacement, i.i.d., ex ante vs ex post.
+:::
+::: {.box}
+<a class="toc-hit" href="#/errors" title="Go to section"></a>
+<span class="tag">4 · When samples go wrong</span>
+Error types, survivorship bias, size-biased sampling.
+:::
+::: {.box}
+<a class="toc-hit" href="#/hist2" title="Go to section"></a>
+<span class="tag">5 · Reading graphs</span>
+Histograms and scatter plots: center, spread, shape, sign, outliers.
+:::
+::: {.box}
+<a class="toc-hit" href="#/tf" title="Go to section"></a>
+<span class="tag">6 · True or false</span>
+Quick concept checks.
+:::
+::: {.box}
+<a class="toc-hit" href="#/quiz" title="Go to section"></a>
+<span class="tag">7 · Timed quiz</span>
+Five random questions, a timer, answers at the end.
+:::
+:::
+
+## Mean, median, mode, variance {#stats1}
+
+<div class="prob" data-id="stats1"></div>
+
+## Covariance and correlation {#cov}
+
+<div class="prob" data-id="cov"></div>
+
+## OLS by hand: three points {#ols3}
+
+<div class="prob" data-id="ols3"></div>
+
+## OLS by hand: four points {#ols4}
+
+<div class="prob" data-id="ols4"></div>
+
+## Squares, first-order conditions, outliers {#best}
+
+<div class="prob" data-id="best"></div>
+
+## Interpreting a regression {#interp}
+
+<div class="prob" data-id="interp"></div>
+
+## Drawing without replacement {#finite}
+
+<div class="prob" data-id="finite"></div>
+
+## The population is a distribution {#popdist}
+
+<div class="prob" data-id="popdist"></div>
+
+## Sampling error vs non-sampling error {#errors}
+
+<div class="prob" data-id="errors"></div>
+
+## Survivorship bias with numbers {#survive}
+
+<div class="prob" data-id="survive"></div>
+
+## Regression on the survivors {#surv_ols}
+
+<div class="prob" data-id="surv_ols"></div>
+
+## Size-biased sampling {#sizebias}
+
+<div class="prob" data-id="sizebias"></div>
+
+## Comparing two histograms {#hist2}
+
+<div class="prob" data-id="hist2"></div>
+
+## Reading the shape of a histogram {#hist1}
+
+<div class="prob" data-id="hist1"></div>
+
+## Scatter plots: sign and strength {#scat1}
+
+<div class="prob" data-id="scat1"></div>
+
+## Scatter plots: lines and outliers {#scat2}
+
+<div class="prob" data-id="scat2"></div>
+
+## True or false {#tf}
+
+<div class="prob" data-id="tf"></div>
+
+## Timed quiz {#quiz}
+
+<div class="quiz"></div>

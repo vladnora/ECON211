@@ -1,23 +1,109 @@
 <!DOCTYPE html>
-<html>
-<head><title>ECON211 Lecture Slides</title></head>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ECON211 · Probability &amp; Statistics</title>
+<meta name="description" content="Lecture slides for ECON211, Probability and Statistics.">
+<style>
+  :root {
+    --navy:#1b3a5c; --blue:#2b6cb0; --blue-soft:#eef4fb; --orange:#dd6b20;
+    --ink:#1f2933; --muted:#52606d; --line:#d9e2ec; --bg:#f7f9fc; --card:#ffffff;
+    --shadow:0 1px 2px rgba(27,58,92,.06), 0 4px 14px rgba(27,58,92,.06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --navy:#cfe0f5; --blue:#6aa6e8; --blue-soft:#17283c; --orange:#f0924d;
+      --ink:#e8edf2; --muted:#9aa8b6; --line:#2a3b4f; --bg:#0f1823; --card:#162231; --shadow:0 1px 2px rgba(0,0,0,.4); }
+  }
+  * { box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body { margin:0; background:var(--bg); color:var(--ink); line-height:1.5;
+    font-family:"Source Sans Pro", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  .wrap { max-width:1040px; margin:0 auto; padding:0 20px; }
+
+  header { background:linear-gradient(135deg,#17324f 0%,#2b6cb0 100%); color:#fff; padding:64px 0 56px; }
+  header .eyebrow { font-size:.85rem; letter-spacing:.14em; text-transform:uppercase; opacity:.8; font-weight:700; }
+  header h1 { font-size:clamp(2rem,5vw,3.2rem); line-height:1.1; margin:.35em 0 .3em; letter-spacing:-.02em; }
+  header p { margin:0; font-size:1.15rem; opacity:.9; max-width:34em; }
+
+  main { padding:36px 0 64px; }
+  section { margin-top:40px; }
+  section:first-child { margin-top:0; }
+  .sec-head { display:flex; flex-wrap:wrap; align-items:baseline; gap:.1em .8em; border-bottom:2px solid var(--line); padding-bottom:.4em; margin-bottom:18px; }
+  .sec-head h2 { margin:0; font-size:1.25rem; color:var(--navy); }
+  .sec-head span { color:var(--muted); font-size:.95rem; }
+
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(290px,1fr)); gap:16px; }
+  a.card { display:flex; gap:14px; align-items:flex-start; text-decoration:none; color:inherit; background:var(--card);
+    border:1px solid var(--line); border-radius:14px; padding:16px 18px; box-shadow:var(--shadow);
+    transition:transform .15s ease, border-color .15s ease, box-shadow .15s ease; }
+  a.card:hover, a.card:focus-visible { transform:translateY(-3px); border-color:var(--blue); outline:none;
+    box-shadow:0 2px 4px rgba(27,58,92,.08), 0 10px 24px rgba(43,108,176,.16); }
+  .num { flex:none; width:2.6em; height:2.6em; border-radius:10px; background:var(--blue-soft); color:var(--blue);
+    display:grid; place-items:center; font-weight:800; font-size:.95rem; }
+  .card h3 { margin:0 0 .15em; font-size:1.08rem; color:var(--navy); line-height:1.25; }
+  .card p { margin:0; font-size:.93rem; color:var(--muted); line-height:1.4; }
+  .badge { display:inline-block; margin-left:.5em; padding:.05em .55em; border-radius:999px; font-size:.7rem; font-weight:800;
+    letter-spacing:.06em; text-transform:uppercase; background:var(--orange); color:#fff; vertical-align:middle; }
+  .exam .num { background:#fff4e5; color:var(--orange); }
+  @media (prefers-color-scheme: dark) { .exam .num { background:#33241a; } }
+
+  footer { border-top:1px solid var(--line); padding:22px 0 40px; color:var(--muted); font-size:.9rem; }
+</style>
+</head>
 <body>
-<h1>ECON211 — Lecture Slides</h1>
-<ul>
-  <li><a href="00_intro.html">Introduction</a></li>
-  <li><a href="01_combinatorics.html">Combinatorics</a></li>
-  <li><a href="02_conditional.html">Conditional Probability</a></li>
-  <li><a href="03_variables.html">Random Variables</a></li>
-  <li><a href="04_expectation.html">Expectations</a></li>
-  <li><a href="05_continuous.html">Continuous</a></li>
-  <li><a href="06_joint.html">Joint Distributions</a></li>
-  <li><a href="08_applications.html">Applications: Portfolios</a></li>
-  <li><a href="09_random_sampling.html">Random Sampling</a></li>
-  <li><a href="10_sampling.html">Sampling Distribution of the Sample Mean</a></li>
-  <li><a href="11_estimation.html">Estimation</a></li>
-  <li><a href="Midterm_prep_blockA.html">Midterm Prep — Block A</a></li>
-<li><a href="Midterm_prep_blockBCD.html">Midterm Prep — Blocks B, C, D</a></li>
-<li><a href="Midterm_prep_blockE.html">Midterm Prep — Block E</a></li>
-</ul>
+<header>
+  <div class="wrap">
+    <div class="eyebrow">Nazarbayev University</div>
+    <h1>ECON211<br>Probability &amp; Statistics</h1>
+    <p>Lecture slides and midterm preparation. Open any card to start the slides; press <b>F</b> for full screen.</p>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section>
+    <div class="sec-head"><h2>Probability foundations</h2><span>Counting and conditioning</span></div>
+    <div class="grid">
+      <a class="card" href="00_intro.html"><div class="num">00</div><div><h3>Introduction</h3><p>What the course is about and how to use it.</p></div></a>
+      <a class="card" href="01_combinatorics.html"><div class="num">01</div><div><h3>Combinatorics</h3><p>Counting outcomes: permutations and combinations.</p></div></a>
+      <a class="card" href="02_conditional.html"><div class="num">02</div><div><h3>Conditional Probability</h3><p>Updating beliefs, independence and Bayes' rule.</p></div></a>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>Random variables</h2><span>Distributions, expectations, joint behaviour</span></div>
+    <div class="grid">
+      <a class="card" href="03_variables.html"><div class="num">03</div><div><h3>Random Variables</h3><p>Discrete distributions and how to describe them.</p></div></a>
+      <a class="card" href="04_expectation.html"><div class="num">04</div><div><h3>Expectations</h3><p>Mean, variance and what they tell us.</p></div></a>
+      <a class="card" href="05_continuous.html"><div class="num">05</div><div><h3>Continuous Distributions</h3><p>Densities, the uniform and the normal.</p></div></a>
+      <a class="card" href="06_joint.html"><div class="num">06</div><div><h3>Joint Distributions</h3><p>Two variables at once: covariance and correlation.</p></div></a>
+      <a class="card" href="08_applications.html"><div class="num">08</div><div><h3>Applications: Portfolios</h3><p>Risk and return as an application of the theory.</p></div></a>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>Statistical inference</h2><span>From samples to conclusions</span></div>
+    <div class="grid">
+      <a class="card" href="09_random_sampling.html"><div class="num">09</div><div><h3>Random Sampling</h3><p>Populations, samples and why randomness matters.</p></div></a>
+      <a class="card" href="10_sampling.html"><div class="num">10</div><div><h3>Sampling Distribution of the Sample Mean</h3><p>How sample means behave: the law of large numbers and the CLT.</p></div></a>
+      <a class="card" href="11_estimation.html"><div class="num">11</div><div><h3>Estimation <span class="badge">Latest</span></h3><p>Point and interval estimates, with an interactive confidence interval game.</p></div></a>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><h2>Midterm preparation</h2><span>Practice problems by block</span></div>
+    <div class="grid exam">
+      <a class="card" href="Midterm_prep_blockA.html"><div class="num">A</div><div><h3>Block A</h3><p>Midterm practice.</p></div></a>
+      <a class="card" href="Midterm_prep_blockBCD.html"><div class="num">B–D</div><div><h3>Blocks B, C, D</h3><p>Midterm practice.</p></div></a>
+      <a class="card" href="Midterm_prep_blockE.html"><div class="num">E</div><div><h3>Block E</h3><p>Midterm practice.</p></div></a>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">ECON211 · Probability &amp; Statistics</div>
+</footer>
 </body>
 </html>

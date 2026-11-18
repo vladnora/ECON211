@@ -17,6 +17,35 @@ format:
     chalkboard: false
 ---
 
+## Contents
+
+::: {.cards .stack .toc}
+::: {.box}
+<span class="tag">1 · Probability vs. Statistics</span>
+Two directions of reasoning: from the population to data, and back.
+:::
+::: {.box}
+<span class="tag">2 · Population vs. Sample</span>
+What a random sample is, and why randomness matters.
+:::
+::: {.box}
+<span class="tag">3 · Statistics</span>
+Sample mean, variance, proportions and relationships between variables.
+:::
+::: {.box}
+<span class="tag">4 · Least squares</span>
+What "best fit" means, from one variable to multiple regression.
+:::
+::: {.box}
+<span class="tag">5 · When Samples Go Wrong</span>
+Unrepresentative samples and the two kinds of error.
+:::
+::: {.box}
+<span class="tag">6 · Examples</span>
+Survivorship bias (bombers) and size-biased sampling (children per family).
+:::
+:::
+
 ## Readings
 
 ::: {.cards}

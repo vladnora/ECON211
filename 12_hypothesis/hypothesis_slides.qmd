@@ -1,0 +1,578 @@
+---
+title: "Hypothesis Testing"
+subtitle: "ECON211 · Probability & Statistics"
+format:
+  revealjs:
+    theme: simple
+    css: hypothesis_slides.css
+    html-math-method: katex
+    center: false
+    slide-number: true
+    embed-resources: true
+    width: 1050
+    height: 700
+    margin: 0.05
+    transition: fade
+    transition-speed: fast
+    chalkboard: false
+---
+
+## Contents
+
+::: {.cards .stack .toc}
+::: {.box}
+<span class="tag">1 · From Estimation to Testing</span>
+From a range of plausible values to a yes/no question.
+:::
+::: {.box}
+<span class="tag">2 · Testing $\mu$ when $\sigma$ is known</span>
+Four steps: hypotheses, test statistic, p-value, decision; link to confidence intervals.
+:::
+::: {.box}
+<span class="tag">3 · One-sided tests</span>
+When the alternative points in one direction only.
+:::
+::: {.box}
+<span class="tag">4 · Testing $\mu$ when $\sigma$ is unknown</span>
+The t-statistic, the t-distribution and the cost of not knowing $\sigma$.
+:::
+:::
+
+# From Estimation to Testing {.section-slide}
+
+From a range of plausible values to a yes/no question.
+
+## A different kind of question
+
+::: {.box}
+A confidence interval gives a **range of plausible values** for a parameter. Research often asks something sharper: *is the parameter equal to a particular value?*
+:::
+
+. . .
+
+::: {.box .key}
+<span class="tag">Definition</span>
+**Hypothesis testing** is a decision-making framework used to evaluate specific claims about a population.
+:::
+
+## Examples from the class survey
+
+| Topic | Estimation | Hypothesis testing |
+|:--|:--|:--|
+| **Heights** | What is the average height of girls in this class? | Is it equal to $167$ cm? |
+| **Demography** | What is the average number of children per family in Kazakhstan? | Is it greater than $2.1$, the replacement rate? |
+| **Emigration** | What share of students is willing to emigrate from Kazakhstan? | Are girls more willing to emigrate than boys? |
+| **Study hours** | How many hours do students study for this class on average? | Do girls study more than boys? |
+| **Difficulty** | By how much does one more unit of perceived difficulty change study hours? | Does difficulty affect study hours at all? |
+
+## Estimation vs. testing
+
+::: {.cards}
+::: {.box .c}
+<span class="tag">Estimation asks</span>
+What is a good guess for $\mu$?
+:::
+::: {.box .key .c}
+<span class="tag">Testing asks</span>
+Is the data consistent with a specific value $\mu_0$?
+:::
+:::
+
+. . .
+
+::: {.box .good}
+<span class="tag">Hint</span>
+Every test question has a **benchmark**: $167$ cm, $2.1$ children, girls and boys equally willing, equal study hours, no effect. This benchmark is the **null hypothesis** $H_0$.
+:::
+
+# Testing $\mu$ when $\sigma$ is known {.section-slide}
+
+Four steps, one example.
+
+## Our example
+
+::: {.box .key}
+<span class="tag">Question</span>
+Is the average height of girls taking this class equal to $167$ cm?
+:::
+
+. . .
+
+::: {.box}
+Data: $n=185$, $\bar{X}=165.9$ cm, and $\sigma=8.7$ cm is assumed **known** (as in the estimation lecture).
+:::
+
+## Step 1: Formulate hypotheses
+
+::: {.cards}
+::: {.box .c}
+<span class="tag">Null hypothesis $H_0$</span>
+The status quo, the "boring" result: no effect, no difference. The benchmark we try to **find evidence against**.
+:::
+::: {.box .key .c}
+<span class="tag">Alternative $H_1$</span>
+The research claim, the "interesting" result: there **is** an effect or a difference.
+:::
+:::
+
+. . .
+
+::: {.box}
+If we find enough evidence to **reject** $H_0$, we favour $H_1$.
+:::
+
+## Hypotheses: the rules
+
+::: {.cards}
+::: {.box}
+<span class="tag">$H_0$</span>
+**Must always contain an equality sign**: $=$, $\leq$ or $\geq$.
+:::
+::: {.box .key}
+<span class="tag">$H_1$</span>
+**Never contains an equality sign**: $\neq$, $>$ or $<$.
+:::
+:::
+
+. . .
+
+::: {.box .good}
+<span class="tag">Example: two-sided test</span>
+$$H_0:\ \mu=167 \qquad H_1:\ \mu\neq167$$
+:::
+
+## Step 2: The test statistic
+
+::: {.box}
+The test statistic measures the **distance** between the sample result and the null, in standard errors. With $\sigma$ known we use the $z$-statistic:
+$$z=\frac{\bar{X}-\mu_0}{\sigma/\sqrt n}$$
+:::
+
+. . .
+
+::: {.box .key}
+<span class="tag">Definition</span>
+$z$ counts how many standard errors the observed $\bar{X}$ is from the hypothesized $\mu_0$. Under $H_0$, by the CLT, $z$ is **approximately** $N(0,1)$ (exactly, if the population is normal).
+:::
+
+## Test statistic: our data
+
+::: {.box .key}
+$$z=\frac{165.9-167}{8.7/\sqrt{185}}=\frac{-1.1}{0.640}\approx-1.72$$
+:::
+
+. . .
+
+::: {.box}
+Our sample mean is about **1.7 standard errors below** the benchmark. Is that far enough to doubt $H_0$?
+:::
+
+## Step 3: The p-value
+
+::: {.box}
+**Assume $H_0$ is true.** Then the distribution of $\bar{X}$ (and of $z$) is fully known. We can ask how likely it is to get a sample **at least as extreme** as ours.
+:::
+
+. . .
+
+::: {.box .key}
+<span class="tag">Definition</span>
+The **p-value** is the probability, computed assuming $H_0$ is true, that the test statistic takes a value as extreme as, or more extreme than (relative to $H_0$), the one actually observed.
+:::
+
+. . .
+
+::: {.cards}
+::: {.box .warn .c}
+<span class="tag">Small p-value</span>
+"If $H_0$ were true, this sample would be a near-impossible miracle."
+:::
+::: {.box .good .c}
+<span class="tag">Large p-value</span>
+"This sample is exactly what we would expect under $H_0$."
+:::
+:::
+
+## The p-value: our data
+
+::: {.box .key}
+$$p=2\,\Phi(-1.72)\approx0.085$$
+:::
+
+. . .
+
+::: {.box}
+If the true mean height were $167$ cm, we would get a sample mean at least as far from $167$ as $165.9$ (in either direction) only about **8.5%** of the time.
+:::
+
+## Step 4: Choose $\alpha$ and decide
+
+::: {.box}
+The **significance level** $\alpha$ is a threshold, **chosen before looking at the data**: how much "surprise" we tolerate before we stop believing $H_0$. For $\alpha=0.05$: "I blame random chance for anything that happens more than 5% of the time."
+:::
+
+. . .
+
+| Significance level $\alpha$ | Interpretation |
+|:-:|:--|
+| **0.10** | 10% risk of a false alarm. Moderate evidence required. |
+| **0.05** | 5% risk of a false alarm. The standard benchmark. |
+| **0.01** | 1% risk of a false alarm. Very strong evidence required. |
+
+## The decision rule
+
+| Condition | Intuition | Verdict |
+|:-:|:--|:--|
+| **$p<\alpha$** | Too rare to be a coincidence. | There is sufficient evidence: **reject $H_0$** in favour of $H_1$. |
+| **$p\geq\alpha$** | Common enough to be random noise. | There is not sufficient evidence: **fail to reject $H_0$**. |
+
+. . .
+
+::: {.box .key}
+<span class="tag">Evidence gauge</span>
+The larger $|z|$, the smaller the p-value, and the more inconsistent the data is with $H_0$.
+:::
+
+## Decision: our data
+
+::: {.box .good}
+$p\approx0.085$. At $\alpha=0.05$ (and, of course, at $\alpha=0.01$) we **fail to reject** $H_0$.
+:::
+
+. . .
+
+::: {.box .warn}
+At the more lenient $\alpha=0.10$ we **would reject** $H_0$. The verdict depends on the threshold, so choose $\alpha$ first.
+:::
+
+. . .
+
+::: {.box}
+<span class="tag">Careful</span>
+"Fail to reject" is **not** "$H_0$ is true". It only says the data is not surprising enough to rule it out.
+:::
+
+## Confidence interval and test
+
+::: {.cap}
+A confidence interval and a **two-sided** test are two sides of the same coin. Move the hypothesized $\mu_0$ and watch the p-value and the intervals.
+:::
+
+<svg id="du-svg" viewBox="0 0 900 300" class="famplot"></svg>
+
+<div class="readout" id="du-out"></div>
+
+<div class="ctl" style="justify-content:center">
+  <label>Hypothesized $\mu_0$: <input type="range" id="du-mu" min="163" max="169" step="0.01" value="167" style="width:420px"> <b id="du-mu-val">167.00</b></label>
+</div>
+
+<script>
+(function () {
+  var SE = 8.7 / Math.sqrt(185), XO = 165.9, L = 50, R = 880, XA = 161, XB = 171;
+  var TOP = 10, SC = 215 / 0.75;
+  function px(x) { return L + (x - XA) / (XB - XA) * (R - L); }
+  function py(y) { return TOP + (0.75 - y) * SC; }
+  function pdf(x, m) { return Math.exp(-0.5 * Math.pow((x - m) / SE, 2)) / (SE * Math.sqrt(2 * Math.PI)); }
+  function erf(x) { var s = x < 0 ? -1 : 1; x = Math.abs(x); var t = 1 / (1 + 0.3275911 * x);
+    return s * (1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x)); }
+  function Phi(z) { return 0.5 * (1 + erf(z / Math.SQRT2)); }
+  var svg = document.getElementById("du-svg"), sl = document.getElementById("du-mu"), lab = document.getElementById("du-mu-val"), out = document.getElementById("du-out");
+  function path(m, lo, hi) {
+    var d = "M" + px(lo).toFixed(1) + "," + py(0).toFixed(1);
+    for (var x = lo; x <= hi + 1e-9; x += 0.01) d += " L" + px(x).toFixed(1) + "," + py(pdf(x, m)).toFixed(1);
+    return d + " L" + px(hi).toFixed(1) + "," + py(0).toFixed(1) + " Z";
+  }
+  function draw() {
+    var m = +sl.value, dist = Math.abs(XO - m), p = 2 * (1 - Phi(dist / SE)), g = "";
+    lab.textContent = m.toFixed(2);
+    var lo = m - 4 * SE, hi = m + 4 * SE;
+    if (m - dist > lo) g += '<path d="' + path(m, lo, m - dist) + '" fill="#c53030" fill-opacity="0.4"/>';
+    if (m + dist < hi) g += '<path d="' + path(m, m + dist, hi) + '" fill="#c53030" fill-opacity="0.4"/>';
+    var d = "";
+    for (var x = lo; x <= hi + 1e-9; x += 0.01) d += (d ? " L" : "M") + px(x).toFixed(1) + "," + py(pdf(x, m)).toFixed(1);
+    g += '<path d="' + d + '" fill="none" stroke="#444" stroke-width="2.5"/>';
+    g += '<line x1="' + L + '" y1="' + py(0) + '" x2="' + R + '" y2="' + py(0) + '" stroke="#52606d" stroke-width="2"/>';
+    for (var t = 162; t <= 170; t += 2) g += '<text x="' + px(t) + '" y="' + (py(0) + 20) + '" text-anchor="middle" font-size="16" fill="#52606d">' + t + '</text>';
+    g += '<line x1="' + px(XO) + '" y1="' + TOP + '" x2="' + px(XO) + '" y2="' + py(0) + '" stroke="#1f2933" stroke-width="3"/>' +
+         '<text x="' + (px(XO) + (m < XO ? 8 : -8)) + '" y="' + (TOP + 14) + '" text-anchor="' + (m < XO ? "start" : "end") + '" font-size="17" font-weight="700" fill="#1f2933">X̄ = 165.9</text>';
+    g += '<line x1="' + px(m) + '" y1="' + TOP + '" x2="' + px(m) + '" y2="' + py(0) + '" stroke="#2b6cb0" stroke-width="2.5" stroke-dasharray="6 5"/>' +
+         '<text x="' + (px(m) + (m < XO ? -8 : 8)) + '" y="' + (TOP + 14) + '" text-anchor="' + (m < XO ? "end" : "start") + '" font-size="17" font-weight="700" fill="#2b6cb0">μ₀ = ' + m.toFixed(2) + '</text>';
+    [[1.645, "#440154", "90% CI", 262], [1.96, "#21918c", "95% CI", 274], [2.576, "#fde725", "99% CI", 286]].forEach(function (c) {
+      g += '<line x1="' + px(XO - c[0] * SE) + '" y1="' + c[3] + '" x2="' + px(XO + c[0] * SE) + '" y2="' + c[3] + '" stroke="' + c[1] + '" stroke-width="7"/>';
+    });
+    [["#440154", "90% CI", 24], ["#21918c", "95% CI", 46], ["#fde725", "99% CI", 68]].forEach(function (c) {
+      g += '<circle cx="790" cy="' + c[2] + '" r="6" fill="' + c[0] + '"/><text x="805" y="' + (c[2] + 6) + '" font-size="17" fill="#1f2933">' + c[1] + '</text>';
+    });
+    svg.innerHTML = g;
+    out.innerHTML = 'Shaded area (p-value): <b style="color:#c53030">' + p.toFixed(4) + '</b> &nbsp;·&nbsp; ' +
+      [[0.10, "90%"], [0.05, "95%"], [0.01, "99%"]].map(function (c) {
+        return 'α = ' + c[0].toFixed(2) + ': ' + (p < c[0] ? '<b>reject</b>' : 'fail to reject') + ' (μ₀ ' + (p < c[0] ? 'outside' : 'inside') + ' the ' + c[1] + ' CI)';
+      }).join(' &nbsp;·&nbsp; ');
+  }
+  sl.addEventListener("input", draw); draw();
+})();
+</script>
+
+## The duality
+
+::: {.box .key}
+At level $\alpha$, a two-sided test **rejects** $\mu_0$ exactly when $\mu_0$ lies **outside** the $(1-\alpha)$ confidence interval.
+:::
+
+. . .
+
+::: {.box}
+The confidence interval is the set of **all** values $\mu_0$ that the test would **not** reject: the plausible values.
+:::
+
+. . .
+
+::: {.box .good}
+<span class="tag">Our data</span>
+$167$ is inside the 95% interval $[164.65,\ 167.15]$ (fail to reject at 5%) but outside the 90% interval $[164.85,\ 166.95]$ (reject at 10%).
+:::
+
+# One-sided tests {.section-slide}
+
+When the question has a direction.
+
+## Two-sided vs. one-sided
+
+| | Two-sided | One-sided |
+|:--|:--|:--|
+| **Question** | Is there *any* difference? | Is there an *increase* or a *decrease*? |
+| **Alternative $H_1$** | $\mu\neq\mu_0$ | $\mu>\mu_0$ or $\mu<\mu_0$ |
+| **Rejection region** | Two tails, $\alpha/2$ each | One tail, the full $\alpha$ |
+| **P-value** | $2\,P(Z>\lvert z\rvert)$ | Area in the tail named by $H_1$ |
+
+## Tail areas and power
+
+::: {.box}
+<span class="tag">Tail areas</span>
+In a **two-sided** test $\alpha$ is split between the lower and upper tails. In a **one-sided** test the whole $\alpha$ goes into the tail named by $H_1$.
+:::
+
+. . .
+
+::: {.box .key}
+<span class="tag">Key result: power</span>
+A one-sided test is more **powerful** in the hypothesized direction: its critical value is closer to the mean. But it completely ignores effects in the opposite direction.
+:::
+
+## One-sided example: hypotheses
+
+::: {.box}
+<span class="tag">Claim</span>
+The average height is **less than $167$ cm**. Data: $n=185$, $\bar{X}=165.9$, $\sigma=8.7$, $SE\approx0.640$.
+:::
+
+. . .
+
+::: {.box .key}
+$$H_0:\ \mu\geq167 \qquad H_1:\ \mu<167$$
+:::
+
+. . .
+
+::: {.box .good}
+If we reject $\mu=167$ in favour of $\mu<167$, we also reject any $\mu_0>167$. So we may write $H_0$ with an equality **without loss of generality**:
+$$H_0:\ \mu=167 \qquad H_1:\ \mu<167$$
+:::
+
+## One-sided example: the test
+
+::: {.box}
+$$z=\frac{165.9-167}{0.640}\approx-1.72$$
+:::
+
+. . .
+
+| At $\alpha=0.05$ | One-sided (lower) | Two-sided |
+|:--|:-:|:-:|
+| **Critical value** | $-1.645$ | $\pm1.96$ |
+| **P-value** | $0.043$ | $0.085$ |
+| **Verdict** | **Reject $H_0$** | **Fail to reject $H_0$** |
+
+. . .
+
+::: {.box .key}
+The one-sided test makes it **easier to reject** $H_0$ in the direction of $H_1$. Decide the direction **before** seeing the data.
+:::
+
+## One-sided test: the picture
+
+::: {.cap}
+Shaded: the probability of a result as low as $\bar{X}=165.9$ if the slider value were the true $\mu_0$, for $H_1:\mu<\mu_0$.
+:::
+
+<svg id="os-svg" viewBox="0 0 900 300" class="famplot"></svg>
+
+<div class="readout" id="os-out"></div>
+
+<div class="ctl" style="justify-content:center">
+  <label>Hypothesized $\mu_0$: <input type="range" id="os-mu" min="164" max="168.5" step="0.01" value="167" style="width:420px"> <b id="os-mu-val">167.00</b></label>
+</div>
+
+<script>
+(function () {
+  var SE = 8.7 / Math.sqrt(185), XO = 165.9, L = 50, R = 880, XA = 161, XB = 171;
+  var TOP = 10, SC = 215 / 0.75;
+  function px(x) { return L + (x - XA) / (XB - XA) * (R - L); }
+  function py(y) { return TOP + (0.75 - y) * SC; }
+  function pdf(x, m) { return Math.exp(-0.5 * Math.pow((x - m) / SE, 2)) / (SE * Math.sqrt(2 * Math.PI)); }
+  function erf(x) { var s = x < 0 ? -1 : 1; x = Math.abs(x); var t = 1 / (1 + 0.3275911 * x);
+    return s * (1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x)); }
+  function Phi(z) { return 0.5 * (1 + erf(z / Math.SQRT2)); }
+  var svg = document.getElementById("os-svg"), sl = document.getElementById("os-mu"), lab = document.getElementById("os-mu-val"), out = document.getElementById("os-out");
+  function draw() {
+    var m = +sl.value, p = Phi((XO - m) / SE), g = "";
+    lab.textContent = m.toFixed(2);
+    var lo = m - 4 * SE, hi = m + 4 * SE;
+    if (XO > lo) {
+      var d0 = "M" + px(lo).toFixed(1) + "," + py(0).toFixed(1);
+      for (var x = lo; x <= Math.min(XO, hi) + 1e-9; x += 0.01) d0 += " L" + px(x).toFixed(1) + "," + py(pdf(x, m)).toFixed(1);
+      g += '<path d="' + d0 + ' L' + px(Math.min(XO, hi)).toFixed(1) + ',' + py(0).toFixed(1) + ' Z" fill="#c53030" fill-opacity="0.4"/>';
+    }
+    var d = "";
+    for (var x2 = lo; x2 <= hi + 1e-9; x2 += 0.01) d += (d ? " L" : "M") + px(x2).toFixed(1) + "," + py(pdf(x2, m)).toFixed(1);
+    g += '<path d="' + d + '" fill="none" stroke="#444" stroke-width="2.5"/>';
+    g += '<line x1="' + L + '" y1="' + py(0) + '" x2="' + R + '" y2="' + py(0) + '" stroke="#52606d" stroke-width="2"/>';
+    for (var t = 162; t <= 170; t += 2) g += '<text x="' + px(t) + '" y="' + (py(0) + 20) + '" text-anchor="middle" font-size="16" fill="#52606d">' + t + '</text>';
+    g += '<line x1="' + px(XO) + '" y1="' + TOP + '" x2="' + px(XO) + '" y2="' + py(0) + '" stroke="#1f2933" stroke-width="3"/>' +
+         '<text x="' + (px(XO) + (m < XO ? 8 : -8)) + '" y="' + (TOP + 14) + '" text-anchor="' + (m < XO ? "start" : "end") + '" font-size="17" font-weight="700" fill="#1f2933">X̄ = 165.9</text>';
+    g += '<line x1="' + px(m) + '" y1="' + TOP + '" x2="' + px(m) + '" y2="' + py(0) + '" stroke="#2b6cb0" stroke-width="2.5" stroke-dasharray="6 5"/>' +
+         '<text x="' + (px(m) + (m < XO ? -8 : 8)) + '" y="' + (TOP + 14) + '" text-anchor="' + (m < XO ? "end" : "start") + '" font-size="17" font-weight="700" fill="#2b6cb0">μ₀ = ' + m.toFixed(2) + '</text>';
+    // one-sided bounds: mu0 is rejected at level a when it lies above XO + z_a * SE
+    [[1.282, "#440154", 262], [1.645, "#21918c", 274], [2.326, "#fde725", 286]].forEach(function (c) {
+      g += '<line x1="' + L + '" y1="' + c[2] + '" x2="' + px(XO + c[0] * SE) + '" y2="' + c[2] + '" stroke="' + c[1] + '" stroke-width="7"/>';
+    });
+    [["#440154", "α = 0.10", 24], ["#21918c", "α = 0.05", 46], ["#fde725", "α = 0.01", 68]].forEach(function (c) {
+      g += '<circle cx="790" cy="' + c[2] + '" r="6" fill="' + c[0] + '"/><text x="805" y="' + (c[2] + 6) + '" font-size="17" fill="#1f2933">' + c[1] + '</text>';
+    });
+    svg.innerHTML = g;
+    out.innerHTML = 'One-sided p-value (shaded area): <b style="color:#c53030">' + p.toFixed(4) + '</b> &nbsp;·&nbsp; ' +
+      [0.10, 0.05, 0.01].map(function (a) { return 'α = ' + a.toFixed(2) + ': ' + (p < a ? '<b>reject</b>' : 'fail to reject'); }).join(' &nbsp;·&nbsp; ') +
+      '<br>Each bar: the values of μ₀ that are <b>not</b> rejected at that α.';
+  }
+  sl.addEventListener("input", draw); draw();
+})();
+</script>
+
+# Testing $\mu$ when $\sigma$ is unknown {.section-slide}
+
+Replace $\sigma$ by its estimate $s$.
+
+## The t-statistic
+
+::: {.box}
+So far $\sigma$ was **known**. In practice it is unknown and must be estimated by the sample standard deviation $s$.
+:::
+
+. . .
+
+::: {.box .key}
+<span class="tag">Definition</span>
+$$t=\frac{\bar{X}-\mu_0}{s/\sqrt n}$$
+where $s$ is the sample standard deviation.
+:::
+
+## Its distribution
+
+::: {.box .key}
+<span class="tag">Key result</span>
+Draw a random sample of size $n$ from a **normal population** with mean $\mu$. Then
+$$t=\frac{\bar{X}-\mu}{s/\sqrt n}$$
+follows the **Student's $t$-distribution** with $n-1$ degrees of freedom. Under $H_0$, $\mu=\mu_0$.
+:::
+
+. . .
+
+::: {.box}
+<span class="tag">Degrees of freedom $df=n-1$</span>
+The number of independent pieces of information used to estimate the standard deviation. The smaller the $df$, the **flatter** the curve and the **thicker** the tails.
+:::
+
+## The t-distribution vs. the normal
+
+::: {.cap}
+Solid red: Student's $t$. Dashed black: the standard normal. Move the slider to change $df$.
+:::
+
+<svg id="td-svg" viewBox="0 0 900 300" class="famplot"></svg>
+
+<div class="ctl" style="justify-content:center">
+  <label>Degrees of freedom: <input type="range" id="td-df" min="1" max="50" step="1" value="3" style="width:420px"> <b id="td-df-val">3</b></label>
+</div>
+
+<script>
+(function () {
+  var L = 50, R = 880, XA = -3.5, XB = 3.5, TOP = 20, B = 250, YM = 0.45;
+  function px(x) { return L + (x - XA) / (XB - XA) * (R - L); }
+  function py(y) { return B - y / YM * (B - TOP); }
+  function lgamma(z) {
+    var C = [76.18009172947146, -86.50532032941677, 24.01409824083091, -1.231739572450155, 0.1208650973866179e-2, -0.5395239384953e-5];
+    var y = z, tmp = z + 5.5; tmp -= (z + 0.5) * Math.log(tmp);
+    var ser = 1.000000000190015;
+    for (var j = 0; j < 6; j++) ser += C[j] / ++y;
+    return -tmp + Math.log(2.5066282746310005 * ser / z);
+  }
+  function tpdf(x, v) { return Math.exp(lgamma((v + 1) / 2) - lgamma(v / 2)) / Math.sqrt(v * Math.PI) * Math.pow(1 + x * x / v, -(v + 1) / 2); }
+  function npdf(x) { return Math.exp(-0.5 * x * x) / Math.sqrt(2 * Math.PI); }
+  var svg = document.getElementById("td-svg"), sl = document.getElementById("td-df"), lab = document.getElementById("td-df-val");
+  function draw() {
+    var v = +sl.value, g = "", dn = "", dt = "";
+    lab.textContent = v;
+    for (var x = XA; x <= XB + 1e-9; x += 0.02) {
+      dn += (dn ? " L" : "M") + px(x).toFixed(1) + "," + py(npdf(x)).toFixed(1);
+      dt += (dt ? " L" : "M") + px(x).toFixed(1) + "," + py(tpdf(x, v)).toFixed(1);
+    }
+    g += '<line x1="' + L + '" y1="' + B + '" x2="' + R + '" y2="' + B + '" stroke="#52606d" stroke-width="2"/>';
+    for (var t = -3; t <= 3; t++) g += '<text x="' + px(t) + '" y="' + (B + 22) + '" text-anchor="middle" font-size="16" fill="#52606d">' + t + '</text>';
+    g += '<text x="' + ((L + R) / 2) + '" y="' + (B + 46) + '" text-anchor="middle" font-size="17" fill="#1f2933">t-statistic / z-score</text>';
+    g += '<path d="' + dn + '" fill="none" stroke="#1f2933" stroke-width="2.5" stroke-dasharray="7 5"/>';
+    g += '<path d="' + dt + '" fill="none" stroke="#c53030" stroke-width="3"/>';
+    g += '<line x1="660" y1="40" x2="700" y2="40" stroke="#1f2933" stroke-width="2.5" stroke-dasharray="7 5"/><text x="710" y="46" font-size="17" fill="#1f2933">Standard normal</text>';
+    g += '<line x1="660" y1="68" x2="700" y2="68" stroke="#c53030" stroke-width="3"/><text x="710" y="74" font-size="17" font-weight="700" fill="#c53030">Student\'s t (df = ' + v + ')</text>';
+    svg.innerHTML = g;
+  }
+  sl.addEventListener("input", draw); draw();
+})();
+</script>
+
+## Normal vs. t
+
+| Feature | Standard normal ($z$) | Student's $t$ |
+|:--|:--|:--|
+| **Shape** | Bell-shaped, symmetric | Bell-shaped, symmetric |
+| **Tails** | Thin | **Thicker (heavier)** |
+| **Spread** | Constant | Depends on $df=n-1$ |
+| **Convergence** | The "ideal" | Approaches the normal as $n\to\infty$ |
+
+## The cost of uncertainty
+
+::: {.box .key}
+Because the $t$-distribution has thicker tails, its **critical values** are always larger than those of the $z$-test at the same $\alpha$.
+:::
+
+. . .
+
+::: {.cards}
+::: {.box .warn}
+P-values are **larger** for the same statistic: harder to reject $H_0$.
+:::
+::: {.box .warn}
+Confidence intervals are **wider**: more uncertainty.
+:::
+:::
+
+. . .
+
+::: {.box .good}
+As $n$ grows, the $t$-distribution converges to the standard normal, so critical values and p-values become close to those of the $z$-test.
+:::
+
+. . .
+
+::: {.cap}
+Self-study: learn how to use the $t$-table at the end of the book.
+:::

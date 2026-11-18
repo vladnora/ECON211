@@ -17,6 +17,35 @@ format:
     chalkboard: false
 ---
 
+## Contents
+
+::: {.cards .stack .toc}
+::: {.box}
+<span class="tag">1 · Point Estimation</span>
+What an estimator is and the first criterion: unbiasedness.
+:::
+::: {.box}
+<span class="tag">2 · Example: randomized response</span>
+Estimating a sensitive share when answers are partly forced.
+:::
+::: {.box}
+<span class="tag">3 · Example: German tanks</span>
+Estimating a maximum from serial numbers; efficiency and consistency.
+:::
+::: {.box}
+<span class="tag">4 · Interval Estimation</span>
+Plausible values of $\mu$, confidence intervals, precision vs. confidence, and a game.
+:::
+::: {.box}
+<span class="tag">5 · Example: student weight</span>
+Confidence intervals for men and women, and what overlap means.
+:::
+::: {.box}
+<span class="tag">6 · Beyond the mean</span>
+The same logic for intervals around other estimators.
+:::
+:::
+
 # Point Estimation {.section-slide}
 
 Guessing a parameter from a sample.

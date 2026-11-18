@@ -105,3 +105,8 @@
 .reveal .quiz .expl { display:none; font-size:0.75em; color:var(--muted); margin-top:0.2em; }
 .reveal .quiz.done .expl { display:block; }
 .reveal .quiz.compact { font-size:0.9em; }
+
+/* ---------- contents slide ---------- */
+.reveal .cards.stack.toc { gap:0.4em; }
+.reveal .cards.stack.toc > .box { display:flex; align-items:center; gap:0.9em; padding:0.4em 0.8em; font-size:0.85em; }
+.reveal .cards.stack.toc > .box .tag { display:block; flex:0 0 17em; margin:0; font-size:0.7em; }

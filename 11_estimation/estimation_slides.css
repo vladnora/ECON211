@@ -141,3 +141,8 @@
 .reveal .cg-stats { gap:1.6em; }
 .reveal .cg-big span, .reveal .cg-w, .reveal .cg-w span { white-space:nowrap; }
 .reveal .cg-big span { font-size:0.62em; }
+
+/* ---------- contents slide ---------- */
+.reveal .cards.stack.toc { gap:0.4em; }
+.reveal .cards.stack.toc > .box { display:flex; align-items:center; gap:0.9em; padding:0.4em 0.8em; font-size:0.85em; }
+.reveal .cards.stack.toc > .box .tag { display:block; flex:0 0 17em; margin:0; font-size:0.7em; }

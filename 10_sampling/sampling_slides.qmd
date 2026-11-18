@@ -18,6 +18,31 @@ format:
     chalkboard: false
 ---
 
+## Contents
+
+::: {.cards .stack .toc}
+::: {.box}
+<span class="tag">Intro · The sample mean is random</span>
+Predict, try it on student heights, and see that $\bar{x}\neq\mu$.
+:::
+::: {.box}
+<span class="tag">1 · Example: rolling a die</span>
+Exact distribution of $\bar{X}$, simulation, the three observations and the CLT.
+:::
+::: {.box}
+<span class="tag">2 · The Normal distribution</span>
+Standard and general Normal, 68–95–99.7 rule, tables and z-scores.
+:::
+::: {.box}
+<span class="tag">3 · Normal in real life</span>
+Where the Normal fits (heights, SAT, sleep) and where it does not.
+:::
+::: {.box}
+<span class="tag">4 · Normal approximation</span>
+Approximating Binomial probabilities, with the continuity correction.
+:::
+:::
+
 ## Main question
 
 ::: {.box .key}

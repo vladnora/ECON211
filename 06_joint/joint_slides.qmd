@@ -1,0 +1,963 @@
+---
+title: "Joint Distributions"
+subtitle: "ECON211 · Probability & Statistics"
+format:
+  revealjs:
+    theme: simple
+    css: joint_slides.css
+    html-math-method: katex
+    center: false
+    slide-number: true
+    embed-resources: true
+    width: 1050
+    height: 700
+    margin: 0.05
+    transition: fade
+    transition-speed: fast
+    chalkboard: false
+---
+
+## Contents
+
+::: {.cards .stack .toc}
+::: {.box}
+<span class="tag">1 · Joint and Marginal Distributions</span>
+Each dot is a student; let the dots fall onto an axis to see a marginal.
+:::
+::: {.box}
+<span class="tag">2 · Joint PMF</span>
+A 3D bar chart of $P(X=x, Y=y)$: marginals by stacking, conditionals by slicing.
+:::
+::: {.box}
+<span class="tag">3 · Strength of Relationship</span>
+Covariance, correlation, units, and what $r=0$ does not mean.
+:::
+:::
+
+# Joint and Marginal Distributions {.section-slide}
+
+From a cloud of dots to the distribution of one variable.
+
+## Marginals of height and weight
+
+```{=html}
+<div id="hwm-root"></div>
+<style>
+  #hwm-root { max-width:700px; margin:0 auto; padding:4px 0; color:#1f2933; text-align:left;
+                font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; font-size:16px; line-height:1.3; }
+  #hwm-root .hwm-bar { display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between; }
+  #hwm-root .hwm-seg { display:inline-flex; background:#eef1f4; border-radius:9px; padding:3px; }
+  #hwm-root .hwm-seg button { border:0; margin:0; background:transparent; padding:6px 13px; border-radius:7px; cursor:pointer;
+                font-family:inherit; font-size:15px; line-height:1.2; color:#7b8794; text-transform:none; letter-spacing:normal;
+                transition:background .25s, color .25s, box-shadow .25s; }
+  #hwm-root .hwm-seg button.hwm-on { background:#ffffff; color:#1f2933; box-shadow:0 1px 3px rgba(0,0,0,.14); }
+  #hwm-root .hwm-cap { font-size:14px; color:#7b8794; margin:8px 2px 0; min-height:20px; }
+  #hwm-root svg { width:100%; height:auto; display:block; margin:0; max-height:none; }
+  #hwm-root .hwm-ax { transition:opacity .6s ease; }
+  #hwm-root .hwm-tick { font-size:13px; fill:#7b8794; }
+  #hwm-root .hwm-lab { font-size:14px; fill:#1f2933; }
+  #hwm-root .hwm-leg { font-size:13px; fill:#1f2933; transition:opacity .4s; }
+</style>
+<script>
+(function () {
+const CFG_P = {"title": "Height and Weight", "prefix": "hwm", "data": [{"x": 153.0, "y": 54.0, "g": "W"}, {"x": 155.0, "y": 40.0, "g": "W"}, {"x": 155.0, "y": 38.0, "g": "W"}, {"x": 155.0, "y": 45.0, "g": "W"}, {"x": 156.0, "y": 60.0, "g": "W"}, {"x": 157.0, "y": 60.0, "g": "W"}, {"x": 157.0, "y": 50.0, "g": "W"}, {"x": 157.0, "y": 49.0, "g": "W"}, {"x": 157.0, "y": 51.0, "g": "W"}, {"x": 158.0, "y": 41.0, "g": "W"}, {"x": 158.0, "y": 52.0, "g": "W"}, {"x": 158.0, "y": 46.5, "g": "W"}, {"x": 158.0, "y": 49.0, "g": "W"}, {"x": 158.0, "y": 52.0, "g": "W"}, {"x": 159.0, "y": 46.0, "g": "W"}, {"x": 159.0, "y": 48.0, "g": "W"}, {"x": 160.0, "y": 60.5, "g": "W"}, {"x": 160.0, "y": 54.0, "g": "W"}, {"x": 160.0, "y": 75.0, "g": "W"}, {"x": 160.0, "y": 52.0, "g": "W"}, {"x": 160.0, "y": 55.0, "g": "W"}, {"x": 160.0, "y": 53.0, "g": "W"}, {"x": 160.0, "y": 45.0, "g": "W"}, {"x": 160.0, "y": 55.0, "g": "W"}, {"x": 160.0, "y": 58.0, "g": "W"}, {"x": 160.0, "y": 40.0, "g": "W"}, {"x": 160.0, "y": 48.0, "g": "W"}, {"x": 160.0, "y": 52.0, "g": "W"}, {"x": 160.0, "y": 50.0, "g": "W"}, {"x": 160.0, "y": 40.0, "g": "W"}, {"x": 161.0, "y": 46.0, "g": "W"}, {"x": 162.0, "y": 50.0, "g": "W"}, {"x": 162.0, "y": 55.0, "g": "W"}, {"x": 162.0, "y": 46.0, "g": "W"}, {"x": 162.0, "y": 56.0, "g": "W"}, {"x": 162.0, "y": 58.0, "g": "W"}, {"x": 162.0, "y": 56.0, "g": "W"}, {"x": 162.0, "y": 55.0, "g": "W"}, {"x": 162.0, "y": 45.0, "g": "W"}, {"x": 162.0, "y": 70.0, "g": "W"}, {"x": 162.0, "y": 53.0, "g": "W"}, {"x": 162.0, "y": 60.0, "g": "W"}, {"x": 162.0, "y": 46.0, "g": "W"}, {"x": 163.0, "y": 48.0, "g": "W"}, {"x": 163.0, "y": 53.0, "g": "W"}, {"x": 163.0, "y": 45.0, "g": "W"}, {"x": 163.0, "y": 50.0, "g": "W"}, {"x": 163.0, "y": 49.0, "g": "W"}, {"x": 163.0, "y": 60.0, "g": "W"}, {"x": 163.0, "y": 60.0, "g": "W"}, {"x": 163.0, "y": 61.0, "g": "W"}, {"x": 163.0, "y": 60.0, "g": "W"}, {"x": 163.0, "y": 53.0, "g": "W"}, {"x": 163.0, "y": 58.0, "g": "W"}, {"x": 163.0, "y": 55.0, "g": "M"}, {"x": 164.0, "y": 51.0, "g": "W"}, {"x": 164.0, "y": 45.0, "g": "W"}, {"x": 164.0, "y": 49.0, "g": "M"}, {"x": 165.0, "y": 47.0, "g": "M"}, {"x": 165.0, "y": 59.0, "g": "W"}, {"x": 165.0, "y": 49.0, "g": "W"}, {"x": 165.0, "y": 63.0, "g": "W"}, {"x": 165.0, "y": 54.0, "g": "W"}, {"x": 165.0, "y": 55.0, "g": "W"}, {"x": 165.0, "y": 68.0, "g": "W"}, {"x": 165.0, "y": 51.0, "g": "W"}, {"x": 165.0, "y": 48.0, "g": "W"}, {"x": 165.0, "y": 43.0, "g": "W"}, {"x": 165.0, "y": 60.0, "g": "W"}, {"x": 165.0, "y": 50.0, "g": "W"}, {"x": 165.0, "y": 53.5, "g": "W"}, {"x": 165.0, "y": 52.0, "g": "W"}, {"x": 166.0, "y": 59.0, "g": "W"}, {"x": 166.0, "y": 52.0, "g": "W"}, {"x": 167.0, "y": 49.0, "g": "W"}, {"x": 167.0, "y": 48.0, "g": "W"}, {"x": 167.0, "y": 55.0, "g": "W"}, {"x": 167.0, "y": 52.0, "g": "W"}, {"x": 167.0, "y": 48.0, "g": "W"}, {"x": 167.0, "y": 57.0, "g": "W"}, {"x": 167.0, "y": 53.0, "g": "W"}, {"x": 167.0, "y": 52.0, "g": "W"}, {"x": 167.0, "y": 54.0, "g": "W"}, {"x": 167.0, "y": 54.0, "g": "W"}, {"x": 168.0, "y": 75.0, "g": "W"}, {"x": 168.0, "y": 67.0, "g": "W"}, {"x": 168.0, "y": 59.0, "g": "W"}, {"x": 168.0, "y": 55.0, "g": "W"}, {"x": 168.0, "y": 56.0, "g": "W"}, {"x": 168.0, "y": 50.0, "g": "W"}, {"x": 168.0, "y": 49.0, "g": "W"}, {"x": 168.0, "y": 54.0, "g": "W"}, {"x": 168.0, "y": 52.0, "g": "W"}, {"x": 169.0, "y": 54.0, "g": "W"}, {"x": 169.0, "y": 48.0, "g": "W"}, {"x": 169.0, "y": 55.0, "g": "W"}, {"x": 169.0, "y": 60.0, "g": "W"}, {"x": 169.0, "y": 58.0, "g": "W"}, {"x": 169.0, "y": 54.0, "g": "W"}, {"x": 169.0, "y": 51.0, "g": "W"}, {"x": 169.0, "y": 60.0, "g": "W"}, {"x": 169.0, "y": 60.0, "g": "W"}, {"x": 170.0, "y": 60.0, "g": "W"}, {"x": 170.0, "y": 58.0, "g": "W"}, {"x": 170.0, "y": 45.0, "g": "W"}, {"x": 170.0, "y": 54.0, "g": "W"}, {"x": 170.0, "y": 80.0, "g": "M"}, {"x": 170.0, "y": 61.0, "g": "M"}, {"x": 170.0, "y": 63.0, "g": "W"}, {"x": 170.0, "y": 53.0, "g": "W"}, {"x": 170.0, "y": 62.0, "g": "W"}, {"x": 170.0, "y": 56.0, "g": "W"}, {"x": 170.0, "y": 66.0, "g": "W"}, {"x": 170.0, "y": 58.0, "g": "W"}, {"x": 170.0, "y": 53.0, "g": "W"}, {"x": 170.0, "y": 61.0, "g": "W"}, {"x": 170.0, "y": 55.0, "g": "W"}, {"x": 170.0, "y": 56.0, "g": "W"}, {"x": 170.0, "y": 66.0, "g": "M"}, {"x": 170.0, "y": 60.0, "g": "M"}, {"x": 170.0, "y": 53.0, "g": "W"}, {"x": 170.0, "y": 57.0, "g": "W"}, {"x": 170.0, "y": 78.0, "g": "M"}, {"x": 171.0, "y": 50.0, "g": "W"}, {"x": 171.0, "y": 62.0, "g": "M"}, {"x": 171.0, "y": 60.0, "g": "W"}, {"x": 171.0, "y": 55.0, "g": "W"}, {"x": 172.0, "y": 85.0, "g": "M"}, {"x": 172.0, "y": 70.0, "g": "W"}, {"x": 172.0, "y": 58.0, "g": "W"}, {"x": 173.0, "y": 49.0, "g": "W"}, {"x": 173.0, "y": 51.0, "g": "W"}, {"x": 173.0, "y": 80.0, "g": "W"}, {"x": 173.0, "y": 62.0, "g": "W"}, {"x": 173.0, "y": 51.0, "g": "M"}, {"x": 173.0, "y": 97.0, "g": "M"}, {"x": 173.0, "y": 69.0, "g": "M"}, {"x": 173.0, "y": 71.0, "g": "M"}, {"x": 173.0, "y": 60.0, "g": "W"}, {"x": 173.0, "y": 62.0, "g": "W"}, {"x": 173.0, "y": 54.0, "g": "W"}, {"x": 173.0, "y": 52.0, "g": "W"}, {"x": 173.0, "y": 68.0, "g": "M"}, {"x": 173.0, "y": 52.0, "g": "W"}, {"x": 173.0, "y": 70.0, "g": "W"}, {"x": 174.0, "y": 60.0, "g": "M"}, {"x": 174.0, "y": 58.0, "g": "M"}, {"x": 174.0, "y": 78.0, "g": "M"}, {"x": 174.0, "y": 64.0, "g": "M"}, {"x": 174.0, "y": 63.0, "g": "M"}, {"x": 174.0, "y": 63.0, "g": "M"}, {"x": 174.0, "y": 65.0, "g": "M"}, {"x": 175.0, "y": 60.0, "g": "M"}, {"x": 175.0, "y": 63.0, "g": "M"}, {"x": 175.0, "y": 63.0, "g": "W"}, {"x": 175.0, "y": 56.0, "g": "W"}, {"x": 175.0, "y": 95.0, "g": "M"}, {"x": 175.0, "y": 52.0, "g": "W"}, {"x": 175.0, "y": 71.0, "g": "M"}, {"x": 175.0, "y": 65.0, "g": "M"}, {"x": 175.0, "y": 55.0, "g": "M"}, {"x": 176.0, "y": 63.0, "g": "M"}, {"x": 176.0, "y": 87.0, "g": "M"}, {"x": 176.0, "y": 67.0, "g": "M"}, {"x": 177.0, "y": 70.0, "g": "M"}, {"x": 177.0, "y": 93.0, "g": "M"}, {"x": 177.0, "y": 69.0, "g": "W"}, {"x": 178.0, "y": 63.0, "g": "W"}, {"x": 178.0, "y": 82.0, "g": "M"}, {"x": 178.0, "y": 62.0, "g": "M"}, {"x": 178.0, "y": 76.0, "g": "M"}, {"x": 178.0, "y": 70.0, "g": "M"}, {"x": 178.0, "y": 79.0, "g": "M"}, {"x": 178.0, "y": 65.0, "g": "W"}, {"x": 178.0, "y": 87.0, "g": "M"}, {"x": 178.0, "y": 65.0, "g": "M"}, {"x": 179.0, "y": 69.0, "g": "M"}, {"x": 179.0, "y": 65.0, "g": "M"}, {"x": 179.0, "y": 67.0, "g": "M"}, {"x": 180.0, "y": 70.0, "g": "M"}, {"x": 180.0, "y": 62.0, "g": "M"}, {"x": 180.0, "y": 65.0, "g": "M"}, {"x": 180.0, "y": 64.0, "g": "M"}, {"x": 180.0, "y": 62.0, "g": "M"}, {"x": 180.0, "y": 69.0, "g": "M"}, {"x": 180.0, "y": 71.0, "g": "M"}, {"x": 180.0, "y": 80.0, "g": "M"}, {"x": 180.0, "y": 75.0, "g": "M"}, {"x": 181.0, "y": 70.0, "g": "M"}, {"x": 181.0, "y": 81.0, "g": "M"}, {"x": 181.0, "y": 69.0, "g": "M"}, {"x": 181.0, "y": 65.0, "g": "W"}, {"x": 182.0, "y": 65.0, "g": "M"}, {"x": 182.0, "y": 63.0, "g": "M"}, {"x": 182.0, "y": 80.0, "g": "M"}, {"x": 182.0, "y": 69.0, "g": "M"}, {"x": 183.0, "y": 73.0, "g": "M"}, {"x": 183.0, "y": 72.0, "g": "M"}, {"x": 183.0, "y": 62.0, "g": "M"}, {"x": 183.0, "y": 70.0, "g": "M"}, {"x": 183.0, "y": 64.0, "g": "M"}, {"x": 183.0, "y": 85.0, "g": "M"}, {"x": 183.0, "y": 93.0, "g": "M"}, {"x": 183.0, "y": 73.0, "g": "M"}, {"x": 183.0, "y": 93.0, "g": "M"}, {"x": 183.0, "y": 73.0, "g": "M"}, {"x": 183.0, "y": 78.0, "g": "M"}, {"x": 183.0, "y": 77.0, "g": "M"}, {"x": 183.0, "y": 63.0, "g": "M"}, {"x": 184.0, "y": 87.0, "g": "M"}, {"x": 184.0, "y": 86.0, "g": "M"}, {"x": 186.0, "y": 80.0, "g": "M"}, {"x": 186.0, "y": 79.0, "g": "M"}, {"x": 186.0, "y": 90.0, "g": "M"}, {"x": 188.0, "y": 75.0, "g": "M"}, {"x": 190.0, "y": 80.0, "g": "M"}, {"x": 190.0, "y": 75.0, "g": "M"}, {"x": 192.0, "y": 75.0, "g": "M"}, {"x": 192.0, "y": 76.0, "g": "M"}, {"x": 193.0, "y": 75.0, "g": "M"}, {"x": 197.0, "y": 87.0, "g": "M"}, {"x": 188.0, "y": 84.0, "g": "M"}, {"x": 165.0, "y": 57.0, "g": "W"}, {"x": 153.0, "y": 40.0, "g": "W"}, {"x": 180.0, "y": 68.0, "g": "M"}, {"x": 160.0, "y": 50.0, "g": "W"}, {"x": 170.0, "y": 66.0, "g": "M"}, {"x": 155.0, "y": 42.0, "g": "W"}, {"x": 169.0, "y": 66.0, "g": "M"}, {"x": 172.0, "y": 53.0, "g": "W"}, {"x": 175.0, "y": 85.0, "g": "M"}, {"x": 167.0, "y": 64.0, "g": "W"}, {"x": 170.0, "y": 50.0, "g": "W"}, {"x": 153.0, "y": 46.0, "g": "W"}, {"x": 165.0, "y": 65.0, "g": "W"}, {"x": 163.0, "y": 51.0, "g": "W"}, {"x": 173.0, "y": 82.0, "g": "M"}, {"x": 162.0, "y": 48.0, "g": "W"}, {"x": 175.0, "y": 62.0, "g": "M"}, {"x": 168.0, "y": 53.0, "g": "W"}, {"x": 158.0, "y": 52.0, "g": "W"}, {"x": 181.0, "y": 64.0, "g": "M"}, {"x": 170.0, "y": 58.0, "g": "W"}, {"x": 173.0, "y": 56.0, "g": "M"}, {"x": 168.0, "y": 49.0, "g": "W"}, {"x": 168.0, "y": 55.0, "g": "W"}, {"x": 182.0, "y": 55.0, "g": "W"}, {"x": 186.0, "y": 90.0, "g": "M"}, {"x": 170.0, "y": 60.0, "g": "W"}, {"x": 160.0, "y": 49.0, "g": "W"}, {"x": 172.0, "y": 63.0, "g": "W"}, {"x": 171.0, "y": 63.0, "g": "W"}, {"x": 169.0, "y": 70.0, "g": "W"}, {"x": 172.0, "y": 59.0, "g": "M"}, {"x": 183.0, "y": 83.0, "g": "M"}, {"x": 170.0, "y": 54.0, "g": "W"}, {"x": 168.0, "y": 63.0, "g": "W"}, {"x": 164.0, "y": 48.0, "g": "W"}, {"x": 185.0, "y": 60.0, "g": "M"}, {"x": 163.0, "y": 56.0, "g": "W"}, {"x": 163.0, "y": 60.0, "g": "W"}, {"x": 169.0, "y": 54.0, "g": "W"}, {"x": 175.0, "y": 65.0, "g": "W"}, {"x": 161.0, "y": 47.0, "g": "W"}, {"x": 185.0, "y": 81.0, "g": "M"}, {"x": 181.0, "y": 54.0, "g": "M"}, {"x": 158.0, "y": 40.0, "g": "W"}, {"x": 184.0, "y": 108.0, "g": "M"}, {"x": 163.0, "y": 52.0, "g": "W"}, {"x": 177.0, "y": 69.0, "g": "M"}, {"x": 175.0, "y": 58.0, "g": "M"}, {"x": 180.0, "y": 67.0, "g": "M"}, {"x": 165.0, "y": 52.0, "g": "W"}, {"x": 163.0, "y": 60.0, "g": "W"}, {"x": 185.0, "y": 75.0, "g": "M"}, {"x": 168.0, "y": 68.0, "g": "W"}, {"x": 178.0, "y": 72.0, "g": "M"}, {"x": 168.0, "y": 47.0, "g": "W"}, {"x": 186.0, "y": 73.0, "g": "M"}, {"x": 180.0, "y": 68.0, "g": "W"}, {"x": 171.0, "y": 65.0, "g": "W"}, {"x": 186.0, "y": 81.0, "g": "M"}, {"x": 175.0, "y": 67.0, "g": "M"}, {"x": 181.0, "y": 65.0, "g": "M"}, {"x": 177.0, "y": 55.0, "g": "M"}, {"x": 182.0, "y": 73.0, "g": "M"}, {"x": 186.0, "y": 83.0, "g": "M"}, {"x": 171.0, "y": 80.0, "g": "W"}, {"x": 168.0, "y": 63.0, "g": "M"}, {"x": 161.0, "y": 55.0, "g": "W"}, {"x": 168.0, "y": 54.0, "g": "W"}, {"x": 174.0, "y": 54.0, "g": "W"}, {"x": 159.0, "y": 53.0, "g": "W"}, {"x": 167.0, "y": 54.0, "g": "W"}, {"x": 173.0, "y": 60.0, "g": "W"}], "xdom": [150, 200], "ydom": [34, 112], "xbin": 1, "ybin": 2, "xticks": [150, 160, 170, 180, 190, 200], "yticks": [40, 50, 60, 70, 80, 90, 100, 110], "xlab": "Height (cm)", "ylab": "Weight (kg)", "xshort": "height", "yshort": "weight", "groups": [{"key": "W", "label": "Women", "color": "#d53f8c"}, {"key": "M", "label": "Men", "color": "#2b6cb0"}], "capJoint": "Joint distribution: each dot is one student (height, weight)", "capX": "Empirical marginal of height: every dot falls onto the x-axis", "capY": "Empirical marginal of weight: every dot falls onto the y-axis"};
+  const P = 'hwm', CFG = CFG_P;
+  const root = document.getElementById(P + '-root');
+  const W = 760, H = 470, m = { l: 62, r: 20, t: 16, b: 54 };
+  const pw = W - m.l - m.r, ph = H - m.t - m.b;
+  const [x0, x1] = CFG.xdom, [y0, y1] = CFG.ydom;
+  const sx = v => m.l + (v - x0) / (x1 - x0) * pw;
+  const sy = v => m.t + ph - (v - y0) / (y1 - y0) * ph;
+  const NS = 'http://www.w3.org/2000/svg';
+  const el = (t, a, p) => { const e = document.createElementNS(NS, t);
+    for (const k in a) e.setAttribute(k, a[k]); if (p) p.appendChild(e); return e; };
+
+  // ---------- controls ----------
+  const bar = document.createElement('div'); bar.className = P + '-bar'; root.appendChild(bar);
+  function seg(opts, init, cb) {
+    const s = document.createElement('div'); s.className = P + '-seg'; const bs = {};
+    opts.forEach(([k, l]) => {
+      const b = document.createElement('button'); b.textContent = l;
+      b.onclick = () => { if (b.classList.contains(P + '-on')) return; for (const kk in bs) bs[kk].classList.toggle(P + '-on', kk === k); cb(k); };
+      bs[k] = b; s.appendChild(b);
+    });
+    bs[init].classList.add(P + '-on'); bar.appendChild(s);
+  }
+  let mode = 'joint', filt = 'all';
+  seg([['joint', 'Joint'], ['mx', 'Marginal of ' + CFG.xshort], ['my', 'Marginal of ' + CFG.yshort]],
+      'joint', k => { mode = k; update(); });
+  if (CFG.groups) seg([['all', 'All'], ...CFG.groups.map(g => [g.key, g.label])],
+      'all', k => { filt = k; update(); });
+  const cap = document.createElement('div'); cap.className = P + '-cap'; root.appendChild(cap);
+
+  // ---------- axes ----------
+  const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': CFG.title }, root);
+  const xAx = el('g', { class: P + '-ax' }, svg), yAx = el('g', { class: P + '-ax' }, svg);
+  CFG.yticks.forEach(v => {
+    el('line', { x1: m.l, x2: m.l + pw, y1: sy(v), y2: sy(v), stroke: '#edf0f3' }, yAx);
+    el('text', { x: m.l - 10, y: sy(v) + 4.5, 'text-anchor': 'end', class: P + '-tick' }, yAx).textContent = v;
+  });
+  CFG.xticks.forEach(v => {
+    el('line', { x1: sx(v), x2: sx(v), y1: m.t, y2: m.t + ph, stroke: '#edf0f3' }, xAx);
+    el('text', { x: sx(v), y: m.t + ph + 22, 'text-anchor': 'middle', class: P + '-tick' }, xAx).textContent = v;
+  });
+  el('text', { x: m.l + pw / 2, y: H - 8, 'text-anchor': 'middle', class: P + '-lab' }, xAx).textContent = CFG.xlab;
+  el('text', { x: 16, y: m.t + ph / 2, 'text-anchor': 'middle', class: P + '-lab',
+               transform: `rotate(-90 16 ${m.t + ph / 2})` }, yAx).textContent = CFG.ylab;
+  el('line', { x1: m.l, x2: m.l + pw, y1: m.t + ph, y2: m.t + ph, stroke: '#9aa5b1' }, svg);
+  el('line', { x1: m.l, x2: m.l, y1: m.t, y2: m.t + ph, stroke: '#9aa5b1' }, svg);
+
+  // legend (groups only)
+  const legItems = {};
+  if (CFG.groups) CFG.groups.forEach((g, i) => {
+    const gg = el('g', { class: P + '-leg', transform: `translate(${m.l + pw - 150 + i * 80}, ${m.t + 6})` }, svg);
+    el('circle', { cx: 0, cy: 0, r: 5, fill: g.color }, gg);
+    el('text', { x: 10, y: 4.5 }, gg).textContent = g.label;
+    legItems[g.key] = gg;
+  });
+
+  // ---------- dots (constant size throughout) ----------
+  const R = CFG.r || 4.3, OP = 0.82;
+  const G = 0.0011;                 // gravity, px / ms^2
+  const dotsG = el('g', {}, svg);
+  const color = d => CFG.groups ? CFG.groups.find(g => g.key === d.g).color : CFG.color;
+  const pts = CFG.data.map(d => ({ g: d.g, dx: d.x, dy: d.y,
+    c: el('circle', { r: R, fill: color(d), stroke: '#fff', 'stroke-width': 0.8, opacity: 0 }, dotsG),
+    x: sx(d.x), y: sy(d.y), op: 0, segs: [], pile: null }));
+  const active = p => filt === 'all' || p.g === filt;
+  const home = p => ({ x: sx(p.dx), y: sy(p.dy) });
+
+  // pile frame: v = lateral coordinate, u = height above the "floor" (the axis the dots fall onto)
+  const toVU = (dim, x, y) => dim === 'x' ? { v: x, u: m.t + ph - y } : { v: y, u: x - m.l };
+  const toXY = (dim, v, u) => dim === 'x' ? { x: v, y: m.t + ph - u } : { x: m.l + u, y: v };
+
+  // drop one disk at lateral position v0 onto the floor / existing disks; it may roll a little sideways into a lower spot
+  function deposit(v0, placed, vTrue = v0, maxDrift = 3 * R) {
+    const restU = v => { let u = R;
+      for (const q of placed) { const dv = v - q.v; if (dv > -2 * R && dv < 2 * R) u = Math.max(u, q.u + Math.sqrt(4 * R * R - dv * dv)); }
+      return u; };
+    let best = null;
+    for (let dl = -1.6 * R; dl <= 1.6 * R; dl += 0.25) {
+      if (Math.abs(v0 + dl - vTrue) > maxDrift) continue;        // never let a dot wander far from its true value
+      const u = restU(v0 + dl), cost = u + 0.3 * Math.abs(dl);
+      if (!best || cost < best.cost) best = { v: v0 + dl, u, cost };
+    }
+    return best;
+  }
+  // build a pile from the given dots, dropped in order of current height above the floor (lowest lands first).
+  // Then re-release the settled pile a few times until it stops changing, so the first drop already lands in its final, smooth shape.
+  function buildPile(dim, list, placed, passes = 15) {
+    const base = placed.slice();
+    const orig = new Map(list.map(p => [p, toVU(dim, p.x, p.y)]));   // true data position: rolling is always measured from here
+    let start = orig;
+    for (let k = 0; k < passes; k++) {
+      const pl = base.slice();
+      list.slice().sort((a, b) => start.get(a).u - start.get(b).u).forEach(p => {
+        const r = deposit(start.get(p).v, pl, orig.get(p).v); pl.push(r); p.pile = { v: r.v, u: r.u };
+      });
+      const moved = k === 0 ? Infinity : list.reduce((s, p) => s + Math.abs(p.pile.v - start.get(p).v) + Math.abs(p.pile.u - start.get(p).u), 0);
+      start = new Map(list.map(p => [p, p.pile]));
+      if (moved < 0.5) break;
+    }
+    list.forEach(p => placed.push({ v: p.pile.v, u: p.pile.u }));
+  }
+  // ---------- animation segments ----------
+  const ease = u => u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2;
+  const smooth = u => u * u * (3 - 2 * u);
+  let clock = 0, raf = null;
+  // each segment: {t0, dur, kind, ...}; positions evaluated relative to the segment start
+  function addFall(p, dim, from, to, t0) {
+    const a = toVU(dim, from.x, from.y), b = toVU(dim, to.x, to.y), D = Math.max(0, a.u - b.u);
+    const T = Math.max(60, Math.sqrt(2 * D / G));
+    p.segs.push({ t0, dur: T, kind: 'fall', dim, a, b, D });
+    const amp = Math.min(3.5, 0.9 * G * T * 3);             // tiny bounce scaled by impact speed
+    p.segs.push({ t0: t0 + T, dur: 170, kind: 'bounce', dim, b, amp });
+    return t0 + T + 170;
+  }
+  function addMove(p, from, to, t0, dur) { p.segs.push({ t0, dur, kind: 'move', from, to }); return t0 + dur; }
+  function addFade(p, o0, o1, t0, dur) { p.segs.push({ t0, dur, kind: 'fade', o0, o1 }); }
+
+  function evalP(p, t) {
+    for (const s of p.segs) {
+      if (t < s.t0) continue;
+      const u = Math.min(1, (t - s.t0) / s.dur);
+      if (s.kind === 'fade') { p.op = s.o0 + (s.o1 - s.o0) * u; continue; }
+      let q;
+      if (s.kind === 'move') { const k = ease(u); q = { x: s.from.x + (s.to.x - s.from.x) * k, y: s.from.y + (s.to.y - s.from.y) * k }; }
+      else if (s.kind === 'fall') {
+        const tt = u * s.dur, fallen = Math.min(s.D, 0.5 * G * tt * tt);
+        const roll = smooth(Math.min(1, Math.max(0, (u - 0.65) / 0.35)));   // sideways roll only at the end of the fall
+        q = toXY(s.dim, s.a.v + (s.b.v - s.a.v) * roll, s.a.u - fallen);
+      } else { q = toXY(s.dim, s.b.v, s.b.u + s.amp * Math.sin(Math.PI * u)); }
+      p.x = q.x; p.y = q.y;
+    }
+  }
+  function tick(now) {
+    if (!clock) clock = now;
+    const t = now - clock; let busy = false;
+    for (const p of pts) {
+      evalP(p, t);
+      if (p.segs.some(s => t < s.t0 + s.dur)) busy = true;
+      p.c.setAttribute('cx', p.x.toFixed(2)); p.c.setAttribute('cy', p.y.toFixed(2)); p.c.setAttribute('opacity', p.op.toFixed(3));
+    }
+    raf = busy ? requestAnimationFrame(tick) : null;
+  }
+  function start() {                       // freeze current state, start a fresh timeline
+    pts.forEach(p => { p.segs = []; });
+    clock = 0; if (!raf) raf = requestAnimationFrame(tick);
+  }
+
+  // ---------- state transitions ----------
+  let shown = 'joint';                      // what the dots currently form
+  function update(changed) {
+    start();
+    const n = pts.filter(active).length;
+    cap.textContent = (mode === 'joint' ? CFG.capJoint : mode === 'mx' ? CFG.capX : CFG.capY) + `   ·   n = ${n}`;
+    xAx.style.opacity = mode === 'my' ? 0 : 1;
+    yAx.style.opacity = mode === 'mx' ? 0 : 1;
+    for (const k in legItems) legItems[k].style.opacity = (filt === 'all' || filt === k) ? 1 : 0.25;
+
+    // fades for filter changes
+    const entering = [], leaving = [];
+    pts.forEach(p => {
+      const on = active(p), vis = p.op > 0.01;
+      if (on && !vis) entering.push(p);
+      if (!on && vis) { leaving.push(p); addFade(p, p.op, 0, 0, 350); p.pile = null; }
+    });
+
+    if (mode === 'joint') {
+      pts.filter(active).forEach(p => {
+        p.pile = null;
+        if (entering.includes(p)) { p.x = home(p).x; p.y = home(p).y; addFade(p, 0, OP, 0, 400); }
+        else addMove(p, { x: p.x, y: p.y }, home(p), Math.random() * 180, 850);
+      });
+      shown = 'joint'; return;
+    }
+
+    const dim = mode === 'mx' ? 'x' : 'y';
+    const act = pts.filter(active);
+    if (shown !== mode) {
+      // lift everything back to its scatter position first (if not already there), then let gravity act
+      const lift = shown === 'joint' ? 0 : 750;
+      act.forEach(p => {
+        p.pile = null;
+        if (entering.includes(p)) { p.x = home(p).x; p.y = home(p).y; addFade(p, 0, OP, 0, 300); }
+        else if (lift) addMove(p, { x: p.x, y: p.y }, home(p), Math.random() * 120, lift - 120);
+      });
+      const placed = []; const src = act.map(p => ({ p, x: home(p).x, y: home(p).y }));
+      // pile computed from scatter positions
+      src.forEach(o => { o.p._x = o.p.x; o.p._y = o.p.y; o.p.x = o.x; o.p.y = o.y; });
+      buildPile(dim, act, placed);
+      src.forEach(o => { o.p.x = o.p._x; o.p.y = o.p._y; });
+      act.forEach(p => addFall(p, dim, home(p), toXY(dim, p.pile.v, p.pile.u), lift + 150 + Math.random() * 120));
+    } else {
+      // same marginal, filter changed: survivors re-settle downward, newcomers appear at their scatter spot and fall on top
+      const stay = act.filter(p => !entering.includes(p));
+      const placed = []; const t0 = leaving.length ? 300 : 0;
+      buildPile(dim, stay, placed);
+      stay.forEach(p => {
+        const to = toXY(dim, p.pile.v, p.pile.u), cur = toVU(dim, p.x, p.y);
+        if (cur.u - p.pile.u > 0.5) addFall(p, dim, { x: p.x, y: p.y }, to, t0 + Math.random() * 80);
+        else if (Math.hypot(to.x - p.x, to.y - p.y) > 0.5) addMove(p, { x: p.x, y: p.y }, to, t0, 400);
+      });
+      entering.forEach(p => { p.x = home(p).x; p.y = home(p).y; addFade(p, 0, OP, t0, 300); });
+      buildPile(dim, entering.map(p => p), placed);
+      entering.forEach(p => addFall(p, dim, home(p), toXY(dim, p.pile.v, p.pile.u), t0 + 350 + Math.random() * 120));
+    }
+    shown = mode;
+  }
+  update();
+})();
+</script>
+```
+
+## Marginals of Quiz 1 and midterm
+
+```{=html}
+<div id="q1m-root"></div>
+<style>
+  #q1m-root { max-width:700px; margin:0 auto; padding:4px 0; color:#1f2933; text-align:left;
+                font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; font-size:16px; line-height:1.3; }
+  #q1m-root .q1m-bar { display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between; }
+  #q1m-root .q1m-seg { display:inline-flex; background:#eef1f4; border-radius:9px; padding:3px; }
+  #q1m-root .q1m-seg button { border:0; margin:0; background:transparent; padding:6px 13px; border-radius:7px; cursor:pointer;
+                font-family:inherit; font-size:15px; line-height:1.2; color:#7b8794; text-transform:none; letter-spacing:normal;
+                transition:background .25s, color .25s, box-shadow .25s; }
+  #q1m-root .q1m-seg button.q1m-on { background:#ffffff; color:#1f2933; box-shadow:0 1px 3px rgba(0,0,0,.14); }
+  #q1m-root .q1m-cap { font-size:14px; color:#7b8794; margin:8px 2px 0; min-height:20px; }
+  #q1m-root svg { width:100%; height:auto; display:block; margin:0; max-height:none; }
+  #q1m-root .q1m-ax { transition:opacity .6s ease; }
+  #q1m-root .q1m-tick { font-size:13px; fill:#7b8794; }
+  #q1m-root .q1m-lab { font-size:14px; fill:#1f2933; }
+  #q1m-root .q1m-leg { font-size:13px; fill:#1f2933; transition:opacity .4s; }
+</style>
+<script>
+(function () {
+const CFG_P = {"title": "Quiz 1 and Midterm", "prefix": "q1m", "data": [{"x": 71.08, "y": 82.81}, {"x": 75.9, "y": 85.94}, {"x": 56.63, "y": 81.25}, {"x": 69.88, "y": 89.06}, {"x": 74.7, "y": 79.69}, {"x": 37.35, "y": 48.44}, {"x": 78.31, "y": 71.88}, {"x": 53.01, "y": 65.63}, {"x": 65.06, "y": 67.19}, {"x": 78.31, "y": 48.44}, {"x": 73.49, "y": 71.88}, {"x": 65.06, "y": 57.81}, {"x": 75.9, "y": 60.94}, {"x": 75.9, "y": 54.69}, {"x": 89.16, "y": 57.81}, {"x": 74.7, "y": 60.94}, {"x": 69.88, "y": 17.19}, {"x": 80.72, "y": 45.31}, {"x": 57.83, "y": 85.94}, {"x": 51.81, "y": 57.81}, {"x": 40.96, "y": 57.81}, {"x": 44.58, "y": 48.44}, {"x": 74.7, "y": 28.13}, {"x": 56.63, "y": 59.38}, {"x": 66.27, "y": 32.81}, {"x": 46.99, "y": 60.94}, {"x": 54.22, "y": 40.63}, {"x": 57.83, "y": 46.88}, {"x": 59.04, "y": 57.81}, {"x": 39.76, "y": 20.31}, {"x": 50.6, "y": 50.0}, {"x": 46.99, "y": 32.81}, {"x": 72.29, "y": 51.56}, {"x": 25.3, "y": 20.31}, {"x": 36.14, "y": 20.31}, {"x": 37.35, "y": 37.5}, {"x": 61.45, "y": 59.38}, {"x": 66.27, "y": 28.13}, {"x": 45.78, "y": 37.5}, {"x": 32.53, "y": 48.44}, {"x": 54.22, "y": 48.44}, {"x": 40.96, "y": 68.75}, {"x": 84.34, "y": 35.94}, {"x": 69.88, "y": 25.0}, {"x": 36.14, "y": 50.0}, {"x": 60.24, "y": 17.19}, {"x": 15.66, "y": 57.81}, {"x": 43.37, "y": 29.69}, {"x": 49.4, "y": 23.44}, {"x": 20.48, "y": 31.25}, {"x": 25.3, "y": 40.63}, {"x": 43.37, "y": 35.94}, {"x": 28.92, "y": 39.06}, {"x": 55.42, "y": 64.06}, {"x": 30.12, "y": 4.69}, {"x": 36.14, "y": 25.0}, {"x": 61.45, "y": 10.94}, {"x": 39.76, "y": 31.25}, {"x": 59.04, "y": 25.0}, {"x": 42.17, "y": 42.19}, {"x": 40.96, "y": 48.44}, {"x": 44.58, "y": 28.13}, {"x": 50.6, "y": 35.94}, {"x": 16.87, "y": 28.13}, {"x": 37.35, "y": 25.0}, {"x": 44.58, "y": 35.94}, {"x": 7.23, "y": 26.56}, {"x": 38.55, "y": 39.06}, {"x": 15.66, "y": 9.38}, {"x": 30.12, "y": 46.88}, {"x": 48.19, "y": 25.0}, {"x": 32.53, "y": 4.69}, {"x": 4.82, "y": 42.19}, {"x": 65.06, "y": 26.56}, {"x": 54.22, "y": 9.38}, {"x": 31.33, "y": 18.75}, {"x": 44.58, "y": 18.75}, {"x": 30.12, "y": 64.06}, {"x": 62.65, "y": 14.06}, {"x": 37.35, "y": 26.56}, {"x": 21.69, "y": 25.0}, {"x": 49.4, "y": 9.38}, {"x": 31.33, "y": 28.13}, {"x": 25.3, "y": 45.31}, {"x": 45.78, "y": 14.06}, {"x": 40.96, "y": 15.63}, {"x": 49.4, "y": 12.5}, {"x": 26.51, "y": 20.31}, {"x": 34.94, "y": 10.94}, {"x": 33.73, "y": 10.94}, {"x": 66.27, "y": 29.69}, {"x": 20.48, "y": 29.69}, {"x": 66.27, "y": 26.56}, {"x": 26.51, "y": 20.31}, {"x": 21.69, "y": 25.0}, {"x": 53.01, "y": 18.75}, {"x": 43.37, "y": 4.69}, {"x": 34.94, "y": 15.63}, {"x": 20.48, "y": 18.75}, {"x": 40.96, "y": 14.06}, {"x": 36.14, "y": 20.31}, {"x": 30.12, "y": 20.31}, {"x": 16.87, "y": 20.31}, {"x": 24.1, "y": 18.75}, {"x": 19.28, "y": 15.63}, {"x": 19.28, "y": 15.63}, {"x": 20.48, "y": 10.94}, {"x": 16.87, "y": 12.5}, {"x": 15.66, "y": 4.69}, {"x": 16.87, "y": 9.38}, {"x": 16.87, "y": 12.5}, {"x": 34.94, "y": 4.69}, {"x": 37.35, "y": 32.81}, {"x": 15.66, "y": 9.38}, {"x": 8.43, "y": 4.69}], "xdom": [0, 100], "ydom": [0, 100], "xbin": 5, "ybin": 5, "xticks": [0, 20, 40, 60, 80, 100], "yticks": [0, 20, 40, 60, 80, 100], "xlab": "Quiz 1 (%)", "ylab": "Midterm (%)", "xshort": "Quiz 1", "yshort": "midterm", "groups": null, "color": "#c05621", "r": 6.5, "capJoint": "Joint distribution: each dot is one student (Quiz 1, midterm), Fall 2025", "capX": "Empirical marginal of Quiz 1: every dot falls onto the x-axis", "capY": "Empirical marginal of midterm: every dot falls onto the y-axis"};
+  const P = 'q1m', CFG = CFG_P;
+  const root = document.getElementById(P + '-root');
+  const W = 760, H = 470, m = { l: 62, r: 20, t: 16, b: 54 };
+  const pw = W - m.l - m.r, ph = H - m.t - m.b;
+  const [x0, x1] = CFG.xdom, [y0, y1] = CFG.ydom;
+  const sx = v => m.l + (v - x0) / (x1 - x0) * pw;
+  const sy = v => m.t + ph - (v - y0) / (y1 - y0) * ph;
+  const NS = 'http://www.w3.org/2000/svg';
+  const el = (t, a, p) => { const e = document.createElementNS(NS, t);
+    for (const k in a) e.setAttribute(k, a[k]); if (p) p.appendChild(e); return e; };
+
+  // ---------- controls ----------
+  const bar = document.createElement('div'); bar.className = P + '-bar'; root.appendChild(bar);
+  function seg(opts, init, cb) {
+    const s = document.createElement('div'); s.className = P + '-seg'; const bs = {};
+    opts.forEach(([k, l]) => {
+      const b = document.createElement('button'); b.textContent = l;
+      b.onclick = () => { if (b.classList.contains(P + '-on')) return; for (const kk in bs) bs[kk].classList.toggle(P + '-on', kk === k); cb(k); };
+      bs[k] = b; s.appendChild(b);
+    });
+    bs[init].classList.add(P + '-on'); bar.appendChild(s);
+  }
+  let mode = 'joint', filt = 'all';
+  seg([['joint', 'Joint'], ['mx', 'Marginal of ' + CFG.xshort], ['my', 'Marginal of ' + CFG.yshort]],
+      'joint', k => { mode = k; update(); });
+  if (CFG.groups) seg([['all', 'All'], ...CFG.groups.map(g => [g.key, g.label])],
+      'all', k => { filt = k; update(); });
+  const cap = document.createElement('div'); cap.className = P + '-cap'; root.appendChild(cap);
+
+  // ---------- axes ----------
+  const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': CFG.title }, root);
+  const xAx = el('g', { class: P + '-ax' }, svg), yAx = el('g', { class: P + '-ax' }, svg);
+  CFG.yticks.forEach(v => {
+    el('line', { x1: m.l, x2: m.l + pw, y1: sy(v), y2: sy(v), stroke: '#edf0f3' }, yAx);
+    el('text', { x: m.l - 10, y: sy(v) + 4.5, 'text-anchor': 'end', class: P + '-tick' }, yAx).textContent = v;
+  });
+  CFG.xticks.forEach(v => {
+    el('line', { x1: sx(v), x2: sx(v), y1: m.t, y2: m.t + ph, stroke: '#edf0f3' }, xAx);
+    el('text', { x: sx(v), y: m.t + ph + 22, 'text-anchor': 'middle', class: P + '-tick' }, xAx).textContent = v;
+  });
+  el('text', { x: m.l + pw / 2, y: H - 8, 'text-anchor': 'middle', class: P + '-lab' }, xAx).textContent = CFG.xlab;
+  el('text', { x: 16, y: m.t + ph / 2, 'text-anchor': 'middle', class: P + '-lab',
+               transform: `rotate(-90 16 ${m.t + ph / 2})` }, yAx).textContent = CFG.ylab;
+  el('line', { x1: m.l, x2: m.l + pw, y1: m.t + ph, y2: m.t + ph, stroke: '#9aa5b1' }, svg);
+  el('line', { x1: m.l, x2: m.l, y1: m.t, y2: m.t + ph, stroke: '#9aa5b1' }, svg);
+
+  // legend (groups only)
+  const legItems = {};
+  if (CFG.groups) CFG.groups.forEach((g, i) => {
+    const gg = el('g', { class: P + '-leg', transform: `translate(${m.l + pw - 150 + i * 80}, ${m.t + 6})` }, svg);
+    el('circle', { cx: 0, cy: 0, r: 5, fill: g.color }, gg);
+    el('text', { x: 10, y: 4.5 }, gg).textContent = g.label;
+    legItems[g.key] = gg;
+  });
+
+  // ---------- dots (constant size throughout) ----------
+  const R = CFG.r || 4.3, OP = 0.82;
+  const G = 0.0011;                 // gravity, px / ms^2
+  const dotsG = el('g', {}, svg);
+  const color = d => CFG.groups ? CFG.groups.find(g => g.key === d.g).color : CFG.color;
+  const pts = CFG.data.map(d => ({ g: d.g, dx: d.x, dy: d.y,
+    c: el('circle', { r: R, fill: color(d), stroke: '#fff', 'stroke-width': 0.8, opacity: 0 }, dotsG),
+    x: sx(d.x), y: sy(d.y), op: 0, segs: [], pile: null }));
+  const active = p => filt === 'all' || p.g === filt;
+  const home = p => ({ x: sx(p.dx), y: sy(p.dy) });
+
+  // pile frame: v = lateral coordinate, u = height above the "floor" (the axis the dots fall onto)
+  const toVU = (dim, x, y) => dim === 'x' ? { v: x, u: m.t + ph - y } : { v: y, u: x - m.l };
+  const toXY = (dim, v, u) => dim === 'x' ? { x: v, y: m.t + ph - u } : { x: m.l + u, y: v };
+
+  // drop one disk at lateral position v0 onto the floor / existing disks; it may roll a little sideways into a lower spot
+  function deposit(v0, placed, vTrue = v0, maxDrift = 3 * R) {
+    const restU = v => { let u = R;
+      for (const q of placed) { const dv = v - q.v; if (dv > -2 * R && dv < 2 * R) u = Math.max(u, q.u + Math.sqrt(4 * R * R - dv * dv)); }
+      return u; };
+    let best = null;
+    for (let dl = -1.6 * R; dl <= 1.6 * R; dl += 0.25) {
+      if (Math.abs(v0 + dl - vTrue) > maxDrift) continue;        // never let a dot wander far from its true value
+      const u = restU(v0 + dl), cost = u + 0.3 * Math.abs(dl);
+      if (!best || cost < best.cost) best = { v: v0 + dl, u, cost };
+    }
+    return best;
+  }
+  // build a pile from the given dots, dropped in order of current height above the floor (lowest lands first).
+  // Then re-release the settled pile a few times until it stops changing, so the first drop already lands in its final, smooth shape.
+  function buildPile(dim, list, placed, passes = 15) {
+    const base = placed.slice();
+    const orig = new Map(list.map(p => [p, toVU(dim, p.x, p.y)]));   // true data position: rolling is always measured from here
+    let start = orig;
+    for (let k = 0; k < passes; k++) {
+      const pl = base.slice();
+      list.slice().sort((a, b) => start.get(a).u - start.get(b).u).forEach(p => {
+        const r = deposit(start.get(p).v, pl, orig.get(p).v); pl.push(r); p.pile = { v: r.v, u: r.u };
+      });
+      const moved = k === 0 ? Infinity : list.reduce((s, p) => s + Math.abs(p.pile.v - start.get(p).v) + Math.abs(p.pile.u - start.get(p).u), 0);
+      start = new Map(list.map(p => [p, p.pile]));
+      if (moved < 0.5) break;
+    }
+    list.forEach(p => placed.push({ v: p.pile.v, u: p.pile.u }));
+  }
+  // ---------- animation segments ----------
+  const ease = u => u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2;
+  const smooth = u => u * u * (3 - 2 * u);
+  let clock = 0, raf = null;
+  // each segment: {t0, dur, kind, ...}; positions evaluated relative to the segment start
+  function addFall(p, dim, from, to, t0) {
+    const a = toVU(dim, from.x, from.y), b = toVU(dim, to.x, to.y), D = Math.max(0, a.u - b.u);
+    const T = Math.max(60, Math.sqrt(2 * D / G));
+    p.segs.push({ t0, dur: T, kind: 'fall', dim, a, b, D });
+    const amp = Math.min(3.5, 0.9 * G * T * 3);             // tiny bounce scaled by impact speed
+    p.segs.push({ t0: t0 + T, dur: 170, kind: 'bounce', dim, b, amp });
+    return t0 + T + 170;
+  }
+  function addMove(p, from, to, t0, dur) { p.segs.push({ t0, dur, kind: 'move', from, to }); return t0 + dur; }
+  function addFade(p, o0, o1, t0, dur) { p.segs.push({ t0, dur, kind: 'fade', o0, o1 }); }
+
+  function evalP(p, t) {
+    for (const s of p.segs) {
+      if (t < s.t0) continue;
+      const u = Math.min(1, (t - s.t0) / s.dur);
+      if (s.kind === 'fade') { p.op = s.o0 + (s.o1 - s.o0) * u; continue; }
+      let q;
+      if (s.kind === 'move') { const k = ease(u); q = { x: s.from.x + (s.to.x - s.from.x) * k, y: s.from.y + (s.to.y - s.from.y) * k }; }
+      else if (s.kind === 'fall') {
+        const tt = u * s.dur, fallen = Math.min(s.D, 0.5 * G * tt * tt);
+        const roll = smooth(Math.min(1, Math.max(0, (u - 0.65) / 0.35)));   // sideways roll only at the end of the fall
+        q = toXY(s.dim, s.a.v + (s.b.v - s.a.v) * roll, s.a.u - fallen);
+      } else { q = toXY(s.dim, s.b.v, s.b.u + s.amp * Math.sin(Math.PI * u)); }
+      p.x = q.x; p.y = q.y;
+    }
+  }
+  function tick(now) {
+    if (!clock) clock = now;
+    const t = now - clock; let busy = false;
+    for (const p of pts) {
+      evalP(p, t);
+      if (p.segs.some(s => t < s.t0 + s.dur)) busy = true;
+      p.c.setAttribute('cx', p.x.toFixed(2)); p.c.setAttribute('cy', p.y.toFixed(2)); p.c.setAttribute('opacity', p.op.toFixed(3));
+    }
+    raf = busy ? requestAnimationFrame(tick) : null;
+  }
+  function start() {                       // freeze current state, start a fresh timeline
+    pts.forEach(p => { p.segs = []; });
+    clock = 0; if (!raf) raf = requestAnimationFrame(tick);
+  }
+
+  // ---------- state transitions ----------
+  let shown = 'joint';                      // what the dots currently form
+  function update(changed) {
+    start();
+    const n = pts.filter(active).length;
+    cap.textContent = (mode === 'joint' ? CFG.capJoint : mode === 'mx' ? CFG.capX : CFG.capY) + `   ·   n = ${n}`;
+    xAx.style.opacity = mode === 'my' ? 0 : 1;
+    yAx.style.opacity = mode === 'mx' ? 0 : 1;
+    for (const k in legItems) legItems[k].style.opacity = (filt === 'all' || filt === k) ? 1 : 0.25;
+
+    // fades for filter changes
+    const entering = [], leaving = [];
+    pts.forEach(p => {
+      const on = active(p), vis = p.op > 0.01;
+      if (on && !vis) entering.push(p);
+      if (!on && vis) { leaving.push(p); addFade(p, p.op, 0, 0, 350); p.pile = null; }
+    });
+
+    if (mode === 'joint') {
+      pts.filter(active).forEach(p => {
+        p.pile = null;
+        if (entering.includes(p)) { p.x = home(p).x; p.y = home(p).y; addFade(p, 0, OP, 0, 400); }
+        else addMove(p, { x: p.x, y: p.y }, home(p), Math.random() * 180, 850);
+      });
+      shown = 'joint'; return;
+    }
+
+    const dim = mode === 'mx' ? 'x' : 'y';
+    const act = pts.filter(active);
+    if (shown !== mode) {
+      // lift everything back to its scatter position first (if not already there), then let gravity act
+      const lift = shown === 'joint' ? 0 : 750;
+      act.forEach(p => {
+        p.pile = null;
+        if (entering.includes(p)) { p.x = home(p).x; p.y = home(p).y; addFade(p, 0, OP, 0, 300); }
+        else if (lift) addMove(p, { x: p.x, y: p.y }, home(p), Math.random() * 120, lift - 120);
+      });
+      const placed = []; const src = act.map(p => ({ p, x: home(p).x, y: home(p).y }));
+      // pile computed from scatter positions
+      src.forEach(o => { o.p._x = o.p.x; o.p._y = o.p.y; o.p.x = o.x; o.p.y = o.y; });
+      buildPile(dim, act, placed);
+      src.forEach(o => { o.p.x = o.p._x; o.p.y = o.p._y; });
+      act.forEach(p => addFall(p, dim, home(p), toXY(dim, p.pile.v, p.pile.u), lift + 150 + Math.random() * 120));
+    } else {
+      // same marginal, filter changed: survivors re-settle downward, newcomers appear at their scatter spot and fall on top
+      const stay = act.filter(p => !entering.includes(p));
+      const placed = []; const t0 = leaving.length ? 300 : 0;
+      buildPile(dim, stay, placed);
+      stay.forEach(p => {
+        const to = toXY(dim, p.pile.v, p.pile.u), cur = toVU(dim, p.x, p.y);
+        if (cur.u - p.pile.u > 0.5) addFall(p, dim, { x: p.x, y: p.y }, to, t0 + Math.random() * 80);
+        else if (Math.hypot(to.x - p.x, to.y - p.y) > 0.5) addMove(p, { x: p.x, y: p.y }, to, t0, 400);
+      });
+      entering.forEach(p => { p.x = home(p).x; p.y = home(p).y; addFade(p, 0, OP, t0, 300); });
+      buildPile(dim, entering.map(p => p), placed);
+      entering.forEach(p => addFall(p, dim, home(p), toXY(dim, p.pile.v, p.pile.u), t0 + 350 + Math.random() * 120));
+    }
+    shown = mode;
+  }
+  update();
+})();
+</script>
+```
+
+# Joint PMF {.section-slide}
+
+Joint, marginal and conditional probabilities on one 3D chart.
+
+## Joint, marginal, conditional PMF
+
+```{=html}
+<div id="jgb-root">
+  <div class="jgb-bar">
+    <div class="jgb-seg" data-role="mode"></div>
+    <div class="jgb-seg jgb-vals" data-role="vals"></div>
+  </div>
+  <div class="jgb-cap"></div>
+  <div class="jgb-main">
+    <div class="jgb-fig"><svg class="jgb-svg"></svg><div class="jgb-hint">drag to rotate</div></div>
+    <div class="jgb-side"><div class="jgb-tab"></div><div class="jgb-cond"></div></div>
+  </div>
+  <div class="jgb-info">&nbsp;</div>
+</div>
+<style>
+  #jgb-root { max-width:980px; margin:0 auto; color:#1f2933; text-align:left; line-height:1.3;
+                font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; font-size:16px; }
+  #jgb-root .jgb-bar { display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
+  #jgb-root .jgb-seg { display:inline-flex; background:#eef1f4; border-radius:9px; padding:3px; transition:opacity .3s; }
+  #jgb-root .jgb-seg button { border:0; margin:0; background:transparent; padding:6px 12px; border-radius:7px; cursor:pointer;
+       font-family:inherit; font-size:15px; line-height:1.2; color:#7b8794; text-transform:none; letter-spacing:normal;
+       transition:background .25s, color .25s, box-shadow .25s; }
+  #jgb-root .jgb-seg button.jgb-on { background:#ffffff; color:#1f2933; box-shadow:0 1px 3px rgba(0,0,0,.14); }
+  #jgb-root .jgb-vals.jgb-off { opacity:0; pointer-events:none; }
+  #jgb-root .jgb-cap { font-size:15px; color:#52606d; margin:10px 2px 4px; min-height:40px; }
+  #jgb-root .jgb-main { display:flex; flex-wrap:wrap; gap:14px; align-items:flex-start; }
+  #jgb-root .jgb-fig { flex:1 1 560px; position:relative; }
+  #jgb-root .jgb-svg { overflow:visible; width:100%; height:auto; display:block; margin:0; max-height:none; touch-action:none; cursor:grab; user-select:none; }
+  #jgb-root .jgb-svg:active { cursor:grabbing; }
+  #jgb-root .jgb-hint { position:absolute; right:4px; bottom:2px; font-size:12px; color:#9aa5b1; }
+  #jgb-root .jgb-side { flex:0 1 330px; padding-top:18px; }
+  #jgb-root table { border-collapse:collapse; font-size:14px; margin:0; width:auto; }
+  #jgb-root th, #jgb-root td { padding:5px 9px; text-align:right; border:0; border-bottom:1px solid #edf0f3;
+       font-variant-numeric:tabular-nums; transition:background .35s, color .35s; background:transparent; }
+  #jgb-root th { color:#7b8794; font-weight:500; white-space:nowrap; }
+  #jgb-root td.jgb-m, #jgb-root th.jgb-m { color:#7b8794; border-left:1px solid #d9dee4; }
+  #jgb-root tr.jgb-mr td, #jgb-root tr.jgb-mr th { border-top:1px solid #d9dee4; color:#7b8794; }
+  #jgb-root td.jgb-hl { background:#fdecd9; color:#1f2933; }
+  #jgb-root td.jgb-hm { background:#dce8f7; color:#1f2933; font-weight:600; }
+  #jgb-root td.jgb-dim { color:#c3cad3; }
+  #jgb-root .jgb-cond { margin-top:14px; font-size:14px; min-height:60px; color:#52606d; }
+  #jgb-root .jgb-cond td { color:#1f2933; }
+  #jgb-root .jgb-info { font-size:14px; color:#52606d; min-height:20px; margin:4px 2px 0; }
+  #jgb-root em { font-style:italic; }
+</style>
+<script>
+(function () {
+  const P = 'jgb', CFG = {"p": [[0.043478260869565216, 0.02608695652173913, 0.034782608695652174, 0.0], [0.02608695652173913, 0.11304347826086956, 0.08695652173913043, 0.008695652173913044], [0.02608695652173913, 0.10434782608695652, 0.30434782608695654, 0.0782608695652174], [0.0, 0.008695652173913044, 0.06956521739130435, 0.06956521739130435]], "xvals": ["1", "2", "3", "4"], "yvals": ["1", "2", "3", "4"], "xname": "X", "yname": "Y", "xlab": "X = Quiz 1 grade points", "ylab": "Y = Midterm grade points", "stretch": 1.5, "view": [40, 20], "defaultCond": [3, 3], "n": 115, "heat": true};
+  const root = document.getElementById(P + '-root');
+  const q = s => root.querySelector('.' + P + '-' + s);
+  const svg = q('svg'), cap = q('cap'), info = q('info'), tabBox = q('tab'), condBox = q('cond');
+  const W = 620, H = 470; svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+
+  // ---------- model ----------
+  const pm = CFG.p, nx = pm.length, ny = pm[0].length, XV = CFG.xvals, YV = CFG.yvals;
+  const pX = pm.map(r => r.reduce((a, b) => a + b, 0));
+  const pY = YV.map((_, j) => pm.reduce((a, r) => a + r[j], 0));
+  // tallest bar any view can show (joint, marginal or conditional); vertical scale is set so it is ~ CFG.stretch x the grid width
+  const ZMAX = Math.max(...pX, ...pY, ...pm.flatMap((r, i) => r.map((v, j) => Math.max(pX[i] ? v / pX[i] : 0, pY[j] ? v / pY[j] : 0))));
+  const HS = CFG.hs || (CFG.stretch || 0.9) * Math.max(nx, ny) / ZMAX, BW = 0.56;   // world units per unit probability
+  const XW = -1.9, YW = ny - 1 + 1.9;                     // back walls (viewer sits in the +x, -y quadrant)
+  const XST = -1.15, YST = ny - 1 + 1.15;                 // where marginal stacks form
+  const XN = CFG.xname, YN = CFG.yname;
+  const f3 = v => v.toFixed(3);
+
+  const hex = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+  const BASE = hex('#3d72b8'), HIL = hex('#e07b2a');
+  // optional heat map (CFG.heat): white-pink -> dark red, bars and table cells share the scale
+  const STOPS = ['#fde0d2', '#fcae91', '#fb6a4a', '#de2d26', '#a50f15', '#67000d'].map(hex);
+  const HM = Math.max(...pm.flat());
+  const heatc = t => { t = Math.max(0, Math.min(1, t)) * (STOPS.length - 1); const k = Math.min(STOPS.length - 2, Math.floor(t)), f = t - k;
+    return STOPS[k].map((v, q) => Math.round(v + (STOPS[k + 1][q] - v) * f)); };
+  const rgbs = c => `rgb(${c[0]},${c[1]},${c[2]})`;
+  const cellSty = (v, M) => { if (!CFG.heat) return ''; const t = v / M, c = v > 0 ? heatc(0.04 + 0.96 * t) : [244, 245, 247];
+    return ` style="background:${rgbs(c)};color:${t > 0.55 ? '#ffffff' : '#1f2933'}"`; };
+
+  const bars = [];
+  for (let i = 0; i < nx; i++) for (let j = 0; j < ny; j++) {
+    const hc = CFG.heat ? heatc(0.04 + 0.96 * pm[i][j] / HM) : BASE;
+    bars.push({ i, j, p: pm[i][j], x: i, y: j, z0: 0, h: pm[i][j] * HS, op: 1, hc, r: hc[0], g: hc[1], b: hc[2], lab: 0, labv: 0 });
+  }
+  const cam = { a: CFG.view[0], e: CFG.view[1], wallH: 0.4, cz: 0 };
+
+  // ---------- projection ----------
+  const rad = d => d * Math.PI / 180;
+  let R, U, V, C;
+  function setCam() {
+    const a = rad(cam.a), e = rad(cam.e);
+    R = [Math.sin(a), Math.cos(a), 0];
+    U = [-Math.sin(e) * Math.cos(a), Math.sin(e) * Math.sin(a), Math.cos(e)];
+    V = [Math.cos(a) * Math.cos(e), -Math.sin(a) * Math.cos(e), Math.sin(e)];
+    C = [(XW + nx - 1 + 0.6) / 2, (-0.6 + YW) / 2, cam.cz];
+  }
+  const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+  let S = 60; const CX = W / 2, CY = H / 2 + 6;
+  function pr(x, y, z) { const d = [x - C[0], y - C[1], z - C[2]]; return [CX + S * dot(d, R), CY - S * dot(d, U), dot(d, V)]; }
+  // fixed zoom: fits the whole scene for every allowed camera angle, so rotating never zooms
+  (function fit() {
+    let best = Infinity; const save = { ...cam };
+    for (const a of [0, 6, 22, CFG.view[0], 62, 84, 90]) for (const e of [13, 20, CFG.view[1]]) {   // the automatic views; manual drags may overflow slightly
+      cam.a = a; cam.e = e; cam.cz = ZMAX * HS * 0.42; setCam(); S = 1;
+      let x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9;
+      for (const X of [XW, nx - 1 + 0.9]) for (const Y of [-0.9, YW]) for (const Z of [0, ZMAX * HS + 0.4]) {
+        const s = pr(X, Y, Z); x0 = Math.min(x0, s[0] - CX); x1 = Math.max(x1, s[0] - CX); y0 = Math.min(y0, s[1] - CY); y1 = Math.max(y1, s[1] - CY);
+      }
+      best = Math.min(best, (W / 2 - 30) / Math.max(-x0, x1), (H / 2 - 18) / Math.max(-y0, y1));
+    }
+    Object.assign(cam, save); S = best;
+  })();
+
+  // ---------- drawing ----------
+  const rgb = (r, g, b, k) => `rgb(${Math.round(r * k)},${Math.round(g * k)},${Math.round(b * k)})`;
+  const poly = (pts, fill, stroke, op, extra = '') =>
+    `<polygon points="${pts.map(p => p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ')}" fill="${fill}" stroke="${stroke}" stroke-width="0.8" stroke-linejoin="round" opacity="${op.toFixed(3)}" ${extra}/>`;
+  const txt = (p, s, cls, anchor = 'middle', dy = 0) =>
+    `<text x="${p[0].toFixed(1)}" y="${(p[1] + dy).toFixed(1)}" text-anchor="${anchor}" font-size="${cls === 'lab' ? 14 : 13}" fill="${cls === 'lab' ? '#1f2933' : '#7b8794'}" font-family="system-ui, -apple-system, Segoe UI, sans-serif">${s}</text>`;
+
+  function render() {
+    setCam();
+    let out = '';
+    // back walls with probability gridlines
+    const wh = cam.wallH * HS, xr = nx - 1 + 0.6, y0 = -0.6;
+    out += poly([pr(XW, y0, 0), pr(XW, YW, 0), pr(XW, YW, wh), pr(XW, y0, wh)], '#fafbfc', '#e3e7ec', 1);
+    out += poly([pr(XW, YW, 0), pr(xr, YW, 0), pr(xr, YW, wh), pr(XW, YW, wh)], '#fafbfc', '#e3e7ec', 1);
+    for (let k = 1; k * 0.1 <= cam.wallH + 1e-9; k++) {
+      const z = k * 0.1 * HS, a = pr(XW, y0, z), b = pr(XW, YW, z), c = pr(xr, YW, z);
+      const strong = k % 2 === 0;
+      out += `<polyline points="${a[0]},${a[1]} ${b[0]},${b[1]} ${c[0]},${c[1]}" fill="none" stroke="${strong ? '#e3e7ec' : '#f0f2f5'}" stroke-width="0.8"/>`;
+      if (strong) out += txt(a, (k / 10).toFixed(1), 'tick', 'end', 4).replace('<text', '<text dx="-6"');
+    }
+    // floor footprints
+    for (const b of bars) {
+      const h = BW / 2 + 0.06, x = b.i, y = b.j;
+      out += poly([pr(x - h, y - h, 0), pr(x + h, y - h, 0), pr(x + h, y + h, 0), pr(x - h, y + h, 0)], b.p > 0 ? '#eef1f5' : '#f6f7f9', '#e3e7ec', 1);
+    }
+    // axis tick labels and names on the two front edges
+    const fx = Math.max(0, Math.min(1, (Math.abs(R[0]) - 0.3) / 0.3)), fy = Math.max(0, Math.min(1, (Math.abs(R[1]) - 0.3) / 0.3));
+    const op = (s, o) => o < 1 ? s.replace('<text', `<text opacity="${o.toFixed(2)}"`) : s;
+    if (fx > 0) { XV.forEach((v, i) => out += op(txt(pr(i, -0.95, 0), v, 'tick', 'middle', 10), fx));
+                  out += op(txt(pr((nx - 1) / 2, -2.1, 0), CFG.xlab, 'lab', 'middle', 10), fx); }
+    if (fy > 0) { YV.forEach((v, j) => out += op(txt(pr(nx - 1 + 0.95, j, 0), v, 'tick', 'middle', 10), fy));
+                  out += op(txt(pr(nx - 1 + 2.1, (ny - 1) / 2, 0), CFG.ylab, 'lab', 'middle', 10), fy); }
+
+    // bars, painter's order (far to near)
+    const list = bars.filter(b => b.h > 1e-3 && b.op > 0.005)
+      .map(b => ({ b, d: pr(b.x, b.y, b.z0 + b.h / 2)[2] })).sort((u, v) => u.d - v.d);
+    const labels = [];
+    for (const { b } of list) {
+      const w = BW / 2, x0 = b.x - w, x1 = b.x + w, ya = b.y - w, yb = b.y + w, z0 = b.z0, z1 = b.z0 + b.h;
+      const id = `data-i="${b.i}" data-j="${b.j}"`, st = rgb(b.r, b.g, b.b, 0.82);
+      if (V[0] > 1e-6) out += poly([pr(x1, ya, z0), pr(x1, yb, z0), pr(x1, yb, z1), pr(x1, ya, z1)], rgb(b.r, b.g, b.b, 0.80), st, b.op, id);
+      if (V[1] < -1e-6) out += poly([pr(x0, ya, z0), pr(x1, ya, z0), pr(x1, ya, z1), pr(x0, ya, z1)], rgb(b.r, b.g, b.b, 0.66), st, b.op, id);
+      out += poly([pr(x0, ya, z1), pr(x1, ya, z1), pr(x1, yb, z1), pr(x0, yb, z1)], rgb(b.r, b.g, b.b, 1.0), st, b.op, id);
+      if (b.lab > 0.02) labels.push({ p: pr(b.x, b.y, z1), s: f3(b.labv), op: b.lab });
+    }
+    for (const L of stackLabels()) labels.push(L);
+    for (const L of labels) out += txt(L.p, L.s, 'lab', 'middle', -8).replace('<text', `<text opacity="${L.op.toFixed(2)}" font-weight="600"`);
+    svg.innerHTML = out;
+  }
+
+  // ---------- tweens ----------
+  let tweens = [], t0 = 0, raf = null;
+  const ease = u => u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2;
+  function tw(obj, key, to, start, dur) { tweens.push({ obj, key, from: null, to, start, dur }); }
+  function tick(now) {
+    if (!t0) t0 = now; const t = now - t0; let busy = false;
+    for (const w of tweens) {
+      if (t < w.start) { busy = true; continue; }
+      if (w.from === null) w.from = w.obj[w.key];
+      const u = Math.min(1, (t - w.start) / w.dur); if (u < 1) busy = true;
+      w.obj[w.key] = w.from + (w.to - w.from) * ease(u);
+    }
+    render(); raf = busy ? requestAnimationFrame(tick) : null;
+  }
+  function go() { t0 = 0; if (!raf) raf = requestAnimationFrame(tick); }
+
+  // ---------- modes ----------
+  let mode = 'joint', sel = null, stackOp = { x: 0, y: 0 };
+  function stackLabels() {
+    const L = [];
+    if (stackOp.x > 0.02) XV.forEach((_, i) => L.push({ p: pr(i, YST, pX[i] * HS), s: f3(pX[i]), op: stackOp.x }));
+    if (stackOp.y > 0.02) YV.forEach((_, j) => L.push({ p: pr(XST, j, pY[j] * HS), s: f3(pY[j]), op: stackOp.y }));
+    return L;
+  }
+  function colorTo(b, c, s, d) { tw(b, 'r', c[0], s, d); tw(b, 'g', c[1], s, d); tw(b, 'b', c[2], s, d); }
+
+  function setMode(m, v) {
+    const prev = mode; mode = m; sel = v; tweens = [];
+    const camTo = (a, e, s = 0, d = 1100) => { tw(cam, 'a', a, s, d); tw(cam, 'e', e, s, d); };
+    let wall = Math.max(...pm.flat());
+    tw(stackOp, 'x', 0, 0, 300); tw(stackOp, 'y', 0, 0, 300);
+
+    if (m === 'joint') {
+      bars.forEach(b => { tw(b, 'x', b.i, 0, 900); tw(b, 'y', b.j, 0, 900); tw(b, 'z0', 0, 0, 900); tw(b, 'h', b.p * HS, 0, 900);
+        tw(b, 'op', 1, 0, 600); tw(b, 'lab', 0, 0, 300); colorTo(b, b.hc, 0, 600); });
+      if (prev.startsWith('cond') || prev.startsWith('marg')) camTo(...CFG.view);
+      cap.innerHTML = `Joint PMF: bar height at (<em>x</em>, <em>y</em>) is P(${XN} = <em>x</em>, ${YN} = <em>y</em>). All bar heights sum to 1.`;
+    }
+    if (m === 'mx' || m === 'my') {
+      const isX = m === 'mx';
+      // bars slide toward the back wall and stack: heights add up to the marginal
+      bars.forEach(b => {
+        const below = isX ? pm[b.i].slice(0, b.j).reduce((s, v) => s + v, 0) : pm.slice(0, b.i).reduce((s, r) => s + r[b.j], 0);
+        const order = isX ? (ny - 1 - b.j) : b.i, st = order * 140;
+        tw(b, isX ? 'y' : 'x', isX ? YST : XST, st, 950); tw(b, isX ? 'x' : 'y', isX ? b.i : b.j, st, 950);
+        tw(b, 'z0', below * HS, st, 950); tw(b, 'h', b.p * HS, 0, 600);
+        tw(b, 'op', 1, 0, 400); tw(b, 'lab', 0, 0, 300); colorTo(b, b.hc, 0, 400);
+      });
+      tw(stackOp, isX ? 'x' : 'y', 1, 1400, 500);
+      wall = Math.max(...(isX ? pX : pY));
+      camTo(isX ? 62 : 22, 20);
+      cap.innerHTML = isX
+        ? `Marginal of ${XN}: for each <em>x</em>, stack the bars along <em>y</em>. P(${XN} = <em>x</em>) = &Sigma;<sub><em>y</em></sub> P(${XN} = <em>x</em>, ${YN} = <em>y</em>).`
+        : `Marginal of ${YN}: for each <em>y</em>, stack the bars along <em>x</em>. P(${YN} = <em>y</em>) = &Sigma;<sub><em>x</em></sub> P(${XN} = <em>x</em>, ${YN} = <em>y</em>).`;
+    }
+    if (m === 'cx' || m === 'cy') {
+      const isX = m === 'cx', den = isX ? pX[v] : pY[v], val = isX ? XV[v] : YV[v];
+      const inSlice = b => (isX ? b.i : b.j) === v;
+      bars.forEach(b => {
+        tw(b, 'x', b.i, 0, 700); tw(b, 'y', b.j, 0, 700); tw(b, 'z0', 0, 0, 700);
+        if (inSlice(b)) {
+          tw(b, 'h', b.p * HS, 0, 700); colorTo(b, CFG.heat ? b.hc : HIL, 0, 600); tw(b, 'op', 1, 0, 500);
+          tw(b, 'h', den > 0 ? b.p / den * HS : 0, 1700, 1000);           // phase 2: divide by the marginal
+          tw(b, 'lab', 1, 2700, 400); b.labv = den > 0 ? b.p / den : 0;
+          if (CFG.heat) { const mc = Math.max(...bars.filter(inSlice).map(q => q.p / den)); colorTo(b, heatc(0.04 + 0.96 * (b.p / den) / mc), 1700, 1000); }
+        } else { tw(b, 'h', b.p * HS, 0, 700); tw(b, 'op', 0.13, 0, 700); colorTo(b, b.hc, 0, 600); tw(b, 'lab', 0, 0, 300); }
+      });
+      wall = Math.max(wall, ...bars.filter(inSlice).map(b => den > 0 ? b.p / den : 0));
+      camTo(isX ? 6 : 84, 13, 0, 1300);
+      const given = isX ? `${XN} = ${val}` : `${YN} = ${val}`, other = isX ? YN : XN, ov = isX ? '<em>y</em>' : '<em>x</em>';
+      cap.innerHTML = `Conditional PMF of ${other} given ${given}: take the slice ${given}, then divide by P(${given}) = ${f3(den)} so the slice sums to 1. ` +
+        `P(${other} = ${ov} | ${given}) = P(${isX ? `${XN} = ${val}, ${YN} = <em>y</em>` : `${XN} = <em>x</em>, ${YN} = ${val}`}) / P(${given}).`;
+    }
+    tw(cam, 'wallH', Math.min(1, Math.ceil(wall * 10 - 1e-9) / 10 + 0.1), 0, 900);
+    tw(cam, 'cz', Math.min(1, Math.ceil(wall * 10 - 1e-9) / 10 + 0.1) * HS * 0.42, 0, 900);
+    drawTable(); go();
+  }
+
+  // ---------- table ----------
+  function drawTable() {
+    const hlRow = mode === 'cx' ? sel : -1, hlCol = mode === 'cy' ? sel : -1;
+    const cls = (i, j) => (i === hlRow || j === hlCol) ? P + '-hl' : ((hlRow >= 0 || hlCol >= 0) ? P + '-dim' : '');
+    let h = `<table><tr><th>${XN} \\ ${YN}</th>${YV.map(v => `<th>${v}</th>`).join('')}<th class="${P}-m">P(${XN}=<em>x</em>)</th></tr>`;
+    pm.forEach((r, i) => {
+      h += `<tr><th>${XV[i]}</th>${r.map((v, j) => { const on = !CFG.heat || (hlRow < 0 && hlCol < 0) || i === hlRow || j === hlCol;
+        return `<td class="${CFG.heat ? '' : cls(i, j)}"${on ? cellSty(v, HM) : ''}>${f3(v)}</td>`; }).join('')}` +
+           `<td class="${P}-m ${mode === 'mx' ? P + '-hm' : (i === hlRow ? P + '-hm' : '')}">${f3(pX[i])}</td></tr>`;
+    });
+    h += `<tr class="${P}-mr"><th>P(${YN}=<em>y</em>)</th>${pY.map((v, j) => `<td class="${mode === 'my' || j === hlCol ? P + '-hm' : ''}">${f3(v)}</td>`).join('')}<td class="${P}-m">1</td></tr></table>`;
+    if (CFG.heat) h += `<div style="display:flex;align-items:center;gap:8px;margin:8px 2px 0;font-size:13px;color:#7b8794">0` +
+      `<div style="flex:0 0 150px;height:10px;border-radius:5px;background:linear-gradient(90deg,${STOPS.map(rgbs).join(',')})"></div>${f3(HM)} &nbsp;darker = higher</div>`;
+    tabBox.innerHTML = h;
+    let c = '';
+    if (mode === 'cx' || mode === 'cy') {
+      const isX = mode === 'cx', den = isX ? pX[sel] : pY[sel], vals = isX ? YV : XV, given = isX ? `${XN}=${XV[sel]}` : `${YN}=${YV[sel]}`;
+      const cp = vals.map((_, k) => (isX ? pm[sel][k] : pm[k][sel]) / den);
+      c = `<table><tr><th>${isX ? YN : XN}</th>${vals.map(v => `<th>${v}</th>`).join('')}<th class="${P}-m">sum</th></tr>` +
+          `<tr><th>P(&middot; | ${given})</th>${cp.map(v => `<td class="${CFG.heat ? '' : P + '-hl'}"${cellSty(v, Math.max(...cp))}>${f3(v)}</td>`).join('')}<td class="${P}-m">1</td></tr></table>`;
+    }
+    condBox.innerHTML = c;
+  }
+
+  // ---------- controls ----------
+  const modeBox = root.querySelector('[data-role=mode]'), valBox = root.querySelector('[data-role=vals]');
+  function buttons(box, opts, onPick) {
+    box.innerHTML = ''; const bs = [];
+    opts.forEach(([k, l]) => { const b = document.createElement('button'); b.innerHTML = l; b.dataset.k = k;
+      b.onclick = () => { if (b.classList.contains(P + '-on')) return; bs.forEach(x => x.classList.toggle(P + '-on', x === b)); onPick(k); };
+      bs.push(b); box.appendChild(b); });
+    return bs;
+  }
+  function showVals(isX) {
+    if (isX === null) { valBox.classList.add(P + '-off'); return; }
+    valBox.classList.remove(P + '-off');
+    const vals = isX ? XV : YV, def = CFG.defaultCond[isX ? 0 : 1];
+    const bs = buttons(valBox, vals.map((v, k) => [k, `${isX ? XN : YN} = ${v}`]), k => setMode(isX ? 'cx' : 'cy', +k));
+    bs[def].classList.add(P + '-on'); return def;
+  }
+  const mbs = buttons(modeBox, [['joint', 'Joint'], ['mx', `Marginal of ${XN}`], ['my', `Marginal of ${YN}`], ['cx', `Given ${XN}`], ['cy', `Given ${YN}`]], k => {
+    if (k === 'cx' || k === 'cy') setMode(k, showVals(k === 'cx')); else { showVals(null); setMode(k); }
+  });
+  mbs[0].classList.add(P + '-on'); showVals(null);
+
+  // ---------- rotate by dragging; hover readout ----------
+  let drag = null;
+  svg.addEventListener('pointerdown', e => { drag = { x: e.clientX, y: e.clientY }; svg.setPointerCapture(e.pointerId); tweens = tweens.filter(w => w.obj !== cam || w.key === 'wallH' || w.key === 'cz'); });
+  svg.addEventListener('pointermove', e => {
+    if (drag) {
+      const k = W / svg.getBoundingClientRect().width;
+      cam.a = Math.max(0, Math.min(90, cam.a - (e.clientX - drag.x) * 0.35 * k));
+      cam.e = Math.max(8, Math.min(60, cam.e + (e.clientY - drag.y) * 0.3 * k));
+      drag = { x: e.clientX, y: e.clientY }; if (!raf) render(); return;
+    }
+    const t = e.target, i = t.getAttribute && t.getAttribute('data-i');
+    if (i === null || i === undefined) { info.innerHTML = '&nbsp;'; return; }
+    const j = +t.getAttribute('data-j'), b = bars.find(z => z.i === +i && z.j === j);
+    let s = `P(${XN} = ${XV[b.i]}, ${YN} = ${YV[b.j]}) = ${f3(b.p)}` + (CFG.n ? ` &nbsp;(${Math.round(b.p * CFG.n)} of ${CFG.n} students)` : '');
+    if (mode === 'cx' && b.i === sel) s += ` &nbsp;&rarr;&nbsp; P(${YN} = ${YV[b.j]} | ${XN} = ${XV[sel]}) = ${f3(b.p)} / ${f3(pX[sel])} = ${f3(b.p / pX[sel])}`;
+    if (mode === 'cy' && b.j === sel) s += ` &nbsp;&rarr;&nbsp; P(${XN} = ${XV[b.i]} | ${YN} = ${YV[sel]}) = ${f3(b.p)} / ${f3(pY[sel])} = ${f3(b.p / pY[sel])}`;
+    info.innerHTML = s;
+  });
+  const end = () => { drag = null; };
+  svg.addEventListener('pointerup', end); svg.addEventListener('pointercancel', end);
+  svg.addEventListener('pointerleave', () => { if (!drag) info.innerHTML = '&nbsp;'; });
+
+  setMode('joint');
+})();
+</script>
+```
+
+# Strength of Relationship {.section-slide}
+
+Covariance and correlation.
+
+## Covariance and correlation
+
+```{=html}
+<div id="srel-root"></div>
+<style>
+  #srel-root { max-width:700px; margin:0 auto; padding:4px 0; color:#1f2933; text-align:left;
+                font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; font-size:16px; line-height:1.3; }
+  #srel-root .srel-bar { display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between; }
+  #srel-root .srel-seg { display:inline-flex; flex-wrap:wrap; background:#eef1f4; border-radius:9px; padding:3px; }
+  #srel-root .srel-seg button { border:0; margin:0; background:transparent; padding:6px 13px; border-radius:7px; cursor:pointer;
+                font-family:inherit; font-size:15px; line-height:1.2; color:#7b8794; text-transform:none; letter-spacing:normal;
+                transition:background .25s, color .25s, box-shadow .25s; }
+  #srel-root .srel-seg button.srel-on { background:#ffffff; color:#1f2933; box-shadow:0 1px 3px rgba(0,0,0,.14); }
+  #srel-root .srel-cap { font-size:14px; color:#7b8794; margin:8px 2px 0; min-height:20px; }
+  #srel-root svg { width:100%; height:auto; display:block; margin:0; max-height:none; }
+  #srel-root .srel-ax { transition:opacity .5s ease; }
+  #srel-root .srel-tick { font-size:13px; fill:#7b8794; }
+  #srel-root .srel-lab { font-size:14px; fill:#1f2933; }
+  #srel-root .srel-rbig { font-size:34px; font-weight:600; fill:#1f2933; }
+  #srel-root .srel-rsub { font-size:14px; fill:#7b8794; }
+  #srel-root .srel-cbig { font-size:24px; font-weight:600; fill:#c05621; }
+  #srel-root .srel-ubar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:8px; }
+  #srel-root .srel-ulab { font-size:14px; color:#7b8794; }
+</style>
+<script>
+(function () {
+const CFG_P = {"title": "Strength of relationship", "x": [153.0, 155.0, 155.0, 155.0, 156.0, 157.0, 157.0, 157.0, 157.0, 158.0, 158.0, 158.0, 158.0, 158.0, 159.0, 159.0, 160.0, 160.0, 160.0, 160.0, 160.0, 160.0, 160.0, 160.0, 160.0, 160.0, 160.0, 160.0, 160.0, 160.0, 161.0, 162.0, 162.0, 162.0, 162.0, 162.0, 162.0, 162.0, 162.0, 162.0, 162.0, 162.0, 162.0, 163.0, 163.0, 163.0, 163.0, 163.0, 163.0, 163.0, 163.0, 163.0, 163.0, 163.0, 163.0, 164.0, 164.0, 164.0, 164.0, 165.0, 165.0, 165.0, 165.0, 165.0, 165.0, 165.0, 165.0, 165.0, 165.0, 165.0, 165.0, 165.0, 165.0, 166.0, 166.0, 167.0, 167.0, 167.0, 167.0, 167.0, 167.0, 167.0, 167.0, 167.0, 167.0, 168.0, 168.0, 168.0, 168.0, 168.0, 168.0, 168.0, 168.0, 168.0, 169.0, 169.0, 169.0, 169.0, 169.0, 169.0, 169.0, 169.0, 169.0, 170.0, 170.0, 170.0, 170.0, 170.0, 170.0, 170.0, 170.0, 170.0, 170.0, 170.0, 170.0, 170.0, 170.0, 170.0, 170.0, 170.0, 170.0, 170.0, 170.0, 170.0, 171.0, 171.0, 171.0, 171.0, 172.0, 172.0, 172.0, 173.0, 173.0, 173.0, 173.0, 173.0, 173.0, 173.0, 173.0, 173.0, 173.0, 173.0, 173.0, 173.0, 173.0, 173.0, 173.0, 174.0, 174.0, 174.0, 174.0, 174.0, 174.0, 174.0, 175.0, 175.0, 175.0, 175.0, 175.0, 175.0, 175.0, 175.0, 175.0, 176.0, 176.0, 176.0, 177.0, 177.0, 177.0, 178.0, 178.0, 178.0, 178.0, 178.0, 178.0, 178.0, 178.0, 178.0, 179.0, 179.0, 179.0, 180.0, 180.0, 180.0, 180.0, 180.0, 180.0, 180.0, 180.0, 180.0, 181.0, 181.0, 181.0, 181.0, 182.0, 182.0, 182.0, 182.0, 183.0, 183.0, 183.0, 183.0, 183.0, 183.0, 183.0, 183.0, 183.0, 183.0, 183.0, 183.0, 183.0, 184.0, 184.0, 186.0, 186.0, 186.0, 186.0, 188.0, 190.0, 190.0, 192.0, 192.0, 193.0, 197.0, 188.0, 165.0, 153.0, 180.0, 160.0, 170.0, 155.0, 169.0, 172.0, 175.0, 167.0, 170.0, 153.0, 165.0, 163.0, 173.0, 162.0, 175.0, 168.0, 158.0, 175.0, 181.0, 170.0, 173.0, 168.0, 168.0, 182.0, 186.0, 170.0, 160.0, 172.0, 171.0, 169.0, 172.0, 183.0, 170.0, 168.0, 164.0, 185.0, 163.0, 163.0, 169.0, 175.0, 161.0, 185.0, 181.0, 158.0, 184.0, 163.0, 177.0, 175.0, 180.0, 165.0, 163.0, 185.0, 168.0, 178.0, 168.0, 186.0, 180.0, 171.0, 186.0, 175.0, 181.0, 177.0, 182.0, 186.0, 171.0, 168.0, 161.0, 168.0, 174.0, 159.0, 167.0, 173.0], "xdom": [150, 200], "xticks": [150, 160, 170, 180, 190, 200], "xlab": "Height (cm)", "color": "#2b6cb0", "r": 4.4, "op": 0.6, "pairs": [{"key": "ft", "label": "Height in feet", "vals": [5.019685039370079, 5.085301837270341, 5.085301837270341, 5.085301837270341, 5.118110236220472, 5.150918635170604, 5.150918635170604, 5.150918635170604, 5.150918635170604, 5.183727034120735, 5.183727034120735, 5.183727034120735, 5.183727034120735, 5.183727034120735, 5.216535433070866, 5.216535433070866, 5.2493438320209975, 5.2493438320209975, 5.2493438320209975, 5.2493438320209975, 5.2493438320209975, 5.2493438320209975, 5.2493438320209975, 5.2493438320209975, 5.2493438320209975, 5.2493438320209975, 5.2493438320209975, 5.2493438320209975, 5.2493438320209975, 5.2493438320209975, 5.282152230971128, 5.31496062992126, 5.31496062992126, 5.31496062992126, 5.31496062992126, 5.31496062992126, 5.31496062992126, 5.31496062992126, 5.31496062992126, 5.31496062992126, 5.31496062992126, 5.31496062992126, 5.31496062992126, 5.347769028871391, 5.347769028871391, 5.347769028871391, 5.347769028871391, 5.347769028871391, 5.347769028871391, 5.347769028871391, 5.347769028871391, 5.347769028871391, 5.347769028871391, 5.347769028871391, 5.347769028871391, 5.380577427821522, 5.380577427821522, 5.380577427821522, 5.380577427821522, 5.413385826771654, 5.413385826771654, 5.413385826771654, 5.413385826771654, 5.413385826771654, 5.413385826771654, 5.413385826771654, 5.413385826771654, 5.413385826771654, 5.413385826771654, 5.413385826771654, 5.413385826771654, 5.413385826771654, 5.413385826771654, 5.446194225721785, 5.446194225721785, 5.479002624671916, 5.479002624671916, 5.479002624671916, 5.479002624671916, 5.479002624671916, 5.479002624671916, 5.479002624671916, 5.479002624671916, 5.479002624671916, 5.479002624671916, 5.511811023622047, 5.511811023622047, 5.511811023622047, 5.511811023622047, 5.511811023622047, 5.511811023622047, 5.511811023622047, 5.511811023622047, 5.511811023622047, 5.544619422572178, 5.544619422572178, 5.544619422572178, 5.544619422572178, 5.544619422572178, 5.544619422572178, 5.544619422572178, 5.544619422572178, 5.544619422572178, 5.57742782152231, 5.57742782152231, 5.57742782152231, 5.57742782152231, 5.57742782152231, 5.57742782152231, 5.57742782152231, 5.57742782152231, 5.57742782152231, 5.57742782152231, 5.57742782152231, 5.57742782152231, 5.57742782152231, 5.57742782152231, 5.57742782152231, 5.57742782152231, 5.57742782152231, 5.57742782152231, 5.57742782152231, 5.57742782152231, 5.57742782152231, 5.610236220472441, 5.610236220472441, 5.610236220472441, 5.610236220472441, 5.6430446194225725, 5.6430446194225725, 5.6430446194225725, 5.675853018372703, 5.675853018372703, 5.675853018372703, 5.675853018372703, 5.675853018372703, 5.675853018372703, 5.675853018372703, 5.675853018372703, 5.675853018372703, 5.675853018372703, 5.675853018372703, 5.675853018372703, 5.675853018372703, 5.675853018372703, 5.675853018372703, 5.675853018372703, 5.708661417322834, 5.708661417322834, 5.708661417322834, 5.708661417322834, 5.708661417322834, 5.708661417322834, 5.708661417322834, 5.741469816272966, 5.741469816272966, 5.741469816272966, 5.741469816272966, 5.741469816272966, 5.741469816272966, 5.741469816272966, 5.741469816272966, 5.741469816272966, 5.774278215223097, 5.774278215223097, 5.774278215223097, 5.807086614173229, 5.807086614173229, 5.807086614173229, 5.83989501312336, 5.83989501312336, 5.83989501312336, 5.83989501312336, 5.83989501312336, 5.83989501312336, 5.83989501312336, 5.83989501312336, 5.83989501312336, 5.8727034120734904, 5.8727034120734904, 5.8727034120734904, 5.905511811023622, 5.905511811023622, 5.905511811023622, 5.905511811023622, 5.905511811023622, 5.905511811023622, 5.905511811023622, 5.905511811023622, 5.905511811023622, 5.938320209973753, 5.938320209973753, 5.938320209973753, 5.938320209973753, 5.971128608923885, 5.971128608923885, 5.971128608923885, 5.971128608923885, 6.003937007874016, 6.003937007874016, 6.003937007874016, 6.003937007874016, 6.003937007874016, 6.003937007874016, 6.003937007874016, 6.003937007874016, 6.003937007874016, 6.003937007874016, 6.003937007874016, 6.003937007874016, 6.003937007874016, 6.036745406824147, 6.036745406824147, 6.102362204724409, 6.102362204724409, 6.102362204724409, 6.102362204724409, 6.167979002624672, 6.233595800524935, 6.233595800524935, 6.299212598425196, 6.299212598425196, 6.332020997375328, 6.4632545931758525, 6.167979002624672, 5.413385826771654, 5.019685039370079, 5.905511811023622, 5.2493438320209975, 5.57742782152231, 5.085301837270341, 5.544619422572178, 5.6430446194225725, 5.741469816272966, 5.479002624671916, 5.57742782152231, 5.019685039370079, 5.413385826771654, 5.347769028871391, 5.675853018372703, 5.31496062992126, 5.741469816272966, 5.511811023622047, 5.183727034120735, 5.741469816272966, 5.938320209973753, 5.57742782152231, 5.675853018372703, 5.511811023622047, 5.511811023622047, 5.971128608923885, 6.102362204724409, 5.57742782152231, 5.2493438320209975, 5.6430446194225725, 5.610236220472441, 5.544619422572178, 5.6430446194225725, 6.003937007874016, 5.57742782152231, 5.511811023622047, 5.380577427821522, 6.069553805774278, 5.347769028871391, 5.347769028871391, 5.544619422572178, 5.741469816272966, 5.282152230971128, 6.069553805774278, 5.938320209973753, 5.183727034120735, 6.036745406824147, 5.347769028871391, 5.807086614173229, 5.741469816272966, 5.905511811023622, 5.413385826771654, 5.347769028871391, 6.069553805774278, 5.511811023622047, 5.83989501312336, 5.511811023622047, 6.102362204724409, 5.905511811023622, 5.610236220472441, 6.102362204724409, 5.741469816272966, 5.938320209973753, 5.807086614173229, 5.971128608923885, 6.102362204724409, 5.610236220472441, 5.511811023622047, 5.282152230971128, 5.511811023622047, 5.708661417322834, 5.216535433070866, 5.479002624671916, 5.675853018372703], "ydom": [4.8, 6.6], "caption": "Same quantity in two units: every dot sits exactly on a line", "note": "perfect linear relationship", "r": 1.0, "cov": 2.455365966787536, "n": 299, "jit": null, "units": [{"key": "ft", "label": "feet", "ylab": "Height (feet)", "f": 1, "yticks": [5, 5.5, 6, 6.5], "td": 1, "cunit": "cm·ft", "cdec": 2}, {"key": "m", "label": "meters", "ylab": "Height (meters)", "f": 0.3048, "yticks": [1.5, 1.6, 1.7, 1.8, 1.9, 2.0], "td": 1, "cunit": "cm·m", "cdec": 3}, {"key": "in", "label": "inches", "ylab": "Height (inches)", "f": 12, "yticks": [60, 65, 70, 75], "td": 0, "cunit": "cm·in", "cdec": 1}, {"key": "cm", "label": "centimeters", "ylab": "Height (cm)", "f": 30.48, "yticks": [150, 160, 170, 180, 190, 200], "td": 0, "cunit": "cm²", "cdec": 1}]}, {"key": "wt", "label": "Weight", "vals": [54.0, 40.0, 38.0, 45.0, 60.0, 60.0, 50.0, 49.0, 51.0, 41.0, 52.0, 46.5, 49.0, 52.0, 46.0, 48.0, 60.5, 54.0, 75.0, 52.0, 55.0, 53.0, 45.0, 55.0, 58.0, 40.0, 48.0, 52.0, 50.0, 40.0, 46.0, 50.0, 55.0, 46.0, 56.0, 58.0, 56.0, 55.0, 45.0, 70.0, 53.0, 60.0, 46.0, 48.0, 53.0, 45.0, 50.0, 49.0, 60.0, 60.0, 61.0, 60.0, 53.0, 58.0, 55.0, 51.0, 45.0, null, 49.0, 47.0, 59.0, 49.0, 63.0, 54.0, 55.0, 68.0, 51.0, 48.0, 43.0, 60.0, 50.0, 53.5, 52.0, 59.0, 52.0, 49.0, 48.0, 55.0, 52.0, 48.0, 57.0, 53.0, 52.0, 54.0, 54.0, 75.0, 67.0, 59.0, 55.0, 56.0, 50.0, 49.0, 54.0, 52.0, 54.0, 48.0, 55.0, 60.0, 58.0, 54.0, 51.0, 60.0, 60.0, 60.0, 58.0, 45.0, 54.0, 80.0, 61.0, 63.0, 53.0, 62.0, 56.0, 66.0, 58.0, 53.0, 61.0, 55.0, 56.0, 66.0, 60.0, 53.0, 57.0, 78.0, 50.0, 62.0, 60.0, 55.0, 85.0, 70.0, 58.0, 49.0, 51.0, 80.0, 62.0, 51.0, 97.0, 69.0, 71.0, 60.0, 62.0, 54.0, 52.0, 68.0, 52.0, 70.0, null, 60.0, 58.0, 78.0, 64.0, 63.0, 63.0, 65.0, 60.0, 63.0, 63.0, 56.0, 95.0, 52.0, 71.0, 65.0, 55.0, 63.0, 87.0, 67.0, 70.0, 93.0, 69.0, 63.0, 82.0, 62.0, 76.0, 70.0, 79.0, 65.0, 87.0, 65.0, 69.0, 65.0, 67.0, 70.0, 62.0, 65.0, 64.0, 62.0, 69.0, 71.0, 80.0, 75.0, 70.0, 81.0, 69.0, 65.0, 65.0, 63.0, 80.0, 69.0, 73.0, 72.0, 62.0, 70.0, 64.0, 85.0, 93.0, 73.0, 93.0, 73.0, 78.0, 77.0, 63.0, 87.0, 86.0, 80.0, null, 79.0, 90.0, 75.0, 80.0, 75.0, 75.0, 76.0, 75.0, 87.0, 84.0, 57.0, 40.0, 68.0, 50.0, 66.0, 42.0, 66.0, 53.0, 85.0, 64.0, 50.0, 46.0, 65.0, 51.0, 82.0, 48.0, 62.0, 53.0, 52.0, 61.0, 64.0, 58.0, 56.0, 49.0, 55.0, 55.0, 90.0, 60.0, 49.0, 63.0, 63.0, 70.0, 59.0, 83.0, 54.0, 63.0, 48.0, 60.0, 56.0, 60.0, 54.0, 65.0, 47.0, 81.0, 54.0, 40.0, 108.0, 52.0, 69.0, 58.0, 67.0, 52.0, 60.0, 75.0, 68.0, 72.0, 47.0, 73.0, 68.0, 65.0, 81.0, 67.0, 65.0, 55.0, 73.0, 83.0, 80.0, 63.0, 55.0, 54.0, 54.0, 53.0, 54.0, 60.0], "ydom": [34, 118], "caption": "Taller students tend to be heavier: dots cluster around an upward line", "note": "strong positive relationship", "r": 0.7218, "cov": 75.59367269812185, "n": 296, "jit": null, "units": [{"key": "kg", "label": "kilograms", "ylab": "Weight (kg)", "f": 1, "yticks": [40, 50, 60, 70, 80, 90, 100, 110], "td": 0, "cunit": "cm·kg", "cdec": 1}, {"key": "lb", "label": "pounds", "ylab": "Weight (lb)", "f": 2.20462262, "yticks": [100, 150, 200, 250], "td": 0, "cunit": "cm·lb", "cdec": 1}, {"key": "g", "label": "grams", "ylab": "Weight (g)", "f": 1000, "yticks": [40000, 60000, 80000, 100000], "td": 0, "cunit": "cm·g", "cdec": 0}]}, {"key": "sd", "label": "Study hours", "vals": [10.0, 8.0, 8.0, 7.0, 1.0, 1.0, 3.0, 5.0, 2.0, 2.0, 10.0, 3.0, 3.0, 4.0, 14.0, 2.0, 5.0, 4.0, 5.0, 20.0, 5.0, 6.0, 12.0, 4.0, 6.0, 2.0, 2.0, 6.0, 8.0, 18.0, 2.0, 8.0, 4.0, 4.0, 7.0, 7.0, 8.0, 7.0, 5.0, 3.0, 7.0, 6.0, 8.0, 6.0, 2.0, 5.0, 9.5, 1.0, 4.0, 3.0, 3.0, 4.0, 5.0, 10.0, 3.0, 2.0, 4.0, 5.0, 6.0, 21.0, 3.0, 3.0, 10.0, 4.0, 10.0, 2.0, 5.0, 7.0, 5.0, 5.0, 5.0, 10.0, 8.0, 5.0, 2.0, 5.0, 30.0, 15.0, 6.0, 5.0, 5.0, 12.0, 5.0, 1.0, null, 4.0, 4.0, 3.0, 10.0, 2.0, 3.0, 7.0, 8.0, 6.0, 5.0, 4.0, 4.0, 8.0, 10.0, 10.0, 5.0, 12.0, 3.0, 18.0, 5.0, 5.0, 6.0, 10.0, 5.0, 3.0, 6.0, 2.0, 3.0, 3.0, 6.0, 5.0, 2.0, 6.0, 4.0, 5.0, 5.0, 5.0, 3.0, 4.0, 4.0, 30.0, null, 8.0, 7.0, 7.0, 3.0, 5.0, 8.0, 5.0, 6.0, 8.0, 3.0, 2.0, 7.0, 10.0, null, 5.0, 2.0, 5.0, 5.0, 20.0, 3.0, 5.0, 4.0, 5.0, 2.0, 12.0, 5.0, null, 15.0, 7.0, 6.0, 9.0, 3.0, 10.0, 3.0, 5.0, 15.0, 2.0, 2.0, 9.0, 15.0, 3.0, 3.0, 5.0, 8.0, 4.0, 3.0, 0.5, 7.0, 3.0, 6.0, 10.0, 3.0, 7.0, 2.0, 2.0, 4.0, 10.0, 10.0, 6.0, 5.0, 2.0, 3.0, 9.0, 3.0, 4.0, 10.0, 5.0, 1.0, 3.0, 0.1, 4.0, 10.0, 14.0, 8.0, 2.5, 9.0, 4.0, 4.0, 4.0, 5.0, 6.0, 7.0, 10.0, 3.0, 3.0, 2.0, 5.0, 4.0, 10.0, 5.0, 3.0, 3.0, 2.0, 3.0, 1.0, 2.0, 2.0, 4.0, 4.0, 5.0, 3.0, 7.0, 15.0, 4.0, 6.0, 5.0, 20.0, 4.0, 25.0, 10.0, 4.0, 12.0, 6.0, 3.0, 4.0, 4.0, 9.0, 4.0, 6.0, 5.0, 15.0, 7.0, 0.0, 3.0, 10.0, 4.0, 7.0, 2.0, 6.0, 7.0, 2.0, 14.0, 0.0, 0.0, 4.0, null, 5.0, 15.0, 8.0, 8.0, 6.0, 10.0, 3.0, 3.0, 3.0, 8.0, 6.0, 6.0, 2.0, 6.0, 5.0, 3.0, 5.0, 7.0, 15.0, 7.0, 11.0, 10.0, 5.0, 4.0, 8.0, 1.0, 4.0, null, 3.0, 2.0, 5.0, 5.0, 5.0, 4.0, 6.0, 4.0], "ydom": [-1, 34], "caption": "Knowing a student’s height tells you almost nothing about study time", "note": "no linear relationship", "r": -0.0732, "cov": -2.767366403291413, "n": 293, "jit": null, "units": [{"key": "h", "label": "hours", "ylab": "Study hours per week", "f": 1, "yticks": [0, 10, 20, 30], "td": 0, "cunit": "cm·h", "cdec": 1}, {"key": "min", "label": "minutes", "ylab": "Study minutes per week", "f": 60, "yticks": [0, 600, 1200, 1800], "td": 0, "cunit": "cm·min", "cdec": 0}]}, {"key": "sb", "label": "Siblings", "vals": [0.0, 1.0, 3.0, 2.0, 1.0, 2.0, 1.0, 2.0, 1.0, 3.0, 1.0, 1.0, 6.0, 3.0, 2.0, 2.0, 3.0, 2.0, 1.0, 2.0, 1.0, 0.0, 1.0, 3.0, 2.0, 2.0, 3.0, 2.0, 2.0, 1.0, 3.0, 3.0, 3.0, 1.0, 1.0, 1.0, 3.0, 4.0, 2.0, 2.0, 0.0, 4.0, 0.0, 3.0, 2.0, 0.0, 0.0, 0.0, 2.0, 1.0, 1.0, 1.0, 3.0, 2.0, 4.0, 0.0, 2.0, 3.0, 3.0, 0.0, 2.0, 2.0, 1.0, 3.0, 1.0, 1.0, 4.0, 2.0, 1.0, 4.0, 1.0, 1.0, 3.0, 3.0, 2.0, 1.0, 0.0, 2.0, 2.0, 2.0, 2.0, 2.0, 3.0, null, 2.0, 1.0, 1.0, 4.0, 3.0, 4.0, 2.0, 1.0, 2.0, 2.0, 1.0, 2.0, 2.0, 1.0, 2.0, 2.0, 0.0, 2.0, 2.0, 0.0, 1.0, 2.0, 3.0, 2.0, 4.0, 4.0, 1.0, 3.0, 1.0, 1.0, 4.0, 2.0, 0.0, 1.0, 4.0, 1.0, 1.0, 0.0, 1.0, 2.0, 2.0, 1.0, 2.0, 1.0, 2.0, 1.0, 1.0, 3.0, 2.0, 1.0, 0.0, 1.0, 2.0, 1.0, 3.0, 1.0, 2.0, 1.0, 3.0, 1.0, 4.0, 4.0, 2.0, 1.0, 5.0, 3.0, 2.0, 2.0, 4.0, 2.0, 0.0, 2.0, 0.0, 1.0, 1.0, 3.0, 1.0, 2.0, 1.0, 2.0, 1.0, 1.0, 1.0, 4.0, 4.0, 1.0, 2.0, 2.0, 0.0, 3.0, 1.0, 1.0, 1.0, 4.0, 1.0, 3.0, 2.0, 1.0, 2.0, 4.0, 1.0, 3.0, 1.0, 3.0, 3.0, 2.0, 3.0, 1.0, 4.0, 3.0, 0.0, 4.0, 1.0, 3.0, 2.0, 2.0, 2.0, 2.0, 1.0, 0.0, 3.0, 2.0, 1.0, 1.0, 3.0, 1.0, 3.0, 1.0, 0.0, 1.0, 1.0, 2.0, 2.0, 0.0, 2.0, 1.0, 1.0, 1.0, 2.0, 2.0, 5.0, 0.0, 2.0, 2.0, 1.0, 3.0, 2.0, 1.0, 3.0, 2.0, 1.0, 3.0, 1.0, 3.0, 1.0, 2.0, 4.0, 2.0, 3.0, 4.0, 0.0, 2.0, 4.0, 1.0, 3.0, 2.0, 6.0, 2.0, 2.0, 0.0, 2.0, 2.0, 2.0, 2.0, 3.0, 0.0, 3.0, 2.0, 4.0, 2.0, 5.0, 2.0, 2.0, 1.0, 0.0, 0.0, 0.0, 0.0, 3.0, 3.0, 4.0, 3.0, 0.0, 1.0, 2.0, 3.0, 1.0, 1.0, 0.0, 3.0, 3.0, 3.0, 1.0, 0.0, 3.0, 4.0, 0.0, 1.0, 2.0, 4.0, 3.0, 2.0, 1.0, 2.0, 2.0], "ydom": [-0.6, 7.6], "caption": "Height and number of siblings: no pattern (points jittered vertically for visibility)", "note": "no linear relationship", "r": -0.0027, "cov": -0.028676021964612938, "n": 298, "jit": [0.0700534612986135, 0.22243972854296234, 0.1543839865373084, -0.15388397360526856, -0.11190688044971378, 0.20918992942190667, -0.2770514294432782, 0.17988791429434914, 0.1663588801011459, -0.01795642640751638, -0.11030184098118442, -0.12408165722356695, -0.13727303091369025, -0.030757268705717933, 0.0025470250164538744, 0.02995851716171577, 0.27748015872325993, 0.1638906747597017, 0.06842036848705108, 0.2738176827018556, -0.1594271289880646, -0.19028126103960707, 0.06302217839289725, -0.25539247554162536, -0.2600190438867862, 0.008337739351967355, -0.018924625817838103, 0.23361395298799725, 0.07236670251496585, 0.00790588209572779, -0.001750876179637595, -0.14139164366469475, -0.2733953456961967, -0.17225479936822607, 0.10753798769382994, -0.1676602345672827, -0.07305966606276426, -0.2779088244508375, 0.18482672868897754, -0.1935017946055937, -0.13014438944428017, 0.21298600622926406, 0.005482853526317, 0.19440413796488687, 0.07824161348781472, 0.13539173052263997, -0.22876246116469445, 0.023040539970833718, 0.004352452328195977, 0.20795005094801317, -0.07769212695207176, 0.054983077636039324, -0.246819080286518, -0.06292619137799194, -0.09909964609540428, -0.19588815172054697, 0.1771493381386824, -0.06751014393182503, 0.2680988152702841, 0.05039534808594176, 0.05883150214471672, 0.07727808524146607, 0.09881213653516147, -0.19555870926571356, -0.033424458374614996, -0.14584418137546695, -0.05460095306177029, -0.22584570739822246, 0.26198370858734, -0.15959773908070718, 0.09618849106231958, -0.11176475437172065, 0.20948313464372254, 0.09084025346953412, -0.20629514314734881, 0.19324161968974968, 0.24917097584118852, 0.226193401389719, 0.03904272280119525, -0.19854242589388094, -0.17222044281773388, 0.23962718345693368, 0.029302833093667713, -0.1788906008686095, 0.21507186075002316, 0.07928015492458923, 0.039028793705332465, -0.06927881176724474, -0.04986504199200728, -0.1458860408981669, -0.25868791945290615, 0.2106825325411918, -0.01807107858410617, 0.026675711559691728, -0.09958854652307395, 0.14074195511875964, -0.2658897523510142, -0.0715762473634858, -0.2630038351448975, -0.21118042276519478, 0.261603011822526, 0.08834600882156807, -0.040196662021890484, 0.013294460429868982, 0.20877315679627367, -0.08724202648222534, 0.05056295008224021, 0.10286324907014449, -0.08096828486683325, 0.010695152437754485, 0.14853853463597266, 0.22914041583470812, -0.19540512427698334, 0.24271485969216, -0.277099835143358, 0.1416674020147422, 0.1738950249776573, -0.20341213113615436, -0.04541395548861632, 0.1765435156772256, -0.2720081337766181, 0.07193869080512283, 0.1640932485348991, 0.007282006380436745, 0.12647567550860883, -0.15320284968959932, -0.1688281571241032, -0.0766489076918031, -0.17953262456239796, -0.08620559409701209, 0.2509494743900563, 0.041066321862227695, -0.0895618822443297, -0.12794621290708025, 0.2531421147962125, -0.03109220259761658, 0.2690210604931301, 0.008692694699511727, 0.011853032254685425, 0.2220626932809605, 0.13594975420042216, 0.04516560375758061, -0.04107627785169535, 0.2117852012742371, -0.04947815605214248, 0.23674536265434176, -0.24151940281175757, -0.0392017573353487, 0.010928299131601038, 0.2525253895258359, -0.13944042186773545, 0.1713819224667809, 0.09882387199921233, 0.12156810639742888, 0.072588422390514, 0.26407399673848486, -0.0936983828416581, -0.056965686579552505, -0.16636941876043093, -0.25160572904752854, -0.16077141081381008, 0.23266006238938863, 0.19049453760869822, -0.2170527847641558, 0.05811625417744459, -0.011649962861810137, 0.05302352747343597, 0.08919400370107544, -0.10827068510223176, 0.25835647305241594, -0.01912958036577006, 0.07173647872434785, 0.0757266629838394, -0.17702193795457297, -0.2453553658324305, -0.04955057884113406, 0.14785684952554246, 0.1765242014433922, 0.1287939794411564, -0.21660522658587514, 0.23147872245738554, 0.16914048367847895, 0.2115071653237388, 0.01305032566609926, 0.23275584365641022, -0.2538747467458232, -0.2630382529983029, -0.26867927892055776, -0.13844954034662443, -0.1408009270029696, -0.17499813276065873, 0.037551258295821566, -0.2581679290214946, 0.05061720598751701, -0.18703375429355848, 0.09960927679769327, -0.26819780151142103, -0.10608068965021086, 0.24547112064418386, 0.02150197273125698, 0.17448894553818045, 0.08849460570256645, 0.0620204399435747, -0.17289849915245747, 0.041661059024371394, -0.25777560566296004, 0.16893206685144907, 0.25763971353465864, 0.19824507995143337, -0.25160259825900577, -0.09035035330707766, -0.10191820919712194, -0.21687848463519283, 0.07090261882374777, 0.1665765782051467, -0.10431597567874343, 0.2031731715544915, 0.16639107119383262, -0.20768275277437814, 0.149441127773367, 0.21426760314507426, -0.16952176089422197, 0.04123906051917292, 0.07769998097237762, 0.06122718419585593, -0.22610242052829566, 0.09026721816837158, 0.07389464582053046, 0.18137587384112802, 0.16996711151298388, -0.09678580355771282, 0.12434650643887019, 0.20567309704051934, 0.22005074458684215, -0.18955309690968045, -0.26504668395168063, 0.08445216831644803, -0.15978128726349256, 0.035677445589558765, 0.2490905366918309, -0.0675810104185621, -0.13844625178478823, -0.024354372021353154, 0.08805659143161082, -0.2233845780013911, -0.0668725324396961, -0.2051161342504273, 0.09096988410398216, 0.185109418067383, -0.06896188241108184, -0.07183458644632576, 0.02213212901056333, -0.1595676434026676, -0.1414506286946083, -0.0952827213618481, -0.023841609042598244, -0.23434238223055892, 0.14152999636552316, 0.04427056168038235, -0.11217143118131934, -0.23657391948343845, 0.1473813327848295, -0.20659576655686043, -0.20540428028418017, -0.2068168223479251, -0.23449310577504537, 0.227579724624144, -0.12922319218290135, -0.1084100756441583, 0.18636481360115786, 0.0671571374386088, -0.1751997035371975, -0.03650448906911022, 0.21499658024440216, -0.06979055046910032, 0.11809366979005886, -0.22578768305157793, 0.12730187497358458, 0.15482517347653807, 0.18242939775319428, 0.09755255464371826, -0.07238963489729858, -0.244041279906982, 0.010514691073765181, 0.14417754757403317, -0.1731306060457808, -0.1309071530967516, 0.020227223732448396, 0.1390656752228348, 0.22208856922514053, -0.20958475018086528, -0.17680868079476192, 0.16774070397736002, 0.08093210889314584, 0.12374476341358737, 0.27819185241753575, 0.24594077686689342, 0.19209403743128828, 0.15518485306978191], "units": [{"key": "n", "label": "count", "ylab": "Number of siblings", "f": 1, "yticks": [0, 1, 2, 3, 4, 5, 6], "td": 0, "cunit": "cm·siblings", "cdec": 1}]}, {"key": "sq", "label": "Artificial: (height − c)²", "vals": [367.07062367914756, 294.43427473906326, 294.43427473906326, 294.43427473906326, 261.1161002690211, 229.79792579897892, 229.79792579897892, 229.79792579897892, 229.79792579897892, 200.47975132893677, 200.47975132893677, 200.47975132893677, 200.47975132893677, 200.47975132893677, 173.16157685889462, 173.16157685889462, 147.84340238885247, 147.84340238885247, 147.84340238885247, 147.84340238885247, 147.84340238885247, 147.84340238885247, 147.84340238885247, 147.84340238885247, 147.84340238885247, 147.84340238885247, 147.84340238885247, 147.84340238885247, 147.84340238885247, 147.84340238885247, 124.52522791881032, 103.20705344876816, 103.20705344876816, 103.20705344876816, 103.20705344876816, 103.20705344876816, 103.20705344876816, 103.20705344876816, 103.20705344876816, 103.20705344876816, 103.20705344876816, 103.20705344876816, 103.20705344876816, 83.88887897872601, 83.88887897872601, 83.88887897872601, 83.88887897872601, 83.88887897872601, 83.88887897872601, 83.88887897872601, 83.88887897872601, 83.88887897872601, 83.88887897872601, 83.88887897872601, 83.88887897872601, 66.57070450868386, 66.57070450868386, 66.57070450868386, 66.57070450868386, 51.252530038641716, 51.252530038641716, 51.252530038641716, 51.252530038641716, 51.252530038641716, 51.252530038641716, 51.252530038641716, 51.252530038641716, 51.252530038641716, 51.252530038641716, 51.252530038641716, 51.252530038641716, 51.252530038641716, 51.252530038641716, 37.934355568599564, 37.934355568599564, 26.61618109855741, 26.61618109855741, 26.61618109855741, 26.61618109855741, 26.61618109855741, 26.61618109855741, 26.61618109855741, 26.61618109855741, 26.61618109855741, 26.61618109855741, 17.298006628515257, 17.298006628515257, 17.298006628515257, 17.298006628515257, 17.298006628515257, 17.298006628515257, 17.298006628515257, 17.298006628515257, 17.298006628515257, 9.979832158473107, 9.979832158473107, 9.979832158473107, 9.979832158473107, 9.979832158473107, 9.979832158473107, 9.979832158473107, 9.979832158473107, 9.979832158473107, 4.661657688430955, 4.661657688430955, 4.661657688430955, 4.661657688430955, 4.661657688430955, 4.661657688430955, 4.661657688430955, 4.661657688430955, 4.661657688430955, 4.661657688430955, 4.661657688430955, 4.661657688430955, 4.661657688430955, 4.661657688430955, 4.661657688430955, 4.661657688430955, 4.661657688430955, 4.661657688430955, 4.661657688430955, 4.661657688430955, 4.661657688430955, 1.3434832183888028, 1.3434832183888028, 1.3434832183888028, 1.3434832183888028, 0.025308748346651044, 0.025308748346651044, 0.025308748346651044, 0.7071342783044993, 0.7071342783044993, 0.7071342783044993, 0.7071342783044993, 0.7071342783044993, 0.7071342783044993, 0.7071342783044993, 0.7071342783044993, 0.7071342783044993, 0.7071342783044993, 0.7071342783044993, 0.7071342783044993, 0.7071342783044993, 0.7071342783044993, 0.7071342783044993, 0.7071342783044993, 3.3889598082623476, 3.3889598082623476, 3.3889598082623476, 3.3889598082623476, 3.3889598082623476, 3.3889598082623476, 3.3889598082623476, 8.070785338220196, 8.070785338220196, 8.070785338220196, 8.070785338220196, 8.070785338220196, 8.070785338220196, 8.070785338220196, 8.070785338220196, 8.070785338220196, 14.752610868178044, 14.752610868178044, 14.752610868178044, 23.43443639813589, 23.43443639813589, 23.43443639813589, 34.11626192809374, 34.11626192809374, 34.11626192809374, 34.11626192809374, 34.11626192809374, 34.11626192809374, 34.11626192809374, 34.11626192809374, 34.11626192809374, 46.79808745805159, 46.79808745805159, 46.79808745805159, 61.47991298800944, 61.47991298800944, 61.47991298800944, 61.47991298800944, 61.47991298800944, 61.47991298800944, 61.47991298800944, 61.47991298800944, 61.47991298800944, 78.16173851796728, 78.16173851796728, 78.16173851796728, 78.16173851796728, 96.84356404792513, 96.84356404792513, 96.84356404792513, 96.84356404792513, 117.52538957788298, 117.52538957788298, 117.52538957788298, 117.52538957788298, 117.52538957788298, 117.52538957788298, 117.52538957788298, 117.52538957788298, 117.52538957788298, 117.52538957788298, 117.52538957788298, 117.52538957788298, 117.52538957788298, 140.20721510784082, 140.20721510784082, 191.57086616775652, 191.57086616775652, 191.57086616775652, 191.57086616775652, 250.93451722767222, 318.29816828758794, 318.29816828758794, 393.66181934750364, 393.66181934750364, 434.3436448774615, 617.0709469972928, 250.93451722767222, 51.252530038641716, 367.07062367914756, 61.47991298800944, 147.84340238885247, 4.661657688430955, 294.43427473906326, 9.979832158473107, 0.025308748346651044, 8.070785338220196, 26.61618109855741, 4.661657688430955, 367.07062367914756, 51.252530038641716, 83.88887897872601, 0.7071342783044993, 103.20705344876816, 8.070785338220196, 17.298006628515257, 200.47975132893677, 8.070785338220196, 78.16173851796728, 4.661657688430955, 0.7071342783044993, 17.298006628515257, 17.298006628515257, 96.84356404792513, 191.57086616775652, 4.661657688430955, 147.84340238885247, 0.025308748346651044, 1.3434832183888028, 9.979832158473107, 0.025308748346651044, 117.52538957788298, 4.661657688430955, 17.298006628515257, 66.57070450868386, 164.88904063779867, 83.88887897872601, 83.88887897872601, 9.979832158473107, 8.070785338220196, 124.52522791881032, 164.88904063779867, 78.16173851796728, 200.47975132893677, 140.20721510784082, 83.88887897872601, 23.43443639813589, 8.070785338220196, 61.47991298800944, 51.252530038641716, 83.88887897872601, 164.88904063779867, 17.298006628515257, 34.11626192809374, 17.298006628515257, 191.57086616775652, 61.47991298800944, 1.3434832183888028, 191.57086616775652, 8.070785338220196, 78.16173851796728, 23.43443639813589, 96.84356404792513, 191.57086616775652, 1.3434832183888028, 17.298006628515257, 124.52522791881032, 17.298006628515257, 3.3889598082623476, 173.16157685889462, 26.61618109855741, 0.7071342783044993], "ydom": [-30, 700], "caption": "Y is an exact function of height, yet r = 0: correlation only measures linear dependence", "note": "r = 0 but fully dependent", "r": -0.0, "cov": -3.8507392211210616e-11, "n": 299, "jit": null, "units": [{"key": "cm2", "label": "cm²", "ylab": "Y = (height − 172.2)² (cm²)", "f": 1, "yticks": [0, 200, 400, 600], "td": 0, "cunit": "cm³", "cdec": 1}, {"key": "m2", "label": "m²", "ylab": "Y = (height − 172.2)² (m²)", "f": 0.0001, "yticks": [0, 0.02, 0.04, 0.06], "td": 2, "cunit": "cm·m²", "cdec": 3}]}]};
+  const P = 'srel', CFG = CFG_P;
+  const root = document.getElementById(P + '-root');
+  const W = 760, H = 470, m = { l: 62, r: 20, t: 16, b: 54 };
+  const pw = W - m.l - m.r, ph = H - m.t - m.b;
+  const [x0, x1] = CFG.xdom;
+  const sx = v => m.l + (v - x0) / (x1 - x0) * pw;
+  // dots are placed once per pair in its base unit; changing units only relabels the axis
+  const syP = (pr, v) => m.t + ph - (v - pr.ydom[0]) / (pr.ydom[1] - pr.ydom[0]) * ph;
+  const NS = 'http://www.w3.org/2000/svg';
+  const el = (t, a, p) => { const e = document.createElementNS(NS, t);
+    for (const k in a) e.setAttribute(k, a[k]); if (p) p.appendChild(e); return e; };
+  const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  const sgn = (v, d) => v < 0 && Math.abs(v).toFixed(d) !== (0).toFixed(d) ? '−' : '';
+
+  // ---------- controls ----------
+  const bar = document.createElement('div'); bar.className = P + '-bar'; root.appendChild(bar);
+  const sg = document.createElement('div'); sg.className = P + '-seg'; bar.appendChild(sg);
+  const bs = {};
+  CFG.pairs.forEach(pr => {
+    const b = document.createElement('button'); b.textContent = pr.label;
+    b.onclick = () => { if (cur === pr.key) return; show(pr.key, pr.units[0].key); };
+    bs[pr.key] = b; sg.appendChild(b);
+  });
+  const ubar = document.createElement('div'); ubar.className = P + '-ubar'; root.appendChild(ubar);
+  const ulab = document.createElement('span'); ulab.className = P + '-ulab'; ulab.textContent = 'Units of Y:'; ubar.appendChild(ulab);
+  const usg = document.createElement('div'); usg.className = P + '-seg'; ubar.appendChild(usg);
+  const ubs = {};
+  CFG.pairs.forEach(pr => pr.units.forEach(u => {
+    const b = document.createElement('button'); b.textContent = u.label; b.style.display = 'none';
+    b.onclick = () => { if (curU === u.key) return; show(cur, u.key); };
+    ubs[pr.key + '|' + u.key] = b; usg.appendChild(b);
+  }));
+  const cap = document.createElement('div'); cap.className = P + '-cap'; root.appendChild(cap);
+
+  // ---------- svg + per-pair/unit axes ----------
+  const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': CFG.title }, root);
+  const xAx = el('g', {}, svg);
+  CFG.xticks.forEach(v => {
+    el('line', { x1: sx(v), x2: sx(v), y1: m.t, y2: m.t + ph, stroke: '#edf0f3' }, xAx);
+    el('text', { x: sx(v), y: m.t + ph + 22, 'text-anchor': 'middle', class: P + '-tick' }, xAx).textContent = v;
+  });
+  el('text', { x: m.l + pw / 2, y: H - 8, 'text-anchor': 'middle', class: P + '-lab' }, xAx).textContent = CFG.xlab;
+  const yAxes = {};
+  CFG.pairs.forEach(pr => pr.units.forEach(u => {
+    const g = el('g', { class: P + '-ax', opacity: 0 }, svg); yAxes[pr.key + '|' + u.key] = g;
+    u.yticks.forEach(v => {
+      const y = syP(pr, v / u.f);
+      el('line', { x1: m.l, x2: m.l + pw, y1: y, y2: y, stroke: '#edf0f3' }, g);
+      el('text', { x: m.l - 10, y: y + 4.5, 'text-anchor': 'end', class: P + '-tick' }, g).textContent = v.toFixed(u.td);
+    });
+    el('text', { x: 16, y: m.t + ph / 2, 'text-anchor': 'middle', class: P + '-lab',
+                 transform: `rotate(-90 16 ${m.t + ph / 2})` }, g).textContent = u.ylab;
+  }));
+  el('line', { x1: m.l, x2: m.l + pw, y1: m.t + ph, y2: m.t + ph, stroke: '#9aa5b1' }, svg);
+  el('line', { x1: m.l, x2: m.l, y1: m.t, y2: m.t + ph, stroke: '#9aa5b1' }, svg);
+
+  // ---------- dots ----------
+  const R = CFG.r || 4.3, OP = CFG.op || 0.6;
+  const dg = el('g', {}, svg);
+  const dots = CFG.x.map(x => ({ x: sx(x), y: m.t + ph / 2, o: 0,
+    c: el('circle', { r: R, fill: CFG.color, opacity: 0, cx: sx(x), cy: m.t + ph / 2 }, dg) }));
+
+  // read-outs: r (never changes with units), Cov (rescales with units)
+  const rb = el('text', { x: m.l + 14, y: m.t + 40, class: P + '-rbig' }, svg);
+  const rc = el('text', { x: m.l + 14, y: m.t + 74, class: P + '-cbig' }, svg);
+  const rn = el('text', { x: m.l + 14, y: m.t + 96, class: P + '-rsub' }, svg);
+  const rs = el('text', { x: m.l + 14, y: m.t + 116, class: P + '-rsub' }, svg);
+  let rVal = 0, cVal = 0;
+
+  const fmtF = f => f >= 100 ? String(Math.round(f)) : String(+f.toPrecision(4));
+  let cur = null, curU = null, raf = 0;
+  function show(key, ukey, instant) {
+    const pr = CFG.pairs.find(p => p.key === key), u = pr.units.find(q => q.key === ukey);
+    const newPair = key !== cur;
+    const ys = pr.vals.map((v, i) => v == null ? null : syP(pr, v + (pr.jit ? pr.jit[i] : 0)));
+    for (const k in bs) bs[k].classList.toggle(P + '-on', k === key);
+    for (const k in ubs) {
+      const [pk, uk] = k.split('|');
+      ubs[k].style.display = pk === key ? '' : 'none';
+      ubs[k].classList.toggle(P + '-on', pk === key && uk === ukey);
+    }
+    ubar.style.visibility = pr.units.length > 1 ? 'visible' : 'hidden';
+    for (const k in yAxes) yAxes[k].setAttribute('opacity', k === key + '|' + ukey ? 1 : 0);
+    cap.textContent = pr.caption;
+    rn.textContent = u.f === 1 ? 'r has no units; Cov carries the units of X × Y'
+      : 'Y × ' + fmtF(u.f) + ' ⇒ Cov × ' + fmtF(u.f) + ', but r is unchanged';
+    rs.textContent = pr.note + '  (n = ' + pr.n + ')';
+    cur = key; curU = ukey;
+    const from = dots.map(d => ({ y: d.y, o: d.o })), r0 = rVal, c0 = cVal, cT = pr.cov * u.f;
+    const dur = instant ? 1 : (newPair ? 1100 : 700), t0 = performance.now();
+    cancelAnimationFrame(raf);
+    const step = now => {
+      const t = Math.min(1, (now - t0) / dur), e = ease(t);
+      dots.forEach((d, i) => {
+        const ty = ys[i];
+        if (ty != null) { d.y = from[i].y + (ty - from[i].y) * e; d.o = from[i].o + (OP - from[i].o) * e; }
+        else { d.y = from[i].y; d.o = from[i].o * (1 - e); }
+        d.c.setAttribute('cy', d.y); d.c.setAttribute('opacity', d.o);
+      });
+      rVal = r0 + (pr.r - r0) * e;
+      rb.textContent = 'r = ' + (rVal < -0.005 ? '−' : '') + Math.abs(rVal).toFixed(2);
+      cVal = c0 + (cT - c0) * e;
+      rc.textContent = 'Cov = ' + sgn(cVal, u.cdec) + Math.abs(cVal).toFixed(u.cdec) + ' ' + u.cunit;
+      if (t < 1) raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+  }
+  show(CFG.pairs[0].key, CFG.pairs[0].units[0].key, true);
+})();
+</script>
+```

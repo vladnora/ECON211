@@ -1,0 +1,2135 @@
+---
+title: "Continuous Random Variables"
+subtitle: "ECON211 · Probability & Statistics"
+format:
+  revealjs:
+    theme: simple
+    css: continious_slides.css
+    html-math-method: katex
+    center: false
+    slide-number: true
+    embed-resources: true
+    width: 1050
+    height: 700
+    margin: 0.05
+    transition: fade
+    transition-speed: fast
+    chalkboard: false
+---
+
+## Contents
+
+::: {.cards .stack .toc}
+::: {.box}
+<span class="tag">1 · Continuous Variables</span>
+A point has probability zero: roulette and sand.
+:::
+::: {.box}
+<span class="tag">2 · PDF and CDF</span>
+Probability as area; the CDF; densities vs. histograms.
+:::
+::: {.box}
+<span class="tag">3 · Expectation</span>
+From binned averages to the integral; center of mass.
+:::
+::: {.box}
+<span class="tag">4 · Median</span>
+Half the area on each side; median vs. mean; a game.
+:::
+::: {.box}
+<span class="tag">5 · Location and Scale</span>
+How a linear change shifts and rescales a variable.
+:::
+:::
+
+# Continuous Variables {.section-slide}
+
+Modeling a number that can land anywhere on a line.
+
+## Roulette wheel: how to model?
+
+```{=html}
+<div id="rw-root">
+<style>
+#rw-root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#fbfaf7;border:1px solid #d9d4c7;border-radius:10px;padding:14px;color:#1d1d1b;max-width:960px;margin:0 auto;box-sizing:border-box;text-align:left;line-height:1.3}
+#rw-root .rw-row{display:flex;gap:18px;align-items:flex-start}
+#rw-root .rw-side{flex:1;min-width:0}
+#rw-root canvas{display:block;max-width:none;margin:0;box-shadow:none;border:0}
+#rw-root #rw-x{font-size:30px;font-weight:600;font-variant-numeric:tabular-nums;margin:2px 0 6px}
+#rw-root #rw-win{font-size:17px;color:#2f3a4a;min-height:40px;margin-top:4px}
+#rw-root #rw-note{font-size:17px;color:#5b5648;min-height:30px;margin:2px 0 8px}
+#rw-root #rw-stat{font-size:15px;color:#5b5648;margin:4px 0 10px}
+#rw-root button{font:inherit;font-size:18px;padding:8px 14px;margin:0 8px 8px 0;border-radius:6px;border:1px solid #2b6cb0;background:#fff;color:#2b6cb0;cursor:pointer;box-shadow:none}
+#rw-root button.rw-primary{background:#2b6cb0;color:#fff}
+#rw-root button:disabled{opacity:.4;cursor:default}
+#rw-root button:focus-visible{outline:3px solid #f2c94c;outline-offset:2px}
+</style>
+<div class="rw-row">
+  <canvas id="rw-wheel"></canvas>
+  <div class="rw-side">
+    <div id="rw-x"></div>
+    <canvas id="rw-strip"></canvas>
+    <div id="rw-win"></div>
+    <div id="rw-note"></div>
+    <div>
+      <button id="rw-spin" class="rw-primary">Spin</button>
+      <button id="rw-in">Zoom in ×10</button>
+      <button id="rw-out">Zoom out ×10</button>
+      <button id="rw-reset">Reset zoom</button>
+      <button id="rw-batch">Spin ×100</button>
+    </div>
+  </div>
+</div>
+<canvas id="rw-hist"></canvas>
+<div id="rw-stat"></div>
+<canvas id="rw-bars"></canvas>
+<script>
+(function(){
+  var SS=2*Math.max(1,window.devicePixelRatio||1);
+  var WH=330, SW=560, SH=104, HW=920, HH=44, BW=920, BH=150, MAXK=12;
+  var reduce=!!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  function $(id){return document.getElementById(id);}
+  function setup(id,w,h){var c=$(id);c.width=w*SS;c.height=h*SS;c.style.width=w+'px';c.style.height=h+'px';var g=c.getContext('2d');g.scale(SS,SS);return g;}
+  var wg=setup('rw-wheel',WH,WH), sg=setup('rw-strip',SW,SH), hg=setup('rw-hist',HW,HH), bg=setup('rw-bars',BW,BH);
+  var st={x:null,a:0,spinning:false,z:0,zt:0,hist:[],anim:false};
+  function clamp(v,lo,hi){return Math.min(hi,Math.max(lo,v));}
+  function ang(a){return -Math.PI/2+2*Math.PI*a;}
+  function disc(g,x,y,r){g.beginPath();g.arc(x,y,r,0,2*Math.PI);g.fill();}
+
+  function drawWheel(){
+    var g=wg,c=WH/2,i,t,r;
+    g.clearRect(0,0,WH,WH);
+    g.fillStyle='#0f3d27'; disc(g,c,c,160);
+    g.strokeStyle='#1b6b45'; g.lineWidth=34; g.beginPath(); g.arc(c,c,133,0,2*Math.PI); g.stroke();
+    g.strokeStyle='#f3ecd8'; g.lineWidth=1.5;
+    for(i=0;i<20;i++){
+      t=ang(i/20); r=(i%2===0)?12:6;
+      g.beginPath();
+      g.moveTo(c+150*Math.cos(t),c+150*Math.sin(t));
+      g.lineTo(c+(150-r)*Math.cos(t),c+(150-r)*Math.sin(t));
+      g.stroke();
+    }
+    g.fillStyle='#efe8d6'; disc(g,c,c,110);
+    g.fillStyle='#14532d'; g.font='600 15px system-ui,sans-serif'; g.textAlign='center'; g.textBaseline='middle';
+    g.fillText('0',c,c-92); g.fillText('0.25',c+84,c); g.fillText('0.5',c,c+92); g.fillText('0.75',c-84,c);
+    g.fillStyle='#3d3a30'; g.font='14px system-ui,sans-serif';
+    g.fillText('X = arc length',c,c-16); g.fillText('clockwise from 0',c,c+4); g.fillText('circumference = 1',c,c+24);
+    g.strokeStyle='#f2c94c'; g.lineWidth=4; g.beginPath(); g.moveTo(c,c-158); g.lineTo(c,c-114); g.stroke();
+    if(st.x!==null&&!st.spinning&&st.z>0.02){
+      var half=Math.max(Math.pow(10,-st.z),0.006)/2;
+      g.strokeStyle='rgba(242,201,76,0.8)'; g.lineWidth=38;
+      g.beginPath(); g.arc(c,c,133,ang(st.x-half),ang(st.x+half)); g.stroke();
+    }
+    var t2=ang(st.a), bx=c+133*Math.cos(t2), by=c+133*Math.sin(t2);
+    g.fillStyle='rgba(0,0,0,0.3)'; disc(g,bx+1.5,by+2,9);
+    g.fillStyle='#d9480f'; disc(g,bx,by,9);
+    g.strokeStyle='#ffffff'; g.lineWidth=2; g.beginPath(); g.arc(bx,by,9,0,2*Math.PI); g.stroke();
+  }
+
+  function view(zv){
+    var w=Math.pow(10,-zv), c=(st.x===null||w>=1)?0.5:clamp(st.x,w/2,1-w/2);
+    return {w:w,lo:c-w/2,hi:c+w/2};
+  }
+  function prefixLen(v){
+    var A=v.lo.toFixed(14),B=v.hi.toFixed(14),L=0;
+    while(L<A.length&&A.charAt(L)===B.charAt(L))L++;
+    return {L:L,A:A};
+  }
+
+  function drawStrip(){
+    var g=sg,L0=14,R0=SW-14,span=R0-L0,y0=44,j,n,s,p,al,h,v=view(st.z);
+    g.clearRect(0,0,SW,SH);
+    function px(val){return L0+(val-v.lo)/v.w*span;}
+    g.strokeStyle='#8a94a6'; g.lineWidth=1.5; g.beginPath(); g.moveTo(L0,y0); g.lineTo(R0,y0); g.stroke();
+    var jl=0;
+    for(j=0;j<=14;j++){ if(Math.pow(10,-j)/v.w*span>=48) jl=j; }
+    for(j=0;j<=14;j++){
+      s=Math.pow(10,-j); p=s/v.w*span;
+      if(p<5) continue;
+      al=clamp((p-5)/25,0,1); h=6+20*clamp((p-5)/300,0,1);
+      g.strokeStyle='rgba(28,78,128,'+al.toFixed(3)+')'; g.lineWidth=1.5;
+      for(n=Math.ceil(v.lo/s-1e-9);n<=Math.floor(v.hi/s+1e-9);n++){
+        var X=px(n*s); g.beginPath(); g.moveTo(X,y0); g.lineTo(X,y0+h); g.stroke();
+      }
+    }
+    var pf=prefixLen(v), cut, full, lab;
+    s=Math.pow(10,-jl);
+    g.fillStyle='#2b6cb0'; g.font='14px system-ui,sans-serif'; g.textAlign='center'; g.textBaseline='alphabetic';
+    for(n=Math.ceil(v.lo/s-1e-9);n<=Math.floor(v.hi/s+1e-9);n++){
+      full=(n/Math.pow(10,jl)).toFixed(jl);
+      lab=full;
+      if(pf.L>2&&full.slice(0,pf.L)===pf.A.slice(0,pf.L)){
+        cut=Math.min(pf.L,full.length-2); lab='\u2026'+full.slice(cut);
+      }
+      g.fillText(lab,px(n*s),y0+46);
+    }
+    if(st.x!==null&&!st.spinning){
+      var bx=px(st.x);
+      g.fillStyle='#d9480f'; disc(g,bx,y0,7);
+      g.strokeStyle='#ffffff'; g.lineWidth=2; g.beginPath(); g.arc(bx,y0,7,0,2*Math.PI); g.stroke();
+      g.fillStyle='#d9480f'; g.font='italic 600 18px Georgia,serif'; g.textAlign='center'; g.fillText('X',bx,y0-16);
+    }
+  }
+
+  function drawHist(){
+    var g=hg,L0=14,R0=HW-14,y0=16,i,k;
+    g.clearRect(0,0,HW,HH);
+    g.strokeStyle='#8a94a6'; g.lineWidth=1.5; g.beginPath(); g.moveTo(L0,y0); g.lineTo(R0,y0); g.stroke();
+    g.fillStyle='#5b5648'; g.font='13px system-ui,sans-serif'; g.textAlign='center';
+    for(i=0;i<=10;i++){
+      var X=L0+i/10*(R0-L0);
+      g.beginPath(); g.moveTo(X,y0); g.lineTo(X,y0+6); g.stroke();
+      if(i%5===0) g.fillText(i===0?'0':(i===10?'1':'0.5'),X,y0+22);
+    }
+    g.fillStyle='rgba(28,78,128,0.35)';
+    for(k=0;k<st.hist.length;k++) disc(g,L0+st.hist[k]*(R0-L0),y0,4);
+    if(st.hist.length){ g.fillStyle='#d9480f'; disc(g,L0+st.hist[st.hist.length-1]*(R0-L0),y0,5); }
+  }
+
+  function drawBars(){
+    var g=bg,L0=14,R0=BW-14,top=28,base=BH-32,bw=(R0-L0)/10,n=st.hist.length,cnt=[0,0,0,0,0,0,0,0,0,0],mx=0,i,k,last=-1,sc,x,h,y;
+    g.clearRect(0,0,BW,BH);
+    for(k=0;k<n;k++){ cnt[Math.min(9,Math.floor(st.hist[k]*10))]++; }
+    for(i=0;i<10;i++) mx=Math.max(mx,cnt[i]);
+    if(st.x!==null&&!st.spinning) last=Math.min(9,Math.floor(st.x*10));
+    sc=(base-top)/(Math.max(4,mx)*1.15);
+    g.fillStyle='#1d1d1b'; g.font='600 16px system-ui,sans-serif'; g.textAlign='left'; g.textBaseline='alphabetic';
+    g.fillText('Spins per interval of length 0.1',L0,16);
+    for(i=0;i<10;i++){
+      x=L0+i*bw+3; h=cnt[i]*sc;
+      g.fillStyle=(i===last)?'#d9480f':'rgba(28,78,128,0.75)';
+      g.fillRect(x,base-h,bw-6,h);
+      g.fillStyle='#1d1d1b'; g.font='600 16px system-ui,sans-serif'; g.textAlign='center';
+      g.fillText(String(cnt[i]),x+(bw-6)/2,base-h-6);
+      g.fillStyle='#5b5648'; g.font='13px system-ui,sans-serif';
+      g.fillText((i/10).toFixed(1)+'\u2013'+((i+1)/10).toFixed(1),x+(bw-6)/2,base+20);
+    }
+    g.strokeStyle='#8a94a6'; g.lineWidth=1.5; g.beginPath(); g.moveTo(L0,base); g.lineTo(R0,base); g.stroke();
+    if(n>0){
+      y=base-(n/10)*sc;
+      g.setLineDash([6,4]); g.strokeStyle='#5b5648'; g.lineWidth=1.2;
+      g.beginPath(); g.moveTo(L0,y); g.lineTo(R0,y); g.stroke(); g.setLineDash([]);
+      g.fillStyle='#5b5648'; g.font='13px system-ui,sans-serif'; g.textAlign='right';
+      g.fillText('dashed line: expected n/10 = '+(n/10).toFixed(1)+' per interval',R0,16);
+    }
+  }
+
+  function render(){drawWheel();drawStrip();drawHist();drawBars();}
+
+  function fmt(k){return k===0?'1':Math.pow(10,-k).toFixed(k);}
+  function refresh(){
+    var k=Math.round(st.zt),sp=st.spinning,has=st.x!==null&&!sp,html,note,v,pf;
+    if(!has){ html='<em>X</em> = ?'; }
+    else { html='<em>X</em> = '+st.x.toFixed(15).slice(0,3+k)+'\u2026'; }
+    $('rw-x').innerHTML=html;
+    if(has){
+      v=view(k); pf=prefixLen(v);
+      $('rw-win').innerHTML='View width '+(k===0?'1':'10<sup>\u2212'+k+'</sup>')+' = '+fmt(k)+
+        ' \u00b7 <em>P</em>(<em>X</em> in view) = '+fmt(k)+
+        (pf.L>2?'<br>Every point in view starts with '+pf.A.slice(0,pf.L)+'\u2026':'');
+    } else { $('rw-win').innerHTML=''; }
+    if(sp) note='Spinning\u2026';
+    else if(!has) note='Press Spin. The ball will stop somewhere on the rim.';
+    else if(k===0) note='Where exactly did it stop? Zoom in.';
+    else if(k<MAXK) note='Still between two ticks. Each zoom shrinks the view, and its probability, tenfold.';
+    else note='Digits run out here: double precision holds about 16. That is a limit of the computer, not of the model. There is always another digit.';
+    $('rw-note').textContent=note;
+    $('rw-spin').disabled=sp; $('rw-batch').disabled=sp;
+    $('rw-in').disabled=!has||k>=MAXK; $('rw-out').disabled=!has||k<=0; $('rw-reset').disabled=!has||k<=0;
+    var n=st.hist.length, m=(new Set(st.hist)).size;
+    $('rw-stat').innerHTML=n?('Each dot is one spin. Spins: '+n+' \u00b7 distinct values: '+m+' \u00b7 repeated values: '+(n-m)):'Each dot below will be one spin.';
+  }
+
+  function zloop(){
+    var dz=st.zt-st.z;
+    if(Math.abs(dz)>0.002){ st.z+=dz*0.16; render(); requestAnimationFrame(zloop); }
+    else { st.z=st.zt; st.anim=false; render(); }
+  }
+  function setZoom(k){
+    st.zt=clamp(k,0,MAXK); refresh();
+    if(!st.anim){ st.anim=true; requestAnimationFrame(zloop); }
+  }
+
+  function spin(){
+    if(st.spinning) return;
+    st.spinning=true; st.x=null; st.z=0; st.zt=0; refresh();
+    var u=Math.random(), a0=st.a, T=3+(((u-a0)%1)+1)%1, t0=performance.now(), D=reduce?600:3400;
+    function step(now){
+      var q=Math.min(1,(now-t0)/D), e=1-Math.pow(1-q,3);
+      st.a=(a0+T*e)%1;
+      if(q<1){ render(); requestAnimationFrame(step); }
+      else { st.a=u; st.x=u; st.spinning=false; st.hist.push(u); render(); refresh(); }
+    }
+    requestAnimationFrame(step);
+  }
+  function batch(){
+    if(st.spinning) return;
+    for(var i=0;i<100;i++) st.hist.push(Math.random());
+    st.x=st.hist[st.hist.length-1]; st.a=st.x; st.z=0; st.zt=0; render(); refresh();
+  }
+
+  $('rw-spin').addEventListener('click',spin);
+  $('rw-batch').addEventListener('click',batch);
+  $('rw-in').addEventListener('click',function(){setZoom(Math.round(st.zt)+1);});
+  $('rw-out').addEventListener('click',function(){setZoom(Math.round(st.zt)-1);});
+  $('rw-reset').addEventListener('click',function(){setZoom(0);});
+  render(); refresh();
+})();
+</script>
+</div>
+```
+
+# PDF and CDF {.section-slide}
+
+Probability as area.
+
+## Sand analogy
+
+```{=html}
+<div id="sd-root">
+<style>
+#sd-root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#fbfaf7;border:1px solid #d9d4c7;border-radius:10px;padding:14px;color:#1d1d1b;max-width:960px;margin:0 auto;box-sizing:border-box;text-align:left;line-height:1.3}
+#sd-root .sd-top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+#sd-root .sd-shapes{display:flex;align-items:center;flex-wrap:wrap;gap:0}
+#sd-root .sd-lab{font-size:17px;color:#5b5648;margin-right:10px}
+#sd-root #sd-cnt{font-size:17px;color:#2f3a4a;font-variant-numeric:tabular-nums}
+#sd-root canvas{display:block;max-width:none;margin:0;box-shadow:none;border:0;touch-action:none}
+#sd-root #sd-int{font-size:17px;color:#2f3a4a;min-height:24px;margin-top:6px;font-variant-numeric:tabular-nums}
+#sd-root #sd-w{font-size:24px;font-weight:600;min-height:30px;font-variant-numeric:tabular-nums}
+#sd-root #sd-det{font-size:16px;color:#5b5648;min-height:30px}
+#sd-root #sd-note{font-size:17px;color:#5b5648;min-height:22px;margin:2px 0 4px}
+#sd-root button{font:inherit;font-size:18px;padding:8px 14px;margin:0 8px 8px 0;border-radius:6px;border:1px solid #2b6cb0;background:#fff;color:#2b6cb0;cursor:pointer;box-shadow:none}
+#sd-root button.sd-primary,#sd-root button.sd-on{background:#2b6cb0;color:#fff}
+#sd-root .sd-shapes button{font-size:16px;padding:6px 12px;margin:0 6px 0 0}
+#sd-root button:disabled{opacity:.4;cursor:default}
+#sd-root button:focus-visible{outline:3px solid #f2c94c;outline-offset:2px}
+</style>
+<div class="sd-top">
+  <div class="sd-shapes"><span class="sd-lab">Pile shape:</span>
+    <button id="sd-s-flat">Flat</button><button id="sd-s-bell">Bell</button><button id="sd-s-skew">Skewed</button><button id="sd-s-two">Two piles</button>
+  </div>
+  <div id="sd-cnt"></div>
+</div>
+<canvas id="sd-cv"></canvas>
+<div id="sd-int"></div>
+<div id="sd-w"></div>
+<div id="sd-det"></div>
+<div id="sd-note"></div>
+<div>
+  <button id="sd-pour" class="sd-primary">Pour the sand</button>
+  <button id="sd-fine">Make the sand infinitely fine</button>
+  <button id="sd-shrink">Shrink interval to a point</button>
+  <button id="sd-reset">Reset</button>
+</div>
+<script>
+(function(){
+  var SS=2*Math.max(1,window.devicePixelRatio||1);
+  var W=920,H=352,X0=52,X1=884,BASE=322,PH=150,LO=0,HI=10,G=2000,NB=60,N=2400;
+  var TILT=700,POUR=4000,FALL=650,UNT=700,MORPH=1500,SHRINK=4500,PVX=470,PVY=118,BWU=(HI-LO)/NB;
+  var reduce=!!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  if(reduce){POUR=1500;}
+  function $(id){return document.getElementById(id);}
+  function clamp(v,lo,hi){return Math.min(hi,Math.max(lo,v));}
+  function sm(t){t=clamp(t,0,1);return t*t*(3-2*t);}
+  var cv=$('sd-cv'); cv.width=W*SS; cv.height=H*SS; cv.style.width=W+'px'; cv.style.height=H+'px';
+  var g=cv.getContext('2d'); g.scale(SS,SS);
+  function xpx(v){return X0+(v-LO)/(HI-LO)*(X1-X0);}
+  function vx(p){return LO+(p-X0)/(X1-X0)*(HI-LO);}
+  function bin(v){return Math.min(NB-1,Math.max(0,Math.floor((v-LO)/BWU)));}
+
+  var SHAPES={
+    flat:function(x){return 1;},
+    bell:function(x){return Math.exp(-0.5*Math.pow((x-5)/1.4,2));},
+    skew:function(x){return x*x*Math.exp(-x/1.1);},
+    two:function(x){return 0.6*Math.exp(-0.5*Math.pow((x-2.8)/0.8,2))/0.8+0.4*Math.exp(-0.5*Math.pow((x-7)/1.1,2))/1.1;}
+  };
+  var M={}, S={};
+  function build(key){
+    var f=SHAPES[key],i,h=(HI-LO)/G,raw=[],F=[0],fm=0,area;
+    for(i=0;i<=G;i++) raw.push(f(LO+i*h));
+    for(i=1;i<=G;i++) F.push(F[i-1]+0.5*(raw[i-1]+raw[i])*h);
+    area=F[G];
+    for(i=0;i<=G;i++){ raw[i]/=area; F[i]/=area; fm=Math.max(fm,raw[i]); }
+    M={fg:raw,F:F,fmax:fm,ys:PH/(fm*1.5),h:h};
+  }
+  function interp(arr,x){
+    var t=(clamp(x,LO,HI)-LO)/M.h,i=Math.min(G-1,Math.floor(t)),r=t-i;
+    return arr[i]*(1-r)+arr[i+1]*r;
+  }
+  function fAt(x){return interp(M.fg,x);}
+  function FAt(x){return interp(M.F,x);}
+  function sample(){
+    var u=Math.random(),lo=0,hi=G,mid,d;
+    while(hi-lo>1){ mid=(lo+hi)>>1; if(M.F[mid]<=u) lo=mid; else hi=mid; }
+    d=M.F[hi]-M.F[lo];
+    return LO+(lo+(d>0?(u-M.F[lo])/d:0))*M.h;
+  }
+
+  function reset(key){
+    var i;
+    S={shape:key,phase:'idle',tc:0,rel:0,grains:[],counts:[],nextLand:0,emitted:0,xs:null,m:0,exact:false,
+       sel:null,shrink:null,morph:0,angle:0,drag:false,anchor:0,shrunk:false};
+    for(i=0;i<NB;i++) S.counts.push(0);
+    build(key); redraw(); refresh();
+  }
+
+  function pileH(v){
+    var hr=S.counts[bin(v)]/N/BWU;
+    return hr*(1-S.m)+(S.m>0?fAt(v)*S.m:0);
+  }
+  function tracePile(){
+    var p;
+    g.beginPath(); g.moveTo(X0,BASE);
+    for(p=X0;p<=X1;p+=2) g.lineTo(p,BASE-pileH(vx(p))*M.ys);
+    g.lineTo(X1,BASE-pileH(HI)*M.ys); g.lineTo(X1,BASE); g.closePath();
+  }
+
+  function drawBag(rem){
+    var s=0.35+0.65*rem,a=S.angle,yc=55*s;
+    g.save(); g.translate(PVX,PVY); g.rotate(a);
+    g.fillStyle='#b8915e'; g.strokeStyle='#7a5a33'; g.lineWidth=2;
+    g.beginPath();
+    g.moveTo(-16,0);
+    g.bezierCurveTo(-16,14*s,-58,20*s,-56,60*s);
+    g.bezierCurveTo(-55,92*s,-40,100*s,0,100*s);
+    g.bezierCurveTo(40,100*s,55,92*s,56,60*s);
+    g.bezierCurveTo(58,20*s,16,14*s,16,0);
+    g.closePath(); g.fill(); g.stroke();
+    g.fillStyle='#a17c4d'; g.fillRect(-19,-9,38,9); g.strokeRect(-19,-9,38,9);
+    if(a<0.05&&S.phase==='idle'){ g.strokeStyle='#5b4630'; g.lineWidth=3; g.beginPath(); g.moveTo(-19,-4); g.lineTo(19,-4); g.stroke(); }
+    if(a>0.05){ g.fillStyle='#5b4630'; g.beginPath(); g.ellipse(0,0,17,5,0,0,2*Math.PI); g.fill(); }
+    g.restore();
+    g.fillStyle='#fff8e7'; g.textAlign='center'; g.textBaseline='middle';
+    var lx=PVX-yc*Math.sin(a), ly=PVY+yc*Math.cos(a);
+    g.font='700 15px system-ui,sans-serif'; g.fillText('SAND',lx,ly-9);
+    g.font='600 14px system-ui,sans-serif'; g.fillText((rem*1).toFixed(2)+' kg',lx,ly+9);
+  }
+
+  function redraw(){
+    var i,v,p,step,mx,y,t,gr,q,gx,gy,tp,a,b,pa,pb,cx,any=false;
+    g.clearRect(0,0,W,H);
+    mx=M.fmax*1.5; step=[0.01,0.02,0.05,0.1,0.2,0.5,1].filter(function(s){return mx/s<=4;})[0]||1;
+    g.font='13px system-ui,sans-serif'; g.textAlign='right'; g.textBaseline='middle';
+    g.strokeStyle='#e4dfd2'; g.lineWidth=1; g.fillStyle='#8a8574';
+    for(v=step;v<mx;v+=step){
+      y=BASE-v*M.ys; g.setLineDash([4,4]); g.beginPath(); g.moveTo(X0,y); g.lineTo(X1,y); g.stroke(); g.setLineDash([]);
+      g.fillText(v.toFixed(step<0.1?2:1),X0-8,y);
+    }
+    g.textAlign='left'; g.textBaseline='alphabetic'; g.fillStyle='#5b5648';
+    g.fillText('thickness of the sand layer (kg per unit length)',12,BASE-PH-14);
+    for(i=0;i<NB;i++) if(S.counts[i]>0){any=true;break;}
+    if(any||S.m>0){
+      tracePile(); g.fillStyle='#e6c27a'; g.fill(); g.strokeStyle='#b98b3c'; g.lineWidth=1.5; g.stroke();
+      if(S.sel&&S.phase==='done'){
+        pa=xpx(S.sel.a); pb=xpx(S.sel.b);
+        if(pb-pa>0.5){ g.save(); g.beginPath(); g.rect(pa,0,pb-pa,H); g.clip(); tracePile(); g.fillStyle='rgba(217,72,15,0.65)'; g.fill(); g.restore(); }
+        if(pb-pa<25){ cx=(pa+pb)/2; tp=BASE-pileH((S.sel.a+S.sel.b)/2)*M.ys;
+          g.strokeStyle='#d9480f'; g.lineWidth=2; g.beginPath(); g.moveTo(cx,BASE); g.lineTo(cx,tp); g.stroke(); }
+      }
+    }
+    g.strokeStyle='#1d1d1b'; g.lineWidth=2; g.beginPath(); g.moveTo(X0,BASE); g.lineTo(X1,BASE); g.stroke();
+    g.fillStyle='#1d1d1b'; g.font='14px system-ui,sans-serif'; g.textAlign='center'; g.lineWidth=1.5;
+    for(i=0;i<=10;i++){ p=xpx(i); g.beginPath(); g.moveTo(p,BASE); g.lineTo(p,BASE+7); g.stroke(); g.fillText(String(i),p,BASE+24); }
+    g.font='italic 16px Georgia,serif'; g.fillText('x',X1+22,BASE+5);
+    if(S.sel&&S.phase==='done'){
+      pa=xpx(S.sel.a); pb=xpx(S.sel.b); if(pb-pa<4){cx=(pa+pb)/2;pa=cx-2;pb=cx+2;}
+      g.strokeStyle='#d9480f'; g.lineWidth=7; g.beginPath(); g.moveTo(pa,BASE); g.lineTo(pb,BASE); g.stroke();
+    }
+    if(S.phase==='pour'){
+      g.fillStyle='#b98b3c';
+      for(i=S.nextLand;i<S.emitted;i++){
+        gr=S.grains[i]; q=clamp((S.rel-gr.t0)/FALL,0,1);
+        tp=BASE-(S.counts[bin(gr.xl)]/N/BWU)*M.ys;
+        gx=gr.x0+(xpx(gr.xl)-gr.x0)*q; gy=(PVY+6)+(tp-(PVY+6))*q*q;
+        g.fillRect(gx-1.5,gy-1.5,3,3);
+      }
+    }
+    var rem=S.phase==='idle'?1:(1-S.emitted/N);
+    drawBag(rem);
+  }
+
+  function fmtKg(v){ if(v<=0) return '0'; if(v>=0.001) return v.toFixed(3); return v.toPrecision(2); }
+  function lb(a,x){var lo=0,hi=a.length,m;while(lo<hi){m=(lo+hi)>>1;if(a[m]<x)lo=m+1;else hi=m;}return lo;}
+  function ub(a,x){var lo=0,hi=a.length,m;while(lo<hi){m=(lo+hi)>>1;if(a[m]<=x)lo=m+1;else hi=m;}return lo;}
+  function weight(a,b){
+    if(S.exact) return {w:Math.max(0,FAt(b)-FAt(a))};
+    var n=ub(S.xs,b)-lb(S.xs,a); return {w:n/N,n:n};
+  }
+
+  function refresh(){
+    var done=S.phase==='done',pour=S.phase==='pour',bag=S.phase==='idle'?1:(1-S.emitted/N),sel=S.sel,r,a,b,len,c,note,html;
+    $('sd-cnt').textContent='In the bag: '+bag.toFixed(3)+' kg \u00b7 On the number line: '+(S.nextLand/N).toFixed(3)+' kg';
+    if(done&&sel){
+      a=sel.a; b=sel.b; len=b-a; r=weight(a,b); c=(a+b)/2;
+      $('sd-int').innerHTML='Interval ['+a.toFixed(len<0.01?4:2)+', '+b.toFixed(len<0.01?4:2)+'] \u00b7 length '+(len>=0.01?len.toFixed(2):len.toPrecision(2));
+      $('sd-w').innerHTML='Sand above it: '+fmtKg(r.w)+' kg';
+      html='<em>P</em>('+a.toFixed(2)+' \u2264 <em>X</em> \u2264 '+b.toFixed(2)+') = '+fmtKg(r.w);
+      if(S.exact){
+        html+=' \u00b7 area under the curve';
+        html+='<br>Thickness at the centre: '+fAt(c).toFixed(3)+' kg per unit length';
+        if(len<0.3) html+=' \u00b7 thickness \u00d7 length = '+fmtKg(fAt(c)*len)+' kg';
+      } else {
+        html+=' \u00b7 '+r.n+' of '+N+' grains'+(r.n===0?' (no grain lands in it)':'');
+      }
+      $('sd-det').innerHTML=html;
+    } else {
+      $('sd-int').textContent=''; $('sd-w').textContent=''; $('sd-det').textContent='';
+    }
+    if(S.phase==='idle') note='One kilogram of sand in a bag. Pick a pile shape, then pour it over the number line.';
+    else if(pour) note='Pouring\u2026 the sand spreads over the number line.';
+    else if(!sel) note=S.exact?'Infinitely fine sand: the pile is a smooth curve. Drag across the number line to weigh the sand above an interval.'
+                              :'All 1 kg is on the line. Drag across the number line to pick an interval and weigh the sand above it.';
+    else if(S.shrunk) note='The weight goes to 0, but the pile is still there. Weight \u2248 thickness \u00d7 length.';
+    else if(S.exact) note='Weight of sand above an interval = area under the curve. The curve is the PDF.';
+    else note='Weight of sand above the interval. Try a different interval, or make the sand infinitely fine.';
+    $('sd-note').textContent=note;
+    $('sd-pour').disabled=S.phase!=='idle';
+    $('sd-fine').disabled=!(done&&!S.exact&&!S.morph);
+    $('sd-shrink').disabled=!(done&&sel&&!S.shrink&&(sel.b-sel.a)>0.0005);
+    $('sd-reset').disabled=pour||S.phase==='idle';
+    ['flat','bell','skew','two'].forEach(function(k){
+      var e=$('sd-s-'+k); e.disabled=pour; e.className=(k===S.shape)?'sd-on':'';
+    });
+  }
+
+  var raf=0;
+  function loop(now){
+    var busy=false,rel,i,gr,q,s,w;
+    raf=0;
+    if(S.phase==='pour'){
+      rel=now-S.tc; S.rel=rel; busy=true;
+      if(rel<TILT) S.angle=Math.PI*sm(rel/TILT);
+      else if(rel<TILT+POUR) S.angle=Math.PI;
+      else S.angle=Math.PI*(1-sm((rel-TILT-POUR)/UNT));
+      S.emitted=rel<TILT?0:Math.min(N,Math.floor((rel-TILT)*N/POUR)+1);
+      while(S.nextLand<S.emitted&&S.grains[S.nextLand].t0+FALL<=rel){ S.counts[bin(S.grains[S.nextLand].xl)]++; S.nextLand++; }
+      if(rel>=TILT+POUR+Math.max(FALL,UNT)){
+        while(S.nextLand<N){ S.counts[bin(S.grains[S.nextLand].xl)]++; S.nextLand++; }
+        S.emitted=N; S.angle=0; S.phase='done'; busy=false;
+        S.xs=S.grains.map(function(x){return x.xl;}).sort(function(p,q){return p-q;});
+      }
+      refresh();
+    }
+    if(S.morph){
+      q=(now-S.morph)/MORPH;
+      if(q>=1){ S.m=1; S.exact=true; S.morph=0; refresh(); } else { S.m=sm(q); busy=true; }
+    }
+    if(S.shrink){
+      s=clamp((now-S.shrink.t0)/SHRINK,0,1);
+      w=S.shrink.w0*Math.pow(S.shrink.wEnd/S.shrink.w0,s);
+      S.sel={a:S.shrink.c-w/2,b:S.shrink.c+w/2};
+      if(s>=1){ S.shrink=null; S.shrunk=true; } else busy=true;
+      refresh();
+    }
+    redraw();
+    if(busy) raf=requestAnimationFrame(loop);
+  }
+  function kick(){ if(!raf) raf=requestAnimationFrame(loop); }
+
+  function pour(){
+    if(S.phase!=='idle') return;
+    var i;
+    S.phase='pour'; S.tc=performance.now(); S.grains=[];
+    for(i=0;i<N;i++) S.grains.push({t0:TILT+i*POUR/N,x0:PVX+(Math.random()-0.5)*24,xl:sample()});
+    refresh(); kick();
+  }
+  function evVal(e){
+    var r=cv.getBoundingClientRect(),w=r.width||W;
+    return clamp(vx((e.clientX-r.left)/w*W),LO,HI);
+  }
+  cv.addEventListener('pointerdown',function(e){
+    if(S.phase!=='done') return;
+    var v=evVal(e); S.drag=true; S.shrink=null; S.shrunk=false; S.anchor=v; S.sel={a:v,b:v};
+    if(cv.setPointerCapture) try{cv.setPointerCapture(e.pointerId);}catch(err){}
+    e.preventDefault(); e.stopPropagation(); redraw(); refresh();
+  });
+  cv.addEventListener('pointermove',function(e){
+    if(!S.drag) return;
+    var v=evVal(e); S.sel={a:Math.min(S.anchor,v),b:Math.max(S.anchor,v)}; redraw(); refresh();
+  });
+  function up(){ S.drag=false; }
+  cv.addEventListener('pointerup',up); cv.addEventListener('pointercancel',up);
+  cv.addEventListener('touchstart',function(e){e.stopPropagation();},{passive:true});
+  cv.addEventListener('touchmove',function(e){e.stopPropagation();},{passive:true});
+
+  $('sd-pour').addEventListener('click',pour);
+  $('sd-fine').addEventListener('click',function(){ if(S.phase!=='done'||S.exact||S.morph) return; S.morph=performance.now(); refresh(); kick(); });
+  $('sd-shrink').addEventListener('click',function(){
+    if(S.phase!=='done'||!S.sel||S.shrink) return;
+    var c=(S.sel.a+S.sel.b)/2,w0=S.sel.b-S.sel.a;
+    if(w0<=0.0005) return;
+    S.shrunk=false; S.shrink={t0:performance.now(),c:c,w0:w0,wEnd:Math.min(1e-4,w0/2)}; refresh(); kick();
+  });
+  $('sd-reset').addEventListener('click',function(){ if(S.phase==='pour') return; reset(S.shape); });
+  ['flat','bell','skew','two'].forEach(function(k){
+    $('sd-s-'+k).addEventListener('click',function(){ if(S.phase==='pour') return; reset(k); });
+  });
+  cv.style.cursor='crosshair';
+  reset('bell');
+})();
+</script>
+</div>
+```
+
+## PDF and CDF
+
+```{=html}
+<div id="pd-root">
+<style>
+#pd-root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#fbfaf7;border:1px solid #d9d4c7;border-radius:10px;padding:14px;color:#1d1d1b;max-width:960px;margin:0 auto;box-sizing:border-box;text-align:left;line-height:1.3}
+#pd-root .pd-cols{display:flex;gap:16px;align-items:flex-start}
+#pd-root .pd-left{flex:0 0 620px}
+#pd-root .pd-right{flex:1;min-width:0}
+#pd-root canvas{display:block;max-width:none;margin:0 0 4px;box-shadow:none;border:0;touch-action:none;cursor:crosshair}
+#pd-root .pd-lab{font-size:16px;color:#5b5648;margin:0 0 4px}
+#pd-root .pd-grid{display:grid;gap:6px;margin-bottom:10px}
+#pd-root .pd-g2{grid-template-columns:1fr 1fr}
+#pd-root .pd-g4{grid-template-columns:repeat(4,1fr)}
+#pd-root button{font:inherit;font-size:16px;padding:7px 6px;margin:0;border-radius:6px;border:1px solid #2b6cb0;background:#fff;color:#2b6cb0;cursor:pointer;box-shadow:none}
+#pd-root button.pd-on{background:#2b6cb0;color:#fff}
+#pd-root button:focus-visible{outline:3px solid #f2c94c;outline-offset:2px}
+#pd-root #pd-form{font-size:15px;color:#2f3a4a;min-height:58px;margin-bottom:8px}
+#pd-root #pd-p{font-size:17px;color:#2f3a4a;min-height:24px;font-variant-numeric:tabular-nums}
+#pd-root #pd-v{font-size:36px;font-weight:600;min-height:44px;font-variant-numeric:tabular-nums;color:#b8390b}
+#pd-root #pd-det{font-size:16px;color:#5b5648;min-height:42px;font-variant-numeric:tabular-nums}
+#pd-root #pd-hov{font-size:14px;color:#5b5648;min-height:36px;font-variant-numeric:tabular-nums}
+#pd-root #pd-note{font-size:16px;color:#5b5648;min-height:64px}
+</style>
+<div class="pd-cols">
+  <div class="pd-left">
+    <canvas id="pd-c1"></canvas>
+    <canvas id="pd-c2"></canvas>
+  </div>
+  <div class="pd-right">
+    <div class="pd-lab">Density</div>
+    <div class="pd-grid pd-g2">
+      <button id="pd-d-unif">Uniform</button><button id="pd-d-norm">Normal</button>
+      <button id="pd-d-exp">Exponential</button><button id="pd-d-weird">Weird</button>
+    </div>
+    <div class="pd-lab">Event</div>
+    <div class="pd-grid pd-g4">
+      <button id="pd-m-int">[a, b]</button><button id="pd-m-left">(&minus;&infin;, b]</button>
+      <button id="pd-m-right">[a, &infin;)</button><button id="pd-m-all">(&minus;&infin;, &infin;)</button>
+    </div>
+    <div id="pd-form"></div>
+    <div id="pd-p"></div>
+    <div id="pd-v"></div>
+    <div id="pd-det"></div>
+    <div id="pd-hov"></div>
+    <div id="pd-note"></div>
+  </div>
+</div>
+<script>
+(function(){
+  var SS=2*Math.max(1,window.devicePixelRatio||1);
+  var W=620,H1=214,H2=208,X0=50,X1=600,B1=170,P1=130,B2=160,P2=110;
+  function $(id){return document.getElementById(id);}
+  function clamp(v,lo,hi){return Math.min(hi,Math.max(lo,v));}
+  function setup(id,w,h){var c=$(id);c.width=w*SS;c.height=h*SS;c.style.width=w+'px';c.style.height=h+'px';var g=c.getContext('2d');g.scale(SS,SS);return g;}
+  var c1=$('pd-c1'),c2=$('pd-c2'),g1=setup('pd-c1',W,H1),g2=setup('pd-c2',W,H2);
+
+  function erfc(x){
+    var z=Math.abs(x),t=1/(1+0.5*z),r=t*Math.exp(-z*z-1.26551223+t*(1.00002368+t*(0.37409196+t*(0.09678418+t*(-0.18628806+t*(0.27886807+t*(-1.13520398+t*(1.48851587+t*(-0.82215223+t*0.17087277)))))))));
+    return x>=0?r:2-r;
+  }
+  function Phi(z){return 0.5*erfc(-z/Math.SQRT2);}
+  function phi(z){return Math.exp(-0.5*z*z)/Math.sqrt(2*Math.PI);}
+  function nf(x,m,s){return phi((x-m)/s)/s;}
+  function nF(x,m,s){return Phi((x-m)/s);}
+  var WB=[{w:0.25,m:1.5,s:0.4},{w:0.30,m:4,s:0.35},{w:0.25,m:6,s:0.8}], WU={w:0.20,a:7.6,b:9.2};
+  var D={
+    unif:{lo:-1,hi:6,
+      f:function(x){return (x>=1&&x<=4)?1/3:0;},
+      F:function(x){return x<=1?0:(x>=4?1:(x-1)/3);},
+      form:'Uniform on [1, 4]<br><em>f</em>(<em>x</em>) = 1/3 on [1, 4], 0 elsewhere<br><em>F</em>(<em>x</em>) = (<em>x</em> \u2212 1)/3 on [1, 4]'},
+    norm:{lo:-4,hi:4,
+      f:function(x){return phi(x);},
+      F:function(x){return Phi(x);},
+      form:'Normal <em>N</em>(0, 1)<br><em>f</em>(<em>x</em>) = e<sup>\u2212<em>x</em>\u00b2/2</sup> / \u221a(2\u03c0)<br><em>F</em>(<em>x</em>) = \u03a6(<em>x</em>), no closed form'},
+    exp:{lo:-1,hi:6,
+      f:function(x){return x<0?0:Math.exp(-x);},
+      F:function(x){return x<0?0:1-Math.exp(-x);},
+      form:'Exponential, rate 1<br><em>f</em>(<em>x</em>) = e<sup>\u2212<em>x</em></sup> for <em>x</em> \u2265 0<br><em>F</em>(<em>x</em>) = 1 \u2212 e<sup>\u2212<em>x</em></sup>'},
+    weird:{lo:0,hi:10,
+      f:function(x){var s=0,i;for(i=0;i<WB.length;i++)s+=WB[i].w*nf(x,WB[i].m,WB[i].s);if(x>=WU.a&&x<=WU.b)s+=WU.w/(WU.b-WU.a);return s;},
+      F:function(x){var s=0,i;for(i=0;i<WB.length;i++)s+=WB[i].w*nF(x,WB[i].m,WB[i].s);s+=WU.w*(x<=WU.a?0:(x>=WU.b?1:(x-WU.a)/(WU.b-WU.a)));return s;},
+      form:'Three bumps and a flat block: no name, no formula worth memorizing.<br>Still \u2265 0, and the total area is still 1.'}
+  };
+  Object.keys(D).forEach(function(k){
+    var d=D[k],i,m=0;
+    for(i=0;i<=2000;i++) m=Math.max(m,d.f(d.lo+(d.hi-d.lo)*i/2000));
+    d.ymax=Math.ceil(m*1.12/0.05)*0.05;
+  });
+
+  var S={d:'norm',mode:'int',a:null,b:null,drag:false,anchor:0,hover:null};
+  function cur(){return D[S.d];}
+  function xpx(v){var d=cur();return X0+(v-d.lo)/(d.hi-d.lo)*(X1-X0);}
+  function vx(p){var d=cur();return d.lo+(p-X0)/(X1-X0)*(d.hi-d.lo);}
+  function range(){
+    if(S.mode==='all') return {a:-Infinity,b:Infinity};
+    if(S.mode==='left') return S.b===null?null:{a:-Infinity,b:S.b};
+    if(S.mode==='right') return S.a===null?null:{a:S.a,b:Infinity};
+    return (S.a===null||S.b===null)?null:{a:S.a,b:S.b};
+  }
+  function Fv(v){return v===Infinity?1:(v===-Infinity?0:cur().F(v));}
+
+  function tickLabels(g,base,ly,d){
+    var v,p;
+    g.strokeStyle='#1d1d1b'; g.lineWidth=2; g.beginPath(); g.moveTo(X0,base); g.lineTo(X1,base); g.stroke();
+    g.fillStyle='#1d1d1b'; g.font='14px system-ui,sans-serif'; g.textAlign='center'; g.textBaseline='alphabetic'; g.lineWidth=1.5;
+    for(v=Math.ceil(d.lo);v<=Math.floor(d.hi);v++){
+      p=xpx(v); g.beginPath(); g.moveTo(p,base); g.lineTo(p,base+6); g.stroke(); g.fillText(String(v),p,ly);
+    }
+    g.font='italic 16px Georgia,serif'; g.fillText('x',X1+16,base+5);
+  }
+  function axisSel(g,base,ly,rg){
+    var pa,pb,inf=false;
+    if(!rg) return;
+    pa=rg.a===-Infinity?X0:xpx(rg.a); pb=rg.b===Infinity?X1:xpx(rg.b);
+    if(pb-pa<4){var c=(pa+pb)/2;pa=c-2;pb=c+2;}
+    g.strokeStyle='#d9480f'; g.fillStyle='#d9480f'; g.lineWidth=7;
+    g.beginPath(); g.moveTo(pa,base); g.lineTo(pb,base); g.stroke();
+    g.font='600 15px system-ui,sans-serif'; g.textAlign='center';
+    if(rg.a===-Infinity){ g.beginPath(); g.moveTo(X0-12,base); g.lineTo(X0,base-7); g.lineTo(X0,base+7); g.closePath(); g.fill(); g.fillText('\u2212\u221e',X0,ly+18); }
+    if(rg.b===Infinity){ g.beginPath(); g.moveTo(X1+12,base); g.lineTo(X1,base-7); g.lineTo(X1,base+7); g.closePath(); g.fill(); g.fillText('\u221e',X1,ly+18); }
+  }
+  function hoverLine(g,top,base){
+    if(S.hover===null) return;
+    var p=xpx(S.hover); g.strokeStyle='#8a8574'; g.lineWidth=1; g.setLineDash([3,3]); g.beginPath(); g.moveTo(p,top); g.lineTo(p,base); g.stroke(); g.setLineDash([]);
+  }
+
+  function draw1(rg){
+    var d=cur(),g=g1,p,p0,p1,v,step,y,i;
+    function yp(val){return B1-val/d.ymax*P1;}
+    function path(a,b){ g.beginPath(); g.moveTo(a,B1); for(p=a;p<=b;p++) g.lineTo(p,yp(d.f(vx(p)))); g.lineTo(b,yp(d.f(vx(b)))); g.lineTo(b,B1); g.closePath(); }
+    g.clearRect(0,0,W,H1);
+    g.fillStyle='#5b5648'; g.font='600 15px system-ui,sans-serif'; g.textAlign='left'; g.textBaseline='alphabetic';
+    g.fillText('Density f(x)',X0,20);
+    step=[0.05,0.1,0.2,0.25,0.5,1].filter(function(s){return d.ymax/s<=5;})[0];
+    g.font='13px system-ui,sans-serif'; g.textAlign='right'; g.textBaseline='middle'; g.strokeStyle='#e4dfd2'; g.lineWidth=1;
+    for(v=step;v<=d.ymax+1e-9;v+=step){ y=yp(v); g.setLineDash([4,4]); g.beginPath(); g.moveTo(X0,y); g.lineTo(X1,y); g.stroke(); g.setLineDash([]); g.fillStyle='#8a8574'; g.fillText(v.toFixed(step<0.1?2:(step<1?2:1)),X0-8,y); }
+    path(X0,X1); g.fillStyle='#e3ebf5'; g.fill();
+    if(rg){
+      p0=rg.a===-Infinity?X0:clamp(xpx(rg.a),X0,X1); p1=rg.b===Infinity?X1:clamp(xpx(rg.b),X0,X1);
+      if(p1>p0){ g.save(); g.beginPath(); g.rect(p0,0,p1-p0,H1); g.clip(); path(X0,X1); g.fillStyle='rgba(217,72,15,0.6)'; g.fill(); g.restore(); }
+    }
+    g.beginPath(); for(p=X0;p<=X1;p++){ y=yp(d.f(vx(p))); if(p===X0) g.moveTo(p,y); else g.lineTo(p,y); }
+    g.strokeStyle='#2b6cb0'; g.lineWidth=2.5; g.stroke();
+    tickLabels(g,B1,B1+22,d);
+    if(rg){
+      [rg.a,rg.b].forEach(function(e){ if(e===Infinity||e===-Infinity) return; var px=xpx(e); g.strokeStyle='#d9480f'; g.lineWidth=1.5; g.setLineDash([5,4]); g.beginPath(); g.moveTo(px,B1); g.lineTo(px,32); g.stroke(); g.setLineDash([]); });
+      axisSel(g,B1,B1+22,rg);
+    }
+    hoverLine(g,32,B1);
+    if(S.hover!==null){ g.fillStyle='#5b5648'; g.beginPath(); g.arc(xpx(S.hover),yp(d.f(S.hover)),4,0,2*Math.PI); g.fill(); }
+  }
+
+  function draw2(rg){
+    var d=cur(),g=g2,p,p0,p1,y,i,labs=[];
+    function yc(val){return B2-val*P2;}
+    function path(){ g.beginPath(); for(p=X0;p<=X1;p++){ y=yc(d.F(vx(p))); if(p===X0) g.moveTo(p,y); else g.lineTo(p,y); } }
+    g.clearRect(0,0,W,H2);
+    g.fillStyle='#5b5648'; g.font='600 15px system-ui,sans-serif'; g.textAlign='left'; g.textBaseline='alphabetic';
+    g.fillText('Cumulative distribution function F(x) = P(X \u2264 x)',X0,20);
+    g.font='13px system-ui,sans-serif'; g.textAlign='right'; g.textBaseline='middle'; g.strokeStyle='#e4dfd2'; g.lineWidth=1;
+    [0.5,1].forEach(function(v){ g.setLineDash([4,4]); g.beginPath(); g.moveTo(X0,yc(v)); g.lineTo(X1,yc(v)); g.stroke(); g.setLineDash([]); g.fillStyle='#8a8574'; g.fillText(String(v),X0-8,yc(v)); });
+    g.fillText('0',X0-8,yc(0));
+    path(); g.strokeStyle='#2b6cb0'; g.lineWidth=2.5; g.stroke();
+    if(rg){
+      p0=rg.a===-Infinity?X0:clamp(xpx(rg.a),X0,X1); p1=rg.b===Infinity?X1:clamp(xpx(rg.b),X0,X1);
+      g.save(); g.beginPath(); g.rect(p0,0,Math.max(p1-p0,0.5),H2); g.clip(); path(); g.strokeStyle='#d9480f'; g.lineWidth=4.5; g.stroke(); g.restore();
+    }
+    tickLabels(g,B2,B2+22,d);
+    if(rg){
+      var Fa=Fv(rg.a),Fb=Fv(rg.b),y0=yc(Fa),y1=yc(Fb),pr=Fb-Fa;
+      [{e:rg.a,F:Fa,n:'F(a)',up:false},{e:rg.b,F:Fb,n:'F(b)',up:true}].forEach(function(m){
+        if(m.e===Infinity||m.e===-Infinity) return;
+        var px=xpx(m.e),py=yc(m.F);
+        g.strokeStyle='#d9480f'; g.lineWidth=1.5; g.setLineDash([5,4]);
+        g.beginPath(); g.moveTo(px,B2); g.lineTo(px,py); g.lineTo(X0,py); g.stroke(); g.setLineDash([]);
+        g.fillStyle='#d9480f'; g.beginPath(); g.arc(px,py,5,0,2*Math.PI); g.fill(); g.strokeStyle='#fff'; g.lineWidth=1.5; g.beginPath(); g.arc(px,py,5,0,2*Math.PI); g.stroke();
+        g.font='600 13px system-ui,sans-serif'; g.textAlign='left'; g.textBaseline='alphabetic';
+        var tx=Math.min(px+8,X1-90); g.fillText(m.n+' = '+m.F.toFixed(3),X0+8,py+(m.up?-6:16));
+      });
+      g.strokeStyle='#d9480f'; g.lineWidth=8; g.beginPath(); g.moveTo(X0,y0); g.lineTo(X0,y1); g.stroke();
+      if(y0-y1>=22){
+        g.font='700 14px system-ui,sans-serif'; g.textAlign='left'; g.textBaseline='middle';
+        g.lineWidth=4; g.strokeStyle='#fbfaf7'; g.strokeText('P = '+(pr>=0.9995?'1':pr.toFixed(3)),X0+150,(y0+y1)/2);
+        g.fillStyle='#b8390b'; g.fillText('P = '+(pr>=0.9995?'1':pr.toFixed(3)),X0+150,(y0+y1)/2);
+      }
+      axisSel(g,B2,B2+22,rg);
+    }
+    hoverLine(g,32,B2);
+    if(S.hover!==null){ g.fillStyle='#5b5648'; g.beginPath(); g.arc(xpx(S.hover),yc(d.F(S.hover)),4,0,2*Math.PI); g.fill(); }
+  }
+
+  function fmtP(p){ if(p<=0) return '0'; if(p>=0.99995) return '1'; if(p<0.0001) return p.toPrecision(2); return p.toFixed(4); }
+  function fx(v){return (Math.abs(v)<0.005?0:v).toFixed(2);}
+  function refresh(){
+    var d=cur(),rg=range(),m=S.mode,Fa,Fb,p,expr,det,note,h;
+    $('pd-form').innerHTML=d.form;
+    ['unif','norm','exp','weird'].forEach(function(k){ $('pd-d-'+k).className=(k===S.d)?'pd-on':''; });
+    [['int','int'],['left','left'],['right','right'],['all','all']].forEach(function(k){ $('pd-m-'+k[0]).className=(k[1]===m)?'pd-on':''; });
+    if(rg){
+      Fa=Fv(rg.a); Fb=Fv(rg.b); p=Math.max(0,Fb-Fa);
+      if(m==='int'){ expr='<em>P</em>('+fx(rg.a)+' \u2264 <em>X</em> \u2264 '+fx(rg.b)+')'; det='<em>F</em>(b) \u2212 <em>F</em>(a) = '+Fb.toFixed(4)+' \u2212 '+Fa.toFixed(4); }
+      else if(m==='left'){ expr='<em>P</em>(<em>X</em> \u2264 '+fx(rg.b)+')'; det='<em>F</em>(b) = '+Fb.toFixed(4); }
+      else if(m==='right'){ expr='<em>P</em>(<em>X</em> \u2265 '+fx(rg.a)+')'; det='1 \u2212 <em>F</em>(a) = 1 \u2212 '+Fa.toFixed(4); }
+      else { expr='<em>P</em>(\u2212\u221e < <em>X</em> < \u221e)'; det='Total area under the density'; }
+      $('pd-p').innerHTML=expr+' ='; $('pd-v').textContent=fmtP(p); $('pd-det').innerHTML=det;
+      note=(m==='all')?'The total area under any density is 1, and F climbs from 0 to 1.':'Probability = shaded area under f = rise of F. Endpoints don\u2019t matter, since <em>P</em>(<em>X</em> = <em>x</em>) = 0.';
+    } else {
+      $('pd-p').textContent=''; $('pd-v').textContent=''; $('pd-det').textContent='';
+      note=(m==='int')?'Drag across either plot to choose [a, b].':(m==='left'?'Click or drag on either plot to choose b.':'Click or drag on either plot to choose a.');
+    }
+    $('pd-note').innerHTML=note;
+    if(S.hover!==null) $('pd-hov').innerHTML='At <em>x</em> = '+S.hover.toFixed(2)+': <em>f</em>(<em>x</em>) = '+d.f(S.hover).toFixed(3)+' (a density, not a probability) \u00b7 <em>F</em>(<em>x</em>) = '+d.F(S.hover).toFixed(3);
+    else $('pd-hov').textContent='Hover over a plot to read f and F.';
+  }
+  function redraw(){ var rg=range(); draw1(rg); draw2(rg); }
+  function update(){ redraw(); refresh(); }
+
+  function evVal(c,e){
+    var r=c.getBoundingClientRect(),w=r.width||W,d=cur();
+    return clamp(vx((e.clientX-r.left)/w*W),d.lo,d.hi);
+  }
+  function apply(v){
+    if(S.mode==='left') S.b=v;
+    else if(S.mode==='right') S.a=v;
+    else if(S.mode==='int'){ S.a=Math.min(S.anchor,v); S.b=Math.max(S.anchor,v); }
+  }
+  [c1,c2].forEach(function(c){
+    c.addEventListener('pointerdown',function(e){
+      if(S.mode==='all') return;
+      var v=evVal(c,e); S.drag=true; S.anchor=v; S.hover=null; apply(v);
+      if(c.setPointerCapture) try{c.setPointerCapture(e.pointerId);}catch(err){}
+      e.preventDefault(); e.stopPropagation(); update();
+    });
+    c.addEventListener('pointermove',function(e){
+      var v=evVal(c,e);
+      if(S.drag){ apply(v); } else { S.hover=v; }
+      update();
+    });
+    c.addEventListener('pointerup',function(){ S.drag=false; });
+    c.addEventListener('pointercancel',function(){ S.drag=false; });
+    c.addEventListener('pointerleave',function(){ if(!S.drag){ S.hover=null; update(); } });
+    c.addEventListener('touchstart',function(e){e.stopPropagation();},{passive:true});
+    c.addEventListener('touchmove',function(e){e.stopPropagation();},{passive:true});
+  });
+  ['unif','norm','exp','weird'].forEach(function(k){
+    $('pd-d-'+k).addEventListener('click',function(){ S.d=k; S.a=null; S.b=null; S.hover=null; S.drag=false; update(); });
+  });
+  [['int','int'],['left','left'],['right','right'],['all','all']].forEach(function(k){
+    $('pd-m-'+k[0]).addEventListener('click',function(){ S.mode=k[1]; S.drag=false; update(); });
+  });
+  update();
+})();
+</script>
+</div>
+```
+
+## PDFs vs Histograms
+
+```{=html}
+<div id="dhist-root" style="font-size:20px;">
+<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px;">
+  <button id="dhist-sim" style="font-size:16px;padding:4px 10px;">Simulate +50</button>
+  <button id="dhist-reset" style="font-size:16px;padding:4px 10px;">Reset</button>
+  <span style="margin-left:10px;color:#555555;font-size:16px;">View:</span>
+  <button id="dhist-v0" style="font-size:16px;padding:4px 10px;border:1px solid #2b6cb0;border-radius:4px;">Density</button>
+  <button id="dhist-v1" style="font-size:16px;padding:4px 10px;border:1px solid #2b6cb0;border-radius:4px;">Histogram: counts</button>
+  <button id="dhist-v2" style="font-size:16px;padding:4px 10px;border:1px solid #2b6cb0;border-radius:4px;">Histogram: proportions</button>
+  <button id="dhist-v3" style="font-size:16px;padding:4px 10px;border:1px solid #2b6cb0;border-radius:4px;">Histogram: proportion / &Delta;</button>
+</div>
+<div id="dhist-status" style="color:#555555;font-size:18px;"></div>
+<svg id="dhist-svg" viewBox="0 0 800 440" style="width:100%;max-width:880px;display:block;"></svg>
+</div>
+<script>
+(function () {
+  var root = document.getElementById("dhist-root");
+  if (!root) return;
+  var NS = "http://www.w3.org/2000/svg";
+  var LO = 0, HI = 2, D = 0.2, K = 10, FX = 0.5, BATCH = 50;
+  var XL = -0.3, XR = 2.3;             // plotted x-range: a margin of real line on both sides
+  var SHOW_F_IN_PROPORTIONS = false;   // set true to also overlay f in the Proportions view
+  var DEFAULT_VIEW = 1;                // 0 = Density, 1 = counts, 2 = proportions, 3 = proportion / Delta
+  var VIEWS = [
+    { ylab: "density  f(x)", ymax: 0.8, ticks: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8], fmt: 1, bars: false },
+    { ylab: "count  n\u1D62", ymax: 50, ticks: [0, 10, 20, 30, 40, 50], fmt: 0, bars: true },
+    { ylab: "proportion  n\u1D62 / n", ymax: 0.3, ticks: [0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3], fmt: 2, bars: true },
+    { ylab: "n\u1D62 / (n\u0394)", ymax: 0.8, ticks: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8], fmt: 1, bars: true }
+  ];
+  // layout: plot area, tick labels, then rug strip of raw draws
+  var W = 800, H = 440, mL = 80, mR = 20, mT = 20, mB = 95;
+  var RUG0 = 34, RUG1 = 80;            // rug strip offsets below the x-axis
+  function sx(x) { return mL + (x - XL) / (XR - XL) * (W - mL - mR); }
+  function sy(y, ymax) { return H - mB - y / ymax * (H - mT - mB); }
+  function el(tag, attrs, parent) {
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  function clear(g) { while (g.firstChild) g.removeChild(g.firstChild); }
+  function mulberry32(a) {
+    return function () {
+      a |= 0; a = (a + 0x6D2B79F5) | 0;
+      var t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  var svg = document.getElementById("dhist-svg");
+  var gBars = el("g", {}, svg), gAxes = el("g", {}, svg), gTop = el("g", {}, svg);
+  var gRugFrame = el("g", {}, svg), gRug = el("g", {}, svg);
+  var btnSim = document.getElementById("dhist-sim"), btnReset = document.getElementById("dhist-reset"),
+      status = document.getElementById("dhist-status");
+  var vbtns = [0, 1, 2, 3].map(function (v) { return document.getElementById("dhist-v" + v); });
+
+  // rug frame (static, independent of view)
+  var y0 = H - mB;
+  el("line", { x1: sx(XL), y1: y0 + RUG1, x2: sx(XR), y2: y0 + RUG1, stroke: "#bbbbbb" }, gRugFrame);
+  el("text", { x: sx(XL) - 8, y: y0 + (RUG0 + RUG1) / 2 + 5, "text-anchor": "end", "font-size": 14, fill: "#555555" }, gRugFrame).textContent = "draws";
+
+  var rng, n, counts, view = 0;
+
+  function drawAxes(V) {
+    clear(gAxes);
+    el("line", { x1: sx(XL), y1: y0, x2: sx(XR), y2: y0, stroke: "#333333" }, gAxes);
+    el("line", { x1: sx(XL), y1: y0, x2: sx(XL), y2: sy(V.ymax, V.ymax), stroke: "#333333" }, gAxes);
+    V.ticks.forEach(function (v) {
+      var yy = sy(v, V.ymax);
+      el("line", { x1: sx(XL) - 5, y1: yy, x2: sx(XL), y2: yy, stroke: "#333333" }, gAxes);
+      el("text", { x: sx(XL) - 8, y: yy + 5, "text-anchor": "end", "font-size": 14, fill: "#333333" }, gAxes).textContent = v.toFixed(V.fmt);
+    });
+    for (var t = -1; t <= 11; t++) {
+      var tx = t * D;
+      el("line", { x1: sx(tx), y1: y0, x2: sx(tx), y2: y0 + 5, stroke: "#333333" }, gAxes);
+      el("text", { x: sx(tx), y: y0 + 20, "text-anchor": "middle", "font-size": 13, fill: "#333333" }, gAxes).textContent = +tx.toFixed(1);
+    }
+    var lab = el("text", { x: 0, y: 0, "text-anchor": "middle", "font-size": 16, fill: "#333333",
+      transform: "translate(" + 22 + "," + ((mT + y0) / 2) + ") rotate(-90)" }, gAxes);
+    lab.textContent = V.ylab;
+  }
+
+  function drawDensity(V) {
+    var yf = sy(FX, V.ymax), yb = sy(0, V.ymax), red = "#d62728";
+    // f = 0 outside [0, 2]
+    el("line", { x1: sx(XL), y1: yb, x2: sx(LO), y2: yb, stroke: red, "stroke-width": 3 }, gTop);
+    el("line", { x1: sx(HI), y1: yb, x2: sx(XR), y2: yb, stroke: red, "stroke-width": 3 }, gTop);
+    // f = 1/2 on [0, 2]
+    el("line", { x1: sx(LO), y1: yf, x2: sx(HI), y2: yf, stroke: red, "stroke-width": 3 }, gTop);
+    // jumps: dashed
+    el("line", { x1: sx(LO), y1: yb, x2: sx(LO), y2: yf, stroke: red, "stroke-width": 1.5, "stroke-dasharray": "5,4" }, gTop);
+    el("line", { x1: sx(HI), y1: yb, x2: sx(HI), y2: yf, stroke: red, "stroke-width": 1.5, "stroke-dasharray": "5,4" }, gTop);
+    el("text", { x: sx(HI) - 6, y: yf - 16, "text-anchor": "end", "font-size": 15, fill: red, "font-style": "italic",
+      stroke: "#ffffff", "stroke-width": 4, "paint-order": "stroke" }, gTop).textContent = "f(x) = 1/2";
+  }
+
+  function draw() {
+    var V = VIEWS[view];
+    drawAxes(V);
+    clear(gBars); clear(gTop);
+    for (var k = 0; V.bars && k < K; k++) {
+      var a = LO + k * D, c = counts[k];
+      var h = view === 1 ? c : (n > 0 ? (view === 2 ? c / n : c / (n * D)) : 0);
+      var hc = Math.min(h, V.ymax);
+      if (h > 0) el("rect", { x: sx(a), y: sy(hc, V.ymax), width: sx(a + D) - sx(a), height: sy(0, V.ymax) - sy(hc, V.ymax),
+        fill: "#9ecae1", stroke: "#3182bd", "stroke-width": 1 }, gBars);
+      if (h > V.ymax) {
+        var cx = (sx(a) + sx(a + D)) / 2, ty = sy(V.ymax, V.ymax);
+        el("path", { d: "M" + cx + "," + (ty - 12) + " l-7,10 l14,0 z", fill: "#d62728" }, gTop);
+      }
+    }
+    if (view === 0 || view === 3 || (view === 2 && SHOW_F_IN_PROPORTIONS)) drawDensity(V);
+    vbtns.forEach(function (b, v) {
+      b.style.background = v === view ? "#2b6cb0" : "#ffffff";
+      b.style.color = v === view ? "#ffffff" : "#2b6cb0";
+    });
+    var mx = n > 0 ? Math.max.apply(null, counts) : 0;
+    status.innerHTML = "<em>X</em> ~ Unif(0, 2), bin width &Delta; = 0.2 &nbsp;|&nbsp; <em>n</em> = " + n +
+      (n > 0 ? " &nbsp;|&nbsp; largest bin count " + mx : "");
+  }
+
+  function simulate() {
+    for (var i = 0; i < BATCH; i++) {
+      var x = LO + (HI - LO) * rng(), jy = rng();
+      counts[Math.min(K - 1, Math.floor((x - LO) / D))]++;
+      el("circle", { cx: sx(x).toFixed(2), cy: (y0 + RUG0 + 3 + jy * (RUG1 - RUG0 - 6)).toFixed(2),
+        r: 1.6, fill: "#08306b", "fill-opacity": 0.5 }, gRug);
+    }
+    n += BATCH;
+    draw();
+  }
+
+  function reset() {
+    rng = mulberry32(211); n = 0; counts = new Array(K).fill(0); view = DEFAULT_VIEW;
+    clear(gRug);
+    draw();
+  }
+
+  btnSim.addEventListener("click", simulate);
+  btnReset.addEventListener("click", reset);
+  vbtns.forEach(function (b, v) { b.addEventListener("click", function () { view = v; draw(); }); });
+  root.addEventListener("keydown", function (e) {
+    if (e.key === " " || e.key === "Enter") e.stopPropagation();
+  });
+  reset();
+})();
+</script>
+```
+
+::: {.notes}
+Counts: ~ n/10 per bin, so height depends on n; bars leave the axis (max 50) after ~8-10 presses.
+Proportions: settle at P(bin) = 0.2 x 1/2 = 0.1, independent of n, but would halve if Delta were halved.
+Proportion / Delta: 0.1 / 0.2 = 0.5 = f. Area = proportion, height -> f. Note f = 0 outside [0, 2]: no draws land there.
+:::
+
+# Expectation {.section-slide}
+
+The average of a continuous variable.
+
+## Same logic as the discrete case
+
+::: {.box}
+Repeat the experiment $n$ times and average $x_1,\dots,x_n$.
+:::
+
+. . .
+
+::: {.box .warn}
+<span class="tag">Problem</span>
+With a continuous $X$, every value occurs once, so "proportion of times $X = x$" is $1/n$ and says nothing: it goes to zero as we repeat more times.
+:::
+
+. . .
+
+::: {.box .good}
+<span class="tag">Fix</span>
+Group draws into bins $B_i$ of width $\Delta$, with midpoints $m_i$, and count the draws $n_i$ falling into each bin.
+:::
+
+. . .
+
+$$\bar x = \frac1n\sum_{j=1}^n x_j \;\approx\; \sum_i m_i\cdot\frac{n_i}{n}$$
+
+::: {.cap}
+Approximate, since $m_i$ stands in for the values of the draws in bin $i$.
+:::
+
+## From histogram to integral
+
+::: {.box}
+<span class="tag">Density histogram</span>
+Use the density per bin $h_i = \dfrac{n_i}{n\Delta}$:
+$$\sum_i m_i\cdot\frac{n_i}{n} = \sum_i m_i\cdot h_i\cdot\Delta$$
+:::
+
+. . .
+
+::: {.box .key}
+<span class="tag">Limit: n → ∞ and Δ → 0</span>
+Then $h_i \to f(m_i)$:
+$$\bar x \approx \sum_i m_i\, h_i\,\Delta \;\longrightarrow\; \sum_i m_i\, f(m_i)\,\Delta \;\longrightarrow\; \int_{-\infty}^{\infty} x\, f(x)\,dx$$
+:::
+
+## Expected value
+
+::: {.box .key}
+<span class="tag">Definition</span>
+The expected value of a continuous r.v. $X$ with PDF $f$ is
+$$E(X) = \int_{-\infty}^{\infty} x f(x)\,dx.$$
+:::
+
+. . .
+
+::: {.cards}
+::: {.box}
+<span class="tag">Discrete</span>
+$E(X)=\sum x P(X=x)$
+:::
+::: {.box}
+<span class="tag">Continuous</span>
+$E(X)=\int x f(x)\,dx$
+:::
+:::
+
+. . .
+
+::: {.box}
+Passing from discrete to continuous: $\sum \to \int$ and $P(X=x)\to f(x)$.
+:::
+
+## Interactive: shrinking the bins
+
+```{=html}
+<div id="ex2c-root" style="font-size:20px;">
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;">
+  <button id="ex2c-sim" style="font-size:18px;padding:4px 12px;">Simulate 5000 draws</button>
+  <button id="ex2c-bin" style="font-size:18px;padding:4px 12px;" disabled>Group into bins</button>
+  <button id="ex2c-reset" style="font-size:18px;padding:4px 12px;">Reset</button>
+  <span id="ex2c-status" style="color:#555555;"><em>f</em>(<em>x</em>) = 2<em>x</em> on [0, 1]</span>
+</div>
+<svg id="ex2c-svg" viewBox="0 0 700 330" style="width:100%;max-width:880px;display:block;"></svg>
+<table style="font-size:18px;border-collapse:collapse;margin-top:2px;">
+  <tr id="ex2c-r1" style="display:none;"><td style="padding:1px 12px;">Sample average &nbsp;<span style="text-decoration:overline;"><em>x</em></span></td><td id="ex2c-xbar" style="padding:1px 12px;font-family:monospace;"></td><td style="padding:1px 12px;color:#666666;">data, no binning</td></tr>
+  <tr id="ex2c-r2" style="display:none;color:#2b6cb0;"><td style="padding:1px 12px;">Binned average &nbsp;&Sigma; <em>m<sub>i</sub></em> &middot; <em>n<sub>i</sub></em>/<em>n</em> &nbsp;(dashed line)</td><td id="ex2c-binned" style="padding:1px 12px;font-family:monospace;"></td><td style="padding:1px 12px;color:#666666;">value &times; proportion</td></tr>
+  <tr id="ex2c-r3" style="display:none;"><td style="padding:1px 12px;">Density sum &nbsp;&Sigma; <em>m<sub>i</sub></em> &middot; <em>f</em>(<em>m<sub>i</sub></em>) &middot; &Delta;</td><td id="ex2c-riem" style="padding:1px 12px;font-family:monospace;"></td><td style="padding:1px 12px;color:#666666;">proportion &rarr; <em>f</em> &middot; &Delta;</td></tr>
+  <tr id="ex2c-r4" style="display:none;color:#d62728;"><td style="padding:1px 12px;">&int; <em>x f</em>(<em>x</em>) <em>dx</em> &nbsp;(marker)</td><td id="ex2c-ex" style="padding:1px 12px;font-family:monospace;"></td><td style="padding:1px 12px;color:#666666;">limit</td></tr>
+</table>
+</div>
+<script>
+(function () {
+  var root = document.getElementById("ex2c-root");
+  if (!root) return;
+  var NS = "http://www.w3.org/2000/svg";
+  var DELTAS = [0.2, 0.1, 0.05, 0.005];
+  var N = 5000, EX = 2 / 3;
+  function f(x) { return (x < 0 || x > 1) ? 0 : 2 * x; }
+  function mulberry32(a) {
+    return function () {
+      a |= 0; a = (a + 0x6D2B79F5) | 0;
+      var t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  // draws via inverse CDF: F(x) = x^2  =>  X = sqrt(U); jitter only for display
+  var rng = mulberry32(211), xs = new Float64Array(N), jit = new Float64Array(N), s = 0;
+  for (var i = 0; i < N; i++) { xs[i] = Math.sqrt(rng()); jit[i] = rng(); s += xs[i]; }
+  var xbar = s / N;
+
+  // geometry: plot area above axis, rug band below axis, tick labels below rug
+  var W = 700, H = 330, mL = 50, mR = 20, mT = 15, mB = 62, YMAX = 3;
+  var RUG0 = 5, RUG1 = 27;
+  function sx(x) { return mL + x * (W - mL - mR); }
+  function sy(y) { return H - mB - y / YMAX * (H - mT - mB); }
+  function el(tag, attrs, parent) {
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  function clear(g) { while (g.firstChild) g.removeChild(g.firstChild); }
+  var svg = document.getElementById("ex2c-svg");
+  var gBars = el("g", {}, svg), gStatic = el("g", {}, svg), gRug = el("g", {}, svg), gMarks = el("g", {}, svg);
+
+  // axes, ticks, density (static)
+  el("line", { x1: sx(0), y1: sy(0), x2: sx(1), y2: sy(0), stroke: "#333333" }, gStatic);
+  el("line", { x1: sx(0), y1: sy(0), x2: sx(0), y2: sy(YMAX), stroke: "#333333" }, gStatic);
+  for (var t = 0; t <= 5; t++) {
+    var tx = t / 5;
+    el("line", { x1: sx(tx), y1: sy(0) + RUG1, x2: sx(tx), y2: sy(0) + RUG1 + 5, stroke: "#333333" }, gStatic);
+    el("text", { x: sx(tx), y: sy(0) + RUG1 + 21, "text-anchor": "middle", "font-size": 14, fill: "#333333" }, gStatic).textContent = tx.toFixed(1);
+  }
+  [0, 0.5, 1, 1.5, 2, 2.5].forEach(function (v) {
+    el("line", { x1: sx(0) - 5, y1: sy(v), x2: sx(0), y2: sy(v), stroke: "#333333" }, gStatic);
+    el("text", { x: sx(0) - 8, y: sy(v) + 4, "text-anchor": "end", "font-size": 14, fill: "#333333" }, gStatic).textContent = v.toFixed(1);
+  });
+  el("polyline", { points: [sx(0), sy(0), sx(1), sy(2), sx(1), sy(0)].join(" "), fill: "none", stroke: "#d62728", "stroke-width": 2.5 }, gStatic);
+
+  var btnSim = document.getElementById("ex2c-sim"), btnBin = document.getElementById("ex2c-bin"),
+      btnReset = document.getElementById("ex2c-reset"), status = document.getElementById("ex2c-status");
+  var rows = [1, 2, 3, 4].map(function (k) { return document.getElementById("ex2c-r" + k); });
+  var cXbar = document.getElementById("ex2c-xbar"), cBinned = document.getElementById("ex2c-binned"),
+      cRiem = document.getElementById("ex2c-riem"), cEx = document.getElementById("ex2c-ex");
+  cXbar.textContent = xbar.toFixed(4);
+  cEx.textContent = "2/3 \u2248 " + EX.toFixed(4);
+
+  var dots = [], step = -1;
+
+  function simulate() {
+    clear(gRug); dots = [];
+    for (var i = 0; i < N; i++) {
+      dots.push(el("circle", { cx: sx(xs[i]).toFixed(2), cy: (sy(0) + RUG0 + jit[i] * (RUG1 - RUG0 - 4) + 2).toFixed(2),
+        r: 1.1, fill: "#333333", "fill-opacity": 0.45 }, gRug));
+    }
+    rows[0].style.display = "";
+    btnSim.disabled = true; btnBin.disabled = false;
+    btnBin.textContent = "Group into bins: \u0394 = " + DELTAS[0];
+    status.textContent = "5000 draws shown below the axis";
+  }
+
+  function compute(d) {
+    var K = Math.round(1 / d), counts = new Array(K).fill(0), idx = new Int32Array(N);
+    for (var i = 0; i < N; i++) {
+      var k = Math.floor(xs[i] / d);
+      if (k < 0) k = 0; if (k > K - 1) k = K - 1;
+      counts[k]++; idx[i] = k;
+    }
+    var binned = 0, riem = 0, bars = [];
+    for (var k2 = 0; k2 < K; k2++) {
+      var a = k2 * d, m = a + d / 2, p = counts[k2] / N;
+      binned += m * p; riem += m * f(m) * d;
+      bars.push({ a: a, h: p / d, odd: k2 % 2 === 1 });
+    }
+    return { binned: binned, riem: riem, bars: bars, idx: idx };
+  }
+
+  function group() {
+    step++;
+    var d = DELTAS[step], r = compute(d);
+    clear(gBars); clear(gMarks);
+    r.bars.forEach(function (b) {
+      var h = Math.min(b.h, YMAX);
+      el("rect", { x: sx(b.a), y: sy(h), width: sx(b.a + d) - sx(b.a), height: sy(0) - sy(h),
+        fill: b.odd ? "#c6dbef" : "#9ecae1", stroke: "#3182bd", "stroke-width": d < 0.05 ? 0.3 : 1 }, gBars);
+    });
+    // colour draws by bin parity so the grouping is visible in the rug
+    for (var i = 0; i < N; i++) dots[i].setAttribute("fill", r.idx[i] % 2 ? "#6baed6" : "#08306b");
+    el("line", { x1: sx(r.binned), x2: sx(r.binned), y1: sy(0), y2: sy(YMAX), stroke: "#2b6cb0", "stroke-width": 2, "stroke-dasharray": "6,4" }, gMarks);
+    el("path", { d: "M" + sx(EX) + "," + sy(YMAX) + " l-7,-12 l14,0 z", fill: "#d62728", transform: "translate(0,12)" }, gMarks);
+    el("text", { x: sx(EX) + 10, y: sy(YMAX) + 10, "font-size": 14, fill: "#d62728", "font-style": "italic" }, gMarks).textContent = "E(X)";
+    cBinned.textContent = r.binned.toFixed(4);
+    cRiem.textContent = r.riem.toFixed(4);
+    rows[1].style.display = ""; rows[2].style.display = ""; rows[3].style.display = "";
+    status.textContent = "\u0394 = " + d + "  (" + r.bars.length + " bins)";
+    if (step < DELTAS.length - 1) btnBin.textContent = "Finer bins: \u0394 = " + DELTAS[step + 1];
+    else { btnBin.textContent = "Finest bins shown"; btnBin.disabled = true; }
+  }
+
+  function reset() {
+    step = -1; clear(gBars); clear(gRug); clear(gMarks); dots = [];
+    rows.forEach(function (rw) { rw.style.display = "none"; });
+    btnSim.disabled = false; btnBin.disabled = true; btnBin.textContent = "Group into bins";
+    status.innerHTML = "<em>f</em>(<em>x</em>) = 2<em>x</em> on [0, 1]";
+  }
+
+  btnSim.addEventListener("click", simulate);
+  btnBin.addEventListener("click", group);
+  btnReset.addEventListener("click", reset);
+  // keep Space/Enter on a focused button from also advancing the slide
+  root.addEventListener("keydown", function (e) {
+    if (e.key === " " || e.key === "Enter") e.stopPropagation();
+  });
+})();
+</script>
+```
+
+::: {.notes}
+Before simulating: where will most draws land? (Near 1, where f is high.)
+Delta -> 0: binned average -> x-bar (error <= Delta/2). n -> infinity: x-bar -> E(X) = 2/3.
+Gap 0.6717 vs 0.6667 is sampling noise (SE = sqrt(1/18)/sqrt(5000) ~ 0.0033).
+At Delta = 0.005 the histogram is ragged (~25 draws per bin): fine bins need more data. That is the n -> infinity half of the argument.
+:::
+
+## Expectation as the center of mass
+
+```{=html}
+<div id="pe-root">
+<style>
+#pe-root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#fbfaf7;border:1px solid #d9d4c7;border-radius:10px;padding:14px;color:#1d1d1b;max-width:960px;margin:0 auto;box-sizing:border-box;text-align:left;line-height:1.3}
+#pe-root .pe-cols{display:flex;gap:16px;align-items:flex-start}
+#pe-root .pe-left{flex:0 0 620px}
+#pe-root .pe-right{flex:1;min-width:0}
+#pe-root canvas{display:block;max-width:none;margin:0;box-shadow:none;border:0;touch-action:none;cursor:ew-resize}
+#pe-root .pe-lab{font-size:16px;color:#5b5648;margin:0 0 4px}
+#pe-root .pe-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px}
+#pe-root .pe-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+#pe-root button{font:inherit;font-size:16px;padding:7px 10px;margin:0;border-radius:6px;border:1px solid #2b6cb0;background:#fff;color:#2b6cb0;cursor:pointer;box-shadow:none}
+#pe-root button.pe-on{background:#2b6cb0;color:#fff}
+#pe-root button:focus-visible{outline:3px solid #f2c94c;outline-offset:2px}
+#pe-root #pe-status{font-size:28px;font-weight:600;min-height:36px}
+#pe-root #pe-c{font-size:17px;color:#2f3a4a;margin:2px 0 6px;font-variant-numeric:tabular-nums}
+#pe-root #pe-l{font-size:16px;color:#2d5f8f;font-variant-numeric:tabular-nums}
+#pe-root #pe-r{font-size:16px;color:#a3480a;font-variant-numeric:tabular-nums}
+#pe-root #pe-net{font-size:16px;color:#2f3a4a;margin-top:6px;min-height:44px;font-variant-numeric:tabular-nums}
+#pe-root #pe-e{font-size:16px;color:#5b5648;min-height:24px;font-variant-numeric:tabular-nums}
+#pe-root #pe-note{font-size:16px;color:#5b5648;min-height:66px;margin-top:4px}
+</style>
+<div class="pe-cols">
+  <div class="pe-left"><canvas id="pe-cv"></canvas></div>
+  <div class="pe-right">
+    <div class="pe-lab">Shape of the sand</div>
+    <div class="pe-grid">
+      <button id="pe-d-unif">Uniform</button><button id="pe-d-norm">Normal</button>
+      <button id="pe-d-exp">Exponential</button><button id="pe-d-two">Two piles</button>
+      <button id="pe-d-weird">Weird</button>
+    </div>
+    <div class="pe-row">
+      <button id="pe-showE">Show <em>E</em>[<em>X</em>]</button>
+      <button id="pe-showM">Show median</button>
+      <button id="pe-snap">Snap to <em>E</em>[<em>X</em>]</button>
+    </div>
+    <div id="pe-status"></div>
+    <div id="pe-c"></div>
+    <div id="pe-l"></div>
+    <div id="pe-r"></div>
+    <div id="pe-net"></div>
+    <div id="pe-e"></div>
+    <div id="pe-note"></div>
+  </div>
+</div>
+<script>
+(function(){
+  var SS=2*Math.max(1,window.devicePixelRatio||1);
+  var W=620,H=352,X0=30,X1=590,YP=262,PLK=22,PH=120,HF=36,GY=YP+PLK+HF,G=40000;
+  function $(id){return document.getElementById(id);}
+  function clamp(v,lo,hi){return Math.min(hi,Math.max(lo,v));}
+  function f3(v){return (Math.abs(v)<0.0005?0:v).toFixed(3);}
+  var cv=$('pe-cv'); cv.width=W*SS; cv.height=H*SS; cv.style.width=W+'px'; cv.style.height=H+'px';
+  var g=cv.getContext('2d'); g.scale(SS,SS);
+
+  function erfc(x){
+    var z=Math.abs(x),t=1/(1+0.5*z),r=t*Math.exp(-z*z-1.26551223+t*(1.00002368+t*(0.37409196+t*(0.09678418+t*(-0.18628806+t*(0.27886807+t*(-1.13520398+t*(1.48851587+t*(-0.82215223+t*0.17087277)))))))));
+    return x>=0?r:2-r;
+  }
+  function phi(z){return Math.exp(-0.5*z*z)/Math.sqrt(2*Math.PI);}
+  function nf(x,m,s){return phi((x-m)/s)/s;}
+  var WB=[{w:0.25,m:1.5,s:0.4},{w:0.30,m:4,s:0.35},{w:0.25,m:6,s:0.8}], WU={w:0.20,a:7.6,b:9.2};
+  var D={
+    unif:{lo:-1,hi:6,ilo:-1,ihi:6,c0:4.6,f:function(x){return (x>=1&&x<=4)?1/3:0;}},
+    norm:{lo:-4,hi:4,ilo:-8,ihi:8,c0:-1.6,f:function(x){return phi(x);}},
+    exp:{lo:-1,hi:6,ilo:0,ihi:40,c0:3.4,f:function(x){return x<0?0:Math.exp(-x);}},
+    two:{lo:0,hi:10,ilo:-4,ihi:14,c0:6.5,f:function(x){return 0.7*nf(x,2.2,0.55)+0.3*nf(x,7.8,0.55);}},
+    weird:{lo:0,hi:10,ilo:-4,ihi:14,c0:2.2,f:function(x){var s=0,i;for(i=0;i<WB.length;i++)s+=WB[i].w*nf(x,WB[i].m,WB[i].s);if(x>=WU.a&&x<=WU.b)s+=WU.w/(WU.b-WU.a);return s;}}
+  };
+  Object.keys(D).forEach(function(k){
+    var d=D[k],i,h=(d.ihi-d.ilo)/G,cm=new Float64Array(G+1),cx=new Float64Array(G+1),mid,fv,m=0;
+    for(i=0;i<G;i++){ mid=d.ilo+(i+0.5)*h; fv=d.f(mid); cm[i+1]=cm[i]+fv*h; cx[i+1]=cx[i]+fv*mid*h; }
+    d.h=h; d.cm=cm; d.cx=cx; d.E=cx[G]/cm[G];
+    for(i=0;i<=2000;i++) m=Math.max(m,d.f(d.lo+(d.hi-d.lo)*i/2000));
+    d.ymax=Math.ceil(m*1.12/0.05)*0.05;
+    var lo=d.ilo,hi=d.ihi,md,t,j;
+    for(j=0;j<60;j++){ md=(lo+hi)/2; if(itp(d,d.cm,md)/cm[G]<0.5) lo=md; else hi=md; }
+    d.med=(lo+hi)/2;
+  });
+  function itp(d,arr,x){ var t=(clamp(x,d.ilo,d.ihi)-d.ilo)/d.h,i=Math.min(G-1,Math.floor(t)),r=t-i; return arr[i]*(1-r)+arr[i+1]*r; }
+
+  var S={d:'unif',c:0,ct:0,th:0,om:0,showE:false,showM:false,drag:false,last:0,run:false};
+  function cur(){return D[S.d];}
+  function xpx(v){var d=cur();return X0+(v-d.lo)/(d.hi-d.lo)*(X1-X0);}
+  function vx(p){var d=cur();return d.lo+(p-X0)/(X1-X0)*(d.hi-d.lo);}
+  function stats(c){
+    var d=cur(),M=itp(d,d.cm,c),m1=itp(d,d.cx,c),Mt=d.cm[G],m1t=d.cx[G];
+    return {pL:M/Mt,pR:1-M/Mt,L:(c*M-m1)/Mt,R:((m1t-m1)-c*(Mt-M))/Mt};
+  }
+  function contact(){ var pc=xpx(S.c); return {R:Math.asin(Math.min(0.999,HF/(X1+14-pc))),L:-Math.asin(Math.min(0.999,HF/(pc-(X0-14))))}; }
+  function balanced(){ return Math.abs(cur().E-S.c)<0.004; }
+
+  function pilePath(){
+    var d=cur(),p;
+    g.beginPath(); g.moveTo(X0,YP);
+    for(p=X0;p<=X1;p++) g.lineTo(p,YP-d.f(vx(p))/d.ymax*PH);
+    g.lineTo(X1,YP); g.closePath();
+  }
+  function draw(){
+    var d=cur(),pc=xpx(S.c),py=YP+PLK,v,p,px,st,bal=balanced();
+    g.clearRect(0,0,W,H);
+    g.strokeStyle='#8a8574'; g.lineWidth=2; g.beginPath(); g.moveTo(10,GY); g.lineTo(W-10,GY); g.stroke();
+    g.fillStyle='#3a3a36'; g.beginPath(); g.moveTo(pc,py); g.lineTo(pc-27,GY); g.lineTo(pc+27,GY); g.closePath(); g.fill();
+    g.fillStyle='#8a8574'; g.font='14px system-ui,sans-serif'; g.textAlign='center'; g.textBaseline='alphabetic';
+    g.fillText('\u25c0  drag the fulcrum  \u25b6',pc,GY+24);
+    g.save(); g.translate(pc,py); g.rotate(S.th); g.translate(-pc,-py);
+    g.save(); g.beginPath(); g.rect(0,0,pc,H); g.clip(); pilePath(); g.fillStyle='#9dbfe3'; g.fill(); g.restore();
+    g.save(); g.beginPath(); g.rect(pc,0,W,H); g.clip(); pilePath(); g.fillStyle='#eba57a'; g.fill(); g.restore();
+    g.beginPath(); for(p=X0;p<=X1;p++){ var y=YP-d.f(vx(p))/d.ymax*PH; if(p===X0) g.moveTo(p,y); else g.lineTo(p,y); }
+    g.strokeStyle='#2b6cb0'; g.lineWidth=2; g.stroke();
+    g.fillStyle='#d9c39a'; g.strokeStyle='#8a6b3a'; g.lineWidth=1.5; g.fillRect(X0-14,YP,X1-X0+28,PLK); g.strokeRect(X0-14,YP,X1-X0+28,PLK);
+    g.fillStyle='#5b3f1a'; g.font='13px system-ui,sans-serif'; g.textAlign='center'; g.textBaseline='middle';
+    for(v=Math.ceil(d.lo);v<=Math.floor(d.hi);v++){ px=xpx(v); g.fillText(String(v),px,YP+PLK/2+1); }
+    g.textBaseline='alphabetic';
+    if(S.showM){ px=xpx(d.med); g.strokeStyle='#5b5648'; g.lineWidth=1.5; g.setLineDash([4,3]); g.beginPath(); g.moveTo(px,YP); g.lineTo(px,YP-PH-8); g.stroke(); g.setLineDash([]); g.fillStyle='#5b5648'; g.font='600 13px system-ui,sans-serif'; g.fillText('median',px,YP-PH-12); }
+    if(S.showE){ px=xpx(d.E); g.strokeStyle='#d9480f'; g.lineWidth=2; g.setLineDash([5,3]); g.beginPath(); g.moveTo(px,YP+PLK); g.lineTo(px,YP-PH-24); g.stroke(); g.setLineDash([]); g.fillStyle='#d9480f'; g.font='600 14px system-ui,sans-serif'; g.fillText('E[X]',px,YP-PH-28); }
+    g.restore();
+    g.font='700 18px system-ui,sans-serif'; g.textAlign='left';
+    st=bal?'Balanced':(d.E>S.c?'Tips right':'Tips left');
+    g.fillStyle=bal?'#14532d':'#5b5648'; g.fillText(st,14,26);
+  }
+
+  function refresh(){
+    var d=cur(),st=stats(S.c),net=d.E-S.c,bal=balanced();
+    ['unif','norm','exp','two','weird'].forEach(function(k){ $('pe-d-'+k).className=(k===S.d)?'pe-on':''; });
+    $('pe-showE').className=S.showE?'pe-on':''; $('pe-showM').className=S.showM?'pe-on':'';
+    $('pe-status').textContent=bal?'Balanced':(net>0?'Tips right':'Tips left');
+    $('pe-status').style.color=bal?'#14532d':'#1d1d1b';
+    $('pe-c').innerHTML='Fulcrum at <em>c</em> = '+S.c.toFixed(2);
+    $('pe-l').innerHTML='Left of <em>c</em>: '+(st.pL*100).toFixed(1)+'% of the sand \u00b7 torque '+st.L.toFixed(3);
+    $('pe-r').innerHTML='Right of <em>c</em>: '+(st.pR*100).toFixed(1)+'% of the sand \u00b7 torque '+st.R.toFixed(3);
+    $('pe-net').innerHTML='Right \u2212 left = \u222b(<em>x</em> \u2212 <em>c</em>) <em>f</em>(<em>x</em>) d<em>x</em> = <em>E</em>[<em>X</em>] \u2212 <em>c</em> = '+f3(net);
+    $('pe-e').innerHTML=(S.showE||S.showM)?((S.showE?'<em>E</em>[<em>X</em>] = '+f3(d.E):'')+(S.showE&&S.showM?' \u00b7 ':'')+(S.showM?'median = '+f3(d.med):'')):'';
+    $('pe-note').innerHTML=bal?'Balanced: left and right torques are equal, so <em>c</em> = <em>E</em>[<em>X</em>]. The expectation is the center of mass.'
+      :(S.showM?'The median puts half the sand on each side. Balance also depends on how far the sand sits from the fulcrum, so the two differ for skewed piles.'
+      :'Drag the fulcrum along the plank and find where it balances. Torque = sand \u00d7 distance from the fulcrum.');
+  }
+
+  function frame(now){
+    var dt=Math.min(0.04,(now-S.last)/1000||0.016),d=cur(),net=d.E-S.c,bal=balanced(),w=d.hi-d.lo,a,ct,busy=false,rest;
+    S.last=now;
+    if(Math.abs(S.ct-S.c)>1e-4){ S.c+=(S.ct-S.c)*Math.min(1,dt*9); if(Math.abs(S.ct-S.c)<=1e-4) S.c=S.ct; busy=true; }
+    net=d.E-S.c; bal=balanced(); ct=contact();
+    if(bal) a=-60*S.th-12*S.om; else a=10*(net/w)*Math.cos(S.th)-1.2*S.om;
+    S.om+=a*dt; S.th+=S.om*dt;
+    if(S.th>ct.R){ S.th=ct.R; S.om=S.om>1.5?-0.25*S.om:0; }
+    if(S.th<ct.L){ S.th=ct.L; S.om=S.om<-1.5?-0.25*S.om:0; }
+    rest=bal?(Math.abs(S.th)<1e-3&&Math.abs(S.om)<1e-3):((net>0&&S.th>=ct.R&&S.om===0)||(net<0&&S.th<=ct.L&&S.om===0));
+    if(bal&&rest){ S.th=0; S.om=0; }
+    if(!rest) busy=true;
+    draw(); refresh();
+    if(busy) requestAnimationFrame(frame); else S.run=false;
+  }
+  function kick(){ if(!S.run){ S.run=true; S.last=performance.now(); requestAnimationFrame(frame); } }
+
+  function evVal(e){
+    var r=cv.getBoundingClientRect(),w=r.width||W,d=cur(),v=clamp(vx((e.clientX-r.left)/w*W),d.lo+0.12*(d.hi-d.lo),d.hi-0.12*(d.hi-d.lo)),mag=3*(d.hi-d.lo)/(X1-X0);
+    if(Math.abs(v-d.E)<mag) v=d.E;
+    return v;
+  }
+  cv.addEventListener('pointerdown',function(e){
+    S.drag=true; var v=evVal(e); S.c=v; S.ct=v;
+    if(cv.setPointerCapture) try{cv.setPointerCapture(e.pointerId);}catch(err){}
+    e.preventDefault(); e.stopPropagation(); kick();
+  });
+  cv.addEventListener('pointermove',function(e){ if(!S.drag) return; var v=evVal(e); S.c=v; S.ct=v; kick(); });
+  cv.addEventListener('pointerup',function(){ S.drag=false; });
+  cv.addEventListener('pointercancel',function(){ S.drag=false; });
+  cv.addEventListener('touchstart',function(e){e.stopPropagation();},{passive:true});
+  cv.addEventListener('touchmove',function(e){e.stopPropagation();},{passive:true});
+
+  ['unif','norm','exp','two','weird'].forEach(function(k){
+    $('pe-d-'+k).addEventListener('click',function(){ S.d=k; S.c=D[k].c0; S.ct=S.c; S.drag=false; kick(); });
+  });
+  $('pe-showE').addEventListener('click',function(){ S.showE=!S.showE; kick(); });
+  $('pe-showM').addEventListener('click',function(){ S.showM=!S.showM; kick(); });
+  $('pe-snap').addEventListener('click',function(){ S.ct=cur().E; kick(); });
+  S.c=D.unif.c0; S.ct=S.c; S.th=(D.unif.E>S.c)?contact().R:contact().L; draw(); refresh();
+})();
+</script>
+</div>
+```
+
+# Median {.section-slide}
+
+Half the area on each side.
+
+## Median: continuous case
+
+::: {.box .key}
+<span class="tag">Definition</span>
+A **median** of $X$ is any $m$ with $P(X \le m) \ge \tfrac12$ and $P(X \ge m) \ge \tfrac12$.
+:::
+
+. . .
+
+::: {.box}
+For continuous $X$ with CDF $F$, this means $F(m) = \tfrac12$: half the area under $f$ on each side of $m$.
+:::
+
+. . .
+
+::: {.box .good}
+<span class="tag">Example</span>
+$f(x) = 2x$ on $[0,1]$: $F(m) = m^2 = \tfrac12 \Rightarrow m = 1/\sqrt2 \approx 0.707 > E(X) = \tfrac23$. Left-skewed, so median $>$ mean.
+:::
+
+::: {.notes}
+Uniqueness: if F is strictly increasing on the support, F(m) = 1/2 has exactly one solution.
+If f = 0 on an interval straddling the 1/2 point, every point in that flat stretch of F is a median.
+Skew rule of thumb (mean > median for right skew) is not a theorem; counterexamples exist.
+:::
+
+## Median vs. mean
+
+::: {.cards .stack}
+::: {.box}
+The median splits the **area** in half; the mean is the **balance point**.
+:::
+::: {.box}
+The median depends only on the ordering of values; the mean uses their magnitudes.
+:::
+::: {.box}
+Push the right tail further out: the mean moves, the median doesn't.
+:::
+::: {.box}
+Symmetric $f$: mean $=$ median (when the mean exists). Right-skewed $f$: typically mean $>$ median.
+:::
+:::
+
+## Median vs. mean: more
+
+::: {.cards .stack}
+::: {.box}
+A median always exists; the mean may not.
+:::
+::: {.box}
+**Loss view.** The mean minimizes $E(X-c)^2$; the median minimizes $E|X-c|$.
+:::
+:::
+
+. . .
+
+::: {.box .key}
+<span class="tag">Reminder</span>
+The median is the point where $F(m)=\tfrac12$; the mean is the point where the sand balances.
+:::
+
+## Where the median matters
+
+::: {.cards .stack}
+::: {.box}
+**Median grade.** A few no-shows scoring 0 drag the mean down; the median describes the typical student.
+:::
+::: {.box}
+**Median income.** Right-skewed, so top earners pull the mean up. Typically *most* people earn less than the average wage.
+:::
+::: {.box}
+**Median voter.** With single-peaked preferences on a left-right line, the median voter's ideal policy beats any alternative in a majority vote. Making extremists more extreme changes nothing.
+:::
+:::
+
+## Median vs Mean game
+
+```{=html}
+<div id="gmm-root" class="gmm-wrap">
+<style>
+.gmm-wrap{font-size:15px;line-height:1.35;color:#1e293b;font-family:inherit;text-align:left;max-width:1050px;margin:0 auto}
+.gmm-wrap *{box-sizing:border-box}
+.gmm-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:6px}
+.gmm-bar label{font-size:14px;display:flex;align-items:center;gap:5px;margin:0}
+.gmm-bar select{font-size:14px;padding:3px 6px;border:1px solid #94a3b8;border-radius:5px;background:#ffffff;color:#1e293b}
+.gmm-btn{font-size:14px;padding:5px 14px;border-radius:6px;border:1px solid #334155;background:#334155;color:#ffffff;cursor:pointer}
+.gmm-btn.gmm-lock{background:#ea580c;border-color:#ea580c}
+.gmm-btn:disabled{background:#cbd5e1;border-color:#cbd5e1;color:#64748b;cursor:default}
+.gmm-main{display:flex;gap:14px;align-items:flex-start}
+.gmm-left{flex:1 1 62%;min-width:0}
+.gmm-side{flex:1 1 38%;min-width:0;font-size:14px}
+.gmm-svg{width:100%;height:auto;display:block;touch-action:none;user-select:none;-webkit-user-select:none;background:#ffffff;border:1px solid #e2e8f0;border-radius:8px}
+.gmm-status{background:#f8fafc;border-left:4px solid #334155;padding:6px 9px;margin-bottom:8px;border-radius:4px}
+.gmm-rtab{border-collapse:collapse;width:100%;margin:4px 0 6px 0;font-size:13.5px}
+.gmm-rtab th,.gmm-rtab td{padding:3px 5px;border-bottom:1px solid #e2e8f0;text-align:right}
+.gmm-rtab th:first-child,.gmm-rtab td:first-child{text-align:left}
+.gmm-rtab th{font-weight:600;color:#64748b;font-size:12.5px}
+.gmm-rtot td{font-weight:700;border-bottom:none}
+.gmm-totals{margin:6px 0;padding:6px 9px;background:#f1f5f9;border-radius:4px}
+.gmm-diag{margin-top:8px;font-size:13.5px}
+.gmm-dhead{font-weight:600;margin-bottom:2px}
+.gmm-tip{margin-top:6px;padding:6px 9px;background:#fff7ed;border-left:4px solid #ea580c;border-radius:4px}
+.gmm-muted{color:#64748b}
+.gmm-formula{display:none;align-items:center;gap:10px;margin-top:6px;font-size:15px;flex-wrap:wrap}
+.gmm-ftab{border-collapse:collapse;border-left:2px solid #334155}
+.gmm-ftab td{padding:1px 10px;border:none}
+.gmm-fexact{flex-basis:100%;font-size:14px;color:#334155}
+.gmm-formula sup,.gmm-formula sub{font-size:0.75em}
+</style>
+<div class="gmm-bar">
+  <label>Level
+    <select class="gmm-level">
+      <option value="1">1: Uniform &amp; symmetric</option>
+      <option value="2">2: Skewed</option>
+      <option value="3">3: Multi-kink</option>
+      <option value="4">4: Long tail</option>
+      <option value="mix">Mixed (2&ndash;4)</option>
+    </select>
+  </label>
+  <button class="gmm-btn gmm-new" type="button">New density</button>
+  <button class="gmm-btn gmm-lock" type="button" disabled>Lock in</button>
+  <label><input type="checkbox" class="gmm-formula-toggle"> Show formula</label>
+</div>
+<div class="gmm-main">
+  <div class="gmm-left">
+    <svg class="gmm-svg" viewBox="0 0 720 340" xmlns="http://www.w3.org/2000/svg"></svg>
+    <div class="gmm-formula"></div>
+  </div>
+  <div class="gmm-side">
+    <div class="gmm-status"></div>
+    <div class="gmm-result"></div>
+    <div class="gmm-totals"></div>
+    <div class="gmm-diag"></div>
+  </div>
+</div>
+<script>
+(function () {
+  /* ===== math core ===== */
+  function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { var t = a % b; a = b; b = t; } return a || 1; }
+  function Fr(n, d) { if (d === undefined) d = 1; if (d < 0) { n = -n; d = -d; } var g = gcd(n, d); return { n: n / g, d: d / g }; }
+  function fadd(a, b) { return Fr(a.n * b.d + b.n * a.d, a.d * b.d); }
+  function fsub(a, b) { return Fr(a.n * b.d - b.n * a.d, a.d * b.d); }
+  function fmul(a, b) { return Fr(a.n * b.n, a.d * b.d); }
+  function fdiv(a, b) { return Fr(a.n * b.d, a.d * b.n); }
+  function fval(a) { return a.n / a.d; }
+  function fstr(a) { return a.d === 1 ? String(a.n) : a.n + "/" + a.d; }
+
+  function ri(lo, hi) { return lo + Math.floor(Math.random() * (hi - lo + 1)); }
+  function pickDistinct(lo, hi, k) {
+    var pool = []; for (var i = lo; i <= hi; i++) pool.push(i);
+    for (var j = pool.length - 1; j > 0; j--) { var r = Math.floor(Math.random() * (j + 1)); var t = pool[j]; pool[j] = pool[r]; pool[r] = t; }
+    return pool.slice(0, k).sort(function (a, b) { return a - b; });
+  }
+  function mirror(xs, ys) {
+    var a = xs[0], b = xs[xs.length - 1];
+    return { xs: xs.map(function (x) { return a + b - x; }).reverse(), ys: ys.slice().reverse() };
+  }
+  function symTri() { var h = ri(2, 5), a = ri(0, 3), b = a + 2 * h; if (b > 10) { a = 0; b = 2 * h; } return { xs: [a, a + h, b], ys: [0, 1, 0] }; }
+  function symTrap() { var a = ri(0, 2), s = ri(1, 3), t = ri(1, 2); return { xs: [a, a + s, a + s + t, a + 2 * s + t], ys: [0, 2, 2, 0] }; }
+
+  function genLevel(level) {
+    var d, a, b, L;
+    if (level === 1) {
+      if (Math.random() < 0.5) { a = ri(0, 4); b = ri(a + 3, 10); d = { xs: [a, b], ys: [1, 1] }; }
+      else d = symTri();
+    } else if (level === 2) {
+      var u = Math.random();
+      if (u < 0.12) d = Math.random() < 0.5 ? symTri() : symTrap();
+      else if (u < 0.55) {
+        a = ri(0, 3); b = ri(a + 4, 10); var c;
+        do { c = ri(a + 1, b - 1); } while (2 * c === a + b);
+        d = { xs: [a, c, b], ys: [0, 1, 0] };
+      } else {
+        a = ri(0, 3); b = ri(a + 3, 10); var h0, h1;
+        do { h0 = ri(0, 4); h1 = ri(1, 4); } while (h0 === h1);
+        d = { xs: [a, b], ys: [h0, h1] };
+      }
+    } else if (level === 3) {
+      if (Math.random() < 0.12) {
+        d = Math.random() < 0.5 ? symTrap() : (function () {
+          var a0 = ri(0, 2), s = ri(1, 2), t = ri(1, 2), p = ri(1, 4), q;
+          do { q = ri(1, 4); } while (q === p);
+          return { xs: [a0, a0 + s, a0 + s + t, a0 + s + 2 * t, a0 + 2 * s + 2 * t], ys: [0, p, q, p, 0] };
+        })();
+      } else {
+        var k = ri(4, 5); a = ri(0, 2); b = ri(Math.max(a + 6, 8), 10);
+        var inner = pickDistinct(a + 1, b - 1, k - 2);
+        var xs = [a].concat(inner, [b]), ys = [];
+        for (var i = 0; i < k; i++) ys.push(i === 0 || i === k - 1 ? ri(0, 2) : ri(1, 5));
+        d = { xs: xs, ys: ys };
+      }
+    } else {
+      a = ri(0, 1); b = ri(9, 10);
+      var pk = a + ri(1, 2), m1 = pk + ri(1, 2), m2 = m1 + ri(2, 3);
+      if (m2 >= b) m2 = b - 1;
+      var hp = ri(4, 6), h1 = ri(2, hp - 1), h2 = 1;
+      d = { xs: [a, pk, m1, m2, b], ys: [0, hp, h1, h2, ri(0, 1)] };
+      if (m1 >= m2) d = { xs: [a, pk, m2, b], ys: [0, hp, h1, ri(0, 1)] };
+    }
+    if (level >= 2 && Math.random() < 0.5) d = mirror(d.xs, d.ys);
+    return d;
+  }
+
+  function analyze(d) {
+    var xs = d.xs, ys = d.ys, n = xs.length, segs = [], A = Fr(0);
+    for (var i = 0; i < n - 1; i++) A = fadd(A, Fr((ys[i] + ys[i + 1]) * (xs[i + 1] - xs[i]), 2));
+    var c = fdiv(Fr(1), A);
+    var mean = Fr(0), EX2 = 0, cum = 0;
+    for (i = 0; i < n - 1; i++) {
+      var x0 = xs[i], x1 = xs[i + 1], y0 = ys[i], y1 = ys[i + 1];
+      var m = Fr(y1 - y0, x1 - x0), q = fsub(Fr(y0), fmul(m, Fr(x0)));
+      var al = fmul(c, m), be = fmul(c, q);
+      mean = fadd(mean, fadd(fmul(al, Fr(x1 * x1 * x1 - x0 * x0 * x0, 3)), fmul(be, Fr(x1 * x1 - x0 * x0, 2))));
+      EX2 += fval(al) * (Math.pow(x1, 4) - Math.pow(x0, 4)) / 4 + fval(be) * (Math.pow(x1, 3) - Math.pow(x0, 3)) / 3;
+      var area = fval(c) * (y0 + y1) * (x1 - x0) / 2;
+      segs.push({ x0: x0, x1: x1, f0: fval(c) * y0, f1: fval(c) * y1, al: al, be: be, cum0: cum, area: area });
+      cum += area;
+    }
+    var mu = fval(mean), sd = Math.sqrt(Math.max(EX2 - mu * mu, 0));
+    var ymax = Math.max.apply(null, ys), first = -1, last = -1;
+    for (i = 0; i < n; i++) if (ys[i] === ymax) { if (first < 0) first = i; last = i; }
+    var allEq = ys.every(function (y) { return y === ys[0]; });
+    var res = { d: d, segs: segs, c: c, mean: mean, mu: mu, sd: sd, fmax: fval(c) * ymax,
+      peak: allEq ? null : (xs[first] + xs[last]) / 2, mid: (xs[0] + xs[n - 1]) / 2, a: xs[0], b: xs[n - 1] };
+    res.F = function (x) {
+      if (x <= res.a) return 0; if (x >= res.b) return 1;
+      for (var j = 0; j < segs.length; j++) { var s = segs[j]; if (x <= s.x1) { var t = x - s.x0, sl = (s.f1 - s.f0) / (s.x1 - s.x0); return s.cum0 + s.f0 * t + sl * t * t / 2; } }
+      return 1;
+    };
+    res.f = function (x) {
+      if (x < res.a || x > res.b) return 0;
+      for (var j = 0; j < segs.length; j++) { var s = segs[j]; if (x <= s.x1) return s.f0 + (s.f1 - s.f0) * (x - s.x0) / (s.x1 - s.x0); }
+      return 0;
+    };
+    for (i = 0; i < segs.length; i++) {
+      var s = segs[i];
+      if (s.cum0 + s.area >= 0.5 - 1e-12) {
+        var r = 0.5 - s.cum0, sl = (s.f1 - s.f0) / (s.x1 - s.x0);
+        res.med = s.x0 + 2 * r / (s.f0 + Math.sqrt(Math.max(s.f0 * s.f0 + 2 * sl * r, 0)));
+        break;
+      }
+    }
+    return res;
+  }
+
+  /* scoring: median error on probability scale (0 pts at 20pp off), mean error in SD units (0 pts at 1/3 SD off) */
+  function score(res, gMed, gMean) {
+    var eMed = Math.abs(res.F(gMed) - 0.5), eMean = Math.abs(gMean - res.mu) / res.sd;
+    return { eMed: eMed, eMean: eMean,
+      pMed: Math.round(100 * Math.max(0, 1 - 5 * eMed)),
+      pMean: Math.round(100 * Math.max(0, 1 - 3 * eMean)) };
+  }
+  /* ===== UI ===== */
+  var root = document.getElementById("gmm-root");
+  if (!root) return;
+  var NS = "http://www.w3.org/2000/svg";
+  var W = 720, H = 340, ML = 52, MR = 16, MT = 44, MB = 64, X0 = 0, X1 = 10;
+  var AX = H - MB, PINY = AX + 30;
+  var C = { med: "#0d9488", medL: "#99f6e4", mean: "#ea580c", ink: "#334155", grid: "#e2e8f0", fill: "#cbd5e1", right: "#f1f5f9" };
+  var BONUS = 20;
+
+  var svg = root.querySelector(".gmm-svg"), status = root.querySelector(".gmm-status");
+  var btnNew = root.querySelector(".gmm-new"), btnLock = root.querySelector(".gmm-lock");
+  var selLevel = root.querySelector(".gmm-level"), chkFormula = root.querySelector(".gmm-formula-toggle");
+  var formulaBox = root.querySelector(".gmm-formula"), resultBox = root.querySelector(".gmm-result");
+  var totalsBox = root.querySelector(".gmm-totals"), diagBox = root.querySelector(".gmm-diag");
+
+  var cur = null, pins = { med: null, mean: null }, locked = false, drag = null, ymaxAxis = 1;
+  var history = [];
+
+  function sx(x) { return ML + (x - X0) / (X1 - X0) * (W - ML - MR); }
+  function ix(px) { return X0 + (px - ML) / (W - ML - MR) * (X1 - X0); }
+  function sy(y) { return AX - y / ymaxAxis * (AX - MT); }
+  function el(tag, attrs, parent, text) {
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (text !== undefined) e.textContent = text;
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  function niceMax(v) {
+    var steps = [0.05, 0.1, 0.2, 0.25, 0.5, 1, 2], t = v * 1.08;
+    for (var i = 0; i < steps.length; i++) { var k = Math.ceil(t / steps[i] - 1e-9); if (k <= 6) return { max: k * steps[i], step: steps[i] }; }
+    return { max: Math.ceil(t), step: Math.ceil(t) / 4 };
+  }
+  function fmt(x, d) { return x.toFixed(d === undefined ? 2 : d); }
+  function frHTML(f) {
+    var s = f.n < 0 ? "&minus;" : "", n = Math.abs(f.n);
+    return f.d === 1 ? s + n : s + "<sup>" + n + "</sup>&frasl;<sub>" + f.d + "</sub>";
+  }
+  function coefHTML(f, withX, first) {
+    if (f.n === 0) return "";
+    var n = Math.abs(f.n), sign = f.n < 0 ? (first ? "&minus;" : " &minus; ") : (first ? "" : " + ");
+    var body = f.d === 1 ? String(n) : "<sup>" + n + "</sup>&frasl;<sub>" + f.d + "</sub>";
+    if (withX) body = (f.d === 1 && n === 1 ? "" : body) + "<em>x</em>";
+    return sign + body;
+  }
+
+  function drawAxes() {
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    var g = el("g", {}, svg);
+    if (cur) {
+      var nm = niceMax(cur.fmax); ymaxAxis = nm.max;
+      for (var v = 0; v <= nm.max + 1e-9; v += nm.step) {
+        el("line", { x1: ML, x2: W - MR, y1: sy(v), y2: sy(v), stroke: C.grid, "stroke-width": 1 }, g);
+        el("text", { x: ML - 7, y: sy(v) + 4, "text-anchor": "end", "font-size": 12, fill: "#64748b" }, g, +v.toFixed(2));
+      }
+      el("text", { x: 14, y: MT + (AX - MT) / 2, "font-size": 13, fill: "#64748b", "text-anchor": "middle", transform: "rotate(-90 14 " + (MT + (AX - MT) / 2) + ")", "font-style": "italic" }, g, "f(x)");
+    }
+    el("line", { x1: ML, x2: W - MR, y1: AX, y2: AX, stroke: C.ink, "stroke-width": 1.5 }, g);
+    for (var t = X0; t <= X1; t++) {
+      el("line", { x1: sx(t), x2: sx(t), y1: AX, y2: AX + 5, stroke: C.ink }, g);
+      el("text", { x: sx(t), y: AX + 18, "text-anchor": "middle", "font-size": 12, fill: C.ink }, g, t);
+    }
+  }
+
+  function areaPath(lo, hi) {
+    var d = cur.d, N = 60;
+    lo = Math.max(lo, cur.a); hi = Math.min(hi, cur.b);
+    if (hi <= lo) return "";
+    var xsS = [lo];
+    for (var i = 0; i <= N; i++) xsS.push(lo + (hi - lo) * i / N);
+    d.xs.forEach(function (x) { if (x > lo && x < hi) xsS.push(x); });
+    xsS.push(hi); xsS.sort(function (a, b) { return a - b; });
+    var s = "M" + sx(lo) + "," + AX;
+    xsS.forEach(function (x) { s += " L" + sx(x).toFixed(2) + "," + sy(cur.f(x)).toFixed(2); });
+    return s + " L" + sx(hi) + "," + AX + " Z";
+  }
+
+  var layerReveal, layerPins;
+  function drawDensity() {
+    drawAxes();
+    var d = cur.d;
+    el("path", { d: areaPath(cur.a, cur.b), fill: C.fill, "fill-opacity": 0.55, stroke: "none" }, svg);
+    layerReveal = el("g", {}, svg);
+    var line = "M" + sx(cur.a) + "," + AX;
+    for (var i = 0; i < d.xs.length; i++) line += " L" + sx(d.xs[i]).toFixed(2) + "," + sy(cur.f(d.xs[i])).toFixed(2);
+    line += " L" + sx(cur.b) + "," + AX;
+    el("path", { d: line, fill: "none", stroke: C.ink, "stroke-width": 2.2, "stroke-linejoin": "round" }, svg);
+    el("rect", { x: ML, y: MT, width: W - ML - MR, height: PINY + 16 - MT, fill: "transparent", class: "gmm-hit" }, svg);
+    layerPins = el("g", {}, svg);
+  }
+
+  function drawPins() {
+    while (layerPins.firstChild) layerPins.removeChild(layerPins.firstChild);
+    [["med", "median", "M"], ["mean", "mean", "\u03bc"]].forEach(function (p, idx) {
+      var x = pins[p[0]]; if (x === null) return;
+      var col = C[p[0]], X = sx(x), g = el("g", { "data-pin": p[0], style: locked ? "" : "cursor:ew-resize" }, layerPins);
+      el("line", { x1: X, x2: X, y1: MT + 16 + idx * 16, y2: PINY - 10, stroke: col, "stroke-width": 2.2, "stroke-dasharray": "6 4" }, g);
+      el("text", { x: X + 5, y: MT + 12 + idx * 16, "font-size": 12, fill: col, "font-weight": 600 }, g, "your " + p[1]);
+      el("circle", { cx: X, cy: PINY, r: 10, fill: col, stroke: "#ffffff", "stroke-width": 2 }, g);
+      el("text", { x: X, y: PINY + 4, "text-anchor": "middle", "font-size": 12, fill: "#ffffff", "font-weight": 700, "pointer-events": "none" }, g, p[2]);
+      el("rect", { x: X - 9, y: MT, width: 18, height: PINY + 12 - MT, fill: "transparent" }, g);
+    });
+  }
+
+  function toData(evt) {
+    var pt;
+    if (svg.createSVGPoint && svg.getScreenCTM && svg.getScreenCTM()) {
+      pt = svg.createSVGPoint(); pt.x = evt.clientX; pt.y = evt.clientY;
+      pt = pt.matrixTransform(svg.getScreenCTM().inverse());
+    } else pt = { x: evt.offsetX, y: evt.offsetY };
+    return Math.min(X1, Math.max(X0, ix(pt.x)));
+  }
+
+  svg.addEventListener("pointerdown", function (evt) {
+    if (!cur || locked) return;
+    var pg = evt.target.closest ? evt.target.closest("[data-pin]") : null;
+    var x = toData(evt);
+    if (pg) drag = pg.getAttribute("data-pin");
+    else if (pins.med === null) { pins.med = x; drag = "med"; }
+    else if (pins.mean === null) { pins.mean = x; drag = "mean"; }
+    else return;
+    if (svg.setPointerCapture) try { svg.setPointerCapture(evt.pointerId); } catch (e) {}
+    evt.preventDefault(); evt.stopPropagation();
+    drawPins(); updateStatus();
+  });
+  svg.addEventListener("pointermove", function (evt) {
+    if (!drag || locked) return;
+    pins[drag] = toData(evt); drawPins();
+  });
+  function endDrag() { drag = null; updateStatus(); }
+  svg.addEventListener("pointerup", endDrag);
+  svg.addEventListener("pointercancel", endDrag);
+  svg.addEventListener("touchstart", function (e) { e.stopPropagation(); }, { passive: true });
+
+  function updateStatus() {
+    if (!cur) { status.innerHTML = "Choose a level and press <b>New density</b>."; return; }
+    if (locked) return;
+    if (pins.med === null) status.innerHTML = "Click on the plot to place your <b style='color:" + C.med + "'>median</b> pin.";
+    else if (pins.mean === null) status.innerHTML = "Now click to place your <b style='color:" + C.mean + "'>mean</b> pin.";
+    else status.innerHTML = "Drag pins to adjust, then press <b>Lock in</b>.";
+    btnLock.disabled = !(pins.med !== null && pins.mean !== null);
+  }
+
+  function showFormula(reveal) {
+    if (!cur || !chkFormula.checked) { formulaBox.style.display = "none"; return; }
+    var rows = cur.segs.map(function (s, i) {
+      var t = coefHTML(s.al, true, true), u = coefHTML(s.be, false, t === "");
+      var body = (t + u) || "0";
+      var last = i === cur.segs.length - 1;
+      return "<tr><td>" + body + ",</td><td>" + s.x0 + " &le; <em>x</em> " + (last ? "&le; " : "&lt; ") + s.x1 + "</td></tr>";
+    }).join("");
+    var h = "<div class='gmm-fhead'><em>f</em>(<em>x</em>) =</div><table class='gmm-ftab'>" + rows +
+      "<tr><td>0,</td><td>otherwise</td></tr></table>";
+    if (reveal) h += "<div class='gmm-fexact'>E[<em>X</em>] = " + frHTML(cur.mean) + " &asymp; " + fmt(cur.mu, 3) +
+      "; &nbsp; median <em>m</em> solves <em>F</em>(<em>m</em>) = &frac12;, <em>m</em> &asymp; " + fmt(cur.med, 3) + "</div>";
+    formulaBox.innerHTML = h; formulaBox.style.display = "flex";
+  }
+
+  function newRound() {
+    var lv = selLevel.value, L = lv === "mix" ? 2 + Math.floor(Math.random() * 3) : +lv;
+    cur = analyze(genLevel(L)); cur.level = L;
+    pins = { med: null, mean: null }; locked = false; drag = null;
+    drawDensity(); drawPins(); showFormula(false);
+    resultBox.innerHTML = ""; btnLock.disabled = true; updateStatus();
+  }
+
+  function reveal() {
+    if (!cur || locked || pins.med === null || pins.mean === null) return;
+    locked = true; btnLock.disabled = true;
+    var sc = score(cur, pins.med, pins.mean);
+    var gap = cur.mu - cur.med, sym = Math.abs(gap) < 1e-9, gGap = pins.mean - pins.med, orderOK;
+    if (sym) orderOK = Math.abs(gGap) <= 0.1 * cur.sd;
+    else orderOK = gGap * gap > 0;
+    var bonus = orderOK ? BONUS : 0, pts = sc.pMed + sc.pMean + bonus;
+
+    el("path", { d: areaPath(cur.a, cur.med), fill: C.medL, "fill-opacity": 0.85 }, layerReveal);
+    el("path", { d: areaPath(cur.med, cur.b), fill: C.right, "fill-opacity": 0.9 }, layerReveal);
+    var yl = AX - 12;
+    el("text", { x: (sx(cur.a) + sx(cur.med)) / 2, y: yl, "text-anchor": "middle", "font-size": 13, "font-weight": 700, fill: C.med }, layerReveal, "50%");
+    el("text", { x: (sx(cur.med) + sx(cur.b)) / 2, y: yl, "text-anchor": "middle", "font-size": 13, "font-weight": 700, fill: "#64748b" }, layerReveal, "50%");
+    var gT = el("g", {}, svg);
+    el("line", { x1: sx(cur.med), x2: sx(cur.med), y1: 20, y2: AX, stroke: C.med, "stroke-width": 3 }, gT);
+    el("line", { x1: sx(cur.mu), x2: sx(cur.mu), y1: 36, y2: AX, stroke: C.mean, "stroke-width": 3 }, gT);
+    var tx = sx(cur.mu);
+    el("path", { d: "M" + tx + "," + AX + " L" + (tx - 8) + "," + (AX + 13) + " L" + (tx + 8) + "," + (AX + 13) + " Z", fill: C.mean }, gT);
+    var lm = sx(cur.med), lu = sx(cur.mu), lab = Math.abs(lm - lu) < 70;
+    el("text", { x: lm + (lab && lm < lu ? -5 : 5), y: 16, "font-size": 12, "font-weight": 700, fill: C.med, "text-anchor": lab && lm < lu ? "end" : "start" }, gT, "median " + fmt(cur.med));
+    el("text", { x: lu + (lab && lu <= lm ? -5 : 5), y: 32, "font-size": 12, "font-weight": 700, fill: C.mean, "text-anchor": lab && lu <= lm ? "end" : "start" }, gT, "mean " + fmt(cur.mu));
+    svg.appendChild(layerPins); drawPins();
+
+    var leftPct = Math.round(100 * cur.F(pins.med));
+    var skewTxt = sym ? "Symmetric: mean = median" : (gap > 0 ? "Right-skewed: mean &gt; median" : "Left-skewed: mean &lt; median");
+    resultBox.innerHTML =
+      "<table class='gmm-rtab'>" +
+      "<tr><th></th><th>true</th><th>yours</th><th>miss</th><th>pts</th></tr>" +
+      "<tr><td style='color:" + C.med + "'><b>Median</b></td><td>" + fmt(cur.med) + "</td><td>" + fmt(pins.med) + "</td><td>" + leftPct + "% left</td><td>" + sc.pMed + "</td></tr>" +
+      "<tr><td style='color:" + C.mean + "'><b>Mean</b></td><td>" + fmt(cur.mu) + "</td><td>" + fmt(pins.mean) + "</td><td>" + fmt(sc.eMean) + " SD</td><td>" + sc.pMean + "</td></tr>" +
+      "<tr><td colspan='4'>" + skewTxt + (sym ? " &mdash; pins together?" : " &mdash; your order") + " " + (orderOK ? "&#10003;" : "&#10007;") + "</td><td>" + bonus + "</td></tr>" +
+      "<tr class='gmm-rtot'><td colspan='4'>Round total</td><td>" + pts + "</td></tr></table>";
+    status.innerHTML = "Press <b>New density</b> for the next round.";
+    showFormula(true);
+
+    history.push({ cur: cur, gMed: pins.med, gMean: pins.mean, pts: pts, sym: sym, orderOK: orderOK });
+    updateTotals(); updateDiag();
+  }
+
+  function updateTotals() {
+    var n = history.length, tot = history.reduce(function (s, h) { return s + h.pts; }, 0);
+    totalsBox.innerHTML = "Rounds: <b>" + n + "</b> &nbsp; Total: <b>" + tot + "</b> &nbsp; Avg: <b>" + (n ? Math.round(tot / n) : 0) + "</b> / " + (200 + BONUS);
+  }
+
+  function classify(key) {
+    var cnt = { truth: 0, peak: 0, mid: 0 }, used = 0;
+    history.forEach(function (h) {
+      var r = h.cur; if (r.peak === null) return;
+      var truth = key === "mean" ? r.mu : r.med, g = key === "mean" ? h.gMean : h.gMed;
+      var refs = { truth: truth, peak: r.peak, mid: r.mid };
+      if (Math.abs(truth - r.peak) < 0.1 * r.sd || Math.abs(truth - r.mid) < 0.1 * r.sd || Math.abs(r.peak - r.mid) < 0.1 * r.sd) return;
+      var best = null, bd = Infinity;
+      for (var k in refs) { var dd = Math.abs(g - refs[k]); if (dd < bd) { bd = dd; best = k; } }
+      cnt[best]++; used++;
+    });
+    return { cnt: cnt, used: used };
+  }
+
+  function updateDiag() {
+    var n = history.length;
+    if (n < 5) { diagBox.innerHTML = "<span class='gmm-muted'>Bias check unlocks after 5 rounds (" + n + "/5).</span>"; return; }
+    var cm = classify("med"), cu = classify("mean");
+    var sk = history.filter(function (h) { return !h.sym; }), ok = sk.filter(function (h) { return h.orderOK; }).length;
+    function row(lbl, c, col) {
+      return "<tr><td style='color:" + col + "'><b>" + lbl + "</b></td><td>" + c.cnt.truth + "</td><td>" + c.cnt.peak + "</td><td>" + c.cnt.mid + "</td></tr>";
+    }
+    var h = "<div class='gmm-dhead'>Bias check: which point were your pins closest to?</div>" +
+      "<table class='gmm-rtab'><tr><th></th><th>true value</th><th>peak</th><th>middle of range</th></tr>" +
+      row("Median pins", cm, C.med) + row("Mean pins", cu, C.mean) + "</table>" +
+      "<div>Mean vs median on the correct side: <b>" + ok + "/" + sk.length + "</b> skewed rounds.</div>";
+    var tips = [];
+    if (cu.used >= 3 && cu.cnt.peak > cu.cnt.truth) tips.push("Your mean pins drift toward the <b>peak</b>. The mean is the balance point, not the highest point of the density.");
+    if (cm.used >= 3 && cm.cnt.mid > cm.cnt.truth) tips.push("Your median pins drift toward the <b>middle of the range</b>. The median splits the <em>area</em> in half, not the interval.");
+    if (cm.used >= 3 && cm.cnt.peak > cm.cnt.truth) tips.push("Your median pins drift toward the <b>peak</b>. Half the area can lie well away from where the density is highest.");
+    if (sk.length >= 3 && ok / sk.length < 0.6) tips.push("Order check: a long tail pulls the <b>mean</b> toward it more than the median.");
+    if (tips.length) h += "<div class='gmm-tip'>" + tips.join("<br>") + "</div>";
+    diagBox.innerHTML = h;
+  }
+
+  btnNew.addEventListener("click", newRound);
+  btnLock.addEventListener("click", reveal);
+  chkFormula.addEventListener("change", function () { showFormula(locked); });
+  drawAxes(); updateStatus(); updateTotals(); updateDiag();
+})();
+</script>
+</div>
+```
+
+# Location and Scale {.section-slide}
+
+The linear transformation $Y=a+bZ$.
+
+## Location and scale: $Y=a+bZ$
+
+```{=html}
+<div id="ls-root">
+<style>
+#ls-root{font-size:20px;line-height:1.3;color:#222222;text-align:left;display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:6px 18px;align-items:start}
+#ls-root *{box-sizing:border-box}
+#ls-root .ls-top{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+#ls-root .ls-tabs{display:flex;gap:4px}
+#ls-root .ls-tabs button{font:inherit;font-size:18px;padding:4px 14px;border:1px solid #bbbbbb;background:#ffffff;color:#444444;border-radius:4px;cursor:pointer}
+#ls-root .ls-tabs button[aria-pressed="true"]{background:#2b6cb0;border-color:#2b6cb0;color:#ffffff}
+#ls-root .ls-model{font-size:22px}
+#ls-root .ls-plots{display:grid;gap:4px}
+#ls-root svg{display:block;width:100%;height:auto}
+#ls-root .ls-panel{display:grid;gap:10px;font-size:17px}
+#ls-root .ls-ctl label{display:flex;justify-content:space-between;align-items:baseline;font-weight:600}
+#ls-root .ls-ctl output{font-variant-numeric:tabular-nums;font-size:20px}
+#ls-root input[type=range]{width:100%;margin:2px 0 0;accent-color:#2b6cb0}
+#ls-root .ls-reset{font:inherit;font-size:15px;padding:4px 10px;border:1px solid #bbbbbb;background:#ffffff;color:#444444;border-radius:4px;cursor:pointer;justify-self:start}
+#ls-root .ls-row{border-left:3px solid #cccccc;padding:1px 0 1px 10px}
+#ls-root .ls-row.ls-m{border-color:#c0392b}
+#ls-root .ls-row.ls-s{border-color:#e6a817}
+#ls-root .ls-lab{color:#666666;font-size:15px}
+#ls-root .ls-num{font-variant-numeric:tabular-nums}
+#ls-root .ls-name{font-size:18px}
+#ls-root .ls-note{font-size:15px;color:#666666}
+#ls-root button:focus-visible,#ls-root input:focus-visible{outline:2px solid #7aa2e8;outline-offset:2px}
+</style>
+
+<div class="ls-top">
+  <div class="ls-tabs">
+    <button type="button" data-d="unif" aria-pressed="true">Uniform</button>
+    <button type="button" data-d="norm" aria-pressed="false">Normal</button>
+    <button type="button" data-d="expo" aria-pressed="false">Exponential</button>
+  </div>
+  <div class="ls-model" id="ls-model"></div>
+</div>
+
+<div class="ls-plots">
+  <svg id="ls-pdf" viewBox="0 0 640 240" role="img" aria-label="Density of Y"></svg>
+  <svg id="ls-cdf" viewBox="0 0 640 240" role="img" aria-label="CDF of Y"></svg>
+</div>
+
+<div class="ls-panel">
+  <div class="ls-ctl">
+    <label for="ls-a"><span>Location <em>a</em></span><output id="ls-aOut"></output></label>
+    <input type="range" id="ls-a" min="-3" max="3" step="0.05" value="0">
+  </div>
+  <div class="ls-ctl">
+    <label for="ls-b"><span>Scale <em>b</em></span><output id="ls-bOut"></output></label>
+    <input type="range" id="ls-b" min="0.5" max="3" step="0.05" value="1">
+  </div>
+  <button type="button" class="ls-reset" id="ls-reset">Reset to <em>a</em> = 0, <em>b</em> = 1</button>
+  <div id="ls-out"></div>
+</div>
+
+<script>
+(() => {
+  const root = document.getElementById('ls-root');
+  const q = s => root.querySelector(s);
+  const COL = { ink:'#222222', muted:'#666666', grid:'#e5e5e5', axis:'#999999',
+    curve:'#2b6cb0', fill:'#2b6cb0', mean:'#c0392b', band:'#e6a817' };
+
+  function erf(x){
+    const s = x < 0 ? -1 : 1; x = Math.abs(x);
+    const t = 1 / (1 + 0.3275911 * x);
+    const p = ((((1.061405429 * t - 1.453152027) * t + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t;
+    return s * (1 - p * Math.exp(-x * x));
+  }
+  const fmt = (v, d = 2) => {
+    let s = v.toFixed(d);
+    if (/^-0(\.0+)?$/.test(s)) s = s.slice(1);
+    return s.replace('-', '\u2212');
+  };
+
+  const D = {
+    unif: { z:'Unif(0, 1)', EZ:0.5, VZ:1/12, EZs:'\u00bd', VZs:'1/12', SDs:'1/\u221a12',
+      xmin:-4, xmax:7, xstep:1, ymax:2.2, ystep:0.5, bmax:3,
+      pdf:z => (z >= 0 && z <= 1) ? 1 : 0,
+      cdf:z => z <= 0 ? 0 : z >= 1 ? 1 : z,
+      zb:[0, 1],
+      name:(a,b) => `<em>Y</em> ~ Unif(${fmt(a)}, ${fmt(a + b)})`,
+      note:'<em>a</em> is the left endpoint, <em>b</em> is the width.' },
+    norm: { z:'N(0, 1)', EZ:0, VZ:1, EZs:'0', VZs:'1', SDs:'1',
+      xmin:-10, xmax:10, xstep:2, ymax:0.9, ystep:0.2, bmax:2.5,
+      pdf:z => Math.exp(-z*z/2) / Math.sqrt(2*Math.PI),
+      cdf:z => 0.5 * (1 + erf(z / Math.SQRT2)),
+      zb:[],
+      name:(a,b) => `<em>Y</em> ~ N(\u03bc = ${fmt(a)}, \u03c3\u00b2 = ${fmt(b*b)})`,
+      note:'<em>a</em> = \u03bc, <em>b</em> = \u03c3.' },
+    expo: { z:'Exp(1)', EZ:1, VZ:1, EZs:'1', VZs:'1', SDs:'1',
+      xmin:-4, xmax:14, xstep:2, ymax:2.2, ystep:0.5, bmax:2.5,
+      pdf:z => z >= 0 ? Math.exp(-z) : 0,
+      cdf:z => z >= 0 ? 1 - Math.exp(-z) : 0,
+      zb:[0],
+      name:(a,b) => Math.abs(a) < 1e-9
+        ? `<em>Y</em> ~ Exp(\u03bb = 1/<em>b</em> = ${fmt(1/b)})`
+        : `<em>Y</em> = ${fmt(a)} + Exp(\u03bb = ${fmt(1/b)}): shifted, not exponential`,
+      note:'<em>b</em> = 1/\u03bb; <em>a</em> moves the start of the support.' }
+  };
+  const st = { d:'unif', a:0, b:1 };
+
+  const W = 640, H = 240, M = { l:46, r:12, t:30, b:26 };
+  const PW = W - M.l - M.r, PH = H - M.t - M.b;
+  const ticks = (lo, hi, step) => { const o = []; for (let k = Math.ceil(lo/step - 1e-9); k*step <= hi + 1e-9; k++) o.push(+(k*step).toFixed(6)); return o; };
+  const tstr = v => String(+v.toFixed(2)).replace('-', '\u2212');
+  const r1 = v => v.toFixed(1);
+
+  function plot(kind){
+    const d = D[st.d], a = st.a, b = st.b;
+    const ymax = kind === 'pdf' ? d.ymax : 1.05;
+    const X = x => M.l + (x - d.xmin) / (d.xmax - d.xmin) * PW;
+    const Y = y => M.t + PH - y / ymax * PH;
+    const mean = a + b * d.EZ, sd = b * Math.sqrt(d.VZ);
+    const id = 'ls-clip-' + kind;
+    let s = `<defs><clipPath id="${id}"><rect x="${M.l}" y="${M.t - 2}" width="${PW}" height="${PH + 4}"/></clipPath></defs>`;
+
+    // grid
+    const yt = kind === 'pdf' ? ticks(0, d.ymax, d.ystep) : [0, 0.25, 0.5, 0.75, 1];
+    yt.forEach(v => {
+      s += `<line x1="${M.l}" x2="${M.l + PW}" y1="${r1(Y(v))}" y2="${r1(Y(v))}" stroke="${v === 0 ? COL.axis : COL.grid}" stroke-width="1"/>`;
+      s += `<text x="${M.l - 6}" y="${r1(Y(v))}" text-anchor="end" dominant-baseline="middle" font-size="12" fill="${COL.muted}">${tstr(v)}</text>`;
+    });
+    ticks(d.xmin, d.xmax, d.xstep).forEach(v => {
+      s += `<line x1="${r1(X(v))}" x2="${r1(X(v))}" y1="${M.t}" y2="${M.t + PH}" stroke="${v === 0 ? COL.axis : COL.grid}" stroke-width="1"/>`;
+      s += `<text x="${r1(X(v))}" y="${M.t + PH + 16}" text-anchor="middle" font-size="12" fill="${COL.muted}">${tstr(v)}</text>`;
+    });
+
+    // mean ± 1 SD band
+    s += `<g clip-path="url(#${id})"><rect x="${r1(X(mean - sd))}" y="${M.t}" width="${r1(X(mean + sd) - X(mean - sd))}" height="${PH}" fill="${COL.band}" fill-opacity="0.2"/>`;
+
+    if (kind === 'pdf') {
+      // split support at discontinuities; solid pieces, dashed verticals at jumps
+      const f = y => d.pdf((y - a) / b) / b;
+      const br = d.zb.map(z => a + b * z).filter(y => y > d.xmin && y < d.xmax);
+      const cuts = [d.xmin, ...br, d.xmax], del = 1e-7, N = 300;
+      const pieces = [];
+      for (let i = 0; i < cuts.length - 1; i++) {
+        const lo = cuts[i], hi = cuts[i + 1], pts = [];
+        for (let k = 0; k <= N; k++) {
+          const x = lo + (hi - lo) * k / N;
+          const xe = Math.min(Math.max(x, lo + del), hi - del);
+          pts.push([X(x), Y(f(xe))]);
+        }
+        pieces.push(pts);
+      }
+      const all = pieces.flat();
+      s += `<path d="M${all.map(p => r1(p[0]) + ',' + r1(p[1])).join('L')}L${r1(X(d.xmax))},${r1(Y(0))}L${r1(X(d.xmin))},${r1(Y(0))}Z" fill="${COL.fill}" fill-opacity="0.12" stroke="none"/>`;
+      pieces.forEach(pts => {
+        s += `<path d="M${pts.map(p => r1(p[0]) + ',' + r1(p[1])).join('L')}" fill="none" stroke="${COL.curve}" stroke-width="3" stroke-linejoin="round"/>`;
+      });
+      br.forEach(y0 => {
+        const yl = f(y0 - del), yr = f(y0 + del);
+        s += `<line x1="${r1(X(y0))}" x2="${r1(X(y0))}" y1="${r1(Y(yl))}" y2="${r1(Y(yr))}" stroke="${COL.curve}" stroke-width="2" stroke-dasharray="6 4"/>`;
+      });
+    } else {
+      const F = y => d.cdf((y - a) / b), N = 600;
+      let p = '';
+      for (let k = 0; k <= N; k++) { const x = d.xmin + (d.xmax - d.xmin) * k / N; p += (k ? 'L' : 'M') + r1(X(x)) + ',' + r1(Y(F(x))); }
+      s += `<path d="${p}" fill="none" stroke="${COL.curve}" stroke-width="3" stroke-linejoin="round"/>`;
+    }
+
+    // mean marker (solid; dashes are reserved for density jumps)
+    s += `<line x1="${r1(X(mean))}" x2="${r1(X(mean))}" y1="${M.t}" y2="${M.t + PH}" stroke="${COL.mean}" stroke-width="2"/>`;
+    if (kind === 'cdf') {
+      s += `<circle cx="${r1(X(mean))}" cy="${r1(Y(d.cdf(d.EZ)))}" r="5" fill="#ffffff" stroke="${COL.mean}" stroke-width="2.5"/>`;
+    }
+    s += `</g>`;
+
+    if (kind === 'pdf') {
+      const right = X(mean) > M.l + PW * 0.6;
+      s += `<text x="${r1(X(mean) + (right ? -7 : 7))}" y="${M.t + 14}" text-anchor="${right ? 'end' : 'start'}" font-size="15" font-style="italic" font-weight="600" fill="${COL.mean}" stroke="#ffffff" stroke-width="4" paint-order="stroke">E[Y] = ${fmt(mean)}</text>`;
+      // legend
+      const lx = M.l + PW - 250;
+      s += `<line x1="${lx}" x2="${lx + 20}" y1="14" y2="14" stroke="${COL.mean}" stroke-width="2"/>`;
+      s += `<text x="${lx + 26}" y="14" dominant-baseline="middle" font-size="13" fill="${COL.muted}">mean</text>`;
+      s += `<rect x="${lx + 82}" y="7" width="20" height="14" fill="${COL.band}" fill-opacity="0.35"/>`;
+      s += `<text x="${lx + 108}" y="14" dominant-baseline="middle" font-size="13" fill="${COL.muted}">mean \u00b1 1 SD</text>`;
+    }
+    s += `<text x="${M.l}" y="15" dominant-baseline="middle" font-size="16" font-style="italic" fill="${COL.ink}">${kind === 'pdf' ? 'Density' : 'CDF'} of Y</text>`;
+    return s;
+  }
+
+  function render(){
+    const d = D[st.d], a = st.a, b = st.b;
+    const mean = a + b * d.EZ, vr = b * b * d.VZ, sd = b * Math.sqrt(d.VZ);
+    q('#ls-model').innerHTML = `<em>Y</em> = <em>a</em> + <em>b Z</em>,&ensp;<em>Z</em> ~ ${d.z}`;
+    q('#ls-aOut').textContent = fmt(a);
+    q('#ls-bOut').textContent = fmt(b);
+    q('#ls-pdf').innerHTML = plot('pdf');
+    q('#ls-cdf').innerHTML = plot('cdf');
+    q('#ls-out').innerHTML = `
+      <div class="ls-name">${d.name(a, b)}</div>
+      <div class="ls-row ls-m"><div class="ls-lab"><em>E</em>[<em>Y</em>] = <em>a</em> + <em>b E</em>[<em>Z</em>]</div>
+        <div class="ls-num">${fmt(a)} + ${fmt(b)} \u00d7 ${d.EZs} = <b>${fmt(mean)}</b></div></div>
+      <div class="ls-row"><div class="ls-lab">Var[<em>Y</em>] = <em>b</em>\u00b2 Var[<em>Z</em>]</div>
+        <div class="ls-num">${fmt(b)}\u00b2 \u00d7 ${d.VZs} = <b>${fmt(vr, 3)}</b></div></div>
+      <div class="ls-row ls-s"><div class="ls-lab">SD[<em>Y</em>] = <em>b</em> SD[<em>Z</em>]</div>
+        <div class="ls-num">${fmt(b)} \u00d7 ${d.SDs} = <b>${fmt(sd, 3)}</b></div></div>
+      <div class="ls-note">${d.note}</div>`;
+  }
+
+  function sync(){
+    const A = q('#ls-a'), B = q('#ls-b');
+    B.max = D[st.d].bmax;
+    A.value = st.a; B.value = st.b;
+  }
+  root.querySelectorAll('.ls-tabs button').forEach(btn => btn.addEventListener('click', () => {
+    st.d = btn.dataset.d; st.a = 0; st.b = 1;
+    root.querySelectorAll('.ls-tabs button').forEach(x => x.setAttribute('aria-pressed', String(x === btn)));
+    sync(); render();
+  }));
+  q('#ls-a').addEventListener('input', e => { st.a = +e.target.value; render(); });
+  q('#ls-b').addEventListener('input', e => { st.b = +e.target.value; render(); });
+  q('#ls-reset').addEventListener('click', () => { st.a = 0; st.b = 1; sync(); render(); });
+  sync(); render();
+})();
+</script>
+</div>
+```

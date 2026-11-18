@@ -582,6 +582,10 @@ font-family:inherit; font-size:0.95em; font-weight:600; line-height:1.3; text-tr
 .reveal .quiz .expl { display:none; font-size:0.75em; color:var(--muted); margin-top:0.2em; }
 .reveal .quiz.done .expl { display:block; }
 .reveal .quiz.compact { font-size:0.9em; }
+
+.reveal .cards.stack.toc { gap:0.4em; }
+.reveal .cards.stack.toc > .box { display:flex; align-items:center; gap:0.9em; padding:0.4em 0.8em; font-size:0.85em; }
+.reveal .cards.stack.toc > .box .tag { display:block; flex:0 0 17em; margin:0; font-size:0.7em; }
 </style>
   
   <script>
@@ -1171,6 +1175,26 @@ margin-right: 0; }
 <div class="quarto-title-authors">
 </div>
 
+</section>
+<section id="contents" class="slide level2">
+<h2>Contents</h2>
+<div class="cards stack toc">
+<div class="box">
+<p><span class="tag">Intro · The sample mean is random</span> Predict, try it on student heights, and see that <span class="math inline">\bar{x}\neq\mu</span>.</p>
+</div>
+<div class="box">
+<p><span class="tag">1 · Example: rolling a die</span> Exact distribution of <span class="math inline">\bar{X}</span>, simulation, the three observations and the CLT.</p>
+</div>
+<div class="box">
+<p><span class="tag">2 · The Normal distribution</span> Standard and general Normal, 68–95–99.7 rule, tables and z-scores.</p>
+</div>
+<div class="box">
+<p><span class="tag">3 · Normal in real life</span> Where the Normal fits (heights, SAT, sleep) and where it does not.</p>
+</div>
+<div class="box">
+<p><span class="tag">4 · Normal approximation</span> Approximating Binomial probabilities, with the continuity correction.</p>
+</div>
+</div>
 </section>
 <section id="main-question" class="slide level2">
 <h2>Main question</h2>

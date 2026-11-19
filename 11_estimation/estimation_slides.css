@@ -162,3 +162,6 @@
 .reveal .sg { position:relative; margin:0.2em 0; }
 .reveal .sg svg { display:block; width:100%; }
 .reveal .sg svg.ov { position:absolute; left:0; top:0; }
+
+/* math inside uppercase tags must keep its case (alpha, x-bar, z_{alpha/2}) */
+.reveal .tag .katex, .reveal .tag .katex * { text-transform:none; }

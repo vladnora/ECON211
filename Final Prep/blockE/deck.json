@@ -1,0 +1,76 @@
+{
+ "name": "blockE_slides",
+ "title": "Final Prep: Estimation",
+ "subtitle": "ECON211 · Probability & Statistics · practice for Lecture 11 (Estimation)",
+ "css": "final_prep.css",
+ "problem_files": [
+  "prob_point.js",
+  "prob_ci.js",
+  "prob_interp.js"
+ ],
+ "slides": [
+  [
+   "unbiased",
+   "Is the estimator unbiased?"
+  ],
+  [
+   "randresp",
+   "Randomized response"
+  ],
+  [
+   "efficiency",
+   "Efficiency: comparing estimators"
+  ],
+  [
+   "ci",
+   "Confidence interval for μ"
+  ],
+  [
+   "level",
+   "Confidence level and the interval"
+  ],
+  [
+   "width",
+   "What makes the interval wider?"
+  ],
+  [
+   "nsize",
+   "How large a sample do we need?"
+  ],
+  [
+   "ci_mc",
+   "What does the interval mean?"
+  ],
+  [
+   "plaus",
+   "Which values of μ are plausible?"
+  ],
+  [
+   "tf",
+   "Concept checks"
+  ]
+ ],
+ "toc": [
+  [
+   "unbiased",
+   "1 · Point estimation",
+   "Bias of simple estimators, randomized response, efficiency."
+  ],
+  [
+   "ci",
+   "2 · Confidence intervals for μ",
+   "Build the interval (σ known), level, width, sample size."
+  ],
+  [
+   "ci_mc",
+   "3 · Interpretation",
+   "Meaning of a confidence interval, plausible values, true or false."
+  ],
+  [
+   "quiz",
+   "4 · Timed quiz",
+   "Five random questions, a timer, answers at the end."
+  ]
+ ],
+ "howto": true
+}

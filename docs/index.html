@@ -4,114 +4,139 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ECON211 · Probability &amp; Statistics</title>
-<meta name="description" content="Lecture slides for ECON211, Probability and Statistics.">
+<meta name="description" content="Lecture slides and practice for ECON211, Probability and Statistics.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap">
 <style>
-  :root {
-    --navy:#1b3a5c; --blue:#2b6cb0; --blue-soft:#eef4fb; --orange:#dd6b20;
-    --ink:#1f2933; --muted:#52606d; --line:#d9e2ec; --bg:#f7f9fc; --card:#ffffff;
-    --shadow:0 1px 2px rgba(27,58,92,.06), 0 4px 14px rgba(27,58,92,.06);
-  }
-  @media (prefers-color-scheme: dark) {
-    :root { --navy:#cfe0f5; --blue:#6aa6e8; --blue-soft:#17283c; --orange:#f0924d;
-      --ink:#e8edf2; --muted:#9aa8b6; --line:#2a3b4f; --bg:#0f1823; --card:#162231; --shadow:0 1px 2px rgba(0,0,0,.4); }
-  }
-  * { box-sizing:border-box; }
-  html { scroll-behavior:smooth; }
-  body { margin:0; background:var(--bg); color:var(--ink); line-height:1.5;
-    font-family:"Source Sans Pro", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
-  .wrap { max-width:1040px; margin:0 auto; padding:0 20px; }
-
-  header { background:linear-gradient(135deg,#17324f 0%,#2b6cb0 100%); color:#fff; padding:64px 0 56px; }
-  header .eyebrow { font-size:.85rem; letter-spacing:.14em; text-transform:uppercase; opacity:.8; font-weight:700; }
-  header h1 { font-size:clamp(2rem,5vw,3.2rem); line-height:1.1; margin:.35em 0 .3em; letter-spacing:-.02em; }
-  header p { margin:0; font-size:1.15rem; opacity:.9; max-width:34em; }
-
-  main { padding:36px 0 64px; }
-  section { margin-top:40px; }
-  section:first-child { margin-top:0; }
-  .sec-head { display:flex; flex-wrap:wrap; align-items:baseline; gap:.1em .8em; border-bottom:2px solid var(--line); padding-bottom:.4em; margin-bottom:18px; }
-  .sec-head h2 { margin:0; font-size:1.25rem; color:var(--navy); }
-  .sec-head span { color:var(--muted); font-size:.95rem; }
-
-  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(290px,1fr)); gap:16px; }
-  a.card { display:flex; gap:14px; align-items:flex-start; text-decoration:none; color:inherit; background:var(--card);
-    border:1px solid var(--line); border-radius:14px; padding:16px 18px; box-shadow:var(--shadow);
-    transition:transform .15s ease, border-color .15s ease, box-shadow .15s ease; }
-  a.card:hover, a.card:focus-visible { transform:translateY(-3px); border-color:var(--blue); outline:none;
-    box-shadow:0 2px 4px rgba(27,58,92,.08), 0 10px 24px rgba(43,108,176,.16); }
-  .num { flex:none; width:2.6em; height:2.6em; border-radius:10px; background:var(--blue-soft); color:var(--blue);
-    display:grid; place-items:center; font-weight:800; font-size:.95rem; }
-  .card h3 { margin:0 0 .15em; font-size:1.08rem; color:var(--navy); line-height:1.25; }
-  .card p { margin:0; font-size:.93rem; color:var(--muted); line-height:1.4; }
-  .badge { display:inline-block; margin-left:.5em; padding:.05em .55em; border-radius:999px; font-size:.7rem; font-weight:800;
-    letter-spacing:.06em; text-transform:uppercase; background:var(--orange); color:#fff; vertical-align:middle; }
-  .exam .num { background:#fff4e5; color:var(--orange); }
-  @media (prefers-color-scheme: dark) { .exam .num { background:#33241a; } }
-
-  footer { border-top:1px solid var(--line); padding:22px 0 40px; color:var(--muted); font-size:.9rem; }
+/* Layout: white page, thin top bar with text tabs, big title, sticky tab row, grey rounded product-style tiles with a plot illustration, name, one-line text, link. Single light theme by choice. */
+:root{
+  --bg:#ffffff; --tile:#f1f3f4; --ink:#202124; --muted:#5f6368; --line:#dadce0;
+  --blue:#1a73e8; --blue-soft:#e8f0fe; --font:"DM Sans","Google Sans",Roboto,Arial,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:400 16px/1.5 var(--font);margin:0;padding-inline:max(16px,env(safe-area-inset-left,0px)) max(16px,env(safe-area-inset-right,0px))}
+a{color:inherit;text-decoration:none}
+a:focus-visible,button:focus-visible{outline:2px solid var(--blue);outline-offset:3px}
+.wrap{max-width:1200px;margin:0 auto}
+.top{display:flex;align-items:center;justify-content:space-between;padding-block:16px;font-size:.95rem}
+.top b{font-weight:700;font-size:1.15rem;letter-spacing:-.01em}
+.top .r{display:flex;gap:24px;color:var(--muted)}
+@media(max-width:560px){.top .r{display:none}}
+h1{font-weight:500;font-size:clamp(2.6rem,7vw,4.5rem);letter-spacing:-.03em;line-height:1.05;margin:56px 0 12px}
+.sub{color:var(--muted);font-size:1.15rem;max-width:36em;margin:0 0 36px}
+.tabs{display:flex;gap:28px;border-bottom:1px solid var(--line);overflow-x:auto;position:sticky;top:0;background:var(--bg);z-index:5;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{background:none;border:0;border-bottom:3px solid transparent;padding:14px 0 12px;font:500 .98rem var(--font);color:var(--muted);cursor:pointer;white-space:nowrap}
+.tab[aria-pressed="true"]{color:var(--blue);border-bottom-color:var(--blue)}
+.tab:hover{color:var(--ink)}
+.tab[aria-pressed="true"]:hover{color:var(--blue)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px;padding-block:32px}
+.tile{display:flex;flex-direction:column;background:var(--tile);border-radius:28px;padding:20px 20px 26px;transition:box-shadow .2s,transform .2s}
+.tile:hover{box-shadow:0 6px 20px rgba(60,64,67,.18);transform:translateY(-2px)}
+.tile[hidden]{display:none}
+.tag{font-size:.8rem;font-weight:500;color:var(--blue);background:var(--blue-soft);border-radius:999px;padding:3px 12px;align-self:flex-start}
+.tile.new .tag{background:var(--blue);color:#fff}
+.tile svg{width:100%;aspect-ratio:3/2;margin-block:10px 14px;display:block}
+.tile h3{font-weight:500;font-size:1.25rem;line-height:1.25;margin:0 0 4px;letter-spacing:-.01em}
+.tile p{margin:0;color:var(--muted);font-size:.93rem;flex:1}
+.tile .more{margin-top:14px;color:var(--blue);font-weight:500;font-size:.93rem}
+.tile:hover .more{text-decoration:underline}
+.s{stroke:#1a73e8;stroke-width:2.5;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.f{fill:#1a73e8}.fl{fill:#aecbfa}.fg{fill:#fff}.o{stroke:#ea8600}.of{fill:#ea8600}.gr{stroke:#34a853}.gf{fill:#34a853}.rd{fill:#d93025}.ax{stroke:#bdc1c6;stroke-width:1.5;fill:none}
+footer{border-top:1px solid var(--line);padding-block:24px 48px;margin-top:24px;color:var(--muted);font-size:.9rem;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
 </style>
 </head>
 <body>
-<header>
-  <div class="wrap">
-    <div class="eyebrow">Nazarbayev University</div>
-    <h1>ECON211<br>Probability &amp; Statistics</h1>
-    <p>Lecture slides and midterm preparation. Open any card to start the slides; press <b>F</b> for full screen.</p>
-  </div>
-</header>
+<div class="wrap">
+<div class="top"><b>ECON211 Fall 2026</b><div class="r"><span>Prof. Vladyslav Nora | Nazarbayev University</span></div></div>
 
-<main class="wrap">
+<h1>Probability &amp; Statistics</h1>
+<p class="sub">Lecture slides and interactive practice. Open a lecture, then test yourself with the practice decks. Some lectures without slides are missing from this list.</p>
 
-  <section>
-    <div class="sec-head"><h2>Probability foundations</h2><span>Counting and conditioning</span></div>
-    <div class="grid">
-      <a class="card" href="00_intro.html"><div class="num">00</div><div><h3>Introduction</h3><p>What the course is about and how to use it.</p></div></a>
-      <a class="card" href="01_combinatorics.html"><div class="num">01</div><div><h3>Combinatorics</h3><p>Counting outcomes: permutations and combinations.</p></div></a>
-      <a class="card" href="02_conditional.html"><div class="num">02</div><div><h3>Conditional Probability</h3><p>Updating beliefs, independence and Bayes' rule.</p></div></a>
-    </div>
-  </section>
+<div class="tabs" id="tabs" role="group" aria-label="Filter">
+  <button class="tab" data-g="all" aria-pressed="true">All</button>
+  <button class="tab" data-g="p" aria-pressed="false">Probability</button>
+  <button class="tab" data-g="r" aria-pressed="false">Random variables</button>
+  <button class="tab" data-g="i" aria-pressed="false">Inference</button>
+  <button class="tab" data-g="e" aria-pressed="false">Exam prep</button>
+</div>
 
-  <section>
-    <div class="sec-head"><h2>Random variables</h2><span>Distributions, expectations, joint behaviour</span></div>
-    <div class="grid">
-      <a class="card" href="03_variables.html"><div class="num">03</div><div><h3>Random Variables</h3><p>Discrete distributions and how to describe them.</p></div></a>
-      <a class="card" href="04_expectation.html"><div class="num">04</div><div><h3>Expectations</h3><p>Mean, variance and what they tell us.</p></div></a>
-      <a class="card" href="05_continuous.html"><div class="num">05</div><div><h3>Continuous Distributions</h3><p>Densities, the uniform and the normal.</p></div></a>
-      <a class="card" href="06_joint.html"><div class="num">06</div><div><h3>Joint Distributions</h3><p>Two variables at once: covariance and correlation.</p></div></a>
-      <a class="card" href="08_applications.html"><div class="num">08</div><div><h3>Applications: Portfolios</h3><p>Risk and return as an application of the theory.</p></div></a>
-    </div>
-  </section>
+<div class="grid" id="grid">
 
-  <section>
-    <div class="sec-head"><h2>Statistical inference</h2><span>From samples to conclusions</span></div>
-    <div class="grid">
-      <a class="card" href="09_random_sampling.html"><div class="num">09</div><div><h3>Random Sampling</h3><p>Populations, samples and why randomness matters.</p></div></a>
-      <a class="card" href="10_sampling.html"><div class="num">10</div><div><h3>Sampling Distribution of the Sample Mean</h3><p>How sample means behave: the law of large numbers and the CLT.</p></div></a>
-      <a class="card" href="11_estimation.html"><div class="num">11</div><div><h3>Estimation <span class="badge">Latest</span></h3><p>Point and interval estimates, with an interactive confidence interval game.</p></div></a>
-    </div>
-  </section>
+<a class="tile" data-g="p" href="00_intro.html"><span class="tag">Lecture 00</span>
+<svg viewBox="0 0 300 200"><rect class="fg s" x="70" y="55" width="80" height="80" rx="16"/><rect class="fg s" x="150" y="75" width="80" height="80" rx="16" transform="rotate(10 190 115)"/><circle class="f" cx="95" cy="80" r="6"/><circle class="f" cx="125" cy="110" r="6"/><circle class="f" cx="170" cy="100" r="6"/><circle class="f" cx="210" cy="132" r="6"/><circle class="f" cx="190" cy="115" r="6"/></svg>
+<h3>Introduction</h3><p>What the course is about and how to use it.</p><span class="more">Open slides ›</span></a>
 
-  <section>
-    <div class="sec-head"><h2>Midterm preparation</h2><span>Practice problems by block</span></div>
-    <div class="grid exam">
-      <a class="card" href="Midterm_prep_blockA.html"><div class="num">A</div><div><h3>Block A</h3><p>Midterm practice.</p></div></a>
-      <a class="card" href="Midterm_prep_blockBCD.html"><div class="num">B–D</div><div><h3>Blocks B, C, D</h3><p>Midterm practice.</p></div></a>
-      <a class="card" href="Midterm_prep_blockE.html"><div class="num">E</div><div><h3>Block E</h3><p>Midterm practice.</p></div></a>
-    </div>
-  </section>
+<a class="tile" data-g="p" href="01_combinatorics.html"><span class="tag">Lecture 01</span>
+<svg viewBox="0 0 300 200"><path class="ax" d="M100 71L150 129M150 71L200 129M200 71L100 129"/><circle class="f" cx="100" cy="55" r="16"/><circle class="of" cx="150" cy="55" r="16"/><circle class="gf" cx="200" cy="55" r="16"/><circle class="gf" cx="100" cy="145" r="16"/><circle class="f" cx="150" cy="145" r="16"/><circle class="of" cx="200" cy="145" r="16"/></svg>
+<h3>Combinatorics</h3><p>Permutations and combinations.</p><span class="more">Open slides ›</span></a>
 
-  <section>
-    <div class="sec-head"><h2>Final preparation</h2><span>Interactive practice with variants and a timed quiz</span></div>
-    <div class="grid exam">
-      <a class="card" href="Final_prep_blockS.html"><div class="num">S</div><div><h3>Block S: Statistics <span class="badge">Draft</span></h3><p>Summary statistics, OLS by hand, random sampling, bias, and reading graphs.</p></div></a>
-      <a class="card" href="Final_prep_blockN.html"><div class="num">N</div><div><h3>Block N: Sampling distributions <span class="badge">Draft</span></h3><p>The Normal table, finding z from a probability, the sample mean, the CLT, and Normal approximations.</p></div></a>
-    </div>
-  </section>
+<a class="tile" data-g="p" href="02_conditional.html"><span class="tag">Lecture 02</span>
+<svg viewBox="0 0 300 200"><circle cx="125" cy="100" r="55" fill="#1a73e8" fill-opacity=".35"/><circle cx="175" cy="100" r="55" fill="#ea8600" fill-opacity=".35"/><circle cx="125" cy="100" r="55" class="s"/><circle cx="175" cy="100" r="55" class="s o"/></svg>
+<h3>Conditional Probability</h3><p>Updating beliefs, independence and Bayes' rule.</p><span class="more">Open slides ›</span></a>
 
-</main>
+<a class="tile" data-g="r" href="03_variables.html"><span class="tag">Lecture 03</span>
+<svg viewBox="0 0 300 200"><path class="ax" d="M40 160H265"/><g class="f"><rect x="60" y="110" width="28" height="50" rx="4"/><rect x="100" y="70" width="28" height="90" rx="4"/><rect x="140" y="40" width="28" height="120" rx="4"/><rect x="180" y="80" width="28" height="80" rx="4"/><rect x="220" y="120" width="28" height="40" rx="4"/></g></svg>
+<h3>Random Variables</h3><p>Discrete distributions and how to describe them.</p><span class="more">Open slides ›</span></a>
 
-<footer>
-  <div class="wrap">ECON211 · Probability &amp; Statistics</div>
-</footer>
+<a class="tile" data-g="r" href="04_expectation.html"><span class="tag">Lecture 04</span>
+<svg viewBox="0 0 300 200"><path class="ax" d="M40 160H265"/><g class="fl"><rect x="60" y="120" width="28" height="40" rx="4"/><rect x="100" y="80" width="28" height="80" rx="4"/><rect x="140" y="50" width="28" height="110" rx="4"/><rect x="180" y="85" width="28" height="75" rx="4"/><rect x="220" y="125" width="28" height="35" rx="4"/></g><path class="s o" stroke-dasharray="6 6" d="M154 30V165"/><circle class="of" cx="154" cy="160" r="7"/></svg>
+<h3>Expectations</h3><p>Mean, variance and what they tell us.</p><span class="more">Open slides ›</span></a>
+
+<a class="tile" data-g="r" href="05_continuous.html"><span class="tag">Lecture 05</span>
+<svg viewBox="0 0 300 200"><path class="ax" d="M30 160H270"/><path d="M30 160C80 160 100 40 150 40S220 160 270 160Z" fill="#1a73e8" fill-opacity=".18"/><path class="s" d="M30 160C80 160 100 40 150 40S220 160 270 160"/></svg>
+<h3>Continuous Distributions</h3><p>Densities, the uniform and the normal.</p><span class="more">Open slides ›</span></a>
+
+<a class="tile" data-g="r" href="06_joint.html"><span class="tag">Lecture 06</span>
+<svg viewBox="0 0 300 200"><path class="ax" d="M50 30V165H265"/><g class="f"><circle cx="80" cy="140" r="6"/><circle cx="105" cy="120" r="6"/><circle cx="120" cy="135" r="6"/><circle cx="150" cy="100" r="6"/><circle cx="170" cy="110" r="6"/><circle cx="195" cy="80" r="6"/><circle cx="215" cy="90" r="6"/><circle cx="240" cy="55" r="6"/></g><path class="s o" d="M65 150L250 50"/></svg>
+<h3>Joint Distributions</h3><p>Two variables at once: covariance and correlation.</p><span class="more">Open slides ›</span></a>
+
+<a class="tile" data-g="r" href="08_applications.html"><span class="tag">Lecture 08</span>
+<svg viewBox="0 0 300 200"><path class="ax" d="M50 30V165H265"/><path class="s" d="M70 150C80 90 120 60 250 50"/><circle class="gf" cx="115" cy="88" r="8"/><circle class="fg s" cx="70" cy="150" r="6"/><circle class="fg s" cx="250" cy="50" r="6"/></svg>
+<h3>Portfolios</h3><p>Risk and return as an application of the theory.</p><span class="more">Open slides ›</span></a>
+
+<a class="tile" data-g="i" href="09_random_sampling.html"><span class="tag">Lecture 09</span>
+<svg viewBox="0 0 300 200"><g class="fl"><circle cx="70" cy="60" r="7"/><circle cx="110" cy="45" r="7"/><circle cx="150" cy="70" r="7"/><circle cx="195" cy="50" r="7"/><circle cx="235" cy="65" r="7"/><circle cx="85" cy="100" r="7"/><circle cx="130" cy="110" r="7"/><circle cx="175" cy="95" r="7"/><circle cx="220" cy="110" r="7"/></g><g class="f"><circle cx="110" cy="45" r="7"/><circle cx="175" cy="95" r="7"/><circle cx="235" cy="65" r="7"/><circle cx="85" cy="100" r="7"/></g><path class="ax" d="M60 150H250"/><g class="f"><circle cx="110" cy="150" r="5"/><circle cx="150" cy="150" r="5"/><circle cx="190" cy="150" r="5"/><circle cx="230" cy="150" r="5"/></g></svg>
+<h3>Random Sampling</h3><p>Populations, samples and why randomness matters.</p><span class="more">Open slides ›</span></a>
+
+<a class="tile" data-g="i" href="10_sampling.html"><span class="tag">Lecture 10</span>
+<svg viewBox="0 0 300 200"><path class="ax" d="M20 160H280"/><path class="s" stroke="#bdc1c6" d="M20 160C65 160 95 90 150 90S235 160 280 160"/><path d="M60 160C100 160 125 25 150 25S200 160 240 160Z" fill="#1a73e8" fill-opacity=".2"/><path class="s" d="M60 160C100 160 125 25 150 25S200 160 240 160"/></svg>
+<h3>Sampling Distribution</h3><p>The law of large numbers and the CLT.</p><span class="more">Open slides ›</span></a>
+
+<a class="tile new" data-g="i" href="11_estimation.html"><span class="tag">Latest · Lecture 11</span>
+<svg viewBox="0 0 300 200"><g class="s"><path d="M100 55H210M100 47V63M210 47V63"/><path d="M120 85H190M120 77V93M190 77V93"/><path d="M80 115H225M80 107V123M225 107V123" stroke="#d93025"/><path d="M130 145H175M130 137V153M175 137V153"/></g><g class="f"><circle cx="155" cy="55" r="5"/><circle cx="155" cy="85" r="5"/><circle cx="152" cy="115" r="5"/><circle cx="153" cy="145" r="5"/></g></svg>
+<h3>Estimation</h3><p>Point and interval estimates, with an interactive demo.</p><span class="more">Open slides ›</span></a>
+
+<a class="tile" data-g="e" href="Midterm_prep_blockA.html"><span class="tag">Midterm prep</span>
+<svg viewBox="0 0 300 200"><rect class="fg s" x="85" y="30" width="130" height="140" rx="16"/><path class="s gr" d="M105 70l8 8 14-16"/><path class="ax" d="M140 70H195"/><path class="s gr" d="M105 105l8 8 14-16"/><path class="ax" d="M140 105H195"/><circle class="fg s" cx="116" cy="140" r="8"/><path class="ax" d="M140 140H180"/></svg>
+<h3>Block A</h3><p>Midterm practice problems.</p><span class="more">Start practice ›</span></a>
+
+<a class="tile" data-g="e" href="Midterm_prep_blockBCD.html"><span class="tag">Midterm prep</span>
+<svg viewBox="0 0 300 200"><rect class="fg s" x="85" y="30" width="130" height="140" rx="16"/><path class="s gr" d="M105 70l8 8 14-16"/><path class="ax" d="M140 70H195"/><path class="s gr" d="M105 105l8 8 14-16"/><path class="ax" d="M140 105H195"/><circle class="fg s" cx="116" cy="140" r="8"/><path class="ax" d="M140 140H180"/></svg>
+<h3>Blocks B, C, D</h3><p>Midterm practice problems.</p><span class="more">Start practice ›</span></a>
+
+<a class="tile" data-g="e" href="Midterm_prep_blockE.html"><span class="tag">Midterm prep</span>
+<svg viewBox="0 0 300 200"><rect class="fg s" x="85" y="30" width="130" height="140" rx="16"/><path class="s gr" d="M105 70l8 8 14-16"/><path class="ax" d="M140 70H195"/><path class="s gr" d="M105 105l8 8 14-16"/><path class="ax" d="M140 105H195"/><circle class="fg s" cx="116" cy="140" r="8"/><path class="ax" d="M140 140H180"/></svg>
+<h3>Block E</h3><p>Midterm practice problems.</p><span class="more">Start practice ›</span></a>
+
+<a class="tile" data-g="e" href="Final_prep_blockS.html"><span class="tag">Final prep · Draft</span>
+<svg viewBox="0 0 300 200"><rect class="fg s" x="85" y="30" width="130" height="140" rx="16"/><path class="s gr" d="M105 70l8 8 14-16"/><path class="ax" d="M140 70H195"/><path class="s gr" d="M105 105l8 8 14-16"/><path class="ax" d="M140 105H195"/><circle class="fg s" cx="116" cy="140" r="8"/><path class="ax" d="M140 140H180"/></svg>
+<h3>Block S: Statistics</h3><p>Summary statistics, OLS by hand, random sampling, bias and reading graphs.</p><span class="more">Start practice ›</span></a>
+
+<a class="tile" data-g="e" href="Final_prep_blockN.html"><span class="tag">Final prep · Draft</span>
+<svg viewBox="0 0 300 200"><rect class="fg s" x="85" y="30" width="130" height="140" rx="16"/><path class="s gr" d="M105 70l8 8 14-16"/><path class="ax" d="M140 70H195"/><path class="s gr" d="M105 105l8 8 14-16"/><path class="ax" d="M140 105H195"/><circle class="fg s" cx="116" cy="140" r="8"/><path class="ax" d="M140 140H180"/></svg>
+<h3>Block N: Sampling distributions</h3><p>The Normal table, finding z, the sample mean, the CLT and Normal approximations.</p><span class="more">Start practice ›</span></a>
+
+</div>
+
+<footer><span>ECON211 · Probability &amp; Statistics</span><span>Nazarbayev University</span></footer>
+</div>
+<script>
+const tabs=document.querySelectorAll('.tab'),tiles=document.querySelectorAll('.tile');
+tabs.forEach(t=>t.addEventListener('click',()=>{
+  tabs.forEach(x=>x.setAttribute('aria-pressed',x===t));
+  tiles.forEach(k=>k.hidden=t.dataset.g!=='all'&&k.dataset.g!==t.dataset.g);
+}));
+</script>
 </body>
 </html>

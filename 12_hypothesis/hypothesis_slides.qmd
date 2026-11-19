@@ -28,7 +28,7 @@ From a range of plausible values to a yes/no question.
 ::: {.box}
 <a class="toc-hit" href="#/testing-mu-when-sigma-is-known" title="Go to section"></a>
 <span class="tag">2 · Testing $\mu$ when $\sigma$ is known</span>
-Four steps: hypotheses, test statistic, p-value, decision; link to confidence intervals.
+Four steps: hypotheses, test statistic, p-value, decision; meaning of $\alpha$, critical values, link to confidence intervals.
 :::
 ::: {.box}
 <a class="toc-hit" href="#/one-sided-tests" title="Go to section"></a>
@@ -38,7 +38,7 @@ When the alternative points in one direction only.
 ::: {.box}
 <a class="toc-hit" href="#/testing-mu-when-sigma-is-unknown" title="Go to section"></a>
 <span class="tag">4 · Testing $\mu$ when $\sigma$ is unknown</span>
-The t-statistic, the t-distribution and the cost of not knowing $\sigma$.
+The t-statistic, the t-distribution, a worked t-test and a one-page summary.
 :::
 :::
 
@@ -134,7 +134,7 @@ If we find enough evidence to **reject** $H_0$, we favour $H_1$.
 :::
 ::: {.box .key}
 <span class="tag">$H_1$</span>
-**Never contains an equality sign**: $\neq$, $>$ or $<$.
+**Never contains an equality sign**: $≠$, $>$ or $<$.
 :::
 :::
 
@@ -142,7 +142,7 @@ If we find enough evidence to **reject** $H_0$, we favour $H_1$.
 
 ::: {.box .good}
 <span class="tag">Example: two-sided test</span>
-$$H_0:\ \mu=167 \qquad H_1:\ \mu\neq167$$
+$$H_0:\ \mu=167 \qquad H_1:\ \mu≠167$$
 :::
 
 ## Step 2: The test statistic
@@ -256,6 +256,47 @@ At the more lenient $\alpha=0.10$ we **would reject** $H_0$. The verdict depends
 "Fail to reject" is **not** "$H_0$ is true". It only says the data is not surprising enough to rule it out.
 :::
 
+## What does $\alpha$ actually mean?
+
+::: {.box .key}
+<span class="tag">Definition</span>
+$\alpha=P(\text{reject }H_0\mid H_0\text{ is true})$. With $\alpha=0.05$: if $H_0$ is true, about **5% of samples** will still make us reject it. This mistake is the **Type I error** (a false alarm).
+:::
+
+. . .
+
+::: {.cards}
+::: {.box .warn .c}
+<span class="tag">Type I error</span>
+Reject $H_0$ when it is **true**. Its probability is $\alpha$, which **we choose**.
+:::
+::: {.box .c}
+<span class="tag">Type II error</span>
+Fail to reject $H_0$ when it is **false**. We do not set it directly; **a larger $n$** makes it smaller.
+:::
+:::
+
+## Critical values: the shortcut
+
+::: {.box}
+Instead of computing the p-value, compare $|z|$ with a **critical value** (from the table). It gives the **same verdict** as $p<\alpha$.
+:::
+
+. . .
+
+| $\alpha$ | Two-sided: reject if $\lvert z\rvert>$ | One-sided: reject if $z>$ (or $z<-$) |
+|:-:|:-:|:-:|
+| **0.10** | $1.645$ | $1.282$ |
+| **0.05** | $1.960$ | $1.645$ |
+| **0.01** | $2.576$ | $2.326$ |
+
+. . .
+
+::: {.box .good}
+<span class="tag">Our data</span>
+$|z|=1.72<1.96$, so we **fail to reject** at $\alpha=0.05$ (same as $p=0.085>0.05$). But $1.72>1.645$, so we **reject** at $\alpha=0.10$ (same as before).
+:::
+
 ## Confidence interval and test
 
 ::: {.cap}
@@ -345,7 +386,7 @@ When the question has a direction.
 | | Two-sided | One-sided |
 |:--|:--|:--|
 | **Question** | Is there *any* difference? | Is there an *increase* or a *decrease*? |
-| **Alternative $H_1$** | $\mu\neq\mu_0$ | $\mu>\mu_0$ or $\mu<\mu_0$ |
+| **Alternative $H_1$** | $\mu≠\mu_0$ | $\mu>\mu_0$ or $\mu<\mu_0$ |
 | **Rejection region** | Two tails, $\alpha/2$ each | One tail, the full $\alpha$ |
 | **P-value** | $2\,P(Z>\lvert z\rvert)$ | Area in the tail named by $H_1$ |
 
@@ -579,6 +620,56 @@ As $n$ grows, the $t$-distribution converges to the standard normal, so critical
 
 ::: {.cap}
 Self-study: learn how to use the $t$-table at the end of the book.
+:::
+
+## A worked t-test
+
+::: {.box .key}
+<span class="tag">Same question, $\sigma$ unknown</span>
+Is the average height of girls equal to $167$ cm? Data: $n=185$, $\bar{X}=165.9$, and now only the sample SD is available: $s=8.7$.
+$$H_0:\ \mu=167 \qquad H_1:\ \mu≠167$$
+:::
+
+. . .
+
+::: {.box}
+$$t=\frac{165.9-167}{8.7/\sqrt{185}}\approx-1.72,\qquad df=n-1=184$$
+:::
+
+. . .
+
+::: {.cards}
+::: {.box .c}
+<span class="tag">Critical value</span>
+$t_{0.025,\,184}\approx1.97$ (the table gives $1.98$ at $df=120$ and $1.96$ at $df=\infty$). $|t|<1.97$.
+:::
+::: {.box .c}
+<span class="tag">P-value</span>
+$p=2\,P(T_{184}>1.72)\approx0.087$, slightly **larger** than the $z$-test's $0.085$.
+:::
+:::
+
+. . .
+
+::: {.box .good}
+<span class="tag">Conclusion</span>
+At $\alpha=0.05$ we **fail to reject** $H_0$: there is not sufficient evidence that the mean height of girls differs from $167$ cm.
+:::
+
+## The whole procedure on one page
+
+| Step | What we do |
+|:--|:--|
+| **1. Hypotheses** | $H_0$ with $=$ (the benchmark $\mu_0$); $H_1$ is $≠$, $>$ or $<$. |
+| **2. Statistic** | $\sigma$ known: $z=\dfrac{\bar{X}-\mu_0}{\sigma/\sqrt n}$. $\sigma$ unknown: $t=\dfrac{\bar{X}-\mu_0}{s/\sqrt n}$ with $df=n-1$. |
+| **3. P-value** | $≠$: both tails, $2\,P(\text{beyond }\lvert\text{stat}\rvert)$. $>$: upper tail. $<$: lower tail. |
+| **4. Decision** | $p<\alpha$ (or statistic beyond the critical value): **reject $H_0$**. Otherwise: **fail to reject**. |
+
+. . .
+
+::: {.box .key}
+<span class="tag">Always finish with a sentence</span>
+"At the $\alpha$ level there **is / is not sufficient evidence** that $\ldots$ (the claim in $H_1$)."
 :::
 
 <script>

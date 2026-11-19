@@ -63,7 +63,7 @@ A confidence interval gives a **range of plausible values** for a parameter. Res
 
 | Topic | Estimation | Hypothesis testing |
 |:--|:--|:--|
-| **Heights** | What is the average height of girls in this class? | Is it equal to $167$ cm? |
+| **Heights** | What is the average height of students in this class? | Is it equal to $167$ cm? |
 | **Demography** | What is the average number of children per family in Kazakhstan? | Is it greater than $2.1$, the replacement rate? |
 | **Emigration** | What share of students is willing to emigrate from Kazakhstan? | Are girls more willing to emigrate than boys? |
 | **Study hours** | How many hours do students study for this class on average? | Do girls study more than boys? |
@@ -97,13 +97,13 @@ Four steps, one example.
 
 ::: {.box .key}
 <span class="tag">Question</span>
-Is the average height of girls taking this class equal to $167$ cm?
+Is the average height of students taking this class equal to $167$ cm?
 :::
 
 . . .
 
 ::: {.box}
-Data: $n=185$, $\bar{X}=165.9$ cm, and $\sigma=8.7$ cm is assumed **known** (as in the estimation lecture).
+Data: $n=20$, $\bar{X}=170$ cm, and $\sigma=8$ cm is assumed **known**: the same student-heights example as in the estimation lecture. There we found the 95% interval $[166.49,\ 173.51]$.
 :::
 
 ## Step 1: Formulate hypotheses
@@ -162,13 +162,13 @@ $z$ counts how many standard errors the observed $\bar{X}$ is from the hypothesi
 ## Test statistic: our data
 
 ::: {.box .key}
-$$z=\frac{165.9-167}{8.7/\sqrt{185}}=\frac{-1.1}{0.640}\approx-1.72$$
+$$z=\frac{170-167}{8/\sqrt{20}}=\frac{3}{1.789}\approx1.68$$
 :::
 
 . . .
 
 ::: {.box}
-Our sample mean is about **1.7 standard errors below** the benchmark. Is that far enough to doubt $H_0$?
+Our sample mean is about **1.7 standard errors above** the benchmark. Is that far enough to doubt $H_0$?
 :::
 
 ## Step 3: The p-value
@@ -200,13 +200,13 @@ The **p-value** is the probability, computed assuming $H_0$ is true, that the te
 ## The p-value: our data
 
 ::: {.box .key}
-$$p=2\,\Phi(-1.72)\approx0.085$$
+$$p=2\,\Phi(-1.68)\approx0.093$$
 :::
 
 . . .
 
 ::: {.box}
-If the true mean height were $167$ cm, we would get a sample mean at least as far from $167$ as $165.9$ (in either direction) only about **8.5%** of the time.
+If the true mean height were $167$ cm, we would get a sample mean at least as far from $167$ as $170$ (in either direction) only about **9%** of the time. This is the probability we saw in the estimation lecture for the candidate $\mu=167$.
 :::
 
 ## Step 4: Choose $\alpha$ and decide
@@ -240,13 +240,13 @@ The larger $|z|$, the smaller the p-value, and the more inconsistent the data is
 ## Decision: our data
 
 ::: {.box .good}
-$p\approx0.085$. At $\alpha=0.05$ (and, of course, at $\alpha=0.01$) we **fail to reject** $H_0$.
+$p\approx0.093$. At $\alpha=0.05$ (and, of course, at $\alpha=0.01$) we **fail to reject** $H_0$.
 :::
 
 . . .
 
 ::: {.box .warn}
-At the more lenient $\alpha=0.10$ we **would reject** $H_0$. The verdict depends on the threshold, so choose $\alpha$ first.
+At the more lenient $\alpha=0.10$ we **would reject** $H_0$ ($0.093<0.10$). The verdict depends on the threshold, so choose $\alpha$ first.
 :::
 
 . . .
@@ -294,7 +294,7 @@ Instead of computing the p-value, compare $|z|$ with a **critical value** (from 
 
 ::: {.box .good}
 <span class="tag">Our data</span>
-$|z|=1.72<1.96$, so we **fail to reject** at $\alpha=0.05$ (same as $p=0.085>0.05$). But $1.72>1.645$, so we **reject** at $\alpha=0.10$ (same as before).
+$|z|=1.68<1.96$, so we **fail to reject** at $\alpha=0.05$ (same as $p=0.093>0.05$). But $1.68>1.645$, so we **reject** at $\alpha=0.10$ (same as before).
 :::
 
 ## Confidence interval and test
@@ -308,15 +308,15 @@ A confidence interval and a **two-sided** test are two sides of the same coin. M
 <div class="readout" id="du-out"></div>
 
 <div class="ctl" style="justify-content:center">
-  <label>Hypothesized $\mu_0$: <input type="range" id="du-mu" min="163" max="169" step="0.01" value="167" style="width:420px"> <b id="du-mu-val">167.00</b></label>
+  <label>Hypothesized $\mu_0$: <input type="range" id="du-mu" min="161" max="179" step="0.01" value="167" style="width:420px"> <b id="du-mu-val">167.00</b></label>
 </div>
 
 <script>
 (function () {
-  var SE = 8.7 / Math.sqrt(185), XO = 165.9, L = 50, R = 880, XA = 161, XB = 171;
-  var TOP = 10, SC = 215 / 0.75;
+  var SE = 8 / Math.sqrt(20), XO = 170, L = 50, R = 880, XA = 155, XB = 181;
+  var TOP = 10, YM = 0.26, SC = 215 / YM;
   function px(x) { return L + (x - XA) / (XB - XA) * (R - L); }
-  function py(y) { return TOP + (0.75 - y) * SC; }
+  function py(y) { return TOP + (YM - y) * SC; }
   function pdf(x, m) { return Math.exp(-0.5 * Math.pow((x - m) / SE, 2)) / (SE * Math.sqrt(2 * Math.PI)); }
   function erf(x) { var s = x < 0 ? -1 : 1; x = Math.abs(x); var t = 1 / (1 + 0.3275911 * x);
     return s * (1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x)); }
@@ -337,9 +337,9 @@ A confidence interval and a **two-sided** test are two sides of the same coin. M
     for (var x = lo; x <= hi + 1e-9; x += 0.01) d += (d ? " L" : "M") + px(x).toFixed(1) + "," + py(pdf(x, m)).toFixed(1);
     g += '<path d="' + d + '" fill="none" stroke="#444" stroke-width="2.5"/>';
     g += '<line x1="' + L + '" y1="' + py(0) + '" x2="' + R + '" y2="' + py(0) + '" stroke="#52606d" stroke-width="2"/>';
-    for (var t = 162; t <= 170; t += 2) g += '<text x="' + px(t) + '" y="' + (py(0) + 20) + '" text-anchor="middle" font-size="16" fill="#52606d">' + t + '</text>';
+    for (var t = 156; t <= 180; t += 4) g += '<text x="' + px(t) + '" y="' + (py(0) + 20) + '" text-anchor="middle" font-size="16" fill="#52606d">' + t + '</text>';
     g += '<line x1="' + px(XO) + '" y1="' + TOP + '" x2="' + px(XO) + '" y2="' + py(0) + '" stroke="#1f2933" stroke-width="3"/>' +
-         '<text x="' + (px(XO) + (m < XO ? 8 : -8)) + '" y="' + (TOP + 14) + '" text-anchor="' + (m < XO ? "start" : "end") + '" font-size="17" font-weight="700" fill="#1f2933">X̄ = 165.9</text>';
+         '<text x="' + (px(XO) + (m < XO ? 8 : -8)) + '" y="' + (TOP + 14) + '" text-anchor="' + (m < XO ? "start" : "end") + '" font-size="17" font-weight="700" fill="#1f2933">X̄ = 170</text>';
     g += '<line x1="' + px(m) + '" y1="' + TOP + '" x2="' + px(m) + '" y2="' + py(0) + '" stroke="#2b6cb0" stroke-width="2.5" stroke-dasharray="6 5"/>' +
          '<text x="' + (px(m) + (m < XO ? -8 : 8)) + '" y="' + (TOP + 14) + '" text-anchor="' + (m < XO ? "end" : "start") + '" font-size="17" font-weight="700" fill="#2b6cb0">μ₀ = ' + m.toFixed(2) + '</text>';
     [[1.645, "#440154", "90% CI", 262], [1.96, "#21918c", "95% CI", 274], [2.576, "#fde725", "99% CI", 286]].forEach(function (c) {
@@ -374,7 +374,7 @@ The confidence interval is the set of **all** values $\mu_0$ that the test would
 
 ::: {.box .good}
 <span class="tag">Our data</span>
-$167$ is inside the 95% interval $[164.65,\ 167.15]$ (fail to reject at 5%) but outside the 90% interval $[164.85,\ 166.95]$ (reject at 10%).
+$167$ is inside the 95% interval $[166.49,\ 173.51]$ (fail to reject at 5%) but outside the 90% interval $[167.06,\ 172.94]$ (reject at 10%). These are the intervals from the estimation lecture.
 :::
 
 # One-sided tests {.section-slide}
@@ -408,34 +408,34 @@ A one-sided test is more **powerful** in the hypothesized direction: its critica
 
 ::: {.box}
 <span class="tag">Claim</span>
-The average height is **less than $167$ cm**. Data: $n=185$, $\bar{X}=165.9$, $\sigma=8.7$, $SE\approx0.640$.
+The average height is **more than $167$ cm**. Data: $n=20$, $\bar{X}=170$, $\sigma=8$, $SE\approx1.789$.
 :::
 
 . . .
 
 ::: {.box .key}
-$$H_0:\ \mu\geq167 \qquad H_1:\ \mu<167$$
+$$H_0:\ \mu\leq167 \qquad H_1:\ \mu>167$$
 :::
 
 . . .
 
 ::: {.box .good}
-If we reject $\mu=167$ in favour of $\mu<167$, we also reject any $\mu_0>167$. So we may write $H_0$ with an equality **without loss of generality**:
-$$H_0:\ \mu=167 \qquad H_1:\ \mu<167$$
+If we reject $\mu=167$ in favour of $\mu>167$, we also reject any $\mu_0<167$. So we may write $H_0$ with an equality **without loss of generality**:
+$$H_0:\ \mu=167 \qquad H_1:\ \mu>167$$
 :::
 
 ## One-sided example: the test
 
 ::: {.box}
-$$z=\frac{165.9-167}{0.640}\approx-1.72$$
+$$z=\frac{170-167}{1.789}\approx1.68$$
 :::
 
 . . .
 
-| At $\alpha=0.05$ | One-sided (lower) | Two-sided |
+| At $\alpha=0.05$ | One-sided (upper) | Two-sided |
 |:--|:-:|:-:|
-| **Critical value** | $-1.645$ | $\pm1.96$ |
-| **P-value** | $0.043$ | $0.085$ |
+| **Critical value** | $1.645$ | $\pm1.96$ |
+| **P-value** | $0.047$ | $0.093$ |
 | **Verdict** | **Reject $H_0$** | **Fail to reject $H_0$** |
 
 . . .
@@ -447,7 +447,7 @@ The one-sided test makes it **easier to reject** $H_0$ in the direction of $H_1$
 ## One-sided test: the picture
 
 ::: {.cap}
-Shaded: the probability of a result as low as $\bar{X}=165.9$ if the slider value were the true $\mu_0$, for $H_1:\mu<\mu_0$.
+Shaded: the probability of a result as high as $\bar{X}=170$ if the slider value were the true $\mu_0$, for $H_1:\mu>\mu_0$.
 :::
 
 <svg id="os-svg" viewBox="0 0 900 300" class="famplot"></svg>
@@ -455,41 +455,41 @@ Shaded: the probability of a result as low as $\bar{X}=165.9$ if the slider valu
 <div class="readout" id="os-out"></div>
 
 <div class="ctl" style="justify-content:center">
-  <label>Hypothesized $\mu_0$: <input type="range" id="os-mu" min="164" max="168.5" step="0.01" value="167" style="width:420px"> <b id="os-mu-val">167.00</b></label>
+  <label>Hypothesized $\mu_0$: <input type="range" id="os-mu" min="161" max="179" step="0.01" value="167" style="width:420px"> <b id="os-mu-val">167.00</b></label>
 </div>
 
 <script>
 (function () {
-  var SE = 8.7 / Math.sqrt(185), XO = 165.9, L = 50, R = 880, XA = 161, XB = 171;
-  var TOP = 10, SC = 215 / 0.75;
+  var SE = 8 / Math.sqrt(20), XO = 170, L = 50, R = 880, XA = 155, XB = 181;
+  var TOP = 10, YM = 0.26, SC = 215 / YM;
   function px(x) { return L + (x - XA) / (XB - XA) * (R - L); }
-  function py(y) { return TOP + (0.75 - y) * SC; }
+  function py(y) { return TOP + (YM - y) * SC; }
   function pdf(x, m) { return Math.exp(-0.5 * Math.pow((x - m) / SE, 2)) / (SE * Math.sqrt(2 * Math.PI)); }
   function erf(x) { var s = x < 0 ? -1 : 1; x = Math.abs(x); var t = 1 / (1 + 0.3275911 * x);
     return s * (1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x)); }
   function Phi(z) { return 0.5 * (1 + erf(z / Math.SQRT2)); }
   var svg = document.getElementById("os-svg"), sl = document.getElementById("os-mu"), lab = document.getElementById("os-mu-val"), out = document.getElementById("os-out");
   function draw() {
-    var m = +sl.value, p = Phi((XO - m) / SE), g = "";
+    var m = +sl.value, p = 1 - Phi((XO - m) / SE), g = "";
     lab.textContent = m.toFixed(2);
     var lo = m - 4 * SE, hi = m + 4 * SE;
-    if (XO > lo) {
-      var d0 = "M" + px(lo).toFixed(1) + "," + py(0).toFixed(1);
-      for (var x = lo; x <= Math.min(XO, hi) + 1e-9; x += 0.01) d0 += " L" + px(x).toFixed(1) + "," + py(pdf(x, m)).toFixed(1);
-      g += '<path d="' + d0 + ' L' + px(Math.min(XO, hi)).toFixed(1) + ',' + py(0).toFixed(1) + ' Z" fill="#c53030" fill-opacity="0.4"/>';
+    if (XO < hi) {
+      var d0 = "M" + px(Math.max(XO, lo)).toFixed(1) + "," + py(0).toFixed(1);
+      for (var x = Math.max(XO, lo); x <= hi + 1e-9; x += 0.01) d0 += " L" + px(x).toFixed(1) + "," + py(pdf(x, m)).toFixed(1);
+      g += '<path d="' + d0 + ' L' + px(hi).toFixed(1) + ',' + py(0).toFixed(1) + ' Z" fill="#c53030" fill-opacity="0.4"/>';
     }
     var d = "";
     for (var x2 = lo; x2 <= hi + 1e-9; x2 += 0.01) d += (d ? " L" : "M") + px(x2).toFixed(1) + "," + py(pdf(x2, m)).toFixed(1);
     g += '<path d="' + d + '" fill="none" stroke="#444" stroke-width="2.5"/>';
     g += '<line x1="' + L + '" y1="' + py(0) + '" x2="' + R + '" y2="' + py(0) + '" stroke="#52606d" stroke-width="2"/>';
-    for (var t = 162; t <= 170; t += 2) g += '<text x="' + px(t) + '" y="' + (py(0) + 20) + '" text-anchor="middle" font-size="16" fill="#52606d">' + t + '</text>';
+    for (var t = 156; t <= 180; t += 4) g += '<text x="' + px(t) + '" y="' + (py(0) + 20) + '" text-anchor="middle" font-size="16" fill="#52606d">' + t + '</text>';
     g += '<line x1="' + px(XO) + '" y1="' + TOP + '" x2="' + px(XO) + '" y2="' + py(0) + '" stroke="#1f2933" stroke-width="3"/>' +
-         '<text x="' + (px(XO) + (m < XO ? 8 : -8)) + '" y="' + (TOP + 14) + '" text-anchor="' + (m < XO ? "start" : "end") + '" font-size="17" font-weight="700" fill="#1f2933">X̄ = 165.9</text>';
+         '<text x="' + (px(XO) + (m < XO ? 8 : -8)) + '" y="' + (TOP + 14) + '" text-anchor="' + (m < XO ? "start" : "end") + '" font-size="17" font-weight="700" fill="#1f2933">X̄ = 170</text>';
     g += '<line x1="' + px(m) + '" y1="' + TOP + '" x2="' + px(m) + '" y2="' + py(0) + '" stroke="#2b6cb0" stroke-width="2.5" stroke-dasharray="6 5"/>' +
          '<text x="' + (px(m) + (m < XO ? -8 : 8)) + '" y="' + (TOP + 14) + '" text-anchor="' + (m < XO ? "end" : "start") + '" font-size="17" font-weight="700" fill="#2b6cb0">μ₀ = ' + m.toFixed(2) + '</text>';
-    // one-sided bounds: mu0 is rejected at level a when it lies above XO + z_a * SE
+    // one-sided bounds (H1: mu > mu0): mu0 is rejected at level a when it lies below XO - z_a * SE
     [[1.282, "#440154", 262], [1.645, "#21918c", 274], [2.326, "#fde725", 286]].forEach(function (c) {
-      g += '<line x1="' + L + '" y1="' + c[2] + '" x2="' + px(XO + c[0] * SE) + '" y2="' + c[2] + '" stroke="' + c[1] + '" stroke-width="7"/>';
+      g += '<line x1="' + px(XO - c[0] * SE) + '" y1="' + c[2] + '" x2="' + R + '" y2="' + c[2] + '" stroke="' + c[1] + '" stroke-width="7"/>';
     });
     [["#440154", "α = 0.10", 24], ["#21918c", "α = 0.05", 46], ["#fde725", "α = 0.01", 68]].forEach(function (c) {
       g += '<circle cx="790" cy="' + c[2] + '" r="6" fill="' + c[0] + '"/><text x="805" y="' + (c[2] + 6) + '" font-size="17" fill="#1f2933">' + c[1] + '</text>';
@@ -626,14 +626,14 @@ Self-study: learn how to use the $t$-table at the end of the book.
 
 ::: {.box .key}
 <span class="tag">Same question, $\sigma$ unknown</span>
-Is the average height of girls equal to $167$ cm? Data: $n=185$, $\bar{X}=165.9$, and now only the sample SD is available: $s=8.7$.
+Is the average height of students equal to $167$ cm? Data: $n=20$, $\bar{X}=170$, and now $\sigma$ is unknown: suppose the sample SD is $s=8$.
 $$H_0:\ \mu=167 \qquad H_1:\ \mu≠167$$
 :::
 
 . . .
 
 ::: {.box}
-$$t=\frac{165.9-167}{8.7/\sqrt{185}}\approx-1.72,\qquad df=n-1=184$$
+$$t=\frac{170-167}{8/\sqrt{20}}\approx1.68,\qquad df=n-1=19$$
 :::
 
 . . .
@@ -641,11 +641,11 @@ $$t=\frac{165.9-167}{8.7/\sqrt{185}}\approx-1.72,\qquad df=n-1=184$$
 ::: {.cards}
 ::: {.box .c}
 <span class="tag">Critical value</span>
-$t_{0.025,\,184}\approx1.97$ (the table gives $1.98$ at $df=120$ and $1.96$ at $df=\infty$). $|t|<1.97$.
+$t_{0.025,\,19}\approx2.093$, larger than $z_{0.025}=1.96$. $|t|=1.68<2.093$.
 :::
 ::: {.box .c}
 <span class="tag">P-value</span>
-$p=2\,P(T_{184}>1.72)\approx0.087$, slightly **larger** than the $z$-test's $0.085$.
+$p=2\,P(T_{19}>1.68)\approx0.110$, **larger** than the $z$-test's $0.093$.
 :::
 :::
 
@@ -653,7 +653,7 @@ $p=2\,P(T_{184}>1.72)\approx0.087$, slightly **larger** than the $z$-test's $0.0
 
 ::: {.box .good}
 <span class="tag">Conclusion</span>
-At $\alpha=0.05$ we **fail to reject** $H_0$: there is not sufficient evidence that the mean height of girls differs from $167$ cm.
+At $\alpha=0.05$ we **fail to reject** $H_0$: there is not sufficient evidence that the mean height of students differs from $167$ cm. Note that at $\alpha=0.10$ the $z$-test rejected but the $t$-test does **not** ($0.110>0.10$): the cost of not knowing $\sigma$.
 :::
 
 ## The whole procedure on one page

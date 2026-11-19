@@ -1219,7 +1219,7 @@ margin-right: 0; }
 <tbody>
 <tr class="odd">
 <td style="text-align: left;"><strong>Heights</strong></td>
-<td style="text-align: left;">What is the average height of girls in this class?</td>
+<td style="text-align: left;">What is the average height of students in this class?</td>
 <td style="text-align: left;">Is it equal to <span class="math inline">167</span> cm?</td>
 </tr>
 <tr class="even">
@@ -1269,11 +1269,11 @@ margin-right: 0; }
 <section id="our-example" class="slide level2">
 <h2>Our example</h2>
 <div class="box key">
-<p><span class="tag">Question</span> Is the average height of girls taking this class equal to <span class="math inline">167</span> cm?</p>
+<p><span class="tag">Question</span> Is the average height of students taking this class equal to <span class="math inline">167</span> cm?</p>
 </div>
 <div class="fragment">
 <div class="box">
-<p>Data: <span class="math inline">n=185</span>, <span class="math inline">\bar{X}=165.9</span> cm, and <span class="math inline">\sigma=8.7</span> cm is assumed <strong>known</strong> (as in the estimation lecture).</p>
+<p>Data: <span class="math inline">n=20</span>, <span class="math inline">\bar{X}=170</span> cm, and <span class="math inline">\sigma=8</span> cm is assumed <strong>known</strong>: the same student-heights example as in the estimation lecture. There we found the 95% interval <span class="math inline">[166.49,\ 173.51]</span>.</p>
 </div>
 </div>
 </section>
@@ -1323,11 +1323,11 @@ margin-right: 0; }
 <section id="test-statistic-our-data" class="slide level2">
 <h2>Test statistic: our data</h2>
 <div class="box key">
-<p><span class="math display">z=\frac{165.9-167}{8.7/\sqrt{185}}=\frac{-1.1}{0.640}\approx-1.72</span></p>
+<p><span class="math display">z=\frac{170-167}{8/\sqrt{20}}=\frac{3}{1.789}\approx1.68</span></p>
 </div>
 <div class="fragment">
 <div class="box">
-<p>Our sample mean is about <strong>1.7 standard errors below</strong> the benchmark. Is that far enough to doubt <span class="math inline">H_0</span>?</p>
+<p>Our sample mean is about <strong>1.7 standard errors above</strong> the benchmark. Is that far enough to doubt <span class="math inline">H_0</span>?</p>
 </div>
 </div>
 </section>
@@ -1355,11 +1355,11 @@ margin-right: 0; }
 <section id="the-p-value-our-data" class="slide level2">
 <h2>The p-value: our data</h2>
 <div class="box key">
-<p><span class="math display">p=2\,\Phi(-1.72)\approx0.085</span></p>
+<p><span class="math display">p=2\,\Phi(-1.68)\approx0.093</span></p>
 </div>
 <div class="fragment">
 <div class="box">
-<p>If the true mean height were <span class="math inline">167</span> cm, we would get a sample mean at least as far from <span class="math inline">167</span> as <span class="math inline">165.9</span> (in either direction) only about <strong>8.5%</strong> of the time.</p>
+<p>If the true mean height were <span class="math inline">167</span> cm, we would get a sample mean at least as far from <span class="math inline">167</span> as <span class="math inline">170</span> (in either direction) only about <strong>9%</strong> of the time. This is the probability we saw in the estimation lecture for the candidate <span class="math inline">\mu=167</span>.</p>
 </div>
 </div>
 </section>
@@ -1430,11 +1430,11 @@ margin-right: 0; }
 <section id="decision-our-data" class="slide level2">
 <h2>Decision: our data</h2>
 <div class="box good">
-<p><span class="math inline">p\approx0.085</span>. At <span class="math inline">\alpha=0.05</span> (and, of course, at <span class="math inline">\alpha=0.01</span>) we <strong>fail to reject</strong> <span class="math inline">H_0</span>.</p>
+<p><span class="math inline">p\approx0.093</span>. At <span class="math inline">\alpha=0.05</span> (and, of course, at <span class="math inline">\alpha=0.01</span>) we <strong>fail to reject</strong> <span class="math inline">H_0</span>.</p>
 </div>
 <div class="fragment">
 <div class="box warn">
-<p>At the more lenient <span class="math inline">\alpha=0.10</span> we <strong>would reject</strong> <span class="math inline">H_0</span>. The verdict depends on the threshold, so choose <span class="math inline">\alpha</span> first.</p>
+<p>At the more lenient <span class="math inline">\alpha=0.10</span> we <strong>would reject</strong> <span class="math inline">H_0</span> (<span class="math inline">0.093&lt;0.10</span>). The verdict depends on the threshold, so choose <span class="math inline">\alpha</span> first.</p>
 </div>
 </div>
 <div class="fragment">
@@ -1499,7 +1499,7 @@ margin-right: 0; }
 </div>
 <div class="fragment">
 <div class="box good">
-<p><span class="tag">Our data</span> <span class="math inline">|z|=1.72&lt;1.96</span>, so we <strong>fail to reject</strong> at <span class="math inline">\alpha=0.05</span> (same as <span class="math inline">p=0.085&gt;0.05</span>). But <span class="math inline">1.72&gt;1.645</span>, so we <strong>reject</strong> at <span class="math inline">\alpha=0.10</span> (same as before).</p>
+<p><span class="tag">Our data</span> <span class="math inline">|z|=1.68&lt;1.96</span>, so we <strong>fail to reject</strong> at <span class="math inline">\alpha=0.05</span> (same as <span class="math inline">p=0.093&gt;0.05</span>). But <span class="math inline">1.68&gt;1.645</span>, so we <strong>reject</strong> at <span class="math inline">\alpha=0.10</span> (same as before).</p>
 </div>
 </div>
 </section>
@@ -1514,14 +1514,14 @@ margin-right: 0; }
 
 </div>
 <div class="ctl" style="justify-content:center">
-<p><label>Hypothesized <span class="math inline">\mu_0</span>: <input type="range" id="du-mu" min="163" max="169" step="0.01" value="167" style="width:420px"> <b id="du-mu-val">167.00</b></label></p>
+<p><label>Hypothesized <span class="math inline">\mu_0</span>: <input type="range" id="du-mu" min="161" max="179" step="0.01" value="167" style="width:420px"> <b id="du-mu-val">167.00</b></label></p>
 </div>
 <script>
 (function () {
-  var SE = 8.7 / Math.sqrt(185), XO = 165.9, L = 50, R = 880, XA = 161, XB = 171;
-  var TOP = 10, SC = 215 / 0.75;
+  var SE = 8 / Math.sqrt(20), XO = 170, L = 50, R = 880, XA = 155, XB = 181;
+  var TOP = 10, YM = 0.26, SC = 215 / YM;
   function px(x) { return L + (x - XA) / (XB - XA) * (R - L); }
-  function py(y) { return TOP + (0.75 - y) * SC; }
+  function py(y) { return TOP + (YM - y) * SC; }
   function pdf(x, m) { return Math.exp(-0.5 * Math.pow((x - m) / SE, 2)) / (SE * Math.sqrt(2 * Math.PI)); }
   function erf(x) { var s = x < 0 ? -1 : 1; x = Math.abs(x); var t = 1 / (1 + 0.3275911 * x);
     return s * (1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x)); }
@@ -1542,9 +1542,9 @@ margin-right: 0; }
     for (var x = lo; x <= hi + 1e-9; x += 0.01) d += (d ? " L" : "M") + px(x).toFixed(1) + "," + py(pdf(x, m)).toFixed(1);
     g += '<path d="' + d + '" fill="none" stroke="#444" stroke-width="2.5"/>';
     g += '<line x1="' + L + '" y1="' + py(0) + '" x2="' + R + '" y2="' + py(0) + '" stroke="#52606d" stroke-width="2"/>';
-    for (var t = 162; t <= 170; t += 2) g += '<text x="' + px(t) + '" y="' + (py(0) + 20) + '" text-anchor="middle" font-size="16" fill="#52606d">' + t + '</text>';
+    for (var t = 156; t <= 180; t += 4) g += '<text x="' + px(t) + '" y="' + (py(0) + 20) + '" text-anchor="middle" font-size="16" fill="#52606d">' + t + '</text>';
     g += '<line x1="' + px(XO) + '" y1="' + TOP + '" x2="' + px(XO) + '" y2="' + py(0) + '" stroke="#1f2933" stroke-width="3"/>' +
-         '<text x="' + (px(XO) + (m < XO ? 8 : -8)) + '" y="' + (TOP + 14) + '" text-anchor="' + (m < XO ? "start" : "end") + '" font-size="17" font-weight="700" fill="#1f2933">X̄ = 165.9</text>';
+         '<text x="' + (px(XO) + (m < XO ? 8 : -8)) + '" y="' + (TOP + 14) + '" text-anchor="' + (m < XO ? "start" : "end") + '" font-size="17" font-weight="700" fill="#1f2933">X̄ = 170</text>';
     g += '<line x1="' + px(m) + '" y1="' + TOP + '" x2="' + px(m) + '" y2="' + py(0) + '" stroke="#2b6cb0" stroke-width="2.5" stroke-dasharray="6 5"/>' +
          '<text x="' + (px(m) + (m < XO ? -8 : 8)) + '" y="' + (TOP + 14) + '" text-anchor="' + (m < XO ? "end" : "start") + '" font-size="17" font-weight="700" fill="#2b6cb0">μ₀ = ' + m.toFixed(2) + '</text>';
     [[1.645, "#440154", "90% CI", 262], [1.96, "#21918c", "95% CI", 274], [2.576, "#fde725", "99% CI", 286]].forEach(function (c) {
@@ -1575,7 +1575,7 @@ margin-right: 0; }
 </div>
 <div class="fragment">
 <div class="box good">
-<p><span class="tag">Our data</span> <span class="math inline">167</span> is inside the 95% interval <span class="math inline">[164.65,\ 167.15]</span> (fail to reject at 5%) but outside the 90% interval <span class="math inline">[164.85,\ 166.95]</span> (reject at 10%).</p>
+<p><span class="tag">Our data</span> <span class="math inline">167</span> is inside the 95% interval <span class="math inline">[166.49,\ 173.51]</span> (fail to reject at 5%) but outside the 90% interval <span class="math inline">[167.06,\ 172.94]</span> (reject at 10%). These are the intervals from the estimation lecture.</p>
 </div>
 </div>
 </section></section>
@@ -1637,43 +1637,43 @@ margin-right: 0; }
 <section id="one-sided-example-hypotheses" class="slide level2">
 <h2>One-sided example: hypotheses</h2>
 <div class="box">
-<p><span class="tag">Claim</span> The average height is <strong>less than <span class="math inline">167</span> cm</strong>. Data: <span class="math inline">n=185</span>, <span class="math inline">\bar{X}=165.9</span>, <span class="math inline">\sigma=8.7</span>, <span class="math inline">SE\approx0.640</span>.</p>
+<p><span class="tag">Claim</span> The average height is <strong>more than <span class="math inline">167</span> cm</strong>. Data: <span class="math inline">n=20</span>, <span class="math inline">\bar{X}=170</span>, <span class="math inline">\sigma=8</span>, <span class="math inline">SE\approx1.789</span>.</p>
 </div>
 <div class="fragment">
 <div class="box key">
-<p><span class="math display">H_0:\ \mu\geq167 \qquad H_1:\ \mu&lt;167</span></p>
+<p><span class="math display">H_0:\ \mu\leq167 \qquad H_1:\ \mu&gt;167</span></p>
 </div>
 </div>
 <div class="fragment">
 <div class="box good">
-<p>If we reject <span class="math inline">\mu=167</span> in favour of <span class="math inline">\mu&lt;167</span>, we also reject any <span class="math inline">\mu_0&gt;167</span>. So we may write <span class="math inline">H_0</span> with an equality <strong>without loss of generality</strong>: <span class="math display">H_0:\ \mu=167 \qquad H_1:\ \mu&lt;167</span></p>
+<p>If we reject <span class="math inline">\mu=167</span> in favour of <span class="math inline">\mu&gt;167</span>, we also reject any <span class="math inline">\mu_0&lt;167</span>. So we may write <span class="math inline">H_0</span> with an equality <strong>without loss of generality</strong>: <span class="math display">H_0:\ \mu=167 \qquad H_1:\ \mu&gt;167</span></p>
 </div>
 </div>
 </section>
 <section id="one-sided-example-the-test" class="slide level2">
 <h2>One-sided example: the test</h2>
 <div class="box">
-<p><span class="math display">z=\frac{165.9-167}{0.640}\approx-1.72</span></p>
+<p><span class="math display">z=\frac{170-167}{1.789}\approx1.68</span></p>
 </div>
 <div class="fragment">
 <table class="caption-top">
 <thead>
 <tr class="header">
 <th style="text-align: left;">At <span class="math inline">\alpha=0.05</span></th>
-<th style="text-align: center;">One-sided (lower)</th>
+<th style="text-align: center;">One-sided (upper)</th>
 <th style="text-align: center;">Two-sided</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;"><strong>Critical value</strong></td>
-<td style="text-align: center;"><span class="math inline">-1.645</span></td>
+<td style="text-align: center;"><span class="math inline">1.645</span></td>
 <td style="text-align: center;"><span class="math inline">\pm1.96</span></td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"><strong>P-value</strong></td>
-<td style="text-align: center;"><span class="math inline">0.043</span></td>
-<td style="text-align: center;"><span class="math inline">0.085</span></td>
+<td style="text-align: center;"><span class="math inline">0.047</span></td>
+<td style="text-align: center;"><span class="math inline">0.093</span></td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;"><strong>Verdict</strong></td>
@@ -1692,7 +1692,7 @@ margin-right: 0; }
 <section id="one-sided-test-the-picture" class="slide level2">
 <h2>One-sided test: the picture</h2>
 <div class="cap">
-<p>Shaded: the probability of a result as low as <span class="math inline">\bar{X}=165.9</span> if the slider value were the true <span class="math inline">\mu_0</span>, for <span class="math inline">H_1:\mu&lt;\mu_0</span>.</p>
+<p>Shaded: the probability of a result as high as <span class="math inline">\bar{X}=170</span> if the slider value were the true <span class="math inline">\mu_0</span>, for <span class="math inline">H_1:\mu&gt;\mu_0</span>.</p>
 </div>
 <svg id="os-svg" viewbox="0 0 900 300" class="famplot">
 </svg>
@@ -1700,40 +1700,40 @@ margin-right: 0; }
 
 </div>
 <div class="ctl" style="justify-content:center">
-<p><label>Hypothesized <span class="math inline">\mu_0</span>: <input type="range" id="os-mu" min="164" max="168.5" step="0.01" value="167" style="width:420px"> <b id="os-mu-val">167.00</b></label></p>
+<p><label>Hypothesized <span class="math inline">\mu_0</span>: <input type="range" id="os-mu" min="161" max="179" step="0.01" value="167" style="width:420px"> <b id="os-mu-val">167.00</b></label></p>
 </div>
 <script>
 (function () {
-  var SE = 8.7 / Math.sqrt(185), XO = 165.9, L = 50, R = 880, XA = 161, XB = 171;
-  var TOP = 10, SC = 215 / 0.75;
+  var SE = 8 / Math.sqrt(20), XO = 170, L = 50, R = 880, XA = 155, XB = 181;
+  var TOP = 10, YM = 0.26, SC = 215 / YM;
   function px(x) { return L + (x - XA) / (XB - XA) * (R - L); }
-  function py(y) { return TOP + (0.75 - y) * SC; }
+  function py(y) { return TOP + (YM - y) * SC; }
   function pdf(x, m) { return Math.exp(-0.5 * Math.pow((x - m) / SE, 2)) / (SE * Math.sqrt(2 * Math.PI)); }
   function erf(x) { var s = x < 0 ? -1 : 1; x = Math.abs(x); var t = 1 / (1 + 0.3275911 * x);
     return s * (1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x)); }
   function Phi(z) { return 0.5 * (1 + erf(z / Math.SQRT2)); }
   var svg = document.getElementById("os-svg"), sl = document.getElementById("os-mu"), lab = document.getElementById("os-mu-val"), out = document.getElementById("os-out");
   function draw() {
-    var m = +sl.value, p = Phi((XO - m) / SE), g = "";
+    var m = +sl.value, p = 1 - Phi((XO - m) / SE), g = "";
     lab.textContent = m.toFixed(2);
     var lo = m - 4 * SE, hi = m + 4 * SE;
-    if (XO > lo) {
-      var d0 = "M" + px(lo).toFixed(1) + "," + py(0).toFixed(1);
-      for (var x = lo; x <= Math.min(XO, hi) + 1e-9; x += 0.01) d0 += " L" + px(x).toFixed(1) + "," + py(pdf(x, m)).toFixed(1);
-      g += '<path d="' + d0 + ' L' + px(Math.min(XO, hi)).toFixed(1) + ',' + py(0).toFixed(1) + ' Z" fill="#c53030" fill-opacity="0.4"/>';
+    if (XO < hi) {
+      var d0 = "M" + px(Math.max(XO, lo)).toFixed(1) + "," + py(0).toFixed(1);
+      for (var x = Math.max(XO, lo); x <= hi + 1e-9; x += 0.01) d0 += " L" + px(x).toFixed(1) + "," + py(pdf(x, m)).toFixed(1);
+      g += '<path d="' + d0 + ' L' + px(hi).toFixed(1) + ',' + py(0).toFixed(1) + ' Z" fill="#c53030" fill-opacity="0.4"/>';
     }
     var d = "";
     for (var x2 = lo; x2 <= hi + 1e-9; x2 += 0.01) d += (d ? " L" : "M") + px(x2).toFixed(1) + "," + py(pdf(x2, m)).toFixed(1);
     g += '<path d="' + d + '" fill="none" stroke="#444" stroke-width="2.5"/>';
     g += '<line x1="' + L + '" y1="' + py(0) + '" x2="' + R + '" y2="' + py(0) + '" stroke="#52606d" stroke-width="2"/>';
-    for (var t = 162; t <= 170; t += 2) g += '<text x="' + px(t) + '" y="' + (py(0) + 20) + '" text-anchor="middle" font-size="16" fill="#52606d">' + t + '</text>';
+    for (var t = 156; t <= 180; t += 4) g += '<text x="' + px(t) + '" y="' + (py(0) + 20) + '" text-anchor="middle" font-size="16" fill="#52606d">' + t + '</text>';
     g += '<line x1="' + px(XO) + '" y1="' + TOP + '" x2="' + px(XO) + '" y2="' + py(0) + '" stroke="#1f2933" stroke-width="3"/>' +
-         '<text x="' + (px(XO) + (m < XO ? 8 : -8)) + '" y="' + (TOP + 14) + '" text-anchor="' + (m < XO ? "start" : "end") + '" font-size="17" font-weight="700" fill="#1f2933">X̄ = 165.9</text>';
+         '<text x="' + (px(XO) + (m < XO ? 8 : -8)) + '" y="' + (TOP + 14) + '" text-anchor="' + (m < XO ? "start" : "end") + '" font-size="17" font-weight="700" fill="#1f2933">X̄ = 170</text>';
     g += '<line x1="' + px(m) + '" y1="' + TOP + '" x2="' + px(m) + '" y2="' + py(0) + '" stroke="#2b6cb0" stroke-width="2.5" stroke-dasharray="6 5"/>' +
          '<text x="' + (px(m) + (m < XO ? -8 : 8)) + '" y="' + (TOP + 14) + '" text-anchor="' + (m < XO ? "end" : "start") + '" font-size="17" font-weight="700" fill="#2b6cb0">μ₀ = ' + m.toFixed(2) + '</text>';
-    // one-sided bounds: mu0 is rejected at level a when it lies above XO + z_a * SE
+    // one-sided bounds (H1: mu > mu0): mu0 is rejected at level a when it lies below XO - z_a * SE
     [[1.282, "#440154", 262], [1.645, "#21918c", 274], [2.326, "#fde725", 286]].forEach(function (c) {
-      g += '<line x1="' + L + '" y1="' + c[2] + '" x2="' + px(XO + c[0] * SE) + '" y2="' + c[2] + '" stroke="' + c[1] + '" stroke-width="7"/>';
+      g += '<line x1="' + px(XO - c[0] * SE) + '" y1="' + c[2] + '" x2="' + R + '" y2="' + c[2] + '" stroke="' + c[1] + '" stroke-width="7"/>';
     });
     [["#440154", "α = 0.10", 24], ["#21918c", "α = 0.05", 46], ["#fde725", "α = 0.01", 68]].forEach(function (c) {
       g += '<circle cx="790" cy="' + c[2] + '" r="6" fill="' + c[0] + '"/><text x="805" y="' + (c[2] + 6) + '" font-size="17" fill="#1f2933">' + c[1] + '</text>';
@@ -1887,26 +1887,26 @@ margin-right: 0; }
 <section id="a-worked-t-test" class="slide level2">
 <h2>A worked t-test</h2>
 <div class="box key">
-<p><span class="tag">Same question, <span class="math inline">\sigma</span> unknown</span> Is the average height of girls equal to <span class="math inline">167</span> cm? Data: <span class="math inline">n=185</span>, <span class="math inline">\bar{X}=165.9</span>, and now only the sample SD is available: <span class="math inline">s=8.7</span>. <span class="math display">H_0:\ \mu=167 \qquad H_1:\ \mu≠167</span></p>
+<p><span class="tag">Same question, <span class="math inline">\sigma</span> unknown</span> Is the average height of students equal to <span class="math inline">167</span> cm? Data: <span class="math inline">n=20</span>, <span class="math inline">\bar{X}=170</span>, and now <span class="math inline">\sigma</span> is unknown: suppose the sample SD is <span class="math inline">s=8</span>. <span class="math display">H_0:\ \mu=167 \qquad H_1:\ \mu≠167</span></p>
 </div>
 <div class="fragment">
 <div class="box">
-<p><span class="math display">t=\frac{165.9-167}{8.7/\sqrt{185}}\approx-1.72,\qquad df=n-1=184</span></p>
+<p><span class="math display">t=\frac{170-167}{8/\sqrt{20}}\approx1.68,\qquad df=n-1=19</span></p>
 </div>
 </div>
 <div class="fragment">
 <div class="cards">
 <div class="box c">
-<p><span class="tag">Critical value</span> <span class="math inline">t_{0.025,\,184}\approx1.97</span> (the table gives <span class="math inline">1.98</span> at <span class="math inline">df=120</span> and <span class="math inline">1.96</span> at <span class="math inline">df=\infty</span>). <span class="math inline">|t|&lt;1.97</span>.</p>
+<p><span class="tag">Critical value</span> <span class="math inline">t_{0.025,\,19}\approx2.093</span>, larger than <span class="math inline">z_{0.025}=1.96</span>. <span class="math inline">|t|=1.68&lt;2.093</span>.</p>
 </div>
 <div class="box c">
-<p><span class="tag">P-value</span> <span class="math inline">p=2\,P(T_{184}&gt;1.72)\approx0.087</span>, slightly <strong>larger</strong> than the <span class="math inline">z</span>-test’s <span class="math inline">0.085</span>.</p>
+<p><span class="tag">P-value</span> <span class="math inline">p=2\,P(T_{19}&gt;1.68)\approx0.110</span>, <strong>larger</strong> than the <span class="math inline">z</span>-test’s <span class="math inline">0.093</span>.</p>
 </div>
 </div>
 </div>
 <div class="fragment">
 <div class="box good">
-<p><span class="tag">Conclusion</span> At <span class="math inline">\alpha=0.05</span> we <strong>fail to reject</strong> <span class="math inline">H_0</span>: there is not sufficient evidence that the mean height of girls differs from <span class="math inline">167</span> cm.</p>
+<p><span class="tag">Conclusion</span> At <span class="math inline">\alpha=0.05</span> we <strong>fail to reject</strong> <span class="math inline">H_0</span>: there is not sufficient evidence that the mean height of students differs from <span class="math inline">167</span> cm. Note that at <span class="math inline">\alpha=0.10</span> the <span class="math inline">z</span>-test rejected but the <span class="math inline">t</span>-test does <strong>not</strong> (<span class="math inline">0.110&gt;0.10</span>): the cost of not knowing <span class="math inline">\sigma</span>.</p>
 </div>
 </div>
 </section>

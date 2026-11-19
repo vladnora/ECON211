@@ -1,0 +1,98 @@
+{
+ "name": "blockN_slides",
+ "title": "Final Prep: Sampling distributions",
+ "subtitle": "ECON211 · Probability & Statistics · practice for Lecture 10 (Sampling distribution of the sample mean)",
+ "css": "final_prep.css",
+ "problem_files": [
+  "prob_normal.js",
+  "prob_xbar.js",
+  "prob_approx.js"
+ ],
+ "slides": [
+  [
+   "ztable",
+   "Reading the Φ table"
+  ],
+  [
+   "normprob",
+   "Probabilities for a Normal"
+  ],
+  [
+   "zfind",
+   "Finding z from a probability"
+  ],
+  [
+   "cutoff",
+   "Cutoffs for a Normal variable"
+  ],
+  [
+   "xbarexact",
+   "Exact distribution of X̄"
+  ],
+  [
+   "xbarmom",
+   "Mean and SD of X̄"
+  ],
+  [
+   "xbarn",
+   "How n changes the spread"
+  ],
+  [
+   "cltshape",
+   "Shape of X̄: reading histograms"
+  ],
+  [
+   "pxbar",
+   "Probability for a sample mean"
+  ],
+  [
+   "onevsmean",
+   "One observation vs. a sample mean"
+  ],
+  [
+   "nneeded",
+   "Sample size for a given margin"
+  ],
+  [
+   "phat",
+   "Approximation: a proportion"
+  ],
+  [
+   "binom",
+   "Approximation: a count"
+  ],
+  [
+   "total",
+   "Approximation: a total"
+  ]
+ ],
+ "toc": [
+  [
+   "ztable",
+   "1 · The Normal and its table",
+   "Standard Normal table, probabilities for any Normal, finding z from a probability, cutoffs."
+  ],
+  [
+   "xbarexact",
+   "2 · Sampling distribution of X̄",
+   "Exact pmf for small n, E(X̄) and SD(X̄), the effect of n, and the CLT shape."
+  ],
+  [
+   "pxbar",
+   "3 · Probabilities for a sample mean",
+   "Standardize X̄, compare one observation with a mean, choose n."
+  ],
+  [
+   "phat",
+   "4 · Normal approximation",
+   "Proportions, counts and totals."
+  ],
+  [
+   "quiz",
+   "5 · Timed quiz",
+   "Five random computational questions, a timer, answers at the end."
+  ]
+ ],
+ "howto": true,
+ "howto_extra": "\n::: {.box .warn}\n<span class=\"tag\">The Φ table</span>\nSlides that need the standard Normal table have a **Φ table** button that opens the table in a **new browser tab**, with a short note on how to read it. The table lists Φ(z) = P(Z ≤ z) for **z ≥ 0 only**, so for negative z or left tails you need **symmetry**.\n:::\n\n"
+}

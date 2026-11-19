@@ -24,7 +24,7 @@
   function fs(f) { var s = f.d === 1 ? String(Math.abs(f.n)) : Math.abs(f.n) + '/' + f.d; return (f.n < 0 ? MINUS : '') + s; }
   function terminating(d) { while (d % 2 === 0) d /= 2; while (d % 5 === 0) d /= 5; return d === 1; }
   function dc(f, k) { if (k === undefined) k = 3; var x = fv(f), m = Math.pow(10, k); var s = String(Math.round(Math.abs(x) * m) / m); return (x < 0 && Math.round(Math.abs(x) * m) !== 0 ? MINUS : '') + s; }
-  function fd(f, k) { if (f.d === 1) return fs(f); return fs(f) + (terminating(f.d) ? ' = ' : ' ≈ ') + dc(f, k || 3); }
+  function fd(f, k) { if (f.d === 1) return fs(f); var kk = k || 3, m = Math.pow(10, kk), x = fv(f); var exact = terminating(f.d) && Math.abs(x * m - Math.round(x * m)) < 1e-9; return fs(f) + (exact ? ' = ' : ' ≈ ') + dc(f, kk); }
   var neg = function (f) { return F(-f.n, f.d); };
   var absF = function (f) { return F(Math.abs(f.n), f.d); };
 

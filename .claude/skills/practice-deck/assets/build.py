@@ -63,7 +63,7 @@ format:
 
 ''' % (cfg['title'], cfg['subtitle'], cfg.get('css', 'final_prep.css'))
 
-out = head + (HOWTO if cfg.get('howto', True) else '')
+out = head + (HOWTO if cfg.get('howto', True) else '') + cfg.get('howto_extra', '')
 out += '## Contents {#contents}\n\n::: {.cards .stack .toc}\n'
 for i, t, d in cfg['toc']:
     out += '::: {.box}\n<a class="toc-hit" href="#/%s" title="Go to section"></a>\n<span class="tag">%s</span>\n%s\n:::\n' % (i, t, d)

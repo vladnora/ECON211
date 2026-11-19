@@ -15,6 +15,8 @@
         if (q.opts[q.ci] !== q.a) fail(id + v + ' a mismatch');
       } else fail(id + v + ' part ' + i + ' has no answer');
     });
+    if (o.meta && o.meta.chk) o.meta.chk.forEach(function (c) { if (Math.abs(c[0] - c[1]) > 0.0004) fail(id + v + ' table vs exact ' + c); });
+    if (o.meta && o.meta.chkInv) o.meta.chkInv.forEach(function (c) { if (Math.abs(c[0] - c[1]) > 0.00036) fail(id + v + ' inverse lookup off ' + c); });
     if (o.meta && o.meta.x && o.meta.b1 !== undefined) {
       var x = o.meta.x, y = o.meta.y, n = x.length, mx = x.reduce(function (a, b) { return a + b; }) / n, my = y.reduce(function (a, b) { return a + b; }) / n, a = 0, b = 0;
       x.forEach(function (t, i) { a += (t - mx) * (y[i] - my); b += (t - mx) * (t - mx); });

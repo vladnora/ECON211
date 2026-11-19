@@ -4,8 +4,26 @@
     {
       "name": "final-prep",
       "runtimeExecutable": "python3",
-      "runtimeArgs": ["-m", "http.server", "8765", "--directory", "Final Prep"],
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8765",
+        "--directory",
+        "Final Prep"
+      ],
       "port": 8765
+    },
+    {
+      "name": "final-prep-n",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8766",
+        "--directory",
+        "Final Prep"
+      ],
+      "port": 8766
     }
   ]
 }

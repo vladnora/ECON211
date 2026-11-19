@@ -7,6 +7,17 @@
   function el(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; }
   function stopKeys(node) { node.addEventListener('keydown', function (e) { e.stopPropagation(); }); }
 
+  /* ---------- optional table (def.table): opens in a new browser tab ---------- */
+  var TAB_CSS = 'body{font-family:"Source Sans Pro",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#1f2933;margin:18px auto;max-width:1000px;padding:0 16px}h1{font-size:22px;color:#1b3a5c;margin:0 0 10px}.cols{display:flex;gap:22px;align-items:flex-start}.info{flex:0 0 310px;font-size:15px;line-height:1.4}.info p{margin:0 0 10px}table.t{border-collapse:collapse;font-size:13.5px}table.t th{background:#1b3a5c;color:#fff;padding:2px 8px;position:sticky;top:0}table.t td{padding:2px 8px;border-bottom:1px solid #e1e8ef;text-align:center;font-variant-numeric:tabular-nums}table.t td:first-child{background:#eef4fb}@media(max-width:760px){.cols{flex-direction:column}.info{flex:none}}';
+  function tablePop() {
+    if (!H.tableHTML) return;
+    var html = '<!doctype html><html><head><meta charset="utf-8"><title>Standard Normal table</title><style>' + TAB_CSS + '</style></head><body><h1>Standard Normal table: Φ(z) = P(Z ≤ z)</h1><div class="cols"><div class="info">' + H.TABLE_INFO + '</div><div>' + H.tableHTML() + '</div></div></body></html>';
+    var url = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+    var w = window.open(url, '_blank');
+    if (!w) alert('Your browser blocked the new tab. Allow pop-ups for this page and press the button again.');
+  }
+  function tableBtn() { var b = el('button', 'act ghost', 'Φ table'); b.addEventListener('click', tablePop); return b; }
+
   /* ---------- practice slides ---------- */
   function partsHTML(parts) {
     return '<ol class="parts" type="a">' + parts.map(function (q) {
@@ -23,7 +34,7 @@
     var chips = el('div', 'chips');
     var body = el('div', 'pr-body'), sol = el('div', 'pr-sol'), btns = el('div', 'pr-btns');
     var bNew = el('button', 'act', 'New variant'), bSol = el('button', 'act ghost', 'Show solution');
-    btns.appendChild(bNew); btns.appendChild(bSol);
+    btns.appendChild(bNew); btns.appendChild(bSol); if (def.table) btns.appendChild(tableBtn());
     var scroll = el('div', 'pr-scroll'); scroll.appendChild(body); scroll.appendChild(sol);
     host.appendChild(top); host.appendChild(chips); host.appendChild(btns); host.appendChild(scroll);
     var cur = null;
@@ -54,7 +65,7 @@
     return /^-?\d*\.?\d+$/.test(s) ? parseFloat(s) : NaN;
   }
   function makeQuiz(k) {
-    var ids = H.sample(P.order, k), items = [];
+    var ids = H.sample(P.order.filter(function (i) { return P.G[i].quiz !== false; }), k), items = [];
     ids.forEach(function (id) {
       var def = P.G[id], v = H.ri(0, def.variants.length - 1), g = def.gen(v);
       var cand = g.parts.filter(function (q) { return (q.num || q.opts) && !q.noquiz; });
@@ -69,7 +80,7 @@
     var K = 5, timer = null, t0 = 0, items = [], idx = 0;
     function intro() {
       clearInterval(timer);
-      host.innerHTML = '<div class="box key"><span class="tag">Timed quiz</span>5 questions, drawn at random from the topics in this deck. A timer starts when you press Start. Answers are shown only after you finish the last question, together with your time compared to a typical time for this set. Use pen and paper. Type numbers as fractions (3/4) or decimals (0.75).</div>';
+      host.innerHTML = '<div class="box key"><span class="tag">Timed quiz</span>5 questions, drawn at random from the topics in this deck. A timer starts when you press Start. Answers are shown only after you finish the last question, together with your time compared to a typical time for this set. Use pen and paper. Type numbers as fractions (3/4) or decimals (0.75). Where a table is needed, a table button is available.</div>';
       var b = el('button', 'act big', 'Start quiz'); b.addEventListener('click', start); host.appendChild(b);
     }
     function start() { items = makeQuiz(K); idx = 0; t0 = Date.now(); timer = setInterval(tick, 500); show(); }
@@ -102,6 +113,7 @@
       var prev = el('button', 'act ghost', 'Back'); prev.disabled = idx === 0; prev.addEventListener('click', function () { save(); idx--; show(); });
       var next = el('button', 'act', idx === K - 1 ? 'Finish' : 'Next');
       next.addEventListener('click', function () { save(); if (idx === K - 1) finish(); else { idx++; show(); } });
+      if (P.G[it.id].table) nav.appendChild(tableBtn());
       nav.appendChild(prev); nav.appendChild(next); host.appendChild(nav);
     }
     function correct(it) {
@@ -122,7 +134,7 @@
           (it.q.ex ? '<div class="res-ex">' + it.q.ex + '</div>' : '') +
           '<details><summary>Show the problem and worked solution</summary><div class="res-sol">' + it.stmt + it.sol + '</div></details></div>';
       }).join('');
-      var ratio = secs / est, verdict = ratio < .6 ? 'Much faster than the target. Check that you were not rushing, and that your answers are right.' : ratio <= 1.1 ? 'On pace for a timed exam.' : ratio <= 1.5 ? 'Somewhat slower than the target. Practice setting up OLS and variance computations faster.' : 'Well above the target. Redo the topics that cost you the most time.';
+      var ratio = secs / est, verdict = ratio < .6 ? 'Much faster than the target. Check that you were not rushing, and that your answers are right.' : ratio <= 1.1 ? 'On pace for a timed exam.' : ratio <= 1.5 ? 'Somewhat slower than the target. Practice the computations until they come faster.' : 'Well above the target. Redo the topics that cost you the most time.';
       host.innerHTML = '<div class="qz-score"><div><span class="big">' + score + ' / ' + K + '</span><br>correct</div>' +
         '<div><span class="big">' + fmtTime(secs) + '</span><br>your time</div><div><span class="big">' + fmtTime(est) + '</span><br>target time for this set</div></div>' +
         '<div class="box ' + (ratio <= 1.1 ? 'good' : 'key') + '"><span class="tag">Pace</span>' + verdict + ' (The target adds up a reasonable time per question for the topics drawn: about ' + Math.round(est / K / 6) / 10 + ' min each on average.)</div>' +

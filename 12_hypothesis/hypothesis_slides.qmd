@@ -28,16 +28,21 @@ From a range of plausible values to a yes/no question.
 ::: {.box}
 <a class="toc-hit" href="#/testing-mu-when-sigma-is-known" title="Go to section"></a>
 <span class="tag">2 · Testing $\mu$ when $\sigma$ is known</span>
-Four steps: hypotheses, test statistic, p-value, decision; meaning of $\alpha$, critical values, link to confidence intervals.
+Four steps: hypotheses, test statistic, p-value, decision; meaning of $\alpha$ and critical values.
+:::
+::: {.box}
+<a class="toc-hit" href="#/two-sided-tests" title="Go to section"></a>
+<span class="tag">3 · Two-sided tests</span>
+A full worked example, and the link to confidence intervals.
 :::
 ::: {.box}
 <a class="toc-hit" href="#/one-sided-tests" title="Go to section"></a>
-<span class="tag">3 · One-sided tests</span>
-When the alternative points in one direction only.
+<span class="tag">4 · One-sided tests</span>
+When the alternative points in one direction only, with a worked example.
 :::
 ::: {.box}
 <a class="toc-hit" href="#/testing-mu-when-sigma-is-unknown" title="Go to section"></a>
-<span class="tag">4 · Testing $\mu$ when $\sigma$ is unknown</span>
+<span class="tag">5 · Testing $\mu$ when $\sigma$ is unknown</span>
 The t-statistic, the t-distribution, a worked t-test and a one-page summary.
 :::
 :::
@@ -297,6 +302,61 @@ Instead of computing the p-value, compare $|z|$ with a **critical value** (from 
 $|z|=1.68<1.96$, so we **fail to reject** at $\alpha=0.05$ (same as $p=0.093>0.05$). But $1.68>1.645$, so we **reject** at $\alpha=0.10$ (same as before).
 :::
 
+# Two-sided tests {.section-slide}
+
+Is there *any* difference?
+
+## Two-sided test: the recipe
+
+| | Two-sided test of $\mu$ ($\sigma$ known) |
+|:--|:--|
+| **Hypotheses** | $H_0:\ \mu=\mu_0 \qquad H_1:\ \mu≠\mu_0$ |
+| **Statistic** | $z=\dfrac{\bar{X}-\mu_0}{\sigma/\sqrt n}$ |
+| **Rejection region** | $\lvert z\rvert>z_{\alpha/2}$: both tails, $\alpha/2$ each |
+| **P-value** | $2\,P(Z>\lvert z\rvert)$ |
+
+## Two-sided example: setup
+
+::: {.box}
+<span class="tag">Claim</span>
+The average height of students **differs from $167$ cm**. Data: $n=20$, $\bar{X}=170$, $\sigma=8$, so $SE=8/\sqrt{20}\approx1.789$.
+:::
+
+. . .
+
+::: {.box .key}
+$$H_0:\ \mu=167 \qquad H_1:\ \mu≠167$$
+Significance level, chosen **before** looking at the data: $\alpha=0.05$.
+:::
+
+## Two-sided example: the test
+
+::: {.box}
+$$z=\frac{170-167}{1.789}\approx1.68$$
+:::
+
+. . .
+
+| At $\alpha=0.05$ | Via p-value | Via critical value |
+|:--|:-:|:-:|
+| **Rule** | reject if $p<0.05$ | reject if $\lvert z\rvert>1.96$ |
+| **Our data** | $p=2\,P(Z>1.68)\approx0.093$ | $\lvert z\rvert=1.68<1.96$ |
+| **Verdict** | **Fail to reject $H_0$** | **Fail to reject $H_0$** |
+
+## Two-sided example: conclusion
+
+::: {.box .good}
+<span class="tag">At $\alpha=0.05$</span>
+There is **not sufficient evidence** that the average height of students differs from $167$ cm.
+:::
+
+. . .
+
+::: {.box .warn}
+<span class="tag">At $\alpha=0.10$</span>
+$p=0.093<0.10$ and $1.68>1.645$: we **reject** $H_0$. There **is sufficient evidence** at the 10% level that the average height differs from $167$ cm. The verdict depends on $\alpha$, chosen in advance.
+:::
+
 ## Confidence interval and test
 
 ::: {.cap}
@@ -442,6 +502,27 @@ $$z=\frac{170-167}{1.789}\approx1.68$$
 
 ::: {.box .key}
 The one-sided test makes it **easier to reject** $H_0$ in the direction of $H_1$. Decide the direction **before** seeing the data.
+:::
+
+## One-sided example: decision
+
+::: {.box .key}
+$H_0:\ \mu=167$ against $H_1:\ \mu>167$, $\alpha=0.05$.<br>
+$p=P(Z>1.68)\approx0.047<0.05$, and $z=1.68>1.645$: **reject $H_0$**.
+:::
+
+. . .
+
+::: {.box .good}
+<span class="tag">Conclusion</span>
+At the 5% level there **is sufficient evidence** that the average height of students is **greater than $167$ cm**.
+:::
+
+. . .
+
+::: {.box .warn}
+<span class="tag">Compare</span>
+The same data did **not** reject in the two-sided test ($p=0.093$). The one-sided test is legitimate only if the direction was chosen **before** seeing the data.
 :::
 
 ## One-sided test: the picture

@@ -114,7 +114,7 @@ But you can come up with different guesses. What makes **a good guess**, and whe
 
 ::: {.box .key}
 <span class="tag">Definition</span>
-If $E(\hat{\theta})=\theta$, then $\hat{\theta}$ is an **unbiased** estimator of $\theta$. That is your guess is unibiased, if it is right on average.
+If $E(\hat{\theta})=\theta$, then $\hat{\theta}$ is an **unbiased** estimator of $\theta$. That is, your guess is unbiased if it is right on average.
 :::
 
 . . .
@@ -555,7 +555,7 @@ To **establish** these properties we need **assumptions about the population dis
 ::: {.cards}
 ::: {.box .warn .c}
 <span class="tag">Needs a specific model</span>
-$2X_1$ and $2\bar{X}$ are unbiased for $a$ **assuming** $X_i\sim U[0,a]$. If the population were Normal, $E[2\bar{X}]=2\mu\neq a$.<br><br>Efficiency: $2\bar{X}$ is beaten by $\frac{n+1}{n}\max(X_i)$ for Uniform, but $\bar{X}$ is the most efficient for Normal.
+$2X_1$ and $2\bar{X}$ are unbiased for $a$ **assuming** $X_i\sim U[0,a]$. If the population were Normal, $E[2\bar{X}]=2\mu≠a$.<br><br>Efficiency: $2\bar{X}$ is beaten by $\frac{n+1}{n}\max(X_i)$ for Uniform, but $\bar{X}$ is the most efficient for Normal.
 :::
 ::: {.box .good .c}
 <span class="tag">Holds for (almost) any population</span>
@@ -572,21 +572,8 @@ Always ask: **under what assumption** is this property true?
 ## The sample mean for $\mu$
 
 ::: {.box .key}
-In many problems the parameter we want is a mean $\mu$, so we use $\bar{X}$. How good is it?
+In many problems the parameter we want is a mean $\mu$, so we use $\bar{X}$.
 :::
-
-::: {.cards}
-::: {.box .good}
-<span class="tag">Bias</span>
-$\bar{X}$ is **always unbiased** for $\mu$: Normal, Binomial, Poisson, anything.
-:::
-::: {.box .warn}
-<span class="tag">Efficiency</span>
-$\bar{X}$ is **not always the most efficient**. For a Uniform population, the maximum-based estimator beats it.
-:::
-:::
-
-## Where we use $\bar{X}$
 
 ::: {.cards}
 ::: {.box}
@@ -623,13 +610,8 @@ What can we infer about $\mu$ from a simple random sample?
 
 . . .
 
-::: {.cards}
 ::: {.box .good}
-Our guess $\bar{X}$ is **unbiased**: on average it equals $\mu$.
-:::
-::: {.box .good}
-It is **consistent**: it becomes more precise as $n$ grows.
-:::
+Our guess $\bar{X}$ is **unbiased** (on average it equals $\mu$) and **consistent** (it becomes more precise as $n$ grows).
 :::
 
 ## Consistency of the sample mean
@@ -664,12 +646,6 @@ A single number does not tell us **how precise** the guess is. We need a way to 
 
 ::: {.box .key}
 One way is to report also a variance or standard error along with the estimator, but we can do even better with an **interval estimate**.
-:::
-
-. . .
-
-::: {.box .key}
-An **interval estimate** captures the uncertainty around our guess.
 :::
 
 ## Confidence intervals in research
@@ -712,42 +688,430 @@ An **interval estimate** (confidence interval) is a range of values, computed fr
 Here we consider interval estimates of the **population mean $\mu$** only.
 :::
 
-## Our assumption
+. . .
 
 ::: {.box .key}
 <span class="tag">Assumption</span>
 The population standard deviation $\sigma$ is **known**: the only uncertainty is about $\bar{X}$. Later we drop this.
 :::
 
-## Example: Which values of $\mu$ are plausible?
+## Example: student heights
 
 ::: {.box}
-<span class="tag">Example: a die</span>
-Observed $\bar{X}=3$. Population variance $\sigma^2=2.92$, sample size $n=20$. Standard error: $SE=\sqrt{2.92/20}\approx 0.382$.
+We have a sample of student heights: sample size $n=20$ and sample average $\bar{X}=170$ cm. Assume the population standard deviation is known: $\sigma=8$ cm.
 :::
 
 . . .
 
 ::: {.box .key}
-<span class="tag">Question</span>
-If the true mean were $\mu$, how likely is it to observe $\bar{X}=3$ **or something more extreme**?
+<span class="tag">Task</span>
+Find a **range of reasonable guesses** for the population average $\mu$, given the information in our sample.
 :::
 
-. . .
+## The logic
 
-::: {.cap}
-"More extreme" = in the tails, at least as far from $\mu$ as $\bar{X}$ is.
+::: {.box .key}
+<span class="tag">Idea</span>
+Take **each potential value** of the population mean $\mu$ and ask:
+Is the $\bar{X}$ we see in our sample **very surprising** or **not very surprising**, if this were the true $\mu$?
 :::
 
 . . .
 
 ::: {.box}
-<span class="tag">CLT</span>
-To answer, we use the distribution of $\bar{X}$ **given $\mu$**. By the CLT it is approximately normal:
-$$\bar{X}\sim N\!\left(\mu,\frac{\sigma^2}{n}\right)$$
+To answer, we need the **probability distribution of $\bar{X}$ given $\mu$**: if $\mu$ were the true mean, how would the sample mean of $20$ observations be distributed?
 :::
 
-## How surprising is $\bar{X}=3$ given a specific $\mu$?
+## The distribution of $\bar{X}$ given $\mu$
+
+::: {.box .key}
+<span class="tag">Central Limit Theorem</span>
+$$\bar{X}\sim N\!\left(\mu,\frac{\sigma^2}{n}\right)\ \text{approximately}$$
+:::
+
+. . .
+
+::: {.box}
+Remember that $\sigma$ is **known**, so it is a fixed number. For a given $\mu$, we know exactly how $\bar{X}$ is distributed. Now we can ask how surprising our $\bar{X}$ is.
+:::
+
+## Measuring surprise
+
+::: {.box .warn}
+What is $P(\bar{X}=170)$? It is **zero**: $\bar{X}$ is (approximately) continuous, and every single point has probability zero. This question is not productive.
+:::
+
+. . .
+
+::: {.box .key}
+<span class="tag">A better question</span>
+What is the probability of a sample whose average is **as far from $\mu$ as ours**?
+Let $d=|\bar{X}-\mu|$ be the distance between our sample average and $\mu$:
+$$P(\bar{X}\le\mu-d\ \text{ or }\ \bar{X}\ge\mu+d)=1-P(\mu-d\le\bar{X}\le\mu+d)$$
+:::
+
+## The picture
+
+<div class="sg" id="g1">
+<svg id="g1-b" viewBox="0 0 900 270"></svg>
+<svg id="g1-s" class="fragment ov" viewBox="0 0 900 270"></svg>
+</div>
+
+<script>
+// ---- helper: pdf of Xbar centred at c with standard error se; base layer + (fragment) shaded layer ----
+function normGraph(id, cfg) {
+  var L = 40, R = 860, BASE = 215, H = 165, c = cfg.c, se = cfg.se, k = cfg.k;
+  var A = c - k * se, B = c + k * se;
+  function px(x) { return L + (x - A) / (B - A) * (R - L); }
+  function py(x) { return BASE - H * Math.exp(-0.5 * Math.pow((x - c) / se, 2)); }
+  function path(a, b) {
+    var d = "M" + px(a).toFixed(1) + "," + BASE;
+    for (var x = a; x <= b + 1e-9; x += (B - A) / 400) d += " L" + px(x).toFixed(1) + "," + py(x).toFixed(1);
+    return d + " L" + px(b).toFixed(1) + "," + BASE + " Z";
+  }
+  function txt(x, y, s, col, anch, size, bold) {
+    return '<text x="' + x + '" y="' + y + '" text-anchor="' + (anch || "middle") + '" font-size="' + (size || 20) + '" ' +
+      (bold ? 'font-weight="700" ' : '') + 'fill="' + (col || "#1f2933") + '">' + s + '</text>';
+  }
+  var g = '<line x1="' + L + '" y1="' + BASE + '" x2="' + R + '" y2="' + BASE + '" stroke="#52606d" stroke-width="2"/>';
+  var d = "";
+  for (var x = A; x <= B + 1e-9; x += (B - A) / 400) d += (d ? " L" : "M") + px(x).toFixed(1) + "," + py(x).toFixed(1);
+  g += '<path d="' + d + '" fill="none" stroke="#444" stroke-width="2.5"/>';
+  g += '<line x1="' + px(c) + '" y1="' + (BASE - H - 12) + '" x2="' + px(c) + '" y2="' + BASE + '" stroke="#2b6cb0" stroke-width="2.5" stroke-dasharray="6 5"/>';
+  (cfg.ticks || []).forEach(function (t) {
+    g += '<line x1="' + px(t[0]) + '" y1="' + BASE + '" x2="' + px(t[0]) + '" y2="' + (BASE + 7) + '" stroke="#52606d" stroke-width="2"/>' + txt(px(t[0]), BASE + 30, t[1], "#52606d");
+  });
+  (cfg.marks || []).forEach(function (m) {
+    g += '<line x1="' + px(m.x) + '" y1="' + (BASE - H - 12) + '" x2="' + px(m.x) + '" y2="' + BASE + '" stroke="' + m.col + '" stroke-width="3"/>' +
+         txt(px(m.x) + (m.dx || 0), BASE - H - 18, m.label, m.col, m.anch, 20, true);
+  });
+  if (cfg.arrow) {
+    var y = BASE - 40, a = cfg.arrow;
+    g += '<line x1="' + px(a[0]) + '" y1="' + y + '" x2="' + px(a[1]) + '" y2="' + y + '" stroke="#1f2933" stroke-width="2"/>' +
+         '<line x1="' + px(a[0]) + '" y1="' + (y - 6) + '" x2="' + px(a[0]) + '" y2="' + (y + 6) + '" stroke="#1f2933" stroke-width="2"/>' +
+         '<line x1="' + px(a[1]) + '" y1="' + (y - 6) + '" x2="' + px(a[1]) + '" y2="' + (y + 6) + '" stroke="#1f2933" stroke-width="2"/>' +
+         txt((px(a[0]) + px(a[1])) / 2, y - 10, a[2], "#1f2933");
+  }
+  document.getElementById(id + "-b").innerHTML = g;
+  var s = "";
+  (cfg.shade || []).forEach(function (r) { s += '<path d="' + path(r[0], r[1]) + '" fill="' + r[2] + '" fill-opacity="0.45"/>'; });
+  (cfg.notes || []).forEach(function (n) { s += txt(px(n[0]), n[1], n[2], n[3], "middle", 20, true); });
+  if (cfg.mirror) s += '<line x1="' + px(cfg.mirror) + '" y1="' + (BASE - H - 12) + '" x2="' + px(cfg.mirror) + '" y2="' + BASE + '" stroke="#444" stroke-width="2" stroke-dasharray="3 4"/>';
+  document.getElementById(id + "-s").innerHTML = s;
+}
+function Phi(z) { var s = z < 0 ? -1 : 1, x = Math.abs(z) / Math.SQRT2, t = 1 / (1 + 0.3275911 * x);
+  return 0.5 * (1 + s * (1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x))); }
+(function () {
+  var se = 8 / Math.sqrt(20), mu = 167, xb = 170, d = xb - mu, p = 2 * (1 - Phi(d / se));
+  normGraph("g1", {
+    c: mu, se: se, k: 3.6,
+    marks: [{ x: xb, label: "X̄ = 170", col: "#1f2933", anch: "start", dx: 8 }, { x: mu, label: "μ = 167 (a candidate)", col: "#2b6cb0", anch: "end", dx: -8 }],
+    arrow: [mu, xb, "d"],
+    mirror: mu - d,
+    shade: [[mu - 3.6 * se, mu - d, "#c53030"], [mu + d, mu + 3.6 * se, "#c53030"]],
+    notes: [[mu, 262, "P(as far from μ as X̄) ≈ " + p.toFixed(2), "#c53030"]]
+  });
+})();
+</script>
+
+. . .
+
+::: {.cap}
+For this candidate $\mu=167$, a sample average as far away as ours has probability about $0.09$.
+:::
+
+## Very surprising or not?
+
+::: {.box}
+The probability above measures **how surprising** our sample is, given $\mu$. What counts as "very surprising"? This is a **subjective choice**, with a conventional answer: a threshold $\alpha$, called the **significance level**.
+:::
+
+. . .
+
+::: {.cards}
+::: {.box .warn .c}
+<span class="tag">Probability $<\alpha$</span>
+Very surprising. The hypothesized $\mu$ is **unreasonable** given our sample.
+:::
+::: {.box .good .c}
+<span class="tag">Probability $>\alpha$</span>
+Not very surprising. The hypothesized $\mu$ is a **reasonable** guess.
+:::
+:::
+
+. . .
+
+::: {.cap}
+Conventionally $\alpha$ is $10\%$, $5\%$ or $1\%$, but this is just a convention.
+:::
+
+## Which values of $\mu$ are reasonable?
+
+::: {.box}
+We can apply this test to **every possible value** of $\mu$. Where do the reasonable values lie, given our $\bar{X}$?
+:::
+
+. . .
+
+::: {.box .key}
+<span class="tag">Key fact</span>
+Because $\sigma$ is fixed, the **shape** of the distribution of $\bar{X}$ is the same for every $\mu$: it only **shifts** along the axis.
+:::
+
+. . .
+
+::: {.box}
+So for our criterion $\alpha$, the surprising values of $\bar{X}$ lie at the **same distance** $m$ from $\mu$, on both sides, whatever $\mu$ is.
+:::
+
+## The distance $m$
+
+::: {.box}
+We need $m$ such that
+$$P(\mu-m\le\bar{X}\le\mu+m)=1-\alpha$$
+:::
+
+<div class="sg" id="g2">
+<svg id="g2-b" viewBox="0 0 900 270"></svg>
+<svg id="g2-s" class="fragment ov" viewBox="0 0 900 270"></svg>
+</div>
+
+<script>
+normGraph("g2", {
+  c: 0, se: 1, k: 3.6,
+  ticks: [[-1.96, "μ − m"], [0, "μ"], [1.96, "μ + m"]],
+  shade: [[-1.96, 1.96, "#2b6cb0"], [-3.6, -1.96, "#c53030"], [1.96, 3.6, "#c53030"]],
+  notes: [[0, 150, "area 1 − α", "#1b3a5c"], [-2.75, 195, "α/2", "#c53030"], [2.75, 195, "α/2", "#c53030"]]
+});
+</script>
+
+. . .
+
+::: {.cap}
+$\bar{X}$ within distance $m$ of $\mu$ is **not very surprising**. Outside, it is very surprising.
+:::
+
+## Z-scores: distance in standard deviations
+
+::: {.box}
+Raw units depend on the problem (cm, kg, hours). To compare values, or to use **one table for every normal distribution**, we measure how far a value is from the mean **in standard deviations**:
+$$z=\frac{x-\mu}{\sigma}$$
+:::
+
+. . .
+
+::: {.box .key}
+<span class="tag">Example</span>
+Heights of girls: $\mu=167$, $\sigma=8.7$ cm. A girl of $x=180$ cm has
+$$z=\frac{180-167}{8.7}\approx1.49$$
+She is about **1.5 standard deviations above** the mean. $z<0$ means below the mean.
+:::
+
+## Standardizing a normal variable
+
+::: {.cards}
+::: {.box .c}
+<span class="tag">Step 1: center</span>
+Subtract the mean: $X-\mu$. The center moves to $0$.
+:::
+::: {.box .c}
+<span class="tag">Step 2: rescale</span>
+Divide by the SD: $\dfrac{X-\mu}{\sigma}$. The spread becomes $1$.
+:::
+:::
+
+. . .
+
+::: {.box .key}
+<span class="tag">Key fact</span>
+If $X\sim N(\mu,\sigma^2)$, then $Z=\dfrac{X-\mu}{\sigma}\sim N(0,1)$. Hence
+$$P(X\le x)=P\!\left(Z\le\tfrac{x-\mu}{\sigma}\right)=\Phi(z)$$
+Every normal probability reduces to the **standard normal** table.
+:::
+
+## Standardization: try it
+
+::: {.cap}
+Move $\mu$, $\sigma$ and $x$. The shaded area under $X$ and under $Z$ is **always the same**: standardizing changes the axis, not the probability.
+:::
+
+<svg id="zs-svg" viewBox="0 0 900 400" class="famplot"></svg>
+
+<div class="readout" id="zs-out"></div>
+
+<div class="ctl" style="justify-content:center">
+  <label>$\mu$: <input type="range" id="zs-mu" min="150" max="185" step="0.5" value="167"> <b id="zs-mu-v">167.0</b></label>
+  <label>$\sigma$: <input type="range" id="zs-sd" min="4" max="14" step="0.1" value="8.7"> <b id="zs-sd-v">8.7</b></label>
+  <label>$x$: <input type="range" id="zs-x" min="130" max="205" step="0.5" value="180"> <b id="zs-x-v">180.0</b></label>
+</div>
+
+<script>
+(function () {
+  var L = 40, R = 860;
+  function erf(x) { var s = x < 0 ? -1 : 1; x = Math.abs(x); var t = 1 / (1 + 0.3275911 * x);
+    return s * (1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x)); }
+  function Phi(z) { return 0.5 * (1 + erf(z / Math.SQRT2)); }
+  function phi(z) { return Math.exp(-0.5 * z * z) / Math.sqrt(2 * Math.PI); }
+  var svg = document.getElementById("zs-svg"), out = document.getElementById("zs-out");
+  var el = { mu: document.getElementById("zs-mu"), sd: document.getElementById("zs-sd"), x: document.getElementById("zs-x") };
+  var lb = { mu: document.getElementById("zs-mu-v"), sd: document.getElementById("zs-sd-v"), x: document.getElementById("zs-x-v") };
+  // panel: top = X axis (fixed range 125-210), bottom = Z axis (-4..4)
+  function panel(top, h, lo, hi, f, xv, cx, ticks, label, color) {
+    function px(v) { return L + (v - lo) / (hi - lo) * (R - L); }
+    function py(y, ymax) { return top + h - y / ymax * h; }
+    var ymax = f.ymax, g = "", d = "", a = "M" + px(lo) + "," + py(0, ymax), N = 400, i, v;
+    for (i = 0; i <= N; i++) { v = lo + (hi - lo) * i / N; d += (i ? " L" : "M") + px(v).toFixed(1) + "," + py(f.pdf(v), ymax).toFixed(1);
+      if (v <= xv) a += " L" + px(v).toFixed(1) + "," + py(f.pdf(v), ymax).toFixed(1); }
+    a += " L" + px(Math.min(xv, hi)) + "," + py(0, ymax) + " Z";
+    if (xv > lo) g += '<path d="' + a + '" fill="' + color + '" fill-opacity="0.35"/>';
+    g += '<path d="' + d + '" fill="none" stroke="#444" stroke-width="2.5"/>';
+    g += '<line x1="' + L + '" y1="' + (top + h) + '" x2="' + R + '" y2="' + (top + h) + '" stroke="#52606d" stroke-width="2"/>';
+    ticks.forEach(function (t) { g += '<line x1="' + px(t[0]) + '" y1="' + (top + h) + '" x2="' + px(t[0]) + '" y2="' + (top + h + 6) + '" stroke="#52606d"/><text x="' + px(t[0]) + '" y="' + (top + h + 22) + '" text-anchor="middle" font-size="16" fill="#52606d">' + t[1] + '</text>'; });
+    g += '<line x1="' + px(cx) + '" y1="' + top + '" x2="' + px(cx) + '" y2="' + (top + h) + '" stroke="#2b6cb0" stroke-width="2" stroke-dasharray="6 5"/>';
+    if (xv >= lo && xv <= hi) g += '<line x1="' + px(xv) + '" y1="' + (py(f.pdf(xv), ymax)) + '" x2="' + px(xv) + '" y2="' + (top + h) + '" stroke="#1f2933" stroke-width="3"/>';
+    g += '<text x="' + R + '" y="' + (top + 16) + '" text-anchor="end" font-size="18" font-weight="700" fill="' + color + '">' + label + '</text>';
+    return g;
+  }
+  function draw() {
+    var mu = +el.mu.value, sd = +el.sd.value, x = +el.x.value, z = (x - mu) / sd, p = Phi(z), g = "", t, XL = 120, XH = 215;
+    lb.mu.textContent = mu.toFixed(1); lb.sd.textContent = sd.toFixed(1); lb.x.textContent = x.toFixed(1);
+    var xt = [], zt = [];
+    for (t = 130; t <= 210; t += 10) xt.push([t, t]);
+    for (t = -3; t <= 3; t++) zt.push([t, t]);
+    g += panel(10, 150, XL, XH, { pdf: function (v) { return phi((v - mu) / sd) / sd; }, ymax: phi(0) / 4 }, x, mu, xt, "X ~ N(μ, σ²), in cm", "#c05621");
+    g += panel(225, 130, -4, 4, { pdf: phi, ymax: phi(0) }, z, 0, zt, "Z ~ N(0, 1)", "#c05621");
+    svg.innerHTML = g;
+    out.innerHTML = 'z = (' + x.toFixed(1) + ' − ' + mu.toFixed(1) + ') / ' + sd.toFixed(1) + ' = <b>' + z.toFixed(2) + '</b> &nbsp;·&nbsp; P(X ≤ x) = P(Z ≤ ' + z.toFixed(2) + ') = Φ(' + z.toFixed(2) + ') = <b>' + p.toFixed(3) + '</b>';
+  }
+  ["mu", "sd", "x"].forEach(function (k) { el[k].addEventListener("input", draw); });
+  draw();
+})();
+</script>
+
+## Standardizing our probability
+
+::: {.box}
+$\bar{X}$ has mean $\mu$ and standard deviation $\sigma/\sqrt n$ (the **standard error**), so $Z=\dfrac{\bar{X}-\mu}{\sigma/\sqrt n}\sim N(0,1)$.
+:::
+
+. . .
+
+::: {.box}
+Recall: we want $m$ with $P(\mu-m\le\bar{X}\le\mu+m)=1-\alpha$. Subtract $\mu$ and divide by $\sigma/\sqrt n$ inside the brackets:
+:::
+
+. . .
+
+::: {.box .key}
+$$P\!\left(-\frac{m}{\sigma/\sqrt n}\le Z\le\frac{m}{\sigma/\sqrt n}\right)=1-\alpha$$
+:::
+
+. . .
+
+::: {.box}
+So we look for a **constant** $c$ with $P(-c\le Z\le c)=1-\alpha$. This is a question about the standard normal only, and the standard normal table answers it.
+:::
+
+## The critical value $z_{\alpha/2}$
+
+::: {.box .key}
+<span class="tag">Definition</span>
+$z_{\alpha/2}$ is the constant with $P(-z_{\alpha/2}\le Z\le z_{\alpha/2})=1-\alpha$. There is probability $\alpha/2$ in each tail.
+:::
+
+. . .
+
+| Confidence level $1-\alpha$ | $\alpha$ | Tail area $\alpha/2$ | $z_{\alpha/2}$ |
+|:-:|:-:|:-:|:-:|
+| 90% | 0.10 | 0.05 | **1.645** |
+| 95% | 0.05 | 0.025 | **1.960** |
+| 99% | 0.01 | 0.005 | **2.576** |
+
+. . .
+
+::: {.box}
+<span class="tag">Practice</span>
+Use the standard normal table to check these values. For 95%, look for the area $0.975$ in the table and read off $1.96$.
+:::
+
+## Solving for $m$
+
+::: {.box}
+We set $c=z_{\alpha/2}$, so $\dfrac{m}{\sigma/\sqrt n}=z_{\alpha/2}$. Therefore
+$$m=z_{\alpha/2}\,\frac{\sigma}{\sqrt n}$$
+This distance $m$ is called the **margin of error**.
+:::
+
+. . .
+
+::: {.box .key}
+<span class="tag">Our example, 95%</span>
+$SE=\dfrac{8}{\sqrt{20}}\approx1.789$, so $m=1.96\times1.789\approx3.51$ cm.
+:::
+
+## Reasonable values of $\mu$
+
+::: {.box}
+For a given $\mu$, our $\bar{X}$ is **not very surprising** exactly when $|\bar{X}-\mu|\le m$. Equivalently: $\mu$ is reasonable when it lies within distance $m$ of $\bar{X}$.
+:::
+
+<div class="sg" id="g3">
+<svg id="g3-b" viewBox="0 0 900 270"></svg>
+<svg id="g3-s" class="fragment ov" viewBox="0 0 900 270"></svg>
+</div>
+
+<script>
+(function () {
+  var se = 8 / Math.sqrt(20), m = 1.96 * se, mu = 170 - m;
+  normGraph("g3", {
+    c: mu, se: se, k: 3.6,
+    ticks: [[mu - m, "μ − m"], [mu, "μ"], [mu + m, "μ + m = X̄"]],
+    marks: [{ x: 170, label: "X̄ = 170", col: "#1f2933", anch: "start", dx: 8 }],
+    shade: [[mu - m, mu + m, "#2b6cb0"], [mu - 3.6 * se, mu - m, "#c53030"], [mu + m, mu + 3.6 * se, "#c53030"]],
+    notes: [[mu, 150, "95%", "#1b3a5c"]]
+  });
+})();
+</script>
+
+. . .
+
+::: {.cap}
+The smallest reasonable $\mu$: our $\bar{X}$ sits exactly at the edge of its central $95\%$ region. The same holds on the other side.
+:::
+
+## The confidence interval
+
+::: {.box .key}
+<span class="tag">Answer</span>
+The reasonable values of $\mu$ lie within $m=z_{\alpha/2}\,\sigma/\sqrt n$ of $\bar{X}$: the **$(1-\alpha)$ confidence interval**
+$$CI_{1-\alpha}=\left[\bar{X}-z_{\alpha/2}\frac{\sigma}{\sqrt n},\ \bar{X}+z_{\alpha/2}\frac{\sigma}{\sqrt n}\right]$$
+:::
+
+. . .
+
+::: {.cards}
+::: {.box}
+<span class="tag">Critical value $z_{\alpha/2}$</span>
+Point of $N(0,1)$ with area $\alpha/2$ in each tail.
+:::
+::: {.box}
+<span class="tag">Standard error $\sigma/\sqrt n$</span>
+The standard deviation of $\bar{X}$.
+:::
+::: {.box}
+<span class="tag">Margin of error $m$</span>
+Half the width of the interval.
+:::
+:::
+
+. . .
+
+::: {.box .good}
+<span class="tag">Our example, 95%</span>
+$$CI_{0.95}=170\pm3.51=[166.49,\ 173.51]$$
+:::
+
+## How surprising is $\bar{X}=170$ given a specific $\mu$?
 
 <svg id="pv-svg" viewBox="0 0 900 283" class="famplot"></svg>
 
@@ -756,7 +1120,7 @@ $$\bar{X}\sim N\!\left(\mu,\frac{\sigma^2}{n}\right)$$
 <div class="readout" id="pv-st" style="min-height:2.6em"></div>
 
 <div class="ctl" style="justify-content:center">
-  <label>Hypothesized $\mu$: <input type="range" id="pv-mu" min="1" max="5" step="0.01" value="2.2" style="width:340px"> <b id="pv-mu-val">2.20</b></label>
+  <label>Hypothesized $\mu$: <input type="range" id="pv-mu" min="160" max="180" step="0.05" value="167" style="width:250px"> <b id="pv-mu-val">167.00</b></label>
   <span>Significance level $\alpha$: <span class="seg" id="pv-a"><button data-a="0" class="on">none</button><button data-a="0.10">10%</button><button data-a="0.05">5%</button><button data-a="0.01">1%</button></span></span>
 </div>
 
@@ -767,13 +1131,13 @@ $$\bar{X}\sim N\!\left(\mu,\frac{\sigma^2}{n}\right)$$
 
 <script>
 (function () {
-  var SE = Math.sqrt(2.92 / 20), XO = 3, L = 50, R = 880, XA = 0, XB = 6;
+  var SE = 8 / Math.sqrt(20), XO = 170, L = 50, R = 880, XA = 160, XB = 180;
   var TOP = 10, SC = 270 / 1.4;                                     // y from 1.25 (top) to -0.15
   var Z = { "0.1": [1.645, "#440154", "90%"], "0.05": [1.96, "#21918c", "95%"], "0.01": [2.576, "#fde725", "99%"] };
-  var mu = 2.2, alpha = 0;
+  var mu = 167, alpha = 0;
   function px(x) { return L + (x - XA) / (XB - XA) * (R - L); }
   function py(y) { return TOP + (1.1 - y) * SC; }
-  function pdf(x, m) { return Math.exp(-0.5 * Math.pow((x - m) / SE, 2)) / (SE * Math.sqrt(2 * Math.PI)); }
+  function pdf(x, m) { return 1.044 * Math.exp(-0.5 * Math.pow((x - m) / SE, 2)); }   // peak height fixed for display
   function erf(x) { var s = x < 0 ? -1 : 1; x = Math.abs(x); var t = 1 / (1 + 0.3275911 * x);
     return s * (1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x)); }
   function Phi(z) { return 0.5 * (1 + erf(z / Math.SQRT2)); }
@@ -781,7 +1145,7 @@ $$\bar{X}\sim N\!\left(\mu,\frac{\sigma^2}{n}\right)$$
       st = document.getElementById("pv-st"), jump = document.getElementById("pv-jump");
   function path(m, lo, hi) {
     var d = "M" + px(lo).toFixed(1) + "," + py(0).toFixed(1);
-    for (var x = lo; x <= hi + 1e-9; x += 0.01) d += " L" + px(x).toFixed(1) + "," + py(pdf(x, m)).toFixed(1);
+    for (var x = lo; x <= hi + 1e-9; x += 0.05) d += " L" + px(x).toFixed(1) + "," + py(pdf(x, m)).toFixed(1);
     return d + " L" + px(hi).toFixed(1) + "," + py(0).toFixed(1) + " Z";
   }
   function draw() {
@@ -798,16 +1162,16 @@ $$\bar{X}\sim N\!\left(\mu,\frac{\sigma^2}{n}\right)$$
     if (m - dist > lo) g += '<path d="' + path(m, lo, Math.min(m - dist, hi)) + '" fill="#c53030" fill-opacity="0.45"/>';
     if (m + dist < hi) g += '<path d="' + path(m, Math.max(m + dist, lo), hi) + '" fill="#c53030" fill-opacity="0.45"/>';
     var d = "";
-    for (var x = lo; x <= hi + 1e-9; x += 0.01) d += (d ? " L" : "M") + px(x).toFixed(1) + "," + py(pdf(x, m)).toFixed(1);
+    for (var x = lo; x <= hi + 1e-9; x += 0.05) d += (d ? " L" : "M") + px(x).toFixed(1) + "," + py(pdf(x, m)).toFixed(1);
     g += '<path d="' + d + '" fill="none" stroke="#444" stroke-width="2.5"/>';
     if (alpha) [m - cut, m + cut].forEach(function (c) {
       g += '<line x1="' + px(c) + '" y1="' + py(pdf(c, m)) + '" x2="' + px(c) + '" y2="' + py(0) + '" stroke="#dd6b20" stroke-width="2.5"/>';
     });
     g += '</g>';
     g += '<line x1="' + L + '" y1="' + py(0) + '" x2="' + R + '" y2="' + py(0) + '" stroke="#52606d" stroke-width="2"/>';
-    for (var t = 0; t <= 6; t++) g += '<text x="' + px(t) + '" y="' + (py(0) + 20) + '" text-anchor="middle" font-size="16" fill="#52606d">' + t + '</text>';
+    for (var t = 160; t <= 180; t += 5) g += '<text x="' + px(t) + '" y="' + (py(0) + 20) + '" text-anchor="middle" font-size="16" fill="#52606d">' + t + '</text>';
     g += '<line x1="' + px(XO) + '" y1="' + TOP + '" x2="' + px(XO) + '" y2="' + py(0) + '" stroke="#1f2933" stroke-width="3"/>' +
-         '<text x="' + (px(XO) + (m < XO ? 8 : -8)) + '" y="' + (TOP + 14) + '" text-anchor="' + (m < XO ? "start" : "end") + '" font-size="17" font-weight="700" fill="#1f2933">X̄ = 3</text>';
+         '<text x="' + (px(XO) + (m < XO ? 8 : -8)) + '" y="' + (TOP + 14) + '" text-anchor="' + (m < XO ? "start" : "end") + '" font-size="17" font-weight="700" fill="#1f2933">X̄ = 170</text>';
     g += '<line x1="' + px(m) + '" y1="' + TOP + '" x2="' + px(m) + '" y2="' + py(0) + '" stroke="#2b6cb0" stroke-width="2.5" stroke-dasharray="6 5"/>' +
          '<text x="' + (px(m) + (m < XO ? -8 : 8)) + '" y="' + (TOP + 14) + '" text-anchor="' + (m < XO ? "end" : "start") + '" font-size="17" font-weight="700" fill="#2b6cb0">μ = ' + m.toFixed(2) + '</text>';
     document.getElementById("pv-p").textContent = p.toFixed(4);
@@ -823,7 +1187,7 @@ $$\bar{X}\sim N\!\left(\mu,\frac{\sigma^2}{n}\right)$$
       var verdict = edge ? '<b>on the boundary</b>' :
         (inside ? '<b style="color:#2f855a">plausible</b>' : '<b style="color:#c53030">not plausible</b>');
       st.innerHTML = 'α = ' + (a * 100).toFixed(0) + '%: each tail has area ' + (a / 2) + '; cutoffs at μ ± ' + cut.toFixed(2) + '. ' +
-        'X̄ = 3 is ' + (edge ? 'exactly at the cutoff, so p = α' : (inside ? 'inside, so p ≥ α' : 'in the tail, so p &lt; α')) + '.<br>' +
+        'X̄ = 170 is ' + (edge ? 'exactly at the cutoff, so p = α' : (inside ? 'inside, so p ≥ α' : 'in the tail, so p &lt; α')) + '.<br>' +
         'μ = ' + m.toFixed(2) + ' is ' + verdict + ': ' + (edge ? 'at the end of' : (inside ? 'inside' : 'outside')) + ' the ' + c[2] + ' CI [' + lowE.toFixed(2) + ', ' + upE.toFixed(2) + '].';
     }
     svg.innerHTML = g;
@@ -849,179 +1213,55 @@ $$\bar{X}\sim N\!\left(\mu,\frac{\sigma^2}{n}\right)$$
 If you understand this figure, then you understand the primary logic of statistical inference.
 :::
 
-## Key result
-
-::: {.box}
-The shaded area is the probability of a sample mean **at least as extreme** as $\bar{X}=3$, if the slider value were the true $\mu$.
-:::
-
-. . .
-
-::: {.box .key}
-As $\mu$ moves away from $\bar{X}$, this probability shrinks: such an $\bar{X}$ becomes unlikely, so far-away values of $\mu$ are **less plausible**.
-:::
-
-. . .
-
-::: {.box .good}
-Confidence interval = the values of $\mu$ for which this probability is **larger than $\alpha$**: the plausible values given our data.
-:::
-
-## An interval around $\mu$
-
-::: {.box}
-Find an interval around $\mu$ that contains $\bar{X}$ with probability $1-\alpha$:
-$$P(\mu-\text{margin}\le\bar{X}\le\mu+\text{margin})=1-\alpha$$
-$\alpha$ is the **significance level**: the probability of falling outside.
-:::
-
-. . .
-
-::: {.figure-slide}
-![](est_Code_Generated_Image%20(6)%20copy.png){fig-align="center" height=330}
-:::
-
-## Finding the margin
-
-::: {.box}
-Standardize $\bar{X}$, dividing by the standard error $\sigma/\sqrt{n}$:
-$$P\!\left(-\tfrac{\text{margin}}{\sigma/\sqrt n}\le Z\le\tfrac{\text{margin}}{\sigma/\sqrt n}\right)=1-\alpha$$
-:::
-
-. . .
-
-::: {.box}
-Define $z_{\alpha/2}$ by $P(-z_{\alpha/2}\le Z\le z_{\alpha/2})=1-\alpha$. Then
-$$\text{margin}=z_{\alpha/2}\,\frac{\sigma}{\sqrt n}$$
-:::
-
-## Flipping the inequality
-
-::: {.box}
-$$P\!\left(\mu-z_{\alpha/2}\tfrac{\sigma}{\sqrt n}\le\bar{X}\le\mu+z_{\alpha/2}\tfrac{\sigma}{\sqrt n}\right)=1-\alpha$$
-:::
-
-. . .
-
-::: {.box .key}
-The same event, written for $\mu$:
-$$P\!\left(\bar{X}-z_{\alpha/2}\tfrac{\sigma}{\sqrt n}\le\mu\le\bar{X}+z_{\alpha/2}\tfrac{\sigma}{\sqrt n}\right)=1-\alpha$$
-:::
-
-## Confidence interval for $\mu$
-
-::: {.box .key}
-<span class="tag">$\sigma$ known</span>
-$$CI_{1-\alpha}=\left[\bar{X}-z_{\alpha/2}\frac{\sigma}{\sqrt n},\ \bar{X}+z_{\alpha/2}\frac{\sigma}{\sqrt n}\right]$$
-:::
-
-. . .
-
-::: {.box}
-The random interval $\bar{X}\pm z_{\alpha/2}\sigma/\sqrt n$ contains $\mu$ with probability $1-\alpha$. If we repeat the sampling many times, about a fraction $1-\alpha$ of the intervals contain $\mu$.
-:::
-
-## The parts of the interval
-
-::: {.cards .stack}
-::: {.box}
-<span class="tag">Critical value $z_{\alpha/2}$</span>
-The point of the standard normal $N(0,1)$ with area $\alpha/2$ in each tail.
-:::
-::: {.box}
-<span class="tag">Standard error $\sigma/\sqrt n$</span>
-The standard deviation of $\bar{X}$.
-:::
-::: {.box}
-<span class="tag">Margin of error $z_{\alpha/2}\,\sigma/\sqrt n$</span>
-Half the width of the interval: how many standard errors we go out from $\bar{X}$.
-:::
-:::
-
-## Example: girls' heights
-
-::: {.box}
-Heights of girls in our class:
-$n=185$, $\bar{X}=165.9$ cm, and $\sigma=8.7$ cm is assumed **known**.
-:::
-
-. . .
-
-::: {.box .key}
-Estimate a **90% confidence interval** for the true mean height.
-:::
-
-## Computing the 90% interval
-
-::: {.cards}
-::: {.box}
-<span class="tag">Critical value</span>
-$\alpha=0.10$, so $z_{0.05}\approx1.645$
-:::
-::: {.box}
-<span class="tag">Standard error</span>
-$SE=\frac{8.7}{\sqrt{185}}\approx0.640$
-:::
-:::
-
-. . .
-
-::: {.box}
-<span class="tag">Margin of error</span>
-$ME=1.645\times0.640\approx1.053$
-:::
-
-. . .
-
-::: {.box .key}
-$$CI_{0.90}=165.9\pm1.053=[164.85,\ 166.95]$$
-:::
-
 ## Interpreting the interval
 
 ::: {.box}
-If we took many samples of 185 girls and built an interval from each, about **90%** of them would contain the true mean height $\mu$.
+If we took many samples of $20$ students and built an interval from each, about **95%** of them would contain the true mean height $\mu$.
 :::
 
 . . .
 
 ::: {.box .good}
 <span class="tag">Plausibility</span>
-$164$ cm is outside the interval. If the true mean were $164$, a sample mean as high as $165.9$ would be very unlikely, so we exclude it from the plausible values.
-:::
-
-## Common critical values
-
-| Confidence level | $\alpha$ | Tail area $\alpha/2$ | Critical value $z_{\alpha/2}$ |
-|:-:|:-:|:-:|:-:|
-| 90% | 0.10 | 0.05 | **1.645** |
-| 95% | 0.05 | 0.025 | **1.960** |
-| 99% | 0.01 | 0.005 | **2.576** |
-
-. . .
-
-::: {.box}
-The critical value $z_{\alpha/2}$ bounds the upper $\alpha/2$ proportion of the standard normal.
+$160$ cm is outside our interval $[166.49,\ 173.51]$. If the true mean were $160$, a sample mean as high as $170$ would be very unlikely, so we exclude it from the plausible values.
 :::
 
 ## Precision vs. confidence
 
 ::: {.cards}
 ::: {.box .c}
+<span class="tag">90% interval</span>
+$170\pm1.645\cdot1.789$<br>$=[167.06,\ 172.94]$
+:::
+::: {.box .c}
 <span class="tag">95% interval</span>
-$165.9\pm1.96\cdot0.640$<br>$=[164.65,\ 167.15]$
+$170\pm1.960\cdot1.789$<br>$=[166.49,\ 173.51]$
 :::
 ::: {.box .c}
 <span class="tag">99% interval</span>
-$165.9\pm2.576\cdot0.640$<br>$=[164.25,\ 167.55]$
+$170\pm2.576\cdot1.789$<br>$=[165.39,\ 174.61]$
 :::
 :::
 
 . . .
 
-::: {.figure-slide}
-![](est_Code_Generated_Image%20(6)%20copy%203.png){fig-align="center" height=220}
-:::
+<svg id="pc-svg" viewBox="0 0 900 190" class="famplot"></svg>
+
+<script>
+(function () {
+  var svg = document.getElementById("pc-svg"), L = 60, R = 860, A = 163, B = 177;
+  function px(x) { return L + (x - A) / (B - A) * (R - L); }
+  var g = '<line x1="' + L + '" y1="165" x2="' + R + '" y2="165" stroke="#52606d" stroke-width="2"/>';
+  for (var t = 164; t <= 176; t += 2) g += '<line x1="' + px(t) + '" y1="20" x2="' + px(t) + '" y2="165" stroke="#e4e7eb"/><text x="' + px(t) + '" y="188" text-anchor="middle" font-size="16" fill="#52606d">' + t + '</text>';
+  [[2.943, 35, "#440154", "90%"], [3.506, 80, "#21918c", "95%"], [4.608, 125, "#c9a800", "99%"]].forEach(function (c) {
+    var y = c[1], x1 = px(170 - c[0]), x2 = px(170 + c[0]);
+    g += '<g stroke="' + c[2] + '" stroke-width="3" stroke-linecap="round"><line x1="' + x1 + '" y1="' + y + '" x2="' + x2 + '" y2="' + y + '"/><line x1="' + x1 + '" y1="' + (y - 10) + '" x2="' + x1 + '" y2="' + (y + 10) + '"/><line x1="' + x2 + '" y1="' + (y - 10) + '" x2="' + x2 + '" y2="' + (y + 10) + '"/></g>' +
+         '<text x="' + (x1 - 14) + '" y="' + (y + 6) + '" text-anchor="end" font-size="18" font-weight="700" fill="' + c[2] + '">' + c[3] + '</text>';
+  });
+  g += '<line x1="' + px(170) + '" y1="12" x2="' + px(170) + '" y2="165" stroke="#1f2933" stroke-width="2" stroke-dasharray="6 5"/>';
+  svg.innerHTML = g;
+})();
+</script>
 
 . . .
 

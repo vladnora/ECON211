@@ -157,3 +157,8 @@
   text-decoration:none; font-weight:700; opacity:.85; font-family:inherit; }
 .reveal a.toc-back:hover { opacity:1; background:var(--blue-soft); }
 .reveal a.toc-back.hide { display:none; }
+
+/* ---------- stacked pdf graphs (base + fragment shading) ---------- */
+.reveal .sg { position:relative; margin:0.2em 0; }
+.reveal .sg svg { display:block; width:100%; }
+.reveal .sg svg.ov { position:absolute; left:0; top:0; }

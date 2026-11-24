@@ -135,3 +135,6 @@
   text-decoration:none; font-weight:700; opacity:.85; font-family:inherit; }
 .reveal a.toc-back:hover { opacity:1; background:var(--blue-soft); }
 .reveal a.toc-back.hide { display:none; }
+
+/* math inside uppercase tags must keep its case (sigma, z, alpha, H_0) */
+.reveal .tag .katex, .reveal .tag .katex * { text-transform:none; }

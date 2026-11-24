@@ -1740,115 +1740,53 @@ margin-right: 0; }
 </div>
 </div>
 </section>
-<section id="two-sided-vs.-one-sided" class="slide level2">
-<h2>Two-sided vs. one-sided</h2>
-<table class="caption-top">
-<colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;"></th>
-<th style="text-align: left;">Two-sided</th>
-<th style="text-align: left;">One-sided</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;"><strong>Question</strong></td>
-<td style="text-align: left;">Is there <em>any</em> difference?</td>
-<td style="text-align: left;">Is there an <em>increase</em> or a <em>decrease</em>?</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"><strong>Alternative <span class="math inline">H_1</span></strong></td>
-<td style="text-align: left;"><span class="math inline">\mu\mathrel{\rlap{\,/}{=}}\mu_0</span></td>
-<td style="text-align: left;"><span class="math inline">\mu&gt;\mu_0</span> or <span class="math inline">\mu&lt;\mu_0</span></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"><strong>Rejection region</strong></td>
-<td style="text-align: left;">Two tails, <span class="math inline">\alpha/2</span> each</td>
-<td style="text-align: left;">One tail, the full <span class="math inline">\alpha</span></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"><strong>P-value</strong></td>
-<td style="text-align: left;"><span class="math inline">2\,P(Z&gt;\lvert z\rvert)</span></td>
-<td style="text-align: left;">Area in the tail named by <span class="math inline">H_1</span></td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="tail-areas-and-power" class="slide level2">
-<h2>Tail areas and power</h2>
+<section id="one-sided-example-the-data" class="slide level2">
+<h2>One-sided example: the data</h2>
 <div class="box">
-<p><span class="tag">Tail areas</span> In a <strong>two-sided</strong> test <span class="math inline">\alpha</span> is split between the lower and upper tails. In a <strong>one-sided</strong> test the whole <span class="math inline">\alpha</span> goes into the tail named by <span class="math inline">H_1</span>.</p>
+<p><span class="tag">Question</span> Are students <strong>taller</strong> than <span class="math inline">167</span> cm? Data: <span class="math inline">n=20</span>, <span class="math inline">\bar{X}=170</span>, <span class="math inline">\sigma=8</span> (known), so <span class="math inline">SE=8/\sqrt{20}\approx1.789</span>.</p>
 </div>
 <div class="fragment">
 <div class="box key">
-<p><span class="tag">Key result: power</span> A one-sided test is more <strong>powerful</strong> in the hypothesized direction: its critical value is closer to the mean. But it completely ignores effects in the opposite direction.</p>
+<p>The <strong>same data</strong> as in the two-sided test. Only the question has changed, so the verdict may change too.</p>
 </div>
 </div>
 </section>
-<section id="one-sided-example-hypotheses" class="slide level2">
-<h2>One-sided example: hypotheses</h2>
-<div class="box">
-<p><span class="tag">Claim</span> The average height is <strong>more than <span class="math inline">167</span> cm</strong>. Data: <span class="math inline">n=20</span>, <span class="math inline">\bar{X}=170</span>, <span class="math inline">\sigma=8</span>, <span class="math inline">SE\approx1.789</span>.</p>
+<section id="one-sided-example-the-hypotheses" class="slide level2">
+<h2>One-sided example: the hypotheses</h2>
+<div class="box key">
+<p>The claim goes into <span class="math inline">H_1</span>. <span class="math inline">H_0</span> is its opposite: “not taller”. <span class="math display">H_0:\ \mu\leq167 \qquad H_1:\ \mu&gt;167</span></p>
 </div>
 <div class="fragment">
-<div class="box key">
-<p><span class="math display">H_0:\ \mu\leq167 \qquad H_1:\ \mu&gt;167</span></p>
+<div class="box">
+<p><span class="tag"><span class="math inline">H_0</span> can now be an inequality</span> <span class="math inline">H_0</span> still contains an equality sign, but it now covers a whole range of values: every <span class="math inline">\mu\leq167</span>.</p>
 </div>
 </div>
 <div class="fragment">
 <div class="box good">
-<p>If we reject <span class="math inline">\mu=167</span> in favour of <span class="math inline">\mu&gt;167</span>, we also reject any <span class="math inline">\mu_0&lt;167</span>. So we may write <span class="math inline">H_0</span> with an equality <strong>without loss of generality</strong>: <span class="math display">H_0:\ \mu=167 \qquad H_1:\ \mu&gt;167</span></p>
+<p><span class="tag">Reformulate with an equality</span> Among all <span class="math inline">\mu\leq167</span>, the hardest value to reject is <span class="math inline">167</span> itself: a sample mean of <span class="math inline">170</span> would be <strong>even more surprising</strong> if the true mean were lower, say <span class="math inline">160</span>. So if we can reject <span class="math inline">\mu=167</span>, we reject every lower value too, and it is enough to test <span class="math display">H_0:\ \mu=167 \qquad H_1:\ \mu&gt;167</span></p>
 </div>
 </div>
 </section>
 <section id="one-sided-example-the-test" class="slide level2">
 <h2>One-sided example: the test</h2>
 <div class="box">
-<p><span class="math display">z=\frac{170-167}{1.789}\approx1.68</span></p>
+<p><span class="math display">z=\frac{170-167}{1.789}\approx1.68</span> The same statistic as in the two-sided test: it does not depend on the direction.</p>
 </div>
 <div class="fragment">
-<table class="caption-top">
-<thead>
-<tr class="header">
-<th style="text-align: left;">At <span class="math inline">\alpha=0.05</span></th>
-<th style="text-align: center;">One-sided (upper)</th>
-<th style="text-align: center;">Two-sided</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;"><strong>Critical value</strong></td>
-<td style="text-align: center;"><span class="math inline">1.645</span></td>
-<td style="text-align: center;"><span class="math inline">\pm1.96</span></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"><strong>P-value</strong></td>
-<td style="text-align: center;"><span class="math inline">0.047</span></td>
-<td style="text-align: center;"><span class="math inline">0.093</span></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"><strong>Verdict</strong></td>
-<td style="text-align: center;"><strong>Reject <span class="math inline">H_0</span></strong></td>
-<td style="text-align: center;"><strong>Fail to reject <span class="math inline">H_0</span></strong></td>
-</tr>
-</tbody>
-</table>
+<div class="cards">
+<div class="box c">
+<p><span class="tag">P-value</span> Only the <strong>upper</strong> tail counts: <span class="math inline">p=P(Z&gt;1.68)\approx0.047</span>.</p>
 </div>
-<div class="fragment">
-<div class="box key">
-<p>The one-sided test makes it <strong>easier to reject</strong> <span class="math inline">H_0</span> in the direction of <span class="math inline">H_1</span>. Decide the direction <strong>before</strong> seeing the data.</p>
+<div class="box c">
+<p><span class="tag">Critical value</span> At <span class="math inline">\alpha=0.05</span> the whole <span class="math inline">\alpha</span> sits in the upper tail: reject if <span class="math inline">z&gt;1.645</span>.</p>
+</div>
 </div>
 </div>
 </section>
 <section id="one-sided-example-decision" class="slide level2">
 <h2>One-sided example: decision</h2>
 <div class="box key">
-<p><span class="math inline">H_0:\ \mu=167</span> against <span class="math inline">H_1:\ \mu&gt;167</span>, <span class="math inline">\alpha=0.05</span>.<br> <span class="math inline">p=P(Z&gt;1.68)\approx0.047&lt;0.05</span>, and <span class="math inline">z=1.68&gt;1.645</span>: <strong>reject <span class="math inline">H_0</span></strong>.</p>
+<p><span class="math inline">H_0:\ \mu=167</span> against <span class="math inline">H_1:\ \mu&gt;167</span>, <span class="math inline">\alpha=0.05</span>.<br> <span class="math inline">p\approx0.047&lt;0.05</span>, and <span class="math inline">z=1.68&gt;1.645</span>: <strong>reject <span class="math inline">H_0</span></strong>.</p>
 </div>
 <div class="fragment">
 <div class="box good">
@@ -1857,7 +1795,7 @@ margin-right: 0; }
 </div>
 <div class="fragment">
 <div class="box warn">
-<p><span class="tag">Compare</span> The same data did <strong>not</strong> reject in the two-sided test (<span class="math inline">p=0.093</span>). The one-sided test is legitimate only if the direction was chosen <strong>before</strong> seeing the data.</p>
+<p><span class="tag">Compare</span> The same data did <strong>not</strong> reject in the two-sided test (<span class="math inline">p=0.093</span>): the one-sided p-value is <strong>half</strong> as large. This is legitimate only if the direction was chosen <strong>before</strong> seeing the data.</p>
 </div>
 </div>
 </section>
@@ -1918,6 +1856,56 @@ margin-right: 0; }
   sl.addEventListener("input", draw); draw();
 })();
 </script>
+</section>
+<section id="two-sided-vs.-one-sided" class="slide level2">
+<h2>Two-sided vs. one-sided</h2>
+<table class="caption-top">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Two-sided</th>
+<th style="text-align: left;">One-sided</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Question</strong></td>
+<td style="text-align: left;">Is there <em>any</em> difference?</td>
+<td style="text-align: left;">Is there an <em>increase</em> or a <em>decrease</em>?</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Alternative <span class="math inline">H_1</span></strong></td>
+<td style="text-align: left;"><span class="math inline">\mu\mathrel{\rlap{\,/}{=}}\mu_0</span></td>
+<td style="text-align: left;"><span class="math inline">\mu&gt;\mu_0</span> or <span class="math inline">\mu&lt;\mu_0</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Rejection region</strong></td>
+<td style="text-align: left;">Two tails, <span class="math inline">\alpha/2</span> each</td>
+<td style="text-align: left;">One tail, the full <span class="math inline">\alpha</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>P-value</strong></td>
+<td style="text-align: left;"><span class="math inline">2\,P(Z&gt;\lvert z\rvert)</span></td>
+<td style="text-align: left;">Area in the tail named by <span class="math inline">H_1</span></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="tail-areas-and-power" class="slide level2">
+<h2>Tail areas and power</h2>
+<div class="box">
+<p><span class="tag">Tail areas</span> In a <strong>two-sided</strong> test <span class="math inline">\alpha</span> is split between the lower and upper tails. In a <strong>one-sided</strong> test the whole <span class="math inline">\alpha</span> goes into the tail named by <span class="math inline">H_1</span>.</p>
+</div>
+<div class="fragment">
+<div class="box key">
+<p><span class="tag">Key result: power</span> A one-sided test is more <strong>powerful</strong> in the hypothesized direction: its critical value is closer to the mean. But it completely ignores effects in the opposite direction.</p>
+</div>
+</div>
 </section></section>
 <section>
 <section id="testing-mu-when-sigma-is-unknown" class="title-slide slide level1 section-slide center">

@@ -535,46 +535,38 @@ A sample like $\bar{X}=150$ can **never** make us reject, however far it is from
 A one-sided test is a **bet on a direction**: stronger if right, blind if wrong. So choose the direction **before** seeing the data.
 :::
 
-## Two-sided vs. one-sided
-
-| | Two-sided | One-sided |
-|:--|:--|:--|
-| **Question** | Is there *any* difference? | Is there an *increase* or a *decrease*? |
-| **Alternative $H_1$** | $\mu\mathrel{\rlap{\,/}{=}}\mu_0$ | $\mu>\mu_0$ or $\mu<\mu_0$ |
-| **Rejection region** | Two tails, $\alpha/2$ each | One tail, the full $\alpha$ |
-| **P-value** | $2\,P(Z>\lvert z\rvert)$ | Area in the tail named by $H_1$ |
-
-## Tail areas and power
+## One-sided example: the data
 
 ::: {.box}
-<span class="tag">Tail areas</span>
-In a **two-sided** test $\alpha$ is split between the lower and upper tails. In a **one-sided** test the whole $\alpha$ goes into the tail named by $H_1$.
+<span class="tag">Question</span>
+Are students **taller** than $167$ cm? Data: $n=20$, $\bar{X}=170$, $\sigma=8$ (known), so $SE=8/\sqrt{20}\approx1.789$.
 :::
 
 . . .
 
 ::: {.box .key}
-<span class="tag">Key result: power</span>
-A one-sided test is more **powerful** in the hypothesized direction: its critical value is closer to the mean. But it completely ignores effects in the opposite direction.
+The **same data** as in the two-sided test. Only the question has changed, so the verdict may change too.
 :::
 
-## One-sided example: hypotheses
-
-::: {.box}
-<span class="tag">Claim</span>
-The average height is **more than $167$ cm**. Data: $n=20$, $\bar{X}=170$, $\sigma=8$, $SE\approx1.789$.
-:::
-
-. . .
+## One-sided example: the hypotheses
 
 ::: {.box .key}
+The claim goes into $H_1$. $H_0$ is its opposite: "not taller".
 $$H_0:\ \mu\leq167 \qquad H_1:\ \mu>167$$
 :::
 
 . . .
 
+::: {.box}
+<span class="tag">$H_0$ can now be an inequality</span>
+$H_0$ still contains an equality sign, but it now covers a whole range of values: every $\mu\leq167$.
+:::
+
+. . .
+
 ::: {.box .good}
-If we reject $\mu=167$ in favour of $\mu>167$, we also reject any $\mu_0<167$. So we may write $H_0$ with an equality **without loss of generality**:
+<span class="tag">Reformulate with an equality</span>
+Among all $\mu\leq167$, the hardest value to reject is $167$ itself: a sample mean of $170$ would be **even more surprising** if the true mean were lower, say $160$. So if we can reject $\mu=167$, we reject every lower value too, and it is enough to test
 $$H_0:\ \mu=167 \qquad H_1:\ \mu>167$$
 :::
 
@@ -582,27 +574,27 @@ $$H_0:\ \mu=167 \qquad H_1:\ \mu>167$$
 
 ::: {.box}
 $$z=\frac{170-167}{1.789}\approx1.68$$
+The same statistic as in the two-sided test: it does not depend on the direction.
 :::
 
 . . .
 
-| At $\alpha=0.05$ | One-sided (upper) | Two-sided |
-|:--|:-:|:-:|
-| **Critical value** | $1.645$ | $\pm1.96$ |
-| **P-value** | $0.047$ | $0.093$ |
-| **Verdict** | **Reject $H_0$** | **Fail to reject $H_0$** |
-
-. . .
-
-::: {.box .key}
-The one-sided test makes it **easier to reject** $H_0$ in the direction of $H_1$. Decide the direction **before** seeing the data.
+::: {.cards}
+::: {.box .c}
+<span class="tag">P-value</span>
+Only the **upper** tail counts: $p=P(Z>1.68)\approx0.047$.
+:::
+::: {.box .c}
+<span class="tag">Critical value</span>
+At $\alpha=0.05$ the whole $\alpha$ sits in the upper tail: reject if $z>1.645$.
+:::
 :::
 
 ## One-sided example: decision
 
 ::: {.box .key}
 $H_0:\ \mu=167$ against $H_1:\ \mu>167$, $\alpha=0.05$.<br>
-$p=P(Z>1.68)\approx0.047<0.05$, and $z=1.68>1.645$: **reject $H_0$**.
+$p\approx0.047<0.05$, and $z=1.68>1.645$: **reject $H_0$**.
 :::
 
 . . .
@@ -616,7 +608,7 @@ At the 5% level there **is sufficient evidence** that the average height of stud
 
 ::: {.box .warn}
 <span class="tag">Compare</span>
-The same data did **not** reject in the two-sided test ($p=0.093$). The one-sided test is legitimate only if the direction was chosen **before** seeing the data.
+The same data did **not** reject in the two-sided test ($p=0.093$): the one-sided p-value is **half** as large. This is legitimate only if the direction was chosen **before** seeing the data.
 :::
 
 ## One-sided test: the picture
@@ -677,6 +669,29 @@ Shaded: the probability of a result as high as $\bar{X}=170$ if the slider value
   sl.addEventListener("input", draw); draw();
 })();
 </script>
+
+## Two-sided vs. one-sided
+
+| | Two-sided | One-sided |
+|:--|:--|:--|
+| **Question** | Is there *any* difference? | Is there an *increase* or a *decrease*? |
+| **Alternative $H_1$** | $\mu\mathrel{\rlap{\,/}{=}}\mu_0$ | $\mu>\mu_0$ or $\mu<\mu_0$ |
+| **Rejection region** | Two tails, $\alpha/2$ each | One tail, the full $\alpha$ |
+| **P-value** | $2\,P(Z>\lvert z\rvert)$ | Area in the tail named by $H_1$ |
+
+## Tail areas and power
+
+::: {.box}
+<span class="tag">Tail areas</span>
+In a **two-sided** test $\alpha$ is split between the lower and upper tails. In a **one-sided** test the whole $\alpha$ goes into the tail named by $H_1$.
+:::
+
+. . .
+
+::: {.box .key}
+<span class="tag">Key result: power</span>
+A one-sided test is more **powerful** in the hypothesized direction: its critical value is closer to the mean. But it completely ignores effects in the opposite direction.
+:::
 
 # Testing $\mu$ when $\sigma$ is unknown {.section-slide}
 

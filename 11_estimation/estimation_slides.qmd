@@ -555,7 +555,7 @@ To **establish** these properties we need **assumptions about the population dis
 ::: {.cards}
 ::: {.box .warn .c}
 <span class="tag">Needs a specific model</span>
-$2X_1$ and $2\bar{X}$ are unbiased for $a$ **assuming** $X_i\sim U[0,a]$. If the population were Normal, $E[2\bar{X}]=2\mu≠a$.<br><br>Efficiency: $2\bar{X}$ is beaten by $\frac{n+1}{n}\max(X_i)$ for Uniform, but $\bar{X}$ is the most efficient for Normal.
+$2X_1$ and $2\bar{X}$ are unbiased for $a$ **assuming** $X_i\sim U[0,a]$. If the population were Normal, $E[2\bar{X}]=2\mu\mathrel{\rlap{\,/}{=}}a$.<br><br>Efficiency: $2\bar{X}$ is beaten by $\frac{n+1}{n}\max(X_i)$ for Uniform, but $\bar{X}$ is the most efficient for Normal.
 :::
 ::: {.box .good .c}
 <span class="tag">Holds for (almost) any population</span>

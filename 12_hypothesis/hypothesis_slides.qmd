@@ -717,6 +717,12 @@ $$H_0:\ \mu=167 \qquad H_1:\ \mu≠167$$
 $$t=\frac{170-167}{8/\sqrt{20}}\approx1.68,\qquad df=n-1=19$$
 :::
 
+## A worked t-test: the decision
+
+::: {.box}
+$$t=\frac{170-167}{8/\sqrt{20}}\approx1.68,\qquad df=19$$
+:::
+
 . . .
 
 ::: {.cards}

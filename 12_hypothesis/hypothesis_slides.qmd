@@ -108,7 +108,40 @@ Is the average height of students taking this class equal to $167$ cm?
 . . .
 
 ::: {.box}
+<span class="tag">We have asked this before</span>
+In the estimation lecture, to decide whether a value was a **reasonable guess** for $\mu$, we asked: *if this value were true, how surprising would our sample be?* Very surprising: not a reasonable guess. Not surprising: a reasonable guess.
+:::
+
+. . .
+
+::: {.box .good}
+<span class="tag">The bridge</span>
+That is exactly what hypothesis testing does, for **one specific guess**: here, $\mu=167$. The confidence interval ran this check for every possible guess at once. Now we make each step precise, and give it a name.
+:::
+
+## Our example: the data
+
+::: {.box}
 Data: $n=20$, $\bar{X}=170$ cm, and $\sigma=8$ cm is assumed **known**: the same student-heights example as in the estimation lecture. There we found the 95% interval $[166.49,\ 173.51]$.
+:::
+
+. . .
+
+::: {.box .key}
+Our task: measure how surprising $\bar{X}=170$ (or something even further from $167$) is **if** the true mean were $167$.
+:::
+
+. . .
+
+::: {.cards}
+::: {.box .warn .c}
+<span class="tag">Very surprising</span>
+There is **statistical evidence against** the claim that the true mean is $167$.
+:::
+::: {.box .good .c}
+<span class="tag">Not very surprising</span>
+There is **not enough evidence against** the claim that the true mean is $167$.
+:::
 :::
 
 ## Step 1: Formulate hypotheses
@@ -139,7 +172,7 @@ If we find enough evidence to **reject** $H_0$, we favour $H_1$.
 :::
 ::: {.box .key}
 <span class="tag">$H_1$</span>
-**Never contains an equality sign**: $≠$, $>$ or $<$.
+**Never contains an equality sign**: $\mathrel{\rlap{\,/}{=}}$, $>$ or $<$.
 :::
 :::
 
@@ -147,7 +180,7 @@ If we find enough evidence to **reject** $H_0$, we favour $H_1$.
 
 ::: {.box .good}
 <span class="tag">Example: two-sided test</span>
-$$H_0:\ \mu=167 \qquad H_1:\ \mu≠167$$
+$$H_0:\ \mu=167 \qquad H_1:\ \mu\mathrel{\rlap{\,/}{=}}167$$
 :::
 
 ## Step 2: The test statistic
@@ -310,7 +343,7 @@ Is there *any* difference?
 
 | | Two-sided test of $\mu$ ($\sigma$ known) |
 |:--|:--|
-| **Hypotheses** | $H_0:\ \mu=\mu_0 \qquad H_1:\ \mu≠\mu_0$ |
+| **Hypotheses** | $H_0:\ \mu=\mu_0 \qquad H_1:\ \mu\mathrel{\rlap{\,/}{=}}\mu_0$ |
 | **Statistic** | $z=\dfrac{\bar{X}-\mu_0}{\sigma/\sqrt n}$ |
 | **Rejection region** | $\lvert z\rvert>z_{\alpha/2}$: both tails, $\alpha/2$ each |
 | **P-value** | $2\,P(Z>\lvert z\rvert)$ |
@@ -325,7 +358,7 @@ The average height of students **differs from $167$ cm**. Data: $n=20$, $\bar{X}
 . . .
 
 ::: {.box .key}
-$$H_0:\ \mu=167 \qquad H_1:\ \mu≠167$$
+$$H_0:\ \mu=167 \qquad H_1:\ \mu\mathrel{\rlap{\,/}{=}}167$$
 Significance level, chosen **before** looking at the data: $\alpha=0.05$.
 :::
 
@@ -446,7 +479,7 @@ When the question has a direction.
 | | Two-sided | One-sided |
 |:--|:--|:--|
 | **Question** | Is there *any* difference? | Is there an *increase* or a *decrease*? |
-| **Alternative $H_1$** | $\mu≠\mu_0$ | $\mu>\mu_0$ or $\mu<\mu_0$ |
+| **Alternative $H_1$** | $\mu\mathrel{\rlap{\,/}{=}}\mu_0$ | $\mu>\mu_0$ or $\mu<\mu_0$ |
 | **Rejection region** | Two tails, $\alpha/2$ each | One tail, the full $\alpha$ |
 | **P-value** | $2\,P(Z>\lvert z\rvert)$ | Area in the tail named by $H_1$ |
 
@@ -708,7 +741,7 @@ Self-study: learn how to use the $t$-table at the end of the book.
 ::: {.box .key}
 <span class="tag">Same question, $\sigma$ unknown</span>
 Is the average height of students equal to $167$ cm? Data: $n=20$, $\bar{X}=170$, and now $\sigma$ is unknown: suppose the sample SD is $s=8$.
-$$H_0:\ \mu=167 \qquad H_1:\ \mu≠167$$
+$$H_0:\ \mu=167 \qquad H_1:\ \mu\mathrel{\rlap{\,/}{=}}167$$
 :::
 
 . . .
@@ -747,9 +780,9 @@ At $\alpha=0.05$ we **fail to reject** $H_0$: there is not sufficient evidence t
 
 | Step | What we do |
 |:--|:--|
-| **1. Hypotheses** | $H_0$ with $=$ (the benchmark $\mu_0$); $H_1$ is $≠$, $>$ or $<$. |
+| **1. Hypotheses** | $H_0$ with $=$ (the benchmark $\mu_0$); $H_1$ is $\mathrel{\rlap{\,/}{=}}$, $>$ or $<$. |
 | **2. Statistic** | $\sigma$ known: $z=\dfrac{\bar{X}-\mu_0}{\sigma/\sqrt n}$. $\sigma$ unknown: $t=\dfrac{\bar{X}-\mu_0}{s/\sqrt n}$ with $df=n-1$. |
-| **3. P-value** | $≠$: both tails, $2\,P(\text{beyond }\lvert\text{stat}\rvert)$. $>$: upper tail. $<$: lower tail. |
+| **3. P-value** | $\mathrel{\rlap{\,/}{=}}$: both tails, $2\,P(\text{beyond }\lvert\text{stat}\rvert)$. $>$: upper tail. $<$: lower tail. |
 | **4. Decision** | $p<\alpha$ (or statistic beyond the critical value): **reject $H_0$**. Otherwise: **fail to reject**. |
 
 . . .

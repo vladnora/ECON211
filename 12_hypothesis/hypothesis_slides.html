@@ -1276,7 +1276,33 @@ margin-right: 0; }
 </div>
 <div class="fragment">
 <div class="box">
+<p><span class="tag">We have asked this before</span> In the estimation lecture, to decide whether a value was a <strong>reasonable guess</strong> for <span class="math inline">\mu</span>, we asked: <em>if this value were true, how surprising would our sample be?</em> Very surprising: not a reasonable guess. Not surprising: a reasonable guess.</p>
+</div>
+</div>
+<div class="fragment">
+<div class="box good">
+<p><span class="tag">The bridge</span> That is exactly what hypothesis testing does, for <strong>one specific guess</strong>: here, <span class="math inline">\mu=167</span>. The confidence interval ran this check for every possible guess at once. Now we make each step precise, and give it a name.</p>
+</div>
+</div>
+</section>
+<section id="our-example-the-data" class="slide level2">
+<h2>Our example: the data</h2>
+<div class="box">
 <p>Data: <span class="math inline">n=20</span>, <span class="math inline">\bar{X}=170</span> cm, and <span class="math inline">\sigma=8</span> cm is assumed <strong>known</strong>: the same student-heights example as in the estimation lecture. There we found the 95% interval <span class="math inline">[166.49,\ 173.51]</span>.</p>
+</div>
+<div class="fragment">
+<div class="box key">
+<p>Our task: measure how surprising <span class="math inline">\bar{X}=170</span> (or something even further from <span class="math inline">167</span>) is <strong>if</strong> the true mean were <span class="math inline">167</span>.</p>
+</div>
+</div>
+<div class="fragment">
+<div class="cards">
+<div class="box warn c">
+<p><span class="tag">Very surprising</span> There is <strong>statistical evidence against</strong> the claim that the true mean is <span class="math inline">167</span>.</p>
+</div>
+<div class="box good c">
+<p><span class="tag">Not very surprising</span> There is <strong>not enough evidence against</strong> the claim that the true mean is <span class="math inline">167</span>.</p>
+</div>
 </div>
 </div>
 </section>
@@ -1303,12 +1329,12 @@ margin-right: 0; }
 <p><span class="tag"><span class="math inline">H_0</span></span> <strong>Must always contain an equality sign</strong>: <span class="math inline">=</span>, <span class="math inline">\leq</span> or <span class="math inline">\geq</span>.</p>
 </div>
 <div class="box key">
-<p><span class="tag"><span class="math inline">H_1</span></span> <strong>Never contains an equality sign</strong>: <span class="math inline">≠</span>, <span class="math inline">&gt;</span> or <span class="math inline">&lt;</span>.</p>
+<p><span class="tag"><span class="math inline">H_1</span></span> <strong>Never contains an equality sign</strong>: <span class="math inline">\mathrel{\rlap{\,/}{=}}</span>, <span class="math inline">&gt;</span> or <span class="math inline">&lt;</span>.</p>
 </div>
 </div>
 <div class="fragment">
 <div class="box good">
-<p><span class="tag">Example: two-sided test</span> <span class="math display">H_0:\ \mu=167 \qquad H_1:\ \mu≠167</span></p>
+<p><span class="tag">Example: two-sided test</span> <span class="math display">H_0:\ \mu=167 \qquad H_1:\ \mu\mathrel{\rlap{\,/}{=}}167</span></p>
 </div>
 </div>
 </section>
@@ -1527,7 +1553,7 @@ margin-right: 0; }
 <tbody>
 <tr class="odd">
 <td style="text-align: left;"><strong>Hypotheses</strong></td>
-<td style="text-align: left;"><span class="math inline">H_0:\ \mu=\mu_0 \qquad H_1:\ \mu≠\mu_0</span></td>
+<td style="text-align: left;"><span class="math inline">H_0:\ \mu=\mu_0 \qquad H_1:\ \mu\mathrel{\rlap{\,/}{=}}\mu_0</span></td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"><strong>Statistic</strong></td>
@@ -1551,7 +1577,7 @@ margin-right: 0; }
 </div>
 <div class="fragment">
 <div class="box key">
-<p><span class="math display">H_0:\ \mu=167 \qquad H_1:\ \mu≠167</span> Significance level, chosen <strong>before</strong> looking at the data: <span class="math inline">\alpha=0.05</span>.</p>
+<p><span class="math display">H_0:\ \mu=167 \qquad H_1:\ \mu\mathrel{\rlap{\,/}{=}}167</span> Significance level, chosen <strong>before</strong> looking at the data: <span class="math inline">\alpha=0.05</span>.</p>
 </div>
 </div>
 </section>
@@ -1709,7 +1735,7 @@ margin-right: 0; }
 </tr>
 <tr class="even">
 <td style="text-align: left;"><strong>Alternative <span class="math inline">H_1</span></strong></td>
-<td style="text-align: left;"><span class="math inline">\mu≠\mu_0</span></td>
+<td style="text-align: left;"><span class="math inline">\mu\mathrel{\rlap{\,/}{=}}\mu_0</span></td>
 <td style="text-align: left;"><span class="math inline">\mu&gt;\mu_0</span> or <span class="math inline">\mu&lt;\mu_0</span></td>
 </tr>
 <tr class="odd">
@@ -2005,7 +2031,7 @@ margin-right: 0; }
 <section id="a-worked-t-test" class="slide level2">
 <h2>A worked t-test</h2>
 <div class="box key">
-<p><span class="tag">Same question, <span class="math inline">\sigma</span> unknown</span> Is the average height of students equal to <span class="math inline">167</span> cm? Data: <span class="math inline">n=20</span>, <span class="math inline">\bar{X}=170</span>, and now <span class="math inline">\sigma</span> is unknown: suppose the sample SD is <span class="math inline">s=8</span>. <span class="math display">H_0:\ \mu=167 \qquad H_1:\ \mu≠167</span></p>
+<p><span class="tag">Same question, <span class="math inline">\sigma</span> unknown</span> Is the average height of students equal to <span class="math inline">167</span> cm? Data: <span class="math inline">n=20</span>, <span class="math inline">\bar{X}=170</span>, and now <span class="math inline">\sigma</span> is unknown: suppose the sample SD is <span class="math inline">s=8</span>. <span class="math display">H_0:\ \mu=167 \qquad H_1:\ \mu\mathrel{\rlap{\,/}{=}}167</span></p>
 </div>
 <div class="fragment">
 <div class="box">
@@ -2050,7 +2076,7 @@ margin-right: 0; }
 <tbody>
 <tr class="odd">
 <td style="text-align: left;"><strong>1. Hypotheses</strong></td>
-<td style="text-align: left;"><span class="math inline">H_0</span> with <span class="math inline">=</span> (the benchmark <span class="math inline">\mu_0</span>); <span class="math inline">H_1</span> is <span class="math inline">≠</span>, <span class="math inline">&gt;</span> or <span class="math inline">&lt;</span>.</td>
+<td style="text-align: left;"><span class="math inline">H_0</span> with <span class="math inline">=</span> (the benchmark <span class="math inline">\mu_0</span>); <span class="math inline">H_1</span> is <span class="math inline">\mathrel{\rlap{\,/}{=}}</span>, <span class="math inline">&gt;</span> or <span class="math inline">&lt;</span>.</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"><strong>2. Statistic</strong></td>
@@ -2058,7 +2084,7 @@ margin-right: 0; }
 </tr>
 <tr class="odd">
 <td style="text-align: left;"><strong>3. P-value</strong></td>
-<td style="text-align: left;"><span class="math inline">≠</span>: both tails, <span class="math inline">2\,P(\text{beyond }\lvert\text{stat}\rvert)</span>. <span class="math inline">&gt;</span>: upper tail. <span class="math inline">&lt;</span>: lower tail.</td>
+<td style="text-align: left;"><span class="math inline">\mathrel{\rlap{\,/}{=}}</span>: both tails, <span class="math inline">2\,P(\text{beyond }\lvert\text{stat}\rvert)</span>. <span class="math inline">&gt;</span>: upper tail. <span class="math inline">&lt;</span>: lower tail.</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"><strong>4. Decision</strong></td>

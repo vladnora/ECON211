@@ -1181,7 +1181,7 @@ margin-right: 0; }
 <p><a class="toc-hit" href="#/one-sided-tests" title="Go to section"></a> <span class="tag">3 · One-sided tests</span> When the alternative points in one direction only, with a worked example.</p>
 </div>
 <div class="box">
-<p><a class="toc-hit" href="#/testing-mu-when-sigma-is-unknown" title="Go to section"></a> <span class="tag">4 · Testing <span class="math inline">\mu</span> when <span class="math inline">\sigma</span> is unknown</span> The t-statistic, the t-distribution, a worked t-test and a one-page summary.</p>
+<p><a class="toc-hit" href="#/testing-mu-when-sigma-is-unknown" title="Go to section"></a> <span class="tag">4 · Testing <span class="math inline">\mu</span> when <span class="math inline">\sigma</span> is unknown</span> The t-statistic, the t-distribution, a worked t-test, confidence intervals with <span class="math inline">t</span>, and a one-page summary.</p>
 </div>
 </div>
 </section>
@@ -1919,7 +1919,23 @@ margin-right: 0; }
 </div>
 <div class="fragment">
 <div class="box key">
-<p><span class="tag">Definition</span> <span class="math display">t=\frac{\bar{X}-\mu_0}{s/\sqrt n}</span> where <span class="math inline">s</span> is the sample standard deviation.</p>
+<p><span class="tag">Definition: the t-statistic (or t-score)</span> <span class="math display">t=\frac{\bar{X}-\mu_0}{s/\sqrt n}</span> where <span class="math inline">s</span> is the sample standard deviation. It has the same form as <span class="math inline">z</span>, with <span class="math inline">\sigma</span> replaced by <span class="math inline">s</span>.</p>
+</div>
+</div>
+</section>
+<section id="why-a-new-distribution" class="slide level2">
+<h2>Why a new distribution?</h2>
+<div class="cards">
+<div class="box c">
+<p><span class="tag">The <span class="math inline">z</span>-statistic</span> <span class="math display">z=\frac{\bar{X}-\mu_0}{\sigma/\sqrt n}</span> Only <span class="math inline">\bar{X}</span> is random. <span class="math inline">\sigma</span> is a fixed, known number.</p>
+</div>
+<div class="box key c">
+<p><span class="tag">The <span class="math inline">t</span>-statistic</span> <span class="math display">t=\frac{\bar{X}-\mu_0}{s/\sqrt n}</span> Both <span class="math inline">\bar{X}</span> <strong>and</strong> <span class="math inline">s</span> are random: <span class="math inline">s</span> changes from sample to sample.</p>
+</div>
+</div>
+<div class="fragment">
+<div class="box warn">
+<p><span class="tag">More uncertainty</span> Two sources of randomness instead of one, so <span class="math inline">t</span> varies <strong>more</strong> than <span class="math inline">z</span>. When <span class="math inline">s</span> happens to come out too small, the denominator shrinks and <span class="math inline">t</span> becomes extreme. This is why the <span class="math inline">t</span>-distribution is <strong>wider</strong>, with thicker tails.</p>
 </div>
 </div>
 </section>
@@ -2044,6 +2060,72 @@ margin-right: 0; }
 </div>
 </div>
 </section>
+<section id="critical-values-t-vs.-z" class="slide level2">
+<h2>Critical values: <span class="math inline">t</span> vs. <span class="math inline">z</span></h2>
+<div class="cap">
+<p>Move the sliders. To cut off the same total tail area <span class="math inline">\alpha</span>, the thicker-tailed <span class="math inline">t</span>-distribution needs a cutoff <strong>further out</strong> (red) than the normal (blue). Blue shading: the extra tail area you would get if you wrongly used the <span class="math inline">z</span> cutoff.</p>
+</div>
+<svg id="cv-svg" viewbox="0 0 900 300" class="famplot">
+</svg>
+<div id="cv-out" class="readout">
+
+</div>
+<div class="ctl" style="justify-content:center">
+<p><label>Degrees of freedom: <input type="range" id="cv-df" min="1" max="50" step="1" value="5" style="width:340px"> <b id="cv-df-val">5</b></label> <label style="margin-left:1.5em">Level 1 − α: <select id="cv-lev"><option value="0.90">90%</option><option value="0.95" selected>95%</option><option value="0.99">99%</option></select></label></p>
+</div>
+<script>
+(function () {
+  var L = 50, R = 880, XA = -6, XB = 6, TOP = 20, B = 250, YM = 0.45, ZC = { "0.90": 1.6449, "0.95": 1.96, "0.99": 2.5758 };
+  function px(x) { return L + (x - XA) / (XB - XA) * (R - L); }
+  function py(y) { return B - y / YM * (B - TOP); }
+  function lgamma(z) {
+    var C = [76.18009172947146, -86.50532032941677, 24.01409824083091, -1.231739572450155, 0.1208650973866179e-2, -0.5395239384953e-5];
+    var y = z, tmp = z + 5.5; tmp -= (z + 0.5) * Math.log(tmp);
+    var ser = 1.000000000190015;
+    for (var j = 0; j < 6; j++) ser += C[j] / ++y;
+    return -tmp + Math.log(2.5066282746310005 * ser / z);
+  }
+  function tpdf(x, v) { return Math.exp(lgamma((v + 1) / 2) - lgamma(v / 2)) / Math.sqrt(v * Math.PI) * Math.pow(1 + x * x / v, -(v + 1) / 2); }
+  function npdf(x) { return Math.exp(-0.5 * x * x) / Math.sqrt(2 * Math.PI); }
+  function mass(x, v) { var n = 2000, h = x / n, s = tpdf(0, v) + tpdf(x, v); for (var i = 1; i < n; i++) s += tpdf(i * h, v) * (i % 2 ? 4 : 2); return s * h / 3; }
+  function tcrit(c, v) { var lo = 0, hi = 100; for (var k = 0; k < 40; k++) { var m = (lo + hi) / 2; if (mass(m, v) < c / 2) lo = m; else hi = m; } return (lo + hi) / 2; }
+  var svg = document.getElementById("cv-svg"), sl = document.getElementById("cv-df"), lab = document.getElementById("cv-df-val"),
+      sel = document.getElementById("cv-lev"), out = document.getElementById("cv-out");
+  function area(a, b, v, fill, op) {
+    a = Math.max(a, XA); b = Math.min(b, XB); if (b <= a) return "";
+    var d = "M" + px(a).toFixed(1) + "," + py(0).toFixed(1);
+    for (var x = a; x <= b + 1e-9; x += 0.02) d += " L" + px(x).toFixed(1) + "," + py(tpdf(x, v)).toFixed(1);
+    return '<path d="' + d + ' L' + px(b).toFixed(1) + ',' + py(0).toFixed(1) + ' Z" fill="' + fill + '" fill-opacity="' + op + '"/>';
+  }
+  function draw() {
+    var v = +sl.value, c = sel.value, z = ZC[c], t = tcrit(+c, v), g = "", dn = "", dt = "";
+    lab.textContent = v;
+    g += area(z, t, v, "#2b6cb0", 0.45) + area(-t, -z, v, "#2b6cb0", 0.45);
+    g += area(t, XB, v, "#c53030", 0.45) + area(XA, -t, v, "#c53030", 0.45);
+    for (var x = XA; x <= XB + 1e-9; x += 0.02) {
+      dn += (dn ? " L" : "M") + px(x).toFixed(1) + "," + py(npdf(x)).toFixed(1);
+      dt += (dt ? " L" : "M") + px(x).toFixed(1) + "," + py(tpdf(x, v)).toFixed(1);
+    }
+    g += '<path d="' + dn + '" fill="none" stroke="#1f2933" stroke-width="2.5" stroke-dasharray="7 5"/>';
+    g += '<path d="' + dt + '" fill="none" stroke="#c53030" stroke-width="3"/>';
+    g += '<line x1="' + L + '" y1="' + B + '" x2="' + R + '" y2="' + B + '" stroke="#52606d" stroke-width="2"/>';
+    for (var k = -5; k <= 5; k++) g += '<text x="' + px(k) + '" y="' + (B + 22) + '" text-anchor="middle" font-size="16" fill="#52606d">' + k + '</text>';
+    [[z, "#2b6cb0", "z", 40, "4 4"], [Math.min(t, XB), "#c53030", "t", 64, ""]].forEach(function (m) {
+      [-1, 1].forEach(function (sg) {
+        g += '<line x1="' + px(sg * m[0]) + '" y1="' + (TOP + 10) + '" x2="' + px(sg * m[0]) + '" y2="' + B + '" stroke="' + m[1] + '" stroke-width="2.5"' + (m[4] ? ' stroke-dasharray="' + m[4] + '"' : '') + '/>';
+      });
+      var val = m[2] === "z" ? z : t, xx = px(m[0]), right = xx < R - 140;
+      g += '<text x="' + (right ? xx + 8 : xx - 8) + '" y="' + m[3] + '" text-anchor="' + (right ? "start" : "end") + '" font-size="17" font-weight="700" fill="' + m[1] + '">' + m[2] + ' = ' + val.toFixed(3) + (m[2] === "t" && t > XB ? ' →' : '') + '</text>';
+    });
+    svg.innerHTML = g;
+    var extra = 1 - 2 * mass(z, v);
+    out.innerHTML = '<b style="color:#2b6cb0">z</b> cutoff: ' + z.toFixed(3) + ' &nbsp;·&nbsp; <b style="color:#c53030">t</b> cutoff (df = ' + v + '): <b>' + t.toFixed(3) + '</b> (' + (t / z).toFixed(2) + '× larger)<br>' +
+      'Total tail area of the <i>t</i>-distribution beyond ±' + z.toFixed(3) + ': <b style="color:#2b6cb0">' + extra.toFixed(3) + '</b> instead of ' + (1 - +c).toFixed(2) + '.';
+  }
+  sl.addEventListener("input", draw); sel.addEventListener("change", draw); draw();
+})();
+</script>
+</section>
 <section id="a-worked-t-test" class="slide level2">
 <h2>A worked t-test</h2>
 <div class="box key">
@@ -2074,6 +2156,201 @@ margin-right: 0; }
 <div class="box good">
 <p><span class="tag">Conclusion</span> At <span class="math inline">\alpha=0.05</span> we <strong>fail to reject</strong> <span class="math inline">H_0</span>: there is not sufficient evidence that the mean height of students differs from <span class="math inline">167</span> cm. Note that at <span class="math inline">\alpha=0.10</span> the <span class="math inline">z</span>-test rejected but the <span class="math inline">t</span>-test does <strong>not</strong> (<span class="math inline">0.110&gt;0.10</span>): the cost of not knowing <span class="math inline">\sigma</span>.</p>
 </div>
+</div>
+</section>
+<section id="confidence-intervals-with-t" class="slide level2">
+<h2>Confidence intervals with <span class="math inline">t</span></h2>
+<div class="cards">
+<div class="box c">
+<p><span class="tag"><span class="math inline">\sigma</span> known</span> <span class="math display">\bar{X}\pm z_{\alpha/2}\,\frac{\sigma}{\sqrt n}</span></p>
+</div>
+<div class="box key c">
+<p><span class="tag"><span class="math inline">\sigma</span> unknown</span> <span class="math display">\bar{X}\pm t_{\alpha/2,\,n-1}\,\frac{s}{\sqrt n}</span></p>
+</div>
+</div>
+<div class="fragment">
+<div class="box">
+<p>The same duality holds: the <span class="math inline">t</span>-interval is the set of all <span class="math inline">\mu_0</span> that the two-sided <span class="math inline">t</span>-test does <strong>not</strong> reject at level <span class="math inline">\alpha</span>.</p>
+</div>
+</div>
+<div class="fragment">
+<div class="box warn">
+<p>Since <span class="math inline">t_{\alpha/2,\,n-1}&gt;z_{\alpha/2}</span>, the <span class="math inline">t</span>-interval is <strong>wider</strong>: the price of not knowing <span class="math inline">\sigma</span>.</p>
+</div>
+</div>
+<div class="fragment">
+<div class="box">
+<p><span class="tag">Aside: one-sided intervals</span> One-sided intervals (a lower or an upper bound only) also exist, with <span class="math inline">t_{\alpha,\,n-1}</span> in place of <span class="math inline">t_{\alpha/2,\,n-1}</span>. We do not use them in this course.</p>
+</div>
+</div>
+</section>
+<section id="z-interval-vs.-t-interval" class="slide level2">
+<h2><span class="math inline">z</span>-interval vs. <span class="math inline">t</span>-interval</h2>
+<div class="cap">
+<p>Same data: <span class="math inline">\bar{X}=174</span> and <span class="math inline">s=\sigma=8</span>. Move the slider to change <span class="math inline">n</span>, or change the level. The <span class="math inline">t</span>-interval (red) is wider than the <span class="math inline">z</span>-interval (blue), and the gap closes as <span class="math inline">n</span> grows. The dashed line is the benchmark <span class="math inline">167</span>.</p>
+</div>
+<svg id="cz-svg" viewbox="0 0 900 280" class="famplot">
+</svg>
+<div id="cz-out" class="readout">
+
+</div>
+<div class="ctl" style="justify-content:center">
+<p><label>Sample size <em>n</em>: <input type="range" id="cz-n" min="4" max="100" step="1" value="6" style="width:340px"> <b id="cz-n-val">6</b></label> <label style="margin-left:1.5em">Confidence level: <select id="cz-lev"><option value="0.90">90%</option><option value="0.95" selected>95%</option><option value="0.99">99%</option></select></label></p>
+</div>
+<script>
+(function () {
+  var L = 50, R = 880, XA = 140, XB = 210, XO = 174, MU0 = 167, S = 8, ZC = { "0.90": 1.6449, "0.95": 1.96, "0.99": 2.5758 };
+  function px(x) { return L + (x - XA) / (XB - XA) * (R - L); }
+  function lgamma(z) {
+    var C = [76.18009172947146, -86.50532032941677, 24.01409824083091, -1.231739572450155, 0.1208650973866179e-2, -0.5395239384953e-5];
+    var y = z, tmp = z + 5.5; tmp -= (z + 0.5) * Math.log(tmp);
+    var ser = 1.000000000190015;
+    for (var j = 0; j < 6; j++) ser += C[j] / ++y;
+    return -tmp + Math.log(2.5066282746310005 * ser / z);
+  }
+  function tpdf(x, v) { return Math.exp(lgamma((v + 1) / 2) - lgamma(v / 2)) / Math.sqrt(v * Math.PI) * Math.pow(1 + x * x / v, -(v + 1) / 2); }
+  function mass(x, v) { var n = 2000, h = x / n, s = tpdf(0, v) + tpdf(x, v); for (var i = 1; i < n; i++) s += tpdf(i * h, v) * (i % 2 ? 4 : 2); return s * h / 3; }
+  function tcrit(c, v) { var lo = 0, hi = 100; for (var k = 0; k < 40; k++) { var m = (lo + hi) / 2; if (mass(m, v) < c / 2) lo = m; else hi = m; } return (lo + hi) / 2; }
+  var svg = document.getElementById("cz-svg"), sl = document.getElementById("cz-n"), lab = document.getElementById("cz-n-val"),
+      sel = document.getElementById("cz-lev"), out = document.getElementById("cz-out");
+  function bar(lo, hi, y, col, name) {
+    return '<line x1="' + px(lo) + '" y1="' + y + '" x2="' + px(hi) + '" y2="' + y + '" stroke="' + col + '" stroke-width="12"/>' +
+      '<line x1="' + px(lo) + '" y1="' + (y - 14) + '" x2="' + px(lo) + '" y2="' + (y + 14) + '" stroke="' + col + '" stroke-width="4"/>' +
+      '<line x1="' + px(hi) + '" y1="' + (y - 14) + '" x2="' + px(hi) + '" y2="' + (y + 14) + '" stroke="' + col + '" stroke-width="4"/>' +
+      '<text x="' + ((px(lo) + px(hi)) / 2) + '" y="' + (y - 22) + '" text-anchor="middle" font-size="17" font-weight="700" fill="' + col + '" stroke="#ffffff" stroke-width="5" paint-order="stroke">' + name + ': [' + lo.toFixed(2) + ', ' + hi.toFixed(2) + ']</text>';
+  }
+  function verdict(lo, hi) { return (MU0 >= lo && MU0 <= hi) ? 'inside: fail to reject' : '<b>outside: reject</b>'; }
+  function draw() {
+    var n = +sl.value, c = sel.value, v = n - 1, z = ZC[c], t = tcrit(+c, v), se = S / Math.sqrt(n), g = "";
+    lab.textContent = n;
+    var zl = XO - z * se, zh = XO + z * se, tl = XO - t * se, th = XO + t * se;
+    g += '<line x1="' + L + '" y1="240" x2="' + R + '" y2="240" stroke="#52606d" stroke-width="2"/>';
+    for (var x = 140; x <= 210; x += 10) g += '<text x="' + px(x) + '" y="262" text-anchor="middle" font-size="16" fill="#52606d">' + x + '</text>';
+    g += '<line x1="' + px(MU0) + '" y1="20" x2="' + px(MU0) + '" y2="240" stroke="#52606d" stroke-width="2.5" stroke-dasharray="6 5"/>' +
+         '<text x="' + (px(MU0) - 8) + '" y="30" text-anchor="end" font-size="16" fill="#52606d">benchmark 167</text>';
+    g += '<line x1="' + px(XO) + '" y1="20" x2="' + px(XO) + '" y2="240" stroke="#1f2933" stroke-width="2"/>' +
+         '<text x="' + (px(XO) + 8) + '" y="30" font-size="16" font-weight="700" fill="#1f2933">X̄ = 174</text>';
+    g += bar(zl, zh, 100, "#2b6cb0", "z");
+    g += bar(tl, th, 190, "#c53030", "t");
+    svg.innerHTML = g;
+    out.innerHTML = '<b style="color:#2b6cb0">z</b> (σ known): critical value ' + z.toFixed(3) + ', half-width ' + (z * se).toFixed(2) + '; 167 is ' + verdict(zl, zh) + '.<br>' +
+      '<b style="color:#c53030">t</b> (s = 8, df = ' + v + '): critical value ' + t.toFixed(3) + ', half-width ' + (t * se).toFixed(2) + '; 167 is ' + verdict(tl, th) + '.<br>The <i>t</i>-interval is <b>' + ((t / z - 1) * 100).toFixed(0) + '% wider</b> than the <i>z</i>-interval.';
+  }
+  sl.addEventListener("input", draw); sel.addEventListener("change", draw); draw();
+})();
+</script>
+</section>
+<section id="z-vs.-t-a-small-sample" class="slide level2">
+<h2><span class="math inline">z</span> vs. <span class="math inline">t</span>: a small sample</h2>
+<div class="cap">
+<p>Suppose we had measured only <span class="math inline">n=6</span> students: <span class="math inline">\bar{X}=174</span>, <span class="math inline">s=8</span> (<span class="math inline">\sigma=8</span> for the <span class="math inline">z</span>-interval), <span class="math inline">SE=8/\sqrt{6}\approx3.266</span>. Benchmark: <span class="math inline">167</span>.</p>
+</div>
+<table class="caption-top">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Level</th>
+<th style="text-align: center;"><span class="math inline">z</span>-interval (<span class="math inline">\sigma=8</span> known)</th>
+<th style="text-align: center;"><span class="math inline">t</span>-interval (<span class="math inline">s=8</span>, <span class="math inline">df=5</span>)</th>
+<th style="text-align: left;">Is <span class="math inline">167</span> inside?</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><strong>90%</strong></td>
+<td style="text-align: center;"><span class="math inline">[168.63,\ 179.37]</span><br><span class="math inline">z_{0.05}=1.645</span></td>
+<td style="text-align: center;"><span class="math inline">[167.42,\ 180.58]</span><br><span class="math inline">t_{0.05,5}=2.015</span></td>
+<td style="text-align: left;">no, no</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>95%</strong></td>
+<td style="text-align: center;"><span class="math inline">[167.60,\ 180.40]</span><br><span class="math inline">z_{0.025}=1.960</span></td>
+<td style="text-align: center;"><span class="math inline">[165.60,\ 182.40]</span><br><span class="math inline">t_{0.025,5}=2.571</span></td>
+<td style="text-align: left;"><span class="math inline">z</span>: <strong>no</strong>, <span class="math inline">t</span>: <strong>yes</strong></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>99%</strong></td>
+<td style="text-align: center;"><span class="math inline">[165.59,\ 182.41]</span><br><span class="math inline">z_{0.005}=2.576</span></td>
+<td style="text-align: center;"><span class="math inline">[160.83,\ 187.17]</span><br><span class="math inline">t_{0.005,5}=4.032</span></td>
+<td style="text-align: left;">yes, yes</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="z-vs.-t-the-same-verdicts-as-the-tests" class="slide level2">
+<h2><span class="math inline">z</span> vs. <span class="math inline">t</span>: the same verdicts as the tests</h2>
+<div class="box">
+<p>The statistic is the same in both tests: <span class="math inline">\dfrac{174-167}{8/\sqrt{6}}\approx2.14</span>. Only its reference distribution differs.</p>
+</div>
+<div class="fragment">
+<div class="cards">
+<div class="box warn c">
+<p><span class="tag"><span class="math inline">z</span>-test (<span class="math inline">\sigma</span> known)</span> <span class="math inline">p=0.032&lt;0.05</span>: <strong>reject</strong> <span class="math inline">\mu=167</span>. And <span class="math inline">167</span> is <strong>outside</strong> the 95% <span class="math inline">z</span>-interval.</p>
+</div>
+<div class="box good c">
+<p><span class="tag"><span class="math inline">t</span>-test (<span class="math inline">s=8</span>, <span class="math inline">df=5</span>)</span> <span class="math inline">p=0.085&gt;0.05</span>: <strong>fail to reject</strong>. And <span class="math inline">167</span> is <strong>inside</strong> the 95% <span class="math inline">t</span>-interval.</p>
+</div>
+</div>
+</div>
+<div class="fragment">
+<div class="box key">
+<p>With a small sample, not knowing <span class="math inline">\sigma</span> can change the conclusion.</p>
+</div>
+</div>
+</section>
+<section id="how-much-wider-is-the-t-interval" class="slide level2">
+<h2>How much wider is the <span class="math inline">t</span>-interval?</h2>
+<div class="box key">
+<p>The <span class="math inline">t</span>-interval is wider than the <span class="math inline">z</span>-interval by the factor <span class="math inline">t_{\alpha/2,\,n-1}/z_{\alpha/2}</span>. It depends <strong>only on <span class="math inline">n</span> and the level</strong>, not on the data. It matters for <strong>small samples</strong> (<span class="math inline">n&lt;30</span>) and <strong>high levels</strong>; for large <span class="math inline">n</span> the two intervals are almost the same.</p>
+</div>
+<div class="fragment">
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th style="text-align: center;">Sample size <span class="math inline">n</span></th>
+<th style="text-align: center;">90% level</th>
+<th style="text-align: center;">95% level</th>
+<th style="text-align: center;">99% level</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><strong>6</strong></td>
+<td style="text-align: center;"><span class="math inline">23\%</span> wider</td>
+<td style="text-align: center;"><span class="math inline">31\%</span> wider</td>
+<td style="text-align: center;"><span class="math inline">57\%</span> wider</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>10</strong></td>
+<td style="text-align: center;"><span class="math inline">11\%</span></td>
+<td style="text-align: center;"><span class="math inline">15\%</span></td>
+<td style="text-align: center;"><span class="math inline">26\%</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>20</strong></td>
+<td style="text-align: center;"><span class="math inline">5\%</span></td>
+<td style="text-align: center;"><span class="math inline">7\%</span></td>
+<td style="text-align: center;"><span class="math inline">11\%</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>30</strong></td>
+<td style="text-align: center;"><span class="math inline">3\%</span></td>
+<td style="text-align: center;"><span class="math inline">4\%</span></td>
+<td style="text-align: center;"><span class="math inline">7\%</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>60</strong></td>
+<td style="text-align: center;"><span class="math inline">2\%</span></td>
+<td style="text-align: center;"><span class="math inline">2\%</span></td>
+<td style="text-align: center;"><span class="math inline">3\%</span></td>
+</tr>
+</tbody>
+</table>
 </div>
 </section>
 <section id="the-whole-procedure-on-one-page" class="slide level2">

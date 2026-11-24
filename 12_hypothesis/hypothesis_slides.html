@@ -1175,16 +1175,13 @@ margin-right: 0; }
 <p><a class="toc-hit" href="#/from-estimation-to-testing" title="Go to section"></a> <span class="tag">1 · From Estimation to Testing</span> From a range of plausible values to a yes/no question.</p>
 </div>
 <div class="box">
-<p><a class="toc-hit" href="#/testing-mu-when-sigma-is-known" title="Go to section"></a> <span class="tag">2 · Testing <span class="math inline">\mu</span> when <span class="math inline">\sigma</span> is known</span> Four steps: hypotheses, test statistic, p-value, decision; meaning of <span class="math inline">\alpha</span> and critical values.</p>
+<p><a class="toc-hit" href="#/the-two-sided-test-the-recipe" title="Go to section"></a> <span class="tag">2 · The two-sided test: the recipe</span> Four steps on one example: hypotheses, test statistic, p-value, decision; <span class="math inline">\alpha</span>, critical values, and the link to confidence intervals.</p>
 </div>
 <div class="box">
-<p><a class="toc-hit" href="#/two-sided-tests" title="Go to section"></a> <span class="tag">3 · Two-sided tests</span> A full worked example, and the link to confidence intervals.</p>
+<p><a class="toc-hit" href="#/one-sided-tests" title="Go to section"></a> <span class="tag">3 · One-sided tests</span> When the alternative points in one direction only, with a worked example.</p>
 </div>
 <div class="box">
-<p><a class="toc-hit" href="#/one-sided-tests" title="Go to section"></a> <span class="tag">4 · One-sided tests</span> When the alternative points in one direction only, with a worked example.</p>
-</div>
-<div class="box">
-<p><a class="toc-hit" href="#/testing-mu-when-sigma-is-unknown" title="Go to section"></a> <span class="tag">5 · Testing <span class="math inline">\mu</span> when <span class="math inline">\sigma</span> is unknown</span> The t-statistic, the t-distribution, a worked t-test and a one-page summary.</p>
+<p><a class="toc-hit" href="#/testing-mu-when-sigma-is-unknown" title="Go to section"></a> <span class="tag">4 · Testing <span class="math inline">\mu</span> when <span class="math inline">\sigma</span> is unknown</span> The t-statistic, the t-distribution, a worked t-test and a one-page summary.</p>
 </div>
 </div>
 </section>
@@ -1265,9 +1262,9 @@ margin-right: 0; }
 </div>
 </section></section>
 <section>
-<section id="testing-mu-when-sigma-is-known" class="title-slide slide level1 section-slide center">
-<h1>Testing <span class="math inline">\mu</span> when <span class="math inline">\sigma</span> is known</h1>
-<p>Four steps, one example.</p>
+<section id="the-two-sided-test-the-recipe" class="title-slide slide level1 section-slide center">
+<h1>The two-sided test: the recipe</h1>
+<p>Four steps, one example: testing <span class="math inline">\mu</span> when <span class="math inline">\sigma</span> is known.</p>
 </section>
 <section id="our-example" class="slide level2">
 <h2>Our example</h2>
@@ -1459,11 +1456,11 @@ margin-right: 0; }
 <section id="decision-our-data" class="slide level2">
 <h2>Decision: our data</h2>
 <div class="box good">
-<p><span class="math inline">p\approx0.093</span>. At <span class="math inline">\alpha=0.05</span> (and, of course, at <span class="math inline">\alpha=0.01</span>) we <strong>fail to reject</strong> <span class="math inline">H_0</span>.</p>
+<p><span class="math inline">p\approx0.093</span>. At <span class="math inline">\alpha=0.05</span> (and, of course, at <span class="math inline">\alpha=0.01</span>) we <strong>fail to reject</strong> <span class="math inline">H_0</span>: there is <strong>not sufficient evidence</strong> that the average height of students differs from <span class="math inline">167</span> cm.</p>
 </div>
 <div class="fragment">
 <div class="box warn">
-<p>At the more lenient <span class="math inline">\alpha=0.10</span> we <strong>would reject</strong> <span class="math inline">H_0</span> (<span class="math inline">0.093&lt;0.10</span>). The verdict depends on the threshold, so choose <span class="math inline">\alpha</span> first.</p>
+<p>At the more lenient <span class="math inline">\alpha=0.10</span> we <strong>would reject</strong> <span class="math inline">H_0</span> (<span class="math inline">0.093&lt;0.10</span>): there <strong>is sufficient evidence</strong> at the 10% level that the average height differs from <span class="math inline">167</span> cm. The verdict depends on the threshold, so choose <span class="math inline">\alpha</span> first.</p>
 </div>
 </div>
 <div class="fragment">
@@ -1529,105 +1526,6 @@ margin-right: 0; }
 <div class="fragment">
 <div class="box good">
 <p><span class="tag">Our data</span> <span class="math inline">|z|=1.68&lt;1.96</span>, so we <strong>fail to reject</strong> at <span class="math inline">\alpha=0.05</span> (same as <span class="math inline">p=0.093&gt;0.05</span>). But <span class="math inline">1.68&gt;1.645</span>, so we <strong>reject</strong> at <span class="math inline">\alpha=0.10</span> (same as before).</p>
-</div>
-</div>
-</section></section>
-<section>
-<section id="two-sided-tests" class="title-slide slide level1 section-slide center">
-<h1>Two-sided tests</h1>
-<p>Is there <em>any</em> difference?</p>
-</section>
-<section id="two-sided-test-the-recipe" class="slide level2">
-<h2>Two-sided test: the recipe</h2>
-<table class="caption-top">
-<colgroup>
-<col style="width: 50%">
-<col style="width: 50%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;"></th>
-<th style="text-align: left;">Two-sided test of <span class="math inline">\mu</span> (<span class="math inline">\sigma</span> known)</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;"><strong>Hypotheses</strong></td>
-<td style="text-align: left;"><span class="math inline">H_0:\ \mu=\mu_0 \qquad H_1:\ \mu\mathrel{\rlap{\,/}{=}}\mu_0</span></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"><strong>Statistic</strong></td>
-<td style="text-align: left;"><span class="math inline">z=\dfrac{\bar{X}-\mu_0}{\sigma/\sqrt n}</span></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"><strong>Rejection region</strong></td>
-<td style="text-align: left;"><span class="math inline">\lvert z\rvert&gt;z_{\alpha/2}</span>: both tails, <span class="math inline">\alpha/2</span> each</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"><strong>P-value</strong></td>
-<td style="text-align: left;"><span class="math inline">2\,P(Z&gt;\lvert z\rvert)</span></td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="two-sided-example-setup" class="slide level2">
-<h2>Two-sided example: setup</h2>
-<div class="box">
-<p><span class="tag">Claim</span> The average height of students <strong>differs from <span class="math inline">167</span> cm</strong>. Data: <span class="math inline">n=20</span>, <span class="math inline">\bar{X}=170</span>, <span class="math inline">\sigma=8</span>, so <span class="math inline">SE=8/\sqrt{20}\approx1.789</span>.</p>
-</div>
-<div class="fragment">
-<div class="box key">
-<p><span class="math display">H_0:\ \mu=167 \qquad H_1:\ \mu\mathrel{\rlap{\,/}{=}}167</span> Significance level, chosen <strong>before</strong> looking at the data: <span class="math inline">\alpha=0.05</span>.</p>
-</div>
-</div>
-</section>
-<section id="two-sided-example-the-test" class="slide level2">
-<h2>Two-sided example: the test</h2>
-<div class="box">
-<p><span class="math display">z=\frac{170-167}{1.789}\approx1.68</span></p>
-</div>
-<div class="fragment">
-<table class="caption-top">
-<colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">At <span class="math inline">\alpha=0.05</span></th>
-<th style="text-align: center;">Via p-value</th>
-<th style="text-align: center;">Via critical value</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;"><strong>Rule</strong></td>
-<td style="text-align: center;">reject if <span class="math inline">p&lt;0.05</span></td>
-<td style="text-align: center;">reject if <span class="math inline">\lvert z\rvert&gt;1.96</span></td>
-</tr>
-<tr class="even">
-<td style="text-align: left;"><strong>Our data</strong></td>
-<td style="text-align: center;"><span class="math inline">p=2\,P(Z&gt;1.68)\approx0.093</span></td>
-<td style="text-align: center;"><span class="math inline">\lvert z\rvert=1.68&lt;1.96</span></td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;"><strong>Verdict</strong></td>
-<td style="text-align: center;"><strong>Fail to reject <span class="math inline">H_0</span></strong></td>
-<td style="text-align: center;"><strong>Fail to reject <span class="math inline">H_0</span></strong></td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-<section id="two-sided-example-conclusion" class="slide level2">
-<h2>Two-sided example: conclusion</h2>
-<div class="box good">
-<p><span class="tag">At <span class="math inline">\alpha=0.05</span></span> There is <strong>not sufficient evidence</strong> that the average height of students differs from <span class="math inline">167</span> cm.</p>
-</div>
-<div class="fragment">
-<div class="box warn">
-<p><span class="tag">At <span class="math inline">\alpha=0.10</span></span> <span class="math inline">p=0.093&lt;0.10</span> and <span class="math inline">1.68&gt;1.645</span>: we <strong>reject</strong> <span class="math inline">H_0</span>. There <strong>is sufficient evidence</strong> at the 10% level that the average height differs from <span class="math inline">167</span> cm. The verdict depends on <span class="math inline">\alpha</span>, chosen in advance.</p>
 </div>
 </div>
 </section>
@@ -1706,11 +1604,141 @@ margin-right: 0; }
 <p><span class="tag">Our data</span> <span class="math inline">167</span> is inside the 95% interval <span class="math inline">[166.49,\ 173.51]</span> (fail to reject at 5%) but outside the 90% interval <span class="math inline">[167.06,\ 172.94]</span> (reject at 10%). These are the intervals from the estimation lecture.</p>
 </div>
 </div>
+</section>
+<section id="the-two-sided-test-summary" class="slide level2">
+<h2>The two-sided test: summary</h2>
+<table class="caption-top">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Step</th>
+<th style="text-align: left;">Two-sided test of <span class="math inline">\mu</span> (<span class="math inline">\sigma</span> known)</th>
+<th style="text-align: left;">Our data</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>1. Hypotheses</strong></td>
+<td style="text-align: left;"><span class="math inline">H_0:\ \mu=\mu_0</span><br><span class="math inline">H_1:\ \mu\mathrel{\rlap{\,/}{=}}\mu_0</span></td>
+<td style="text-align: left;"><span class="math inline">H_0:\ \mu=167</span><br><span class="math inline">H_1:\ \mu\mathrel{\rlap{\,/}{=}}167</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>2. Statistic</strong></td>
+<td style="text-align: left;"><span class="math inline">z=\dfrac{\bar{X}-\mu_0}{\sigma/\sqrt n}</span></td>
+<td style="text-align: left;"><span class="math inline">z\approx1.68</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>3. P-value</strong></td>
+<td style="text-align: left;"><span class="math inline">2\,P(Z&gt;\lvert z\rvert)</span></td>
+<td style="text-align: left;"><span class="math inline">p\approx0.093</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>4. Decision</strong></td>
+<td style="text-align: left;">reject if <span class="math inline">p&lt;\alpha</span>, equivalently <span class="math inline">\lvert z\rvert&gt;z_{\alpha/2}</span></td>
+<td style="text-align: left;"><span class="math inline">\alpha=0.05</span>: fail to reject</td>
+</tr>
+</tbody>
+</table>
 </section></section>
 <section>
 <section id="one-sided-tests" class="title-slide slide level1 section-slide center">
 <h1>One-sided tests</h1>
 <p>When the question has a direction.</p>
+</section>
+<section id="a-one-sided-question" class="slide level2">
+<h2>A one-sided question</h2>
+<div class="cards">
+<div class="box c">
+<p><span class="tag">Before: two-sided</span> Is the average height of students <strong>equal</strong> to <span class="math inline">167</span> cm?</p>
+<p>Any difference counts: taller <strong>or</strong> shorter.</p>
+</div>
+<div class="box key c">
+<p><span class="tag">Now: one-sided</span> Are students <strong>taller</strong> than <span class="math inline">167</span> cm?</p>
+<p>Only one direction counts.</p>
+</div>
+</div>
+<div class="fragment">
+<div class="box good">
+<p>The direction comes from the <strong>claim we want to check</strong>, not from the data.</p>
+</div>
+</div>
+</section>
+<section id="which-samples-make-us-doubt" class="slide level2">
+<h2>Which samples make us doubt?</h2>
+<div class="box">
+<p><span class="tag">The claim and its opposite</span> Claim to check: students are <strong>taller</strong> than <span class="math inline">167</span> cm. The opposite, our benchmark <span class="math inline">H_0</span>: students are <strong>not taller</strong> (the mean is <span class="math inline">167</span> or less).</p>
+</div>
+<div class="fragment">
+<div class="box key">
+<p>Three possible sample means. Does each one make you <strong>doubt</strong> <span class="math inline">H_0</span>?</p>
+</div>
+</div>
+</section>
+<section id="which-samples-make-us-doubt-the-answers" class="slide level2">
+<h2>Which samples make us doubt? The answers</h2>
+<div class="cards">
+<div class="box warn c">
+<p><span class="tag"><span class="math inline">\bar{X}=180</span></span> <strong>Yes</strong>, strongly. Far above <span class="math inline">167</span>.</p>
+</div>
+<div class="box c">
+<p><span class="tag"><span class="math inline">\bar{X}=167</span></span> <strong>No.</strong> Exactly what <span class="math inline">H_0</span> expects.</p>
+</div>
+<div class="box good c">
+<p><span class="tag"><span class="math inline">\bar{X}=150</span></span> <strong>No.</strong> Far from <span class="math inline">167</span>, but on the wrong side: if anything it <strong>supports</strong> <span class="math inline">H_0</span>.</p>
+</div>
+</div>
+<div class="fragment">
+<div class="box">
+<p><span class="tag">Compare</span> With the two-sided question (“equal to <span class="math inline">167</span>?”), <span class="math inline">\bar{X}=150</span> <strong>would</strong> have made us doubt.</p>
+</div>
+</div>
+</section>
+<section id="evidence-against-h_0" class="slide level2">
+<h2>Evidence against <span class="math inline">H_0</span></h2>
+<div class="box key">
+<p><span class="tag">Big idea</span> <strong>Evidence against <span class="math inline">H_0</span> is evidence pointing toward <span class="math inline">H_1</span>.</strong></p>
+</div>
+<div class="fragment">
+<div class="box">
+<p>A sample is surprising under <span class="math inline">H_0</span> only if it is unusual <strong>in the direction the claim points</strong>. A sample on the other side is not surprising: it is exactly what <span class="math inline">H_0</span> expects, because “not taller” includes <strong>all</strong> lower means.</p>
+</div>
+</div>
+<div class="fragment">
+<div class="box good">
+<p>So “far from <span class="math inline">167</span>” is no longer the criterion. The criterion is “far from <span class="math inline">167</span> <strong>in the direction of <span class="math inline">H_1</span></strong>”.</p>
+</div>
+</div>
+</section>
+<section id="easier-or-harder-to-reject" class="slide level2">
+<h2>Easier or harder to reject?</h2>
+<div class="box key">
+<p><span class="tag">Question</span> Compared with the two-sided question, is it <strong>easier or harder</strong> to reject <span class="math inline">H_0</span> in a one-sided test?</p>
+</div>
+<div class="fragment">
+<div class="box">
+<p>Think about what counts as “a sample at least as surprising as ours”. Two-sided: far from <span class="math inline">167</span> in <strong>either</strong> direction. One-sided: far <strong>above</strong> <span class="math inline">167</span> only.</p>
+</div>
+</div>
+</section>
+<section id="easier-or-harder-the-answer" class="slide level2">
+<h2>Easier or harder? The answer</h2>
+<div class="cards">
+<div class="box good c">
+<p><span class="tag">In the direction of <span class="math inline">H_1</span>: easier</span> Only one tail is counted, so the same sample looks <strong>more surprising</strong>: its p-value is <strong>half</strong> the two-sided one.</p>
+</div>
+<div class="box warn c">
+<p><span class="tag">In the other direction: impossible</span> A sample like <span class="math inline">\bar{X}=150</span> can <strong>never</strong> make us reject, however far it is from <span class="math inline">167</span>.</p>
+</div>
+</div>
+<div class="fragment">
+<div class="box key">
+<p>A one-sided test is a <strong>bet on a direction</strong>: stronger if right, blind if wrong. So choose the direction <strong>before</strong> seeing the data.</p>
+</div>
+</div>
 </section>
 <section id="two-sided-vs.-one-sided" class="slide level2">
 <h2>Two-sided vs. one-sided</h2>

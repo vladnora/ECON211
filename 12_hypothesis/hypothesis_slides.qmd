@@ -26,23 +26,18 @@ format:
 From a range of plausible values to a yes/no question.
 :::
 ::: {.box}
-<a class="toc-hit" href="#/testing-mu-when-sigma-is-known" title="Go to section"></a>
-<span class="tag">2 · Testing $\mu$ when $\sigma$ is known</span>
-Four steps: hypotheses, test statistic, p-value, decision; meaning of $\alpha$ and critical values.
-:::
-::: {.box}
-<a class="toc-hit" href="#/two-sided-tests" title="Go to section"></a>
-<span class="tag">3 · Two-sided tests</span>
-A full worked example, and the link to confidence intervals.
+<a class="toc-hit" href="#/the-two-sided-test-the-recipe" title="Go to section"></a>
+<span class="tag">2 · The two-sided test: the recipe</span>
+Four steps on one example: hypotheses, test statistic, p-value, decision; $\alpha$, critical values, and the link to confidence intervals.
 :::
 ::: {.box}
 <a class="toc-hit" href="#/one-sided-tests" title="Go to section"></a>
-<span class="tag">4 · One-sided tests</span>
+<span class="tag">3 · One-sided tests</span>
 When the alternative points in one direction only, with a worked example.
 :::
 ::: {.box}
 <a class="toc-hit" href="#/testing-mu-when-sigma-is-unknown" title="Go to section"></a>
-<span class="tag">5 · Testing $\mu$ when $\sigma$ is unknown</span>
+<span class="tag">4 · Testing $\mu$ when $\sigma$ is unknown</span>
 The t-statistic, the t-distribution, a worked t-test and a one-page summary.
 :::
 :::
@@ -94,9 +89,9 @@ Is the data consistent with a specific value $\mu_0$?
 Every test question has a **benchmark**: $167$ cm, $2.1$ children, girls and boys equally willing, equal study hours, no effect. This benchmark is the **null hypothesis** $H_0$.
 :::
 
-# Testing $\mu$ when $\sigma$ is known {.section-slide}
+# The two-sided test: the recipe {.section-slide}
 
-Four steps, one example.
+Four steps, one example: testing $\mu$ when $\sigma$ is known.
 
 ## Our example
 
@@ -278,13 +273,13 @@ The larger $|z|$, the smaller the p-value, and the more inconsistent the data is
 ## Decision: our data
 
 ::: {.box .good}
-$p\approx0.093$. At $\alpha=0.05$ (and, of course, at $\alpha=0.01$) we **fail to reject** $H_0$.
+$p\approx0.093$. At $\alpha=0.05$ (and, of course, at $\alpha=0.01$) we **fail to reject** $H_0$: there is **not sufficient evidence** that the average height of students differs from $167$ cm.
 :::
 
 . . .
 
 ::: {.box .warn}
-At the more lenient $\alpha=0.10$ we **would reject** $H_0$ ($0.093<0.10$). The verdict depends on the threshold, so choose $\alpha$ first.
+At the more lenient $\alpha=0.10$ we **would reject** $H_0$ ($0.093<0.10$): there **is sufficient evidence** at the 10% level that the average height differs from $167$ cm. The verdict depends on the threshold, so choose $\alpha$ first.
 :::
 
 . . .
@@ -333,61 +328,6 @@ Instead of computing the p-value, compare $|z|$ with a **critical value** (from 
 ::: {.box .good}
 <span class="tag">Our data</span>
 $|z|=1.68<1.96$, so we **fail to reject** at $\alpha=0.05$ (same as $p=0.093>0.05$). But $1.68>1.645$, so we **reject** at $\alpha=0.10$ (same as before).
-:::
-
-# Two-sided tests {.section-slide}
-
-Is there *any* difference?
-
-## Two-sided test: the recipe
-
-| | Two-sided test of $\mu$ ($\sigma$ known) |
-|:--|:--|
-| **Hypotheses** | $H_0:\ \mu=\mu_0 \qquad H_1:\ \mu\mathrel{\rlap{\,/}{=}}\mu_0$ |
-| **Statistic** | $z=\dfrac{\bar{X}-\mu_0}{\sigma/\sqrt n}$ |
-| **Rejection region** | $\lvert z\rvert>z_{\alpha/2}$: both tails, $\alpha/2$ each |
-| **P-value** | $2\,P(Z>\lvert z\rvert)$ |
-
-## Two-sided example: setup
-
-::: {.box}
-<span class="tag">Claim</span>
-The average height of students **differs from $167$ cm**. Data: $n=20$, $\bar{X}=170$, $\sigma=8$, so $SE=8/\sqrt{20}\approx1.789$.
-:::
-
-. . .
-
-::: {.box .key}
-$$H_0:\ \mu=167 \qquad H_1:\ \mu\mathrel{\rlap{\,/}{=}}167$$
-Significance level, chosen **before** looking at the data: $\alpha=0.05$.
-:::
-
-## Two-sided example: the test
-
-::: {.box}
-$$z=\frac{170-167}{1.789}\approx1.68$$
-:::
-
-. . .
-
-| At $\alpha=0.05$ | Via p-value | Via critical value |
-|:--|:-:|:-:|
-| **Rule** | reject if $p<0.05$ | reject if $\lvert z\rvert>1.96$ |
-| **Our data** | $p=2\,P(Z>1.68)\approx0.093$ | $\lvert z\rvert=1.68<1.96$ |
-| **Verdict** | **Fail to reject $H_0$** | **Fail to reject $H_0$** |
-
-## Two-sided example: conclusion
-
-::: {.box .good}
-<span class="tag">At $\alpha=0.05$</span>
-There is **not sufficient evidence** that the average height of students differs from $167$ cm.
-:::
-
-. . .
-
-::: {.box .warn}
-<span class="tag">At $\alpha=0.10$</span>
-$p=0.093<0.10$ and $1.68>1.645$: we **reject** $H_0$. There **is sufficient evidence** at the 10% level that the average height differs from $167$ cm. The verdict depends on $\alpha$, chosen in advance.
 :::
 
 ## Confidence interval and test
@@ -470,9 +410,130 @@ The confidence interval is the set of **all** values $\mu_0$ that the test would
 $167$ is inside the 95% interval $[166.49,\ 173.51]$ (fail to reject at 5%) but outside the 90% interval $[167.06,\ 172.94]$ (reject at 10%). These are the intervals from the estimation lecture.
 :::
 
+## The two-sided test: summary
+
+| Step | Two-sided test of $\mu$ ($\sigma$ known) | Our data |
+|:--|:--|:--|
+| **1. Hypotheses** | $H_0:\ \mu=\mu_0$<br>$H_1:\ \mu\mathrel{\rlap{\,/}{=}}\mu_0$ | $H_0:\ \mu=167$<br>$H_1:\ \mu\mathrel{\rlap{\,/}{=}}167$ |
+| **2. Statistic** | $z=\dfrac{\bar{X}-\mu_0}{\sigma/\sqrt n}$ | $z\approx1.68$ |
+| **3. P-value** | $2\,P(Z>\lvert z\rvert)$ | $p\approx0.093$ |
+| **4. Decision** | reject if $p<\alpha$, equivalently $\lvert z\rvert>z_{\alpha/2}$ | $\alpha=0.05$: fail to reject |
+
+
 # One-sided tests {.section-slide}
 
 When the question has a direction.
+
+## A one-sided question
+
+::: {.cards}
+::: {.box .c}
+<span class="tag">Before: two-sided</span>
+Is the average height of students **equal** to $167$ cm?
+
+Any difference counts: taller **or** shorter.
+:::
+::: {.box .key .c}
+<span class="tag">Now: one-sided</span>
+Are students **taller** than $167$ cm?
+
+Only one direction counts.
+:::
+:::
+
+. . .
+
+::: {.box .good}
+The direction comes from the **claim we want to check**, not from the data.
+:::
+
+## Which samples make us doubt?
+
+::: {.box}
+<span class="tag">The claim and its opposite</span>
+Claim to check: students are **taller** than $167$ cm. The opposite, our benchmark $H_0$: students are **not taller** (the mean is $167$ or less).
+:::
+
+. . .
+
+::: {.box .key}
+Three possible sample means. Does each one make you **doubt** $H_0$?
+:::
+
+## Which samples make us doubt? The answers
+
+::: {.cards}
+::: {.box .warn .c}
+<span class="tag">$\bar{X}=180$</span>
+**Yes**, strongly. Far above $167$.
+:::
+::: {.box .c}
+<span class="tag">$\bar{X}=167$</span>
+**No.** Exactly what $H_0$ expects.
+:::
+::: {.box .good .c}
+<span class="tag">$\bar{X}=150$</span>
+**No.** Far from $167$, but on the wrong side: if anything it **supports** $H_0$.
+:::
+:::
+
+. . .
+
+::: {.box}
+<span class="tag">Compare</span>
+With the two-sided question ("equal to $167$?"), $\bar{X}=150$ **would** have made us doubt.
+:::
+
+## Evidence against $H_0$
+
+::: {.box .key}
+<span class="tag">Big idea</span>
+**Evidence against $H_0$ is evidence pointing toward $H_1$.**
+:::
+
+. . .
+
+::: {.box}
+A sample is surprising under $H_0$ only if it is unusual **in the direction the claim points**. A sample on the other side is not surprising: it is exactly what $H_0$ expects, because "not taller" includes **all** lower means.
+:::
+
+. . .
+
+::: {.box .good}
+So "far from $167$" is no longer the criterion. The criterion is "far from $167$ **in the direction of $H_1$**".
+:::
+
+## Easier or harder to reject?
+
+::: {.box .key}
+<span class="tag">Question</span>
+Compared with the two-sided question, is it **easier or harder** to reject $H_0$ in a one-sided test?
+:::
+
+. . .
+
+::: {.box}
+Think about what counts as "a sample at least as surprising as ours". Two-sided: far from $167$ in **either** direction. One-sided: far **above** $167$ only.
+:::
+
+## Easier or harder? The answer
+
+::: {.cards}
+::: {.box .good .c}
+<span class="tag">In the direction of $H_1$: easier</span>
+Only one tail is counted, so the same sample looks **more surprising**: its p-value is **half** the two-sided one.
+:::
+::: {.box .warn .c}
+<span class="tag">In the other direction: impossible</span>
+A sample like $\bar{X}=150$ can **never** make us reject, however far it is from $167$.
+:::
+:::
+
+. . .
+
+::: {.box .key}
+A one-sided test is a **bet on a direction**: stronger if right, blind if wrong. So choose the direction **before** seeing the data.
+:::
 
 ## Two-sided vs. one-sided
 

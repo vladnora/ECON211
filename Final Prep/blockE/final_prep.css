@@ -90,3 +90,7 @@
 
 .hat { position:relative; display:inline-block; line-height:1; }
 .hat::after { content:'^'; position:absolute; left:50%; top:-0.32em; transform:translateX(-50%); font-size:0.95em; font-style:normal; }
+
+/* sample mean: a bar drawn over X (the combining macron renders off-centre in this font) */
+.reveal .xbar { position:relative; display:inline-block; font-style:italic; line-height:1; }
+.reveal .xbar::before { content:""; position:absolute; left:0.12em; right:-0.04em; top:0.02em; border-top:0.085em solid currentColor; }

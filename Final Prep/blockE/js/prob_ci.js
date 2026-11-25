@@ -3,7 +3,7 @@
   'use strict';
   var P = globalThis.P, H = P.h;
   var ri = H.ri, pick = H.pick, shuffle = H.shuffle, F = H.F, num = H.num, mc = H.mc, p = H.p, steps = H.steps, M = H.MINUS;
-  var fx = H.fx, r2 = H.r2, isDp = H.isDp, dn = H.dn, U = H.U, Z = H.Z, draw = H.draw, XB = 'X̄';
+  var fx = H.fx, r2 = H.r2, isDp = H.isDp, dn = H.dn, U = H.U, Z = H.Z, draw = H.draw, XB = '<span class="xbar">X</span>';
   var ciS = function (c, a, b) { return '[' + fx(a) + ', ' + fx(b) + ']'; };
   function uni(c) { return c.unit === '$' ? '$' : ''; }
   function popTxt(o) {
@@ -22,7 +22,7 @@
   /* ========================================================= 1. computing a CI */
   P.reg('ci', {
     title: 'Confidence interval for μ', section: 2, est: 170, note: true,
-    topic: 'Build the interval X̄ ± z · σ/√n when σ is known.',
+    topic: 'Build the interval <span class="xbar">X</span> ± z · σ/√n when σ is known.',
     variants: ['From summary statistics', 'From a short data list', 'From the interval back to the data'],
     gen: function (v) {
       var out, L = pick([90, 95, 99]), o, z, ci0;
@@ -32,8 +32,8 @@
           parts: [
             dn('Find the standard error σ/√<i>n</i>.', o.se, 2, 'σ/√n.'),
             dn('Find the margin of error <i>z</i> · σ/√<i>n</i> (with <i>z</i> = ' + z + ' for ' + lvl(L) + ').', ci0.me, 2, 'z · SE.'),
-            dn('Find the <b>lower</b> endpoint of the ' + lvl(L) + ' interval.', ci0.lo, 2, 'X̄ − ME.'),
-            dn('Find the <b>upper</b> endpoint of the ' + lvl(L) + ' interval.', ci0.hi, 2, 'X̄ + ME.')],
+            dn('Find the <b>lower</b> endpoint of the ' + lvl(L) + ' interval.', ci0.lo, 2, '<span class="xbar">X</span> − ME.'),
+            dn('Find the <b>upper</b> endpoint of the ' + lvl(L) + ' interval.', ci0.hi, 2, '<span class="xbar">X</span> + ME.')],
           sol: steps(['SE = σ/√<i>n</i> = ' + seTxt(o) + '. (Here √' + o.n + ' = ' + o.k + '.)', 'Critical value for ' + lvl(L) + ': <i>z</i> = ' + z + '. ME = ' + z + ' × ' + fx(o.se) + ' = <b>' + r2(ci0.me).toFixed(2) + '</b>.', 'CI = ' + XB + ' ± ME = ' + fx(o.xb) + ' ± ' + r2(ci0.me).toFixed(2) + ' = <b>[' + r2(ci0.lo).toFixed(2) + ', ' + r2(ci0.hi).toFixed(2) + ']</b>.']) };
       } else if (v === 1) {
         var c = pick(H.CTX), mu = pick(c.mus), n = 4, xs, g, sm, sdc = pick(c.sds);
@@ -44,8 +44,8 @@
           parts: [
             dn('Compute the sample mean ' + XB + '.', xb, 2, 'Add the values and divide by n.'),
             dn('Compute the standard error σ/√<i>n</i>.', o.se, 2, 'σ/√n with n = ' + n + '.'),
-            dn('Find the <b>lower</b> endpoint of the ' + lvl(L) + ' interval (use <i>z</i> = ' + z + ').', ci0.lo, 2, 'X̄ − z · SE.'),
-            dn('Find the <b>upper</b> endpoint of the ' + lvl(L) + ' interval (use <i>z</i> = ' + z + ').', ci0.hi, 2, 'X̄ + z · SE.')],
+            dn('Find the <b>lower</b> endpoint of the ' + lvl(L) + ' interval (use <i>z</i> = ' + z + ').', ci0.lo, 2, '<span class="xbar">X</span> − z · SE.'),
+            dn('Find the <b>upper</b> endpoint of the ' + lvl(L) + ' interval (use <i>z</i> = ' + z + ').', ci0.hi, 2, '<span class="xbar">X</span> + z · SE.')],
           sol: steps([XB + ' = (' + xs.join(' + ') + ')/' + n + ' = <b>' + fx(xb) + '</b>.', 'SE = ' + fx(sdc) + '/√' + n + ' = <b>' + fx(o.se) + '</b>.', 'ME = ' + z + ' × ' + fx(o.se) + ' = ' + fx(Z[L] * o.se) + ' ≈ ' + ci0.me.toFixed(2) + '. CI = ' + fx(xb) + ' ± ' + ci0.me.toFixed(2) + ' = <b>[' + r2(ci0.lo).toFixed(2) + ', ' + r2(ci0.hi).toFixed(2) + ']</b>.']) };
       } else {
         o = drawQ(); L = pick([95, 95, 90]);
@@ -53,7 +53,7 @@
         z = Z[L]; ci0 = ci(o, L);
         out = { stmt: p(popTxt(o) + ' From a random sample, a <b>' + lvl(L) + '</b> confidence interval for the mean μ was reported as <b>[' + r2(ci0.lo).toFixed(2) + ', ' + r2(ci0.hi).toFixed(2) + ']</b> (in ' + (o.c.unit === '$' ? 'dollars' : o.c.unit) + ').'),
           parts: [
-            dn('What was the sample mean ' + XB + '?', o.xb, 2, 'The interval is centred at X̄: take the midpoint.'),
+            dn('What was the sample mean ' + XB + '?', o.xb, 2, 'The interval is centred at <span class="xbar">X</span>: take the midpoint.'),
             dn('What is the margin of error?', ci0.me, 2, 'Half the width of the interval.'),
             num('Use the margin of error (with <i>z</i> = ' + z + ') to find the sample size <i>n</i>. (Margin of error = <i>z</i> · σ/√<i>n</i>.)', F(o.n), 'Solve ME = z σ/√n: √n = zσ/ME, so n = (zσ/ME)².')],
           sol: steps(['Midpoint: (' + r2(ci0.lo).toFixed(2) + ' + ' + r2(ci0.hi).toFixed(2) + ')/2 = <b>' + fx(o.xb) + '</b>.', 'ME = (upper − lower)/2 = (' + r2(ci0.hi).toFixed(2) + ' − ' + r2(ci0.lo).toFixed(2) + ')/2 = <b>' + r2(ci0.me).toFixed(2) + '</b>.', '√<i>n</i> = <i>z</i>σ/ME = ' + z + ' × ' + fx(o.sd) + ' / ' + r2(ci0.me).toFixed(2) + ' = ' + o.k + ', so <i>n</i> = <b>' + o.n + '</b>.']) };
@@ -83,8 +83,8 @@
           parts: [
             dn('Find the standard error: (half-width of the 95% interval)/1.96.', o.se, 2, 'ME = 1.96 · SE.'),
             dn('Find the margin of error of the ' + lvl(to) + ' interval.', ct.me, 2, 'z · SE with the new z.'),
-            dn('Find the <b>lower</b> endpoint of the ' + lvl(to) + ' interval.', ct.lo, 2, 'X̄ − new ME.'),
-            dn('Find the <b>upper</b> endpoint of the ' + lvl(to) + ' interval.', ct.hi, 2, 'X̄ + new ME.')],
+            dn('Find the <b>lower</b> endpoint of the ' + lvl(to) + ' interval.', ct.lo, 2, '<span class="xbar">X</span> − new ME.'),
+            dn('Find the <b>upper</b> endpoint of the ' + lvl(to) + ' interval.', ct.hi, 2, '<span class="xbar">X</span> + new ME.')],
           sol: steps(['Centre ' + XB + ' = ' + fx(o.xb) + '. Half-width = ' + r2(cf.me).toFixed(2) + ', so SE = ' + r2(cf.me).toFixed(2) + ' / 1.96 = <b>' + fx(o.se) + '</b>.', 'New ME = ' + Z[to] + ' × ' + fx(o.se) + ' = <b>' + r2(ct.me).toFixed(2) + '</b>.', 'New interval: ' + fx(o.xb) + ' ± ' + r2(ct.me).toFixed(2) + ' = <b>[' + r2(ct.lo).toFixed(2) + ', ' + r2(ct.hi).toFixed(2) + ']</b>, which is ' + (to > from ? 'wider' : 'narrower') + ' than the 95% interval.']) };
       } else {
         o = drawQ(); var lv = shuffle([90, 95, 99]), labs = ['A', 'B', 'C'], cs = lv.map(function (L) { return ci(o, L); });
@@ -216,10 +216,10 @@
         o = draw(); cl = claimDraw(o, 95, 99); var c95 = ci(o, 95), c99 = ci(o, 99);
         out = { stmt: p(popTxt(o) + ' A random sample of <i>n</i> = <b>' + o.n + '</b> observations has ' + XB + ' = <b>' + U(o.c, o.xb) + '</b>. A claim says that the true mean is μ<sub>0</sub> = <b>' + U(o.c, cl.m0) + '</b>.'),
           parts: [
-            dn('Find the <b>lower</b> endpoint of the 95% confidence interval (<i>z</i> = 1.96).', c95.lo, 2, 'X̄ − 1.96 σ/√n.'),
-            dn('Find the <b>upper</b> endpoint of the 95% confidence interval (<i>z</i> = 1.96).', c95.hi, 2, 'X̄ + 1.96 σ/√n.'),
+            dn('Find the <b>lower</b> endpoint of the 95% confidence interval (<i>z</i> = 1.96).', c95.lo, 2, '<span class="xbar">X</span> − 1.96 σ/√n.'),
+            dn('Find the <b>upper</b> endpoint of the 95% confidence interval (<i>z</i> = 1.96).', c95.hi, 2, '<span class="xbar">X</span> + 1.96 σ/√n.'),
             mc('Is the claimed value μ<sub>0</sub> = ' + U(o.c, cl.m0) + ' a plausible value of μ, judged by the <b>95%</b> interval?', ['Yes, it lies inside the interval', 'No, it lies outside the interval'], cl.in1 ? 0 : 1, 'Plausible values are those inside the interval.', true),
-            mc('Judged by the <b>99%</b> interval (<i>z</i> = 2.576), is μ<sub>0</sub> = ' + U(o.c, cl.m0) + ' plausible?', ['Yes, it lies inside the interval', 'No, it lies outside the interval'], cl.in2 ? 0 : 1, 'Check whether μ0 is between X̄ ± 2.576 · SE.', true)],
+            mc('Judged by the <b>99%</b> interval (<i>z</i> = 2.576), is μ<sub>0</sub> = ' + U(o.c, cl.m0) + ' plausible?', ['Yes, it lies inside the interval', 'No, it lies outside the interval'], cl.in2 ? 0 : 1, 'Check whether μ0 is between <span class="xbar">X</span> ± 2.576 · SE.', true)],
           sol: steps(['SE = ' + seTxt(o) + '. 95%: ME = 1.96 × ' + fx(o.se) + ' = ' + r2(c95.me).toFixed(2) + ', interval <b>[' + r2(c95.lo).toFixed(2) + ', ' + r2(c95.hi).toFixed(2) + ']</b>.', 'μ<sub>0</sub> = ' + fx(cl.m0) + ' is ' + (cl.in1 ? 'inside' : 'outside') + ' it: <b>' + (cl.in1 ? 'plausible' : 'not plausible') + '</b> at 95%.', '99%: ME = 2.576 × ' + fx(o.se) + ' = ' + r2(c99.me).toFixed(2) + ', interval [' + r2(c99.lo).toFixed(2) + ', ' + r2(c99.hi).toFixed(2) + ']. μ<sub>0</sub> is ' + (cl.in2 ? 'inside' : 'outside') + ': <b>' + (cl.in2 ? 'plausible' : 'not plausible') + '</b> at 99%.']) };
       } else if (v === 1) {
         o = draw(); var L = pick([90, 95]), cc = ci(o, L), vals = [], names = ['A', 'B', 'C', 'D'], ins = shuffle([true, true, false, false]);
@@ -237,8 +237,8 @@
         var correctC = truth.join(' and '), optsC = [correctC].concat(shuffle(combos.filter(function (q) { return q !== correctC; })).slice(0, 3)); var ordC = shuffle(optsC);
         out = { stmt: p(popTxt(o) + ' A random sample of <i>n</i> = <b>' + o.n + '</b> observations has ' + XB + ' = <b>' + U(o.c, o.xb) + '</b>. Four people each claim a value for the true mean μ: ' + names.map(function (nm, i) { return '<b>' + nm + '</b>: ' + U(o.c, vals[i]); }).join('; ') + '.'),
           parts: [
-            dn('Find the <b>lower</b> endpoint of the ' + lvl(L) + ' confidence interval (<i>z</i> = ' + Z[L] + ').', cc.lo, 2, 'X̄ − z σ/√n.'),
-            dn('Find the <b>upper</b> endpoint of the ' + lvl(L) + ' confidence interval (<i>z</i> = ' + Z[L] + ').', cc.hi, 2, 'X̄ + z σ/√n.'),
+            dn('Find the <b>lower</b> endpoint of the ' + lvl(L) + ' confidence interval (<i>z</i> = ' + Z[L] + ').', cc.lo, 2, '<span class="xbar">X</span> − z σ/√n.'),
+            dn('Find the <b>upper</b> endpoint of the ' + lvl(L) + ' confidence interval (<i>z</i> = ' + Z[L] + ').', cc.hi, 2, '<span class="xbar">X</span> + z σ/√n.'),
             mc('Which claims are plausible, judged by the ' + lvl(L) + ' interval? (Claims: ' + names.map(function (nm, i) { return nm + ' = ' + fx(vals[i]); }).join(', ') + '.)', ordC, ordC.indexOf(correctC), 'A claim is plausible if its value lies inside the interval.', true)],
           sol: steps(['SE = ' + seTxt(o) + ', ME = ' + Z[L] + ' × ' + fx(o.se) + ' = ' + r2(cc.me).toFixed(2) + '. Interval: <b>[' + r2(cc.lo).toFixed(2) + ', ' + r2(cc.hi).toFixed(2) + ']</b>.', 'Inside the interval: ' + names.map(function (nm, i) { return nm + ' (' + fx(vals[i]) + ') ' + (Math.abs(vals[i] - o.xb) <= cc.me ? 'yes' : 'no'); }).join(', ') + '.', 'Plausible claims: <b>' + correctC + '</b>.']) };
       } else {

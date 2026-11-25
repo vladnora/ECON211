@@ -572,6 +572,11 @@ margin: 0 0.8em 0.2em -1em;  vertical-align: middle;
 .reveal .res-sol { background:var(--green-soft); border-radius:6px; padding:4px 10px; margin-top:4px; }
 .reveal .pr-body > svg.fig, .reveal .qz-q > svg.fig { max-width:420px; }
 .reveal p.note { font-size:0.88em; color:var(--muted); background:#f4f6f8; border-radius:6px; padding:3px 10px; margin:0.4em 0; }
+
+.reveal .xbar { position:relative; display:inline-block; font-style:italic; line-height:1; }
+.reveal .xbar::before { content:""; position:absolute; left:0.12em; right:-0.04em; top:0.02em; border-top:0.085em solid currentColor; }
+.reveal .xbar.low { font-style:inherit; }
+.reveal .xbar.low::before { left:0.05em; right:0.05em; top:0.19em; border-top-width:0.07em; }
 </style>
   <style type="text/css">.reveal
 div.sourceCode
@@ -2573,20 +2578,20 @@ window.QuartoSupport = function () {
         var X = H.toF(x), Y = H.toF(y);
         var rows = x.map(function (xi, i) { var dx = sub(X[i], o.xb), dy = sub(Y[i], o.yb); return [xi, y[i], fs(dx), fs(dy), fs(mul(dx, dy)), fs(mul(dx, dx))]; });
         rows.push(['<b>sum</b>', '', '', '', '<b>' + fs(o.Sxy) + '</b>', '<b>' + fs(o.Sxx) + '</b>']);
-        return tbl(['x', 'y', 'x − x̄', 'y − ȳ', '(x − x̄)(y − ȳ)', '(x − x̄)²'], rows);
+        return tbl(['x', 'y', 'x − <span class="xbar low">x</span>', 'y − ȳ', '(x − <span class="xbar low">x</span>)(y − ȳ)', '(x − <span class="xbar low">x</span>)²'], rows);
       }
       function olsSol(x, y, o) {
         return steps([
-          'Means: x̄ = ' + fd(o.xb) + ', ȳ = ' + fd(o.yb) + '.',
+          'Means: <span class="xbar low">x</span> = ' + fd(o.xb) + ', ȳ = ' + fd(o.yb) + '.',
           'Deviations table:' + olsTable(x, y, o),
-          'Slope: b₁ = Σ(x−x̄)(y−ȳ) / Σ(x−x̄)² = ' + fs(o.Sxy) + ' / ' + fs(o.Sxx) + ' = <b>' + fd(o.b1) + '</b>.',
-          'Intercept: b₀ = ȳ − b₁x̄ = ' + fs(o.yb) + ' − (' + fs(o.b1) + ')(' + fs(o.xb) + ') = <b>' + fd(o.b0) + '</b>.',
+          'Slope: b₁ = Σ(x−<span class="xbar low">x</span>)(y−ȳ) / Σ(x−<span class="xbar low">x</span>)² = ' + fs(o.Sxy) + ' / ' + fs(o.Sxx) + ' = <b>' + fd(o.b1) + '</b>.',
+          'Intercept: b₀ = ȳ − b₁<span class="xbar low">x</span> = ' + fs(o.yb) + ' − (' + fs(o.b1) + ')(' + fs(o.xb) + ') = <b>' + fd(o.b0) + '</b>.',
           'Fitted values: ' + o.fit.map(fd).join(', ') + '. Residuals (y − ŷ): ' + o.res.map(fd).join(', ') + '. They add up to ' + fs(H.sumF(o.res)) + '.'
         ]);
       }
 
       H.olsSol = olsSol;
-      var COVN = '<p class="note">Notation: s<sub>x</sub>² and s<sub>y</sub>² are the sample variances (divide by n − 1); s<sub>xy</sub> = Σ(x − x̄)(y − ȳ)/(n − 1) is the sample covariance; r = s<sub>xy</sub>/(s<sub>x</sub>s<sub>y</sub>) is the sample correlation; the OLS line is ŷ = b₀ + b₁x, where ŷ is the predicted y.</p>';
+      var COVN = '<p class="note">Notation: s<sub>x</sub>² and s<sub>y</sub>² are the sample variances (divide by n − 1); s<sub>xy</sub> = Σ(x − <span class="xbar low">x</span>)(y − ȳ)/(n − 1) is the sample covariance; r = s<sub>xy</sub>/(s<sub>x</sub>s<sub>y</sub>) is the sample correlation; the OLS line is ŷ = b₀ + b₁x, where ŷ is the predicted y.</p>';
       var NOTE = '<p class="note">Notation: the fitted line is \u0177 = b\u2080 + b\u2081x, where \u0177 (\u201cy-hat\u201d) is the value of y predicted by the line for a given x. The <b>residual</b> of an observation is y \u2212 \u0177: the observed y minus the predicted y.</p>';
       H.NOTE = NOTE;
 
@@ -2689,7 +2694,7 @@ window.QuartoSupport = function () {
               num('Compute the OLS slope b₁ of y on x.', div(S, Sx), 'b₁ = s_xy / s_x².')
             ];
             out.sol = steps([
-              'x̄ = 2.5, ȳ = ' + fs(H.mean(y)) + '. Deviations of x: −1.5, −0.5, 0.5, 1.5. Deviations of y: ' + y.map(function (t) { return fs(sub(F(t), H.mean(y))); }).join(', ') + '.',
+              '<span class="xbar low">x</span> = 2.5, ȳ = ' + fs(H.mean(y)) + '. Deviations of x: −1.5, −0.5, 0.5, 1.5. Deviations of y: ' + y.map(function (t) { return fs(sub(F(t), H.mean(y))); }).join(', ') + '.',
               'Products of deviations sum to ' + fs(S) + ', so s<sub>xy</sub> = ' + fs(S) + '/3 = <b>' + fd(div(S, F(3))) + '</b>.',
               'Sum of squares: x: ' + fs(Sx) + ', y: ' + fs(Sy) + '. So s<sub>x</sub>² = ' + fd(div(Sx, F(3))) + ' and s<sub>y</sub>² = ' + fd(div(Sy, F(3))) + '.',
               'r = s<sub>xy</sub> / (s<sub>x</sub> s<sub>y</sub>) = ' + fs(S) + ' / √(' + fs(Sx) + '·' + fs(Sy) + ') = <b>' + fd(rF, 2) + '</b>.',
@@ -2760,7 +2765,7 @@ window.QuartoSupport = function () {
             out.stmt = p('Three data points (x, y): ' + x.map(function (t, i) { return '(' + t + ', ' + y[i] + ')'; }).join(', ') + '. Fit the line ŷ = b₀ + b₁x by ordinary least squares (OLS).');
             out.parts = [
               num('Find b₁.', o.b1, 'Covariance over variance of x.'),
-              num('Find b₀.', o.b0, 'Use that the line passes through (x̄, ȳ).'),
+              num('Find b₀.', o.b0, 'Use that the line passes through (<span class="xbar low">x</span>, ȳ).'),
               num('Find the prediction ŷ at x = 4.', add(o.b0, mul(o.b1, F(4))), 'Plug x = 4 into the fitted line.'),
               num('Find the residual of the third observation, (3, ' + y[2] + '): its observed y minus the y predicted by your line.', o.res[2], 'Residual = observed y − predicted ŷ.'),
               num('What is the sum of the three residuals?', F(0), 'It is always 0 when the line has an intercept.', { noquiz: true })
@@ -2784,7 +2789,7 @@ window.QuartoSupport = function () {
               'Multiply the first equation by ' + Sx + ' and the second by 3, then subtract to eliminate b₀: (3·' + Sxx + ' − ' + Sx + '·' + Sx + ')b₁ = 3·' + Sxy2 + ' − ' + Sx + '·' + Sy + '.',
               'That is ' + (3 * Sxx - Sx * Sx) + ' b₁ = ' + (3 * Sxy2 - Sx * Sy) + ', so b₁ = <b>' + fd(o.b1) + '</b>.',
               'From the first equation: b₀ = (' + Sy + ' − ' + Sx + 'b₁)/3 = <b>' + fd(o.b0) + '</b>.',
-              'Check with the deviation formula: x̄ = ' + fd(o.xb) + ', ȳ = ' + fd(o.yb) + ', b₁ = ' + fs(o.Sxy) + '/' + fs(o.Sxx) + ' = ' + fd(o.b1) + '. Same answer.'
+              'Check with the deviation formula: <span class="xbar low">x</span> = ' + fd(o.xb) + ', ȳ = ' + fd(o.yb) + ', b₁ = ' + fs(o.Sxy) + '/' + fs(o.Sxx) + ' = ' + fd(o.b1) + '. Same answer.'
             ]);
           } else {
             var x0 = pick([0, 1, 2]);
@@ -2793,7 +2798,7 @@ window.QuartoSupport = function () {
             out.stmt = p('Three people were observed. For each we recorded <b>x</b> = ' + c.x + ' and <b>y</b> = ' + c.y + ': ' + x.map(function (t, i) { return '(' + t + ', ' + y[i] + ')'; }).join(', ') + '.');
             out.parts = [
               num('Find the OLS slope b₁.', o.b1, 'Slope = covariance of x and y divided by the variance of x.'),
-              num('Find the OLS intercept b₀.', o.b0, 'b₀ = ȳ − b₁x̄.'),
+              num('Find the OLS intercept b₀.', o.b0, 'b₀ = ȳ − b₁<span class="xbar low">x</span>.'),
               num('Predict y for x = ' + xn + '.', add(o.b0, mul(o.b1, F(xn))), 'Plug in.'),
               num('The observation with x = 1 has y = ' + y[1] + '. Find its residual (observed y minus the y predicted by your line).', o.res[1], 'Observed minus predicted.'),
               mc('Which sentence interprets the slope correctly?', [
@@ -2827,8 +2832,8 @@ window.QuartoSupport = function () {
             (v === 2 ? p('Note that two observations share the same x. OLS works exactly the same way.') : '') +
             (v === 1 ? p('The x values are in larger units, so the slope will be small. Keep fractions exact.') : '');
           out.parts = [
-            num('Find the slope b₁.', o.b1, 'b₁ = Σ(x−x̄)(y−ȳ) / Σ(x−x̄)².'),
-            num('Find the intercept b₀.', o.b0, 'b₀ = ȳ − b₁x̄.'),
+            num('Find the slope b₁.', o.b1, 'b₁ = Σ(x−<span class="xbar low">x</span>)(y−ȳ) / Σ(x−<span class="xbar low">x</span>)².'),
+            num('Find the intercept b₀.', o.b0, 'b₀ = ȳ − b₁<span class="xbar low">x</span>.'),
             num('Find the residual of observation number ' + (xi + 1) + ' (x = ' + x[xi] + ', y = ' + y[xi] + '): its observed y minus the y predicted by your line.', o.res[xi], 'Observed y − predicted ŷ.'),
             num('Add up the four residuals. What do you get?', F(0), 'First-order condition for b₀.', { noquiz: true }),
             num('Multiply each observation’s x by its residual, and add the four products.', sumxe, 'First-order condition for b₁.', { noquiz: true })
@@ -2887,7 +2892,7 @@ window.QuartoSupport = function () {
             out.sol = steps([
               'Line A: residuals ' + sa.res.map(fs).join(', ') + ' → sum of residuals = ' + fs(sa.sum) + '; sum of (x × residual) = ' + fs(sa.sumx) + '.',
               'Line B: residuals ' + sb.res.map(fs).join(', ') + ' → sum of residuals = ' + fs(sb.sum) + '; sum of (x × residual) = ' + fs(sb.sumx) + '.',
-              'The OLS line must satisfy <b>both</b> conditions. Line ' + (ols1 ? 'B' : 'A') + ' does. The other line fails at least one (' + (wrong ? 'its residuals do not even add to zero, the intercept is off' : 'its residuals add to zero because it goes through (x̄, ȳ), but the slope is wrong so the sum of (x × residual) is not 0') + ').'
+              'The OLS line must satisfy <b>both</b> conditions. Line ' + (ols1 ? 'B' : 'A') + ' does. The other line fails at least one (' + (wrong ? 'its residuals do not even add to zero, the intercept is off' : 'its residuals add to zero because it goes through (<span class="xbar low">x</span>, ȳ), but the slope is wrong so the sum of (x × residual) is not 0') + ').'
             ]);
           } else {
             var b0v = ri(1, 4), b1v = ri(1, 3), d = pick([-6, -4, 4, 6]);
@@ -2896,8 +2901,8 @@ window.QuartoSupport = function () {
             out.stmt = p('Four points lie exactly on the line y = ' + b0v + ' + ' + b1v + 'x: x = 1, 2, 3, 4 and y = ' + yA.join(', ') + '. Now the last point is mistyped: its y changes from ' + yA[3] + ' to <b>' + yB[3] + '</b>. The other three points stay the same.');
             out.parts = [
               num('Find the OLS slope using the correct data.', oA.b1, 'The points are on a line.'),
-              num('Find the OLS slope using the mistyped data.', oB.b1, 'Here x̄ = 2.5 and Σ(x − x̄)² = 5.'),
-              num('Find the OLS intercept using the mistyped data.', oB.b0, 'b₀ = ȳ − b₁x̄.'),
+              num('Find the OLS slope using the mistyped data.', oB.b1, 'Here <span class="xbar low">x</span> = 2.5 and Σ(x − <span class="xbar low">x</span>)² = 5.'),
+              num('Find the OLS intercept using the mistyped data.', oB.b0, 'b₀ = ȳ − b₁<span class="xbar low">x</span>.'),
               num('Find the residual of the mistyped point (x = 4) under the new OLS line: its y minus the y predicted by that line.', oB.res[3], 'Observed minus predicted.')
             ];
             out.sol = olsSol(x4, yB, oB) + p('<b>Lesson:</b> one wrong point moved the slope from ' + b1v + ' to ' + fd(oB.b1) + ', and the new line does not pass through any of the four points. Because deviations are squared, a point far from the others pulls the OLS line towards itself. Notice also that the outlier’s own residual (' + fd(oB.res[3]) + ') is smaller than its distance from the old line (' + d + '): the line moved towards it.');
@@ -3116,8 +3121,8 @@ window.QuartoSupport = function () {
             var bank = [
               ['p, the true proportion of girls in the population', 'Number'],
               ['μ, the population mean', 'Number'],
-              ['X̄, the sample mean <i>before</i> the sample is drawn', 'Random variable'],
-              ['x̄ = 0.6, the sample mean <i>after</i> the sample is drawn', 'Number'],
+              ['<span class="xbar">X</span>, the sample mean <i>before</i> the sample is drawn', 'Random variable'],
+              ['<span class="xbar low">x</span> = 0.6, the sample mean <i>after</i> the sample is drawn', 'Number'],
               ['X₃, the third observation <i>before</i> sampling', 'Random variable'],
               ['x₃ = 1, the recorded third observation', 'Number'],
               ['s², the sample variance before the data are collected', 'Random variable']
@@ -3279,12 +3284,12 @@ window.QuartoSupport = function () {
               (v === 0 ? p('The ' + story[0].replace(/s$/, '') + ' with the <b>lowest y</b> (x = ' + x[dr[0]] + ', y = ' + y[dr[0]] + ') ' + story[3] + ' and will not appear in a later dataset.') :
                 p('A later dataset only contains ' + story[0] + ' with intermediate outcomes: the ones with the <b>lowest and the highest y</b> (x = ' + x[dr[0]] + ', y = ' + y[dr[0]] + ' and x = ' + x[dr[1]] + ', y = ' + y[dr[1]] + ') are not recorded (for example, the best ones were bought out and the worst ' + story[3] + ').'));
             out.parts = [
-              num('Find the OLS slope b₁ (in the line ŷ = b₀ + b₁x) using all five observations.', full.b1, 'Slope = Σ(x−x̄)(y−ȳ)/Σ(x−x̄)².'),
+              num('Find the OLS slope b₁ (in the line ŷ = b₀ + b₁x) using all five observations.', full.b1, 'Slope = Σ(x−<span class="xbar low">x</span>)(y−ȳ)/Σ(x−<span class="xbar low">x</span>)².'),
               num('Find the OLS slope b₁ using only the observations that remain in the later dataset.', ko.b1, 'Recompute with ' + xs2.length + ' observations.'),
               mc('Compared with the full-data slope, the slope from the remaining data is:', ['smaller (flatter)', 'larger (steeper)', 'the same'], 0, 'Removing extreme outcomes flattens the relationship.', true),
               mc('What causes the difference?', ['Survivorship / selection on the outcome: the dropped observations are not random.', 'Sampling error only.', 'A mistake in the formula.'], 0, 'The observations were dropped because of their y values.')
             ];
-            out.sol = H.olsSol(x, y, full) + steps(['<b>Remaining data:</b> ' + xs2.map(function (t, i) { return '(' + t + ', ' + ys2[i] + ')'; }).join(', ') + '. x̄ = ' + fd(ko.xb) + ', ȳ = ' + fd(ko.yb) + ', Σ(x−x̄)(y−ȳ) = ' + fs(ko.Sxy) + ', Σ(x−x̄)² = ' + fs(ko.Sxx) + ' → slope <b>' + fd(ko.b1) + '</b>.',
+            out.sol = H.olsSol(x, y, full) + steps(['<b>Remaining data:</b> ' + xs2.map(function (t, i) { return '(' + t + ', ' + ys2[i] + ')'; }).join(', ') + '. <span class="xbar low">x</span> = ' + fd(ko.xb) + ', ȳ = ' + fd(ko.yb) + ', Σ(x−<span class="xbar low">x</span>)(y−ȳ) = ' + fs(ko.Sxy) + ', Σ(x−<span class="xbar low">x</span>)² = ' + fs(ko.Sxx) + ' → slope <b>' + fd(ko.b1) + '</b>.',
               'The slope fell from ' + fd(full.b1, 2) + ' to ' + fd(ko.b1, 2) + '. The dropped points were extreme outcomes that anchored the relationship; selection on the outcome flattens the line. This is <b>non-sampling error</b>: the data we see are not representative of the original population.']);
             out.meta = { full: fv(full.b1), kept: fv(ko.b1) };
           } else {
@@ -3376,7 +3381,7 @@ window.QuartoSupport = function () {
 
       /* =========================================================== T/F */
       var TF1 = [
-        ['The OLS line always passes through the point (x̄, ȳ).', true, 'b₀ = ȳ − b₁x̄ guarantees it.'],
+        ['The OLS line always passes through the point (<span class="xbar low">x</span>, ȳ).', true, 'b₀ = ȳ − b₁<span class="xbar low">x</span> guarantees it.'],
         ['When the model has an intercept, OLS residuals always add up to zero.', true, 'It is the first-order condition for b₀.'],
         ['Correlation changes if we measure x in different units (for example cm instead of m).', false, 'Correlation is unit-free.'],
         ['Covariance changes if we measure x in different units.', true, 'Covariance scales with the units.'],
@@ -3638,9 +3643,9 @@ window.QuartoSupport = function () {
               num('Estimate the slope b₁ from the graph: how much does the line rise (or fall) per unit of x?', F(cfg.b), 'Use two points on the line, e.g. at x = 0 and x = 4.'),
               num('Use the line to predict y at x = ' + x0 + '.', F(cfg.a + cfg.b * x0), 'Read off the line at x = ' + x0 + '.'),
               mc('The marked point M lies ' + (res > 0 ? 'above' : 'below') + ' the line. Its residual (the observed y minus the y on the line) is:', ['positive', 'negative', 'zero'], res > 0 ? 0 : 1, 'Residual = observed − predicted: positive when the point is above the line.', true),
-              mc('The line is guaranteed to pass through which point?', ['(0, 0)', '(x̄, ȳ), the point whose coordinates are the means of x and of y', '(largest x, largest y)'], 1, 'b₀ = ȳ − b₁x̄.', true)
+              mc('The line is guaranteed to pass through which point?', ['(0, 0)', '(<span class="xbar low">x</span>, ȳ), the point whose coordinates are the means of x and of y', '(largest x, largest y)'], 1, 'b₀ = ȳ − b₁<span class="xbar low">x</span>.', true)
             ];
-            out.sol = steps(['Intercept: the line crosses the y-axis at <b>' + cfg.a + '</b>.', 'Slope: between x = 0 (y = ' + cfg.a + ') and x = 4 (y = ' + (cfg.a + 4 * cfg.b) + ') the line changes by ' + (4 * cfg.b) + ' over 4 units, so b₁ = <b>' + cfg.b + '</b>.', 'Prediction at x = ' + x0 + ': ' + cfg.a + ' + ' + cfg.b + '·' + x0 + ' = <b>' + (cfg.a + cfg.b * x0) + '</b>.', 'Point M is ' + (res > 0 ? 'above' : 'below') + ' the line, so its residual (observed − fitted) is ' + (res > 0 ? 'positive' : 'negative') + '.', 'The OLS line always passes through (x̄, ȳ).']);
+            out.sol = steps(['Intercept: the line crosses the y-axis at <b>' + cfg.a + '</b>.', 'Slope: between x = 0 (y = ' + cfg.a + ') and x = 4 (y = ' + (cfg.a + 4 * cfg.b) + ') the line changes by ' + (4 * cfg.b) + ' over 4 units, so b₁ = <b>' + cfg.b + '</b>.', 'Prediction at x = ' + x0 + ': ' + cfg.a + ' + ' + cfg.b + '·' + x0 + ' = <b>' + (cfg.a + cfg.b * x0) + '</b>.', 'Point M is ' + (res > 0 ? 'above' : 'below') + ' the line, so its residual (observed − fitted) is ' + (res > 0 ? 'positive' : 'negative') + '.', 'The OLS line always passes through (<span class="xbar low">x</span>, ȳ).']);
           } else {
             var base, pts2, after, kind, tries = 0, lab;
             var types = [

@@ -3,7 +3,7 @@
   'use strict';
   var P = globalThis.P, H = P.h;
   var ri = H.ri, pick = H.pick, shuffle = H.shuffle, F = H.F, num = H.num, mc = H.mc, p = H.p, steps = H.steps;
-  var fx = H.fx, r2 = H.r2, U = H.U, Z = H.Z, XB = 'X̄';
+  var fx = H.fx, r2 = H.r2, U = H.U, Z = H.Z, XB = '<span class="xbar">X</span>';
   var TF = ['True', 'False'];
   function tf(prompt, truth, ex) { return mc(prompt, TF, truth ? 0 : 1, ex, true); }
   function rep(c, L) { return L + '%'; }
@@ -47,7 +47,7 @@
         out = { stmt: p(setup(o)),
           parts: [
             mc('Which statement is a <b>correct</b> interpretation of the ' + o.L + '% confidence interval ' + rng(o) + '?', opt1, ci1, 'The ' + o.L + '% describes the method: the long-run share of intervals that contain μ. Once computed, the interval is fixed, and μ is a fixed (unknown) number.'),
-            mc('Another researcher draws a <b>new</b> random sample of the same size from the same population and computes a ' + o.L + '% interval in the same way. Which statement is true?', rest[0], 1, 'A new sample gives a new X̄, hence a new interval; it is not guaranteed to contain μ, and it need not lie inside the old interval.', false)],
+            mc('Another researcher draws a <b>new</b> random sample of the same size from the same population and computes a ' + o.L + '% interval in the same way. Which statement is true?', rest[0], 1, 'A new sample gives a new <span class="xbar">X</span>, hence a new interval; it is not guaranteed to contain μ, and it need not lie inside the old interval.', false)],
           sol: steps(['The ' + o.L + '% is the success rate of the <b>procedure</b> in repeated sampling: about ' + o.L + ' out of 100 intervals built this way contain μ. The other options confuse the interval with a statement about μ, the population or the sample.', 'A new sample has a different ' + XB + ', so the new interval is centred elsewhere and <b>generally differs</b>. It also has the same probability ' + o.L + '% (not a guarantee) of containing μ.']) };
       } else if (v === 1) {
         var good = shuffle(GOOD).slice(0, 3).map(function (f) { return f(o); }), bad = pick(wrongs(o));
@@ -73,10 +73,10 @@
     ['An unbiased estimator always gives an estimate exactly equal to the true parameter.', false, 'Unbiased means right <i>on average</i>; a single estimate still has error.'],
     ['“Unbiased” means that E(<span class="hat">θ</span>) = θ: the estimator is right on average.', true, 'That is the definition.'],
     ['If E(<span class="hat">θ</span>) = θ + 2, then <span class="hat">θ</span> is an unbiased estimator of θ.', false, 'Its bias is 2, so it is biased.'],
-    ['The sample mean ' + XB + ' is an unbiased estimator of μ for any population with a finite mean.', true, 'E(X̄) = μ whenever the mean exists.'],
+    ['The sample mean ' + XB + ' is an unbiased estimator of μ for any population with a finite mean.', true, 'E(<span class="xbar">X</span>) = μ whenever the mean exists.'],
     ['Of two unbiased estimators, the one with the smaller variance is more efficient.', true, 'That is the definition of efficiency.'],
     ['An estimator with a very small variance is always better than an unbiased one, even if it is biased.', false, 'Efficiency only compares unbiased estimators; a tiny-variance estimator can be far from θ.'],
-    ['For a Uniform[0, a] population, the estimator 2<i>X</i><sub>1</sub> (first observation only) is as efficient as 2' + XB + ' computed from <i>n</i> = 10 observations.', false, 'Var(2X̄) is n times smaller than Var(2X₁).'],
+    ['For a Uniform[0, a] population, the estimator 2<i>X</i><sub>1</sub> (first observation only) is as efficient as 2' + XB + ' computed from <i>n</i> = 10 observations.', false, 'Var(2<span class="xbar">X</span>) is n times smaller than Var(2X₁).'],
     ['Dividing the sum of squared deviations from the sample mean, Σ(<i>X</i><sub>i</sub> − ' + XB + ')², by <i>n</i> − 1 gives an unbiased estimator of σ².', true, 'E(s²) = σ².'],
     ['Dividing the sum of squared deviations from the sample mean, Σ(<i>X</i><sub>i</sub> − ' + XB + ')², by <i>n</i> gives an unbiased estimator of σ².', false, 'It is too small by the factor (n − 1)/n on average.'],
     ['A consistent estimator converges to the true parameter as the sample size grows.', true, 'That is the definition of consistency.'],
@@ -116,7 +116,7 @@
           sol: steps(['Expect ' + Ln + '% of ' + N + ' intervals to contain μ: <b>' + k + '</b>.', 'The others miss: ' + N + ' − ' + k + ' = <b>' + miss + '</b>.', 'Before sampling, the interval is random and contains μ with probability <b>' + (Ln / 100) + '</b>. (After it is computed, it either contains μ or not; we just do not know which.)']) };
       } else {
         var sel2 = shuffle(EST).slice(0, 4);
-        out = { stmt: p('Decide whether each statement about estimators is true. Here θ is a population parameter and <span class="hat">θ</span> an estimator of it; X̄ is the sample mean and <i>n</i> the sample size.'),
+        out = { stmt: p('Decide whether each statement about estimators is true. Here θ is a population parameter and <span class="hat">θ</span> an estimator of it; <span class="xbar">X</span> is the sample mean and <i>n</i> the sample size.'),
           parts: sel2.map(function (q) { return tf('True or false? ' + q[0], q[1], q[2]); }),
           sol: steps(sel2.map(function (q) { return q[0] + ' <b>' + (q[1] ? 'True' : 'False') + '</b>. ' + q[2]; })) };
       }

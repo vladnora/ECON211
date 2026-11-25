@@ -69,7 +69,10 @@ for i, t, d in cfg['toc']:
     out += '::: {.box}\n<a class="toc-hit" href="#/%s" title="Go to section"></a>\n<span class="tag">%s</span>\n%s\n:::\n' % (i, t, d)
 out += ':::\n\n'
 for i, t in cfg['slides']:
-    out += '## %s {#%s}\n\n<div class="prob" data-id="%s"></div>\n\n' % (t, i, i)
+    # the slide menu shows plain text, so a title with the bar span needs a menu title in words
+    xb = '<span class="xbar">X</span>'
+    menu = ' data-menu-title="%s"' % t.replace(xb, 'the sample mean') if xb in t else ''
+    out += '## %s {#%s%s}\n\n<div class="prob" data-id="%s"></div>\n\n' % (t, i, menu, i)
 out += '## Timed quiz {#quiz}\n\n<div class="quiz"></div>\n'
 (here / (cfg['name'] + '.qmd')).write_text(out)
 

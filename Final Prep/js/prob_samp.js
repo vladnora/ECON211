@@ -115,8 +115,8 @@
         var bank = [
           ['p, the true proportion of girls in the population', 'Number'],
           ['μ, the population mean', 'Number'],
-          ['X̄, the sample mean <i>before</i> the sample is drawn', 'Random variable'],
-          ['x̄ = 0.6, the sample mean <i>after</i> the sample is drawn', 'Number'],
+          ['<span class="xbar">X</span>, the sample mean <i>before</i> the sample is drawn', 'Random variable'],
+          ['<span class="xbar low">x</span> = 0.6, the sample mean <i>after</i> the sample is drawn', 'Number'],
           ['X₃, the third observation <i>before</i> sampling', 'Random variable'],
           ['x₃ = 1, the recorded third observation', 'Number'],
           ['s², the sample variance before the data are collected', 'Random variable']
@@ -278,12 +278,12 @@
           (v === 0 ? p('The ' + story[0].replace(/s$/, '') + ' with the <b>lowest y</b> (x = ' + x[dr[0]] + ', y = ' + y[dr[0]] + ') ' + story[3] + ' and will not appear in a later dataset.') :
             p('A later dataset only contains ' + story[0] + ' with intermediate outcomes: the ones with the <b>lowest and the highest y</b> (x = ' + x[dr[0]] + ', y = ' + y[dr[0]] + ' and x = ' + x[dr[1]] + ', y = ' + y[dr[1]] + ') are not recorded (for example, the best ones were bought out and the worst ' + story[3] + ').'));
         out.parts = [
-          num('Find the OLS slope b₁ (in the line ŷ = b₀ + b₁x) using all five observations.', full.b1, 'Slope = Σ(x−x̄)(y−ȳ)/Σ(x−x̄)².'),
+          num('Find the OLS slope b₁ (in the line ŷ = b₀ + b₁x) using all five observations.', full.b1, 'Slope = Σ(x−<span class="xbar low">x</span>)(y−ȳ)/Σ(x−<span class="xbar low">x</span>)².'),
           num('Find the OLS slope b₁ using only the observations that remain in the later dataset.', ko.b1, 'Recompute with ' + xs2.length + ' observations.'),
           mc('Compared with the full-data slope, the slope from the remaining data is:', ['smaller (flatter)', 'larger (steeper)', 'the same'], 0, 'Removing extreme outcomes flattens the relationship.', true),
           mc('What causes the difference?', ['Survivorship / selection on the outcome: the dropped observations are not random.', 'Sampling error only.', 'A mistake in the formula.'], 0, 'The observations were dropped because of their y values.')
         ];
-        out.sol = H.olsSol(x, y, full) + steps(['<b>Remaining data:</b> ' + xs2.map(function (t, i) { return '(' + t + ', ' + ys2[i] + ')'; }).join(', ') + '. x̄ = ' + fd(ko.xb) + ', ȳ = ' + fd(ko.yb) + ', Σ(x−x̄)(y−ȳ) = ' + fs(ko.Sxy) + ', Σ(x−x̄)² = ' + fs(ko.Sxx) + ' → slope <b>' + fd(ko.b1) + '</b>.',
+        out.sol = H.olsSol(x, y, full) + steps(['<b>Remaining data:</b> ' + xs2.map(function (t, i) { return '(' + t + ', ' + ys2[i] + ')'; }).join(', ') + '. <span class="xbar low">x</span> = ' + fd(ko.xb) + ', ȳ = ' + fd(ko.yb) + ', Σ(x−<span class="xbar low">x</span>)(y−ȳ) = ' + fs(ko.Sxy) + ', Σ(x−<span class="xbar low">x</span>)² = ' + fs(ko.Sxx) + ' → slope <b>' + fd(ko.b1) + '</b>.',
           'The slope fell from ' + fd(full.b1, 2) + ' to ' + fd(ko.b1, 2) + '. The dropped points were extreme outcomes that anchored the relationship; selection on the outcome flattens the line. This is <b>non-sampling error</b>: the data we see are not representative of the original population.']);
         out.meta = { full: fv(full.b1), kept: fv(ko.b1) };
       } else {
@@ -375,7 +375,7 @@
 
   /* =========================================================== T/F */
   var TF1 = [
-    ['The OLS line always passes through the point (x̄, ȳ).', true, 'b₀ = ȳ − b₁x̄ guarantees it.'],
+    ['The OLS line always passes through the point (<span class="xbar low">x</span>, ȳ).', true, 'b₀ = ȳ − b₁<span class="xbar low">x</span> guarantees it.'],
     ['When the model has an intercept, OLS residuals always add up to zero.', true, 'It is the first-order condition for b₀.'],
     ['Correlation changes if we measure x in different units (for example cm instead of m).', false, 'Correlation is unit-free.'],
     ['Covariance changes if we measure x in different units.', true, 'Covariance scales with the units.'],

@@ -27,11 +27,11 @@
   ],
   [
    "xbarexact",
-   "Exact distribution of X̄"
+   "Exact distribution of <span class=\"xbar\">X</span>"
   ],
   [
    "xbarmom",
-   "Mean and SD of X̄"
+   "Mean and SD of <span class=\"xbar\">X</span>"
   ],
   [
    "xbarn",
@@ -39,7 +39,7 @@
   ],
   [
    "cltshape",
-   "Shape of X̄: reading histograms"
+   "Shape of <span class=\"xbar\">X</span>: reading histograms"
   ],
   [
    "pxbar",
@@ -74,13 +74,13 @@
   ],
   [
    "xbarexact",
-   "2 · Sampling distribution of X̄",
-   "Exact pmf for small n, E(X̄) and SD(X̄), the effect of n, and the CLT shape."
+   "2 · Sampling distribution of <span class=\"xbar\">X</span>",
+   "Exact pmf for small n, E(<span class=\"xbar\">X</span>) and SD(<span class=\"xbar\">X</span>), the effect of n, and the CLT shape."
   ],
   [
    "pxbar",
    "3 · Probabilities for a sample mean",
-   "Standardize X̄, compare one observation with a mean, choose n."
+   "Standardize <span class=\"xbar\">X</span>, compare one observation with a mean, choose n."
   ],
   [
    "phat",

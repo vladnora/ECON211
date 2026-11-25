@@ -87,3 +87,9 @@
 .reveal .pr-body > svg.fig, .reveal .qz-q > svg.fig { max-width:420px; }
 
 .reveal p.note { font-size:0.88em; color:var(--muted); background:#f4f6f8; border-radius:6px; padding:3px 10px; margin:0.4em 0; }
+
+/* sample mean: a bar drawn over X (the combining macron renders off-centre in this font) */
+.reveal .xbar { position:relative; display:inline-block; font-style:italic; line-height:1; }
+.reveal .xbar::before { content:""; position:absolute; left:0.12em; right:-0.04em; top:0.02em; border-top:0.085em solid currentColor; }
+.reveal .xbar.low { font-style:inherit; }
+.reveal .xbar.low::before { left:0.05em; right:0.05em; top:0.19em; border-top-width:0.07em; }

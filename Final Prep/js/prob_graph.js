@@ -220,9 +220,9 @@
           num('Estimate the slope b₁ from the graph: how much does the line rise (or fall) per unit of x?', F(cfg.b), 'Use two points on the line, e.g. at x = 0 and x = 4.'),
           num('Use the line to predict y at x = ' + x0 + '.', F(cfg.a + cfg.b * x0), 'Read off the line at x = ' + x0 + '.'),
           mc('The marked point M lies ' + (res > 0 ? 'above' : 'below') + ' the line. Its residual (the observed y minus the y on the line) is:', ['positive', 'negative', 'zero'], res > 0 ? 0 : 1, 'Residual = observed − predicted: positive when the point is above the line.', true),
-          mc('The line is guaranteed to pass through which point?', ['(0, 0)', '(x̄, ȳ), the point whose coordinates are the means of x and of y', '(largest x, largest y)'], 1, 'b₀ = ȳ − b₁x̄.', true)
+          mc('The line is guaranteed to pass through which point?', ['(0, 0)', '(<span class="xbar low">x</span>, ȳ), the point whose coordinates are the means of x and of y', '(largest x, largest y)'], 1, 'b₀ = ȳ − b₁<span class="xbar low">x</span>.', true)
         ];
-        out.sol = steps(['Intercept: the line crosses the y-axis at <b>' + cfg.a + '</b>.', 'Slope: between x = 0 (y = ' + cfg.a + ') and x = 4 (y = ' + (cfg.a + 4 * cfg.b) + ') the line changes by ' + (4 * cfg.b) + ' over 4 units, so b₁ = <b>' + cfg.b + '</b>.', 'Prediction at x = ' + x0 + ': ' + cfg.a + ' + ' + cfg.b + '·' + x0 + ' = <b>' + (cfg.a + cfg.b * x0) + '</b>.', 'Point M is ' + (res > 0 ? 'above' : 'below') + ' the line, so its residual (observed − fitted) is ' + (res > 0 ? 'positive' : 'negative') + '.', 'The OLS line always passes through (x̄, ȳ).']);
+        out.sol = steps(['Intercept: the line crosses the y-axis at <b>' + cfg.a + '</b>.', 'Slope: between x = 0 (y = ' + cfg.a + ') and x = 4 (y = ' + (cfg.a + 4 * cfg.b) + ') the line changes by ' + (4 * cfg.b) + ' over 4 units, so b₁ = <b>' + cfg.b + '</b>.', 'Prediction at x = ' + x0 + ': ' + cfg.a + ' + ' + cfg.b + '·' + x0 + ' = <b>' + (cfg.a + cfg.b * x0) + '</b>.', 'Point M is ' + (res > 0 ? 'above' : 'below') + ' the line, so its residual (observed − fitted) is ' + (res > 0 ? 'positive' : 'negative') + '.', 'The OLS line always passes through (<span class="xbar low">x</span>, ȳ).']);
       } else {
         var base, pts2, after, kind, tries = 0, lab;
         var types = [

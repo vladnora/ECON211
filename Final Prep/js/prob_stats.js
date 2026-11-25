@@ -10,20 +10,20 @@
     var X = H.toF(x), Y = H.toF(y);
     var rows = x.map(function (xi, i) { var dx = sub(X[i], o.xb), dy = sub(Y[i], o.yb); return [xi, y[i], fs(dx), fs(dy), fs(mul(dx, dy)), fs(mul(dx, dx))]; });
     rows.push(['<b>sum</b>', '', '', '', '<b>' + fs(o.Sxy) + '</b>', '<b>' + fs(o.Sxx) + '</b>']);
-    return tbl(['x', 'y', 'x − x̄', 'y − ȳ', '(x − x̄)(y − ȳ)', '(x − x̄)²'], rows);
+    return tbl(['x', 'y', 'x − <span class="xbar low">x</span>', 'y − ȳ', '(x − <span class="xbar low">x</span>)(y − ȳ)', '(x − <span class="xbar low">x</span>)²'], rows);
   }
   function olsSol(x, y, o) {
     return steps([
-      'Means: x̄ = ' + fd(o.xb) + ', ȳ = ' + fd(o.yb) + '.',
+      'Means: <span class="xbar low">x</span> = ' + fd(o.xb) + ', ȳ = ' + fd(o.yb) + '.',
       'Deviations table:' + olsTable(x, y, o),
-      'Slope: b₁ = Σ(x−x̄)(y−ȳ) / Σ(x−x̄)² = ' + fs(o.Sxy) + ' / ' + fs(o.Sxx) + ' = <b>' + fd(o.b1) + '</b>.',
-      'Intercept: b₀ = ȳ − b₁x̄ = ' + fs(o.yb) + ' − (' + fs(o.b1) + ')(' + fs(o.xb) + ') = <b>' + fd(o.b0) + '</b>.',
+      'Slope: b₁ = Σ(x−<span class="xbar low">x</span>)(y−ȳ) / Σ(x−<span class="xbar low">x</span>)² = ' + fs(o.Sxy) + ' / ' + fs(o.Sxx) + ' = <b>' + fd(o.b1) + '</b>.',
+      'Intercept: b₀ = ȳ − b₁<span class="xbar low">x</span> = ' + fs(o.yb) + ' − (' + fs(o.b1) + ')(' + fs(o.xb) + ') = <b>' + fd(o.b0) + '</b>.',
       'Fitted values: ' + o.fit.map(fd).join(', ') + '. Residuals (y − ŷ): ' + o.res.map(fd).join(', ') + '. They add up to ' + fs(H.sumF(o.res)) + '.'
     ]);
   }
 
   H.olsSol = olsSol;
-  var COVN = '<p class="note">Notation: s<sub>x</sub>² and s<sub>y</sub>² are the sample variances (divide by n − 1); s<sub>xy</sub> = Σ(x − x̄)(y − ȳ)/(n − 1) is the sample covariance; r = s<sub>xy</sub>/(s<sub>x</sub>s<sub>y</sub>) is the sample correlation; the OLS line is ŷ = b₀ + b₁x, where ŷ is the predicted y.</p>';
+  var COVN = '<p class="note">Notation: s<sub>x</sub>² and s<sub>y</sub>² are the sample variances (divide by n − 1); s<sub>xy</sub> = Σ(x − <span class="xbar low">x</span>)(y − ȳ)/(n − 1) is the sample covariance; r = s<sub>xy</sub>/(s<sub>x</sub>s<sub>y</sub>) is the sample correlation; the OLS line is ŷ = b₀ + b₁x, where ŷ is the predicted y.</p>';
   var NOTE = '<p class="note">Notation: the fitted line is \u0177 = b\u2080 + b\u2081x, where \u0177 (\u201cy-hat\u201d) is the value of y predicted by the line for a given x. The <b>residual</b> of an observation is y \u2212 \u0177: the observed y minus the predicted y.</p>';
   H.NOTE = NOTE;
 
@@ -126,7 +126,7 @@
           num('Compute the OLS slope b₁ of y on x.', div(S, Sx), 'b₁ = s_xy / s_x².')
         ];
         out.sol = steps([
-          'x̄ = 2.5, ȳ = ' + fs(H.mean(y)) + '. Deviations of x: −1.5, −0.5, 0.5, 1.5. Deviations of y: ' + y.map(function (t) { return fs(sub(F(t), H.mean(y))); }).join(', ') + '.',
+          '<span class="xbar low">x</span> = 2.5, ȳ = ' + fs(H.mean(y)) + '. Deviations of x: −1.5, −0.5, 0.5, 1.5. Deviations of y: ' + y.map(function (t) { return fs(sub(F(t), H.mean(y))); }).join(', ') + '.',
           'Products of deviations sum to ' + fs(S) + ', so s<sub>xy</sub> = ' + fs(S) + '/3 = <b>' + fd(div(S, F(3))) + '</b>.',
           'Sum of squares: x: ' + fs(Sx) + ', y: ' + fs(Sy) + '. So s<sub>x</sub>² = ' + fd(div(Sx, F(3))) + ' and s<sub>y</sub>² = ' + fd(div(Sy, F(3))) + '.',
           'r = s<sub>xy</sub> / (s<sub>x</sub> s<sub>y</sub>) = ' + fs(S) + ' / √(' + fs(Sx) + '·' + fs(Sy) + ') = <b>' + fd(rF, 2) + '</b>.',
@@ -197,7 +197,7 @@
         out.stmt = p('Three data points (x, y): ' + x.map(function (t, i) { return '(' + t + ', ' + y[i] + ')'; }).join(', ') + '. Fit the line ŷ = b₀ + b₁x by ordinary least squares (OLS).');
         out.parts = [
           num('Find b₁.', o.b1, 'Covariance over variance of x.'),
-          num('Find b₀.', o.b0, 'Use that the line passes through (x̄, ȳ).'),
+          num('Find b₀.', o.b0, 'Use that the line passes through (<span class="xbar low">x</span>, ȳ).'),
           num('Find the prediction ŷ at x = 4.', add(o.b0, mul(o.b1, F(4))), 'Plug x = 4 into the fitted line.'),
           num('Find the residual of the third observation, (3, ' + y[2] + '): its observed y minus the y predicted by your line.', o.res[2], 'Residual = observed y − predicted ŷ.'),
           num('What is the sum of the three residuals?', F(0), 'It is always 0 when the line has an intercept.', { noquiz: true })
@@ -221,7 +221,7 @@
           'Multiply the first equation by ' + Sx + ' and the second by 3, then subtract to eliminate b₀: (3·' + Sxx + ' − ' + Sx + '·' + Sx + ')b₁ = 3·' + Sxy2 + ' − ' + Sx + '·' + Sy + '.',
           'That is ' + (3 * Sxx - Sx * Sx) + ' b₁ = ' + (3 * Sxy2 - Sx * Sy) + ', so b₁ = <b>' + fd(o.b1) + '</b>.',
           'From the first equation: b₀ = (' + Sy + ' − ' + Sx + 'b₁)/3 = <b>' + fd(o.b0) + '</b>.',
-          'Check with the deviation formula: x̄ = ' + fd(o.xb) + ', ȳ = ' + fd(o.yb) + ', b₁ = ' + fs(o.Sxy) + '/' + fs(o.Sxx) + ' = ' + fd(o.b1) + '. Same answer.'
+          'Check with the deviation formula: <span class="xbar low">x</span> = ' + fd(o.xb) + ', ȳ = ' + fd(o.yb) + ', b₁ = ' + fs(o.Sxy) + '/' + fs(o.Sxx) + ' = ' + fd(o.b1) + '. Same answer.'
         ]);
       } else {
         var x0 = pick([0, 1, 2]);
@@ -230,7 +230,7 @@
         out.stmt = p('Three people were observed. For each we recorded <b>x</b> = ' + c.x + ' and <b>y</b> = ' + c.y + ': ' + x.map(function (t, i) { return '(' + t + ', ' + y[i] + ')'; }).join(', ') + '.');
         out.parts = [
           num('Find the OLS slope b₁.', o.b1, 'Slope = covariance of x and y divided by the variance of x.'),
-          num('Find the OLS intercept b₀.', o.b0, 'b₀ = ȳ − b₁x̄.'),
+          num('Find the OLS intercept b₀.', o.b0, 'b₀ = ȳ − b₁<span class="xbar low">x</span>.'),
           num('Predict y for x = ' + xn + '.', add(o.b0, mul(o.b1, F(xn))), 'Plug in.'),
           num('The observation with x = 1 has y = ' + y[1] + '. Find its residual (observed y minus the y predicted by your line).', o.res[1], 'Observed minus predicted.'),
           mc('Which sentence interprets the slope correctly?', [
@@ -264,8 +264,8 @@
         (v === 2 ? p('Note that two observations share the same x. OLS works exactly the same way.') : '') +
         (v === 1 ? p('The x values are in larger units, so the slope will be small. Keep fractions exact.') : '');
       out.parts = [
-        num('Find the slope b₁.', o.b1, 'b₁ = Σ(x−x̄)(y−ȳ) / Σ(x−x̄)².'),
-        num('Find the intercept b₀.', o.b0, 'b₀ = ȳ − b₁x̄.'),
+        num('Find the slope b₁.', o.b1, 'b₁ = Σ(x−<span class="xbar low">x</span>)(y−ȳ) / Σ(x−<span class="xbar low">x</span>)².'),
+        num('Find the intercept b₀.', o.b0, 'b₀ = ȳ − b₁<span class="xbar low">x</span>.'),
         num('Find the residual of observation number ' + (xi + 1) + ' (x = ' + x[xi] + ', y = ' + y[xi] + '): its observed y minus the y predicted by your line.', o.res[xi], 'Observed y − predicted ŷ.'),
         num('Add up the four residuals. What do you get?', F(0), 'First-order condition for b₀.', { noquiz: true }),
         num('Multiply each observation’s x by its residual, and add the four products.', sumxe, 'First-order condition for b₁.', { noquiz: true })
@@ -324,7 +324,7 @@
         out.sol = steps([
           'Line A: residuals ' + sa.res.map(fs).join(', ') + ' → sum of residuals = ' + fs(sa.sum) + '; sum of (x × residual) = ' + fs(sa.sumx) + '.',
           'Line B: residuals ' + sb.res.map(fs).join(', ') + ' → sum of residuals = ' + fs(sb.sum) + '; sum of (x × residual) = ' + fs(sb.sumx) + '.',
-          'The OLS line must satisfy <b>both</b> conditions. Line ' + (ols1 ? 'B' : 'A') + ' does. The other line fails at least one (' + (wrong ? 'its residuals do not even add to zero, the intercept is off' : 'its residuals add to zero because it goes through (x̄, ȳ), but the slope is wrong so the sum of (x × residual) is not 0') + ').'
+          'The OLS line must satisfy <b>both</b> conditions. Line ' + (ols1 ? 'B' : 'A') + ' does. The other line fails at least one (' + (wrong ? 'its residuals do not even add to zero, the intercept is off' : 'its residuals add to zero because it goes through (<span class="xbar low">x</span>, ȳ), but the slope is wrong so the sum of (x × residual) is not 0') + ').'
         ]);
       } else {
         var b0v = ri(1, 4), b1v = ri(1, 3), d = pick([-6, -4, 4, 6]);
@@ -333,8 +333,8 @@
         out.stmt = p('Four points lie exactly on the line y = ' + b0v + ' + ' + b1v + 'x: x = 1, 2, 3, 4 and y = ' + yA.join(', ') + '. Now the last point is mistyped: its y changes from ' + yA[3] + ' to <b>' + yB[3] + '</b>. The other three points stay the same.');
         out.parts = [
           num('Find the OLS slope using the correct data.', oA.b1, 'The points are on a line.'),
-          num('Find the OLS slope using the mistyped data.', oB.b1, 'Here x̄ = 2.5 and Σ(x − x̄)² = 5.'),
-          num('Find the OLS intercept using the mistyped data.', oB.b0, 'b₀ = ȳ − b₁x̄.'),
+          num('Find the OLS slope using the mistyped data.', oB.b1, 'Here <span class="xbar low">x</span> = 2.5 and Σ(x − <span class="xbar low">x</span>)² = 5.'),
+          num('Find the OLS intercept using the mistyped data.', oB.b0, 'b₀ = ȳ − b₁<span class="xbar low">x</span>.'),
           num('Find the residual of the mistyped point (x = 4) under the new OLS line: its y minus the y predicted by that line.', oB.res[3], 'Observed minus predicted.')
         ];
         out.sol = olsSol(x4, yB, oB) + p('<b>Lesson:</b> one wrong point moved the slope from ' + b1v + ' to ' + fd(oB.b1) + ', and the new line does not pass through any of the four points. Because deviations are squared, a point far from the others pulls the OLS line towards itself. Notice also that the outlier’s own residual (' + fd(oB.res[3]) + ') is smaller than its distance from the old line (' + d + '): the line moved towards it.');

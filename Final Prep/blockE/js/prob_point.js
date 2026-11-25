@@ -3,7 +3,7 @@
   'use strict';
   var P = globalThis.P, H = P.h;
   var ri = H.ri, pick = H.pick, shuffle = H.shuffle, F = H.F, num = H.num, mc = H.mc, p = H.p, steps = H.steps, M = H.MINUS;
-  var XB = 'X̄';
+  var XB = '<span class="xbar">X</span>';
 
   /* ---------- shared helpers (used by the other prob_ files) ---------- */
   function fx(v) { var s = String(+Math.abs(v).toFixed(4)); return (v < 0 && +s !== 0 ? M : '') + s; }
@@ -208,7 +208,7 @@
   P.reg('efficiency', {
     title: 'Efficiency: comparing estimators', section: 1, est: 150,
     topic: 'Among unbiased estimators, the one with the smaller variance is more efficient.',
-    variants: ['Uniform on [0, a]: 2X₁ vs. 2X̄', 'Averaging more observations', 'Different weights', 'Table: bias and variance'],
+    variants: ['Uniform on [0, a]: 2X₁ vs. 2<span class="xbar">X</span>', 'Averaging more observations', 'Different weights', 'Table: bias and variance'],
     gen: function (v) {
       var out;
       if (v === 0) {
@@ -217,7 +217,7 @@
         out = { stmt: p('The serial numbers of <i>n</i> = <b>' + n + '</b> captured tanks are modelled as independent <i>X</i><sub>i</sub> ~ Uniform[0, <i>a</i>], with <i>a</i> = <b>' + a + '</b> in this exercise (but unknown in practice). Recall that Var(<i>X</i><sub>i</sub>) = <i>a</i>²/12. Two <b>unbiased</b> estimators of <i>a</i> are ' + th('1') + ' = 2<i>X</i><sub>1</sub> (uses only the first tank) and ' + th('2') + ' = 2' + XB + ' (uses all ' + n + ' tanks).'),
           parts: [
             num('Find Var(' + th('1') + ') = 4 · Var(<i>X</i><sub>1</sub>).', v1, '4 · a²/12 = a²/3.'),
-            num('Find Var(' + th('2') + ') = 4 · Var(' + XB + '), where Var(' + XB + ') = Var(<i>X</i><sub>i</sub>)/' + n + '.', v2, 'Var(X̄) = (a²/12)/n, so Var(2X̄) = a²/(3n).'),
+            num('Find Var(' + th('2') + ') = 4 · Var(' + XB + '), where Var(' + XB + ') = Var(<i>X</i><sub>i</sub>)/' + n + '.', v2, 'Var(<span class="xbar">X</span>) = (a²/12)/n, so Var(2<span class="xbar">X</span>) = a²/(3n).'),
             mc('Which estimator is more efficient?', [th('1') + ' = 2<i>X</i><sub>1</sub>', th('2') + ' = 2' + XB, 'They are equally efficient'], 1, 'Both are unbiased, so the one with the smaller variance wins.')],
           sol: steps(['Var(' + th('1') + ') = 4 · ' + a + '²/12 = <b>' + H.fd(v1) + '</b>.', 'Var(' + th('2') + ') = 4 · (' + a + '²/12)/' + n + ' = <b>' + H.fd(v2) + '</b>, which is ' + n + ' times smaller.', 'Both are unbiased, and Var(' + th('2') + ') < Var(' + th('1') + '), so <b>' + th('2') + ' = 2' + XB + '</b> is more efficient.']) };
       } else if (v === 1) {

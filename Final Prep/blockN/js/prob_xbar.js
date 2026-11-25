@@ -4,7 +4,7 @@
   var P = globalThis.P, H = P.h;
   var ri = H.ri, pick = H.pick, F = H.F, num = H.num, mc = H.mc, p = H.p, steps = H.steps, M = H.MINUS, tbl = H.tbl;
   var T = H.T, PHI = H.PHI, Phi = H.Phi, f4 = H.f4, zs = H.zs, fx = H.fx, dn = H.dn, pn = H.pn, rz = H.rz, isDp = H.isDp, loc = H.loc, phiTxt = H.phiTxt, U = H.U, CTX = H.CTX;
-  var XB = 'X̄';
+  var XB = '<span class="xbar">X</span>';
 
   /* population mean mu, sd sigma, sample size n = k^2 so that SE = sigma/k is a short decimal */
   function drawSE(pool) {
@@ -39,7 +39,7 @@
   function pSum(d, f) { return d.filter(f).reduce(function (a, r) { return H.add(a, r.p); }, F(0)); }
 
   P.reg('xbarexact', {
-    title: 'Exact distribution of X̄', section: 2, est: 170,
+    title: 'Exact distribution of <span class="xbar">X</span>', section: 2, est: 170,
     topic: 'Exact probabilities for the sample mean when n is small.',
     variants: ['Two dice', 'Three free throws (0/1 data)', 'Two draws from a 3-value pmf'],
     gen: function (v) {
@@ -52,7 +52,7 @@
           parts: [
             num('Find P(' + XB + ' = ' + t + ').', ways.p, 'Count the pairs with sum ' + s0 + ': each has probability 1/36.'),
             num('Find P(' + XB + ' ≥ ' + u + ').', pu, 'Add up the pmf over all values of the mean that are ≥ ' + u + '.'),
-            num('Find E(' + XB + ').', F(7, 2), 'E(X̄) = μ = 3.5.')],
+            num('Find E(' + XB + ').', F(7, 2), 'E(<span class="xbar">X</span>) = μ = 3.5.')],
           sol: steps(['There are 36 equally likely pairs. ' + XB + ' = ' + t + ' means the sum is ' + s0 + ': ' + (ways.p.n * 36 / ways.p.d) + ' pair(s). So P = <b>' + H.fd(ways.p) + '</b>.',
             'pmf of ' + XB + ':' + pmfTable(d, XB),
             'P(' + XB + ' ≥ ' + u + ') = <b>' + H.fd(pu) + '</b>.',
@@ -64,7 +64,7 @@
           parts: [
             num('Find P(' + XB + ' = 1/3).', pa, 'Exactly one of three throws is made: 3 arrangements.'),
             num('Find P(' + XB + ' ≥ 2/3).', pb, 'At least two of three throws are made.'),
-            num('Find E(' + XB + ').', pp, 'E(X̄) = μ = p.')],
+            num('Find E(' + XB + ').', pp, 'E(<span class="xbar">X</span>) = μ = p.')],
           sol: steps(['pmf of ' + XB + ':' + pmfTable(d1, XB, true) + 'with P(' + XB + ' = k/3) = C(3, k) <i>p</i><sup>k</sup>(1 − <i>p</i>)<sup>3−k</sup>.',
             'P(' + XB + ' = 1/3) = 3 · ' + H.fs(pp) + ' · ' + H.fs(H.sub(F(1), pp)) + '² = <b>' + H.fd(pa) + '</b>.',
             'P(' + XB + ' ≥ 2/3) = P(' + XB + ' = 2/3) + P(' + XB + ' = 1) = <b>' + H.fd(pb) + '</b>.',
@@ -78,7 +78,7 @@
           parts: [
             num('Find P(' + XB + ' = ' + mtxt(F(VS[0] + VS[1], 2)) + ').', pm, 'Two orders: (' + VS[0] + ', ' + VS[1] + ') and (' + VS[1] + ', ' + VS[0] + ').'),
             num('Find P(' + XB + ' ≥ ' + mtxt(F(VS[1] + VS[2], 2)) + ').', pt, 'Add the probabilities of all pairs whose mean is at least that.'),
-            num('Find Var(' + XB + ').', H.div(vr, F(2)), 'Var(X̄) = σ²/n with n = 2.')],
+            num('Find Var(' + XB + ').', H.div(vr, F(2)), 'Var(<span class="xbar">X</span>) = σ²/n with n = 2.')],
           sol: steps(['pmf of ' + XB + ' (list all 9 pairs):' + pmfTable(d3, XB),
             'P(' + XB + ' = ' + mtxt(F(VS[0] + VS[1], 2)) + ') = 2 · ' + H.fs(pr3[0]) + ' · ' + H.fs(pr3[1]) + ' = <b>' + H.fd(pm) + '</b>.',
             'P(' + XB + ' ≥ ' + mtxt(F(VS[1] + VS[2], 2)) + ') = <b>' + H.fd(pt) + '</b>.',
@@ -90,14 +90,14 @@
 
   /* =========================================================== 6. mean and sd of the sample mean */
   P.reg('xbarmom', {
-    title: 'Mean and SD of X̄', section: 2, est: 110,
+    title: 'Mean and SD of <span class="xbar">X</span>', section: 2, est: 110,
     topic: 'The center and the spread of the sample mean, for any population and any sample size.',
     variants: ['Given μ and σ', 'Population given as a pmf', 'Sample mean vs. total'],
     gen: function (v) {
       var o = drawSE(v === 2 ? CTX.filter(function (q) { return q.tot; }) : null), c = o.c, varF = F(Math.round(o.sd * o.sd * 100), 100 * o.n), seF = F(Math.round(o.se * 100), 100);
       if (v === 0) {
         return { stmt: p('Let <i>X</i> be ' + c.name + ', with mean μ = <b>' + U(c, o.mu) + '</b> and standard deviation σ = <b>' + U(c, o.sd) + '</b>. A random sample of <i>n</i> = <b>' + o.n + '</b> is taken, and ' + XB + ' is the sample mean.'),
-          parts: [num('Find E(' + XB + ').', F(o.mu), 'E(X̄) = μ.'), num('Find Var(' + XB + ').', varF, 'σ²/n.'), num('Find SD(' + XB + ').', seF, 'σ/√n.')],
+          parts: [num('Find E(' + XB + ').', F(o.mu), 'E(<span class="xbar">X</span>) = μ.'), num('Find Var(' + XB + ').', varF, 'σ²/n.'), num('Find SD(' + XB + ').', seF, 'σ/√n.')],
           sol: steps(['E(' + XB + ') = μ = <b>' + fx(o.mu) + '</b> (true for every <i>n</i>).', 'Var(' + XB + ') = σ²/<i>n</i> = ' + fx(o.sd) + '² / ' + o.n + ' = ' + fx(o.sd * o.sd) + ' / ' + o.n + ' = <b>' + H.fd(varF) + '</b>.',
             'SD(' + XB + ') = σ/√<i>n</i> = ' + fx(o.sd) + ' / ' + o.k + ' = <b>' + fx(o.se) + '</b>. (Equivalently the square root of the variance.)']) };
       }
@@ -112,8 +112,8 @@
       }
       var totSD = o.sd * o.k;
       return { stmt: p(c.totTxt(o.n) + ', each with mean μ = <b>' + U(c, o.mu) + '</b> and standard deviation σ = <b>' + U(c, o.sd) + '</b>. Let <i>n</i> = ' + o.n + ' be the number of values and <i>X</i><sub>i</sub> the <i>i</i>-th value. Let ' + XB + ' = (<i>X</i><sub>1</sub> + … + <i>X</i><sub>n</sub>)/<i>n</i> be their mean and <i>S</i> = <i>X</i><sub>1</sub> + … + <i>X</i><sub>n</sub> their total.'),
-        parts: [num('Find E(' + XB + ').', F(o.mu), 'E(X̄) = μ.'), num('Find SD(' + XB + ').', seF, 'σ/√n.'), num('Find E(<i>S</i>).', F(o.mu * o.n), 'E(S) = nμ.'), num('Find SD(<i>S</i>).', F(Math.round(totSD * 100), 100), 'SD(S) = σ√n.')],
-        sol: steps(['E(' + XB + ') = μ = <b>' + fx(o.mu) + '</b>.', 'SD(' + XB + ') = σ/√<i>n</i> = ' + fx(o.sd) + ' / ' + o.k + ' = <b>' + fx(o.se) + '</b>.', 'E(<i>S</i>) = <i>n</i>μ = ' + o.n + ' × ' + fx(o.mu) + ' = <b>' + fx(o.n * o.mu) + '</b>.', 'Var(<i>S</i>) = <i>n</i>σ², so SD(<i>S</i>) = σ√<i>n</i> = ' + fx(o.sd) + ' × ' + o.k + ' = <b>' + fx(totSD) + '</b>. (Also SD(S) = n · SD(X̄).)']) };
+        parts: [num('Find E(' + XB + ').', F(o.mu), 'E(<span class="xbar">X</span>) = μ.'), num('Find SD(' + XB + ').', seF, 'σ/√n.'), num('Find E(<i>S</i>).', F(o.mu * o.n), 'E(S) = nμ.'), num('Find SD(<i>S</i>).', F(Math.round(totSD * 100), 100), 'SD(S) = σ√n.')],
+        sol: steps(['E(' + XB + ') = μ = <b>' + fx(o.mu) + '</b>.', 'SD(' + XB + ') = σ/√<i>n</i> = ' + fx(o.sd) + ' / ' + o.k + ' = <b>' + fx(o.se) + '</b>.', 'E(<i>S</i>) = <i>n</i>μ = ' + o.n + ' × ' + fx(o.mu) + ' = <b>' + fx(o.n * o.mu) + '</b>.', 'Var(<i>S</i>) = <i>n</i>σ², so SD(<i>S</i>) = σ√<i>n</i> = ' + fx(o.sd) + ' × ' + o.k + ' = <b>' + fx(totSD) + '</b>. (Also SD(S) = n · SD(<span class="xbar">X</span>).)']) };
     }
   });
 
@@ -127,7 +127,7 @@
       if (v === 0) {
         var k1 = pick([2, 3, 4, 5, 6, 8, 10]), n1 = k1 * k1, m = pick([2, 3]), n2 = n1 * m * m, j = ri(2, 6), s1 = j * m, sg = s1 * k1;
         out = { stmt: p('A random sample of <i>n</i> = <b>' + n1 + '</b> observations is taken from some population, and ' + XB + ' denotes the sample mean. Its standard deviation is SD(' + XB + ') = <b>' + s1 + '</b>.'),
-          parts: [num('Find the population standard deviation σ.', F(sg), 'σ = SD(X̄) · √n.'), num('A new random sample of <i>n</i> = <b>' + n2 + '</b> observations is taken from the same population. Find the new SD(' + XB + ').', F(j), 'Compare the two sample sizes.'), num('A new random sample of <i>n</i> = <b>' + n2 + '</b> observations is taken from the same population. Find the new Var(' + XB + ').', F(j * j), 'Compare the two sample sizes.')],
+          parts: [num('Find the population standard deviation σ.', F(sg), 'σ = SD(<span class="xbar">X</span>) · √n.'), num('A new random sample of <i>n</i> = <b>' + n2 + '</b> observations is taken from the same population. Find the new SD(' + XB + ').', F(j), 'Compare the two sample sizes.'), num('A new random sample of <i>n</i> = <b>' + n2 + '</b> observations is taken from the same population. Find the new Var(' + XB + ').', F(j * j), 'Compare the two sample sizes.')],
           sol: steps(['σ = SD(' + XB + ') · √<i>n</i> = ' + s1 + ' × ' + k1 + ' = <b>' + sg + '</b>.', 'The sample is ' + (m * m) + ' times larger (' + n2 + ' = ' + (m * m) + ' × ' + n1 + '), so SD(' + XB + ') is divided by √' + (m * m) + ' = ' + m + ': ' + s1 + ' / ' + m + ' = <b>' + j + '</b>. Check: ' + sg + ' / √' + n2 + ' = ' + sg + ' / ' + (k1 * m) + ' = ' + j + '.', 'Var = ' + j + '² = <b>' + (j * j) + '</b>.']) };
       } else if (v === 1) {
         var n = pick([20, 25, 40, 50, 100]), m2 = pick([2, 3, 4]), q = pick([2, 3, 5]), s = m2 * ri(2, 8);
@@ -153,16 +153,16 @@
   }
   function gh(n, label) { return H.hist(gammaCounts(n), { lo: 0, step: .1, w: 330, h: 215, title: label, ymax: 400, ystep: 100, tickEvery: 5, xlabel: 'sample mean (1000 samples)' }); }
   var STATEMENTS = [
-    { s: 'E(X̄) = μ holds for every sample size n, even n = 2.', t: true, e: 'The proof uses only linearity of expectation. The CLT is about the <i>shape</i>.' },
-    { s: 'By the CLT, when n is large the histogram of the <i>population</i> becomes bell-shaped.', t: false, e: 'The population does not change. It is the distribution of X̄ that becomes approximately Normal.' },
-    { s: 'Steps per day are right-skewed. The average of n = 100 randomly chosen days is approximately Normal.', t: true, e: 'CLT: for large n, X̄ is approximately Normal whatever the population looks like.' },
-    { s: 'Increasing n makes the population standard deviation σ smaller.', t: false, e: 'σ is a fixed feature of the population. Only SD(X̄) = σ/√n shrinks.' },
-    { s: 'For large n, X̄ is approximately Normal, whatever the shape of the population.', t: true, e: 'This is the Central Limit Theorem.' },
-    { s: 'To make SD(X̄) half as large, it is enough to double the sample size.', t: false, e: 'SD(X̄) = σ/√n: halving it needs four times the data. Doubling n only divides it by √2.' },
-    { s: 'The CLT says that X̄ equals μ when n is large.', t: false, e: 'X̄ is still random. It is only approximately Normal around μ, with spread σ/√n.' }
+    { s: 'E(<span class="xbar">X</span>) = μ holds for every sample size n, even n = 2.', t: true, e: 'The proof uses only linearity of expectation. The CLT is about the <i>shape</i>.' },
+    { s: 'By the CLT, when n is large the histogram of the <i>population</i> becomes bell-shaped.', t: false, e: 'The population does not change. It is the distribution of <span class="xbar">X</span> that becomes approximately Normal.' },
+    { s: 'Steps per day are right-skewed. The average of n = 100 randomly chosen days is approximately Normal.', t: true, e: 'CLT: for large n, <span class="xbar">X</span> is approximately Normal whatever the population looks like.' },
+    { s: 'Increasing n makes the population standard deviation σ smaller.', t: false, e: 'σ is a fixed feature of the population. Only SD(<span class="xbar">X</span>) = σ/√n shrinks.' },
+    { s: 'For large n, <span class="xbar">X</span> is approximately Normal, whatever the shape of the population.', t: true, e: 'This is the Central Limit Theorem.' },
+    { s: 'To make SD(<span class="xbar">X</span>) half as large, it is enough to double the sample size.', t: false, e: 'SD(<span class="xbar">X</span>) = σ/√n: halving it needs four times the data. Doubling n only divides it by √2.' },
+    { s: 'The CLT says that <span class="xbar">X</span> equals μ when n is large.', t: false, e: '<span class="xbar">X</span> is still random. It is only approximately Normal around μ, with spread σ/√n.' }
   ];
   P.reg('cltshape', {
-    title: 'Shape of the distribution of X̄', section: 2, est: 90, quiz: false,
+    title: 'Shape of the distribution of <span class="xbar">X</span>', section: 2, est: 90, quiz: false,
     topic: 'How the center, spread and shape of the sample mean change with n. Read it off the histograms.',
     variants: ['Match n to the histogram', 'Compare two histograms', 'True or false?'],
     gen: function (v) {
@@ -177,7 +177,7 @@
         var pr = pick([[2, 25], [5, 50], [1, 20], [3, 40]]), flip = Math.random() < .5, nA = flip ? pr[1] : pr[0], nB = flip ? pr[0] : pr[1];
         var big = flip ? 'A' : 'B';
         out = { stmt: p('A right-skewed population (mean 1) is sampled 1000 times with two different sample sizes: <i>n</i> = ' + nA + ' for histogram A and <i>n</i> = ' + nB + ' for histogram B. Each histogram shows the 1000 sample means ' + XB + '. Same axes.') + H.row(gh(nA, 'A'), gh(nB, 'B')),
-          parts: [H.AB('Which histogram is more spread out, that is, has the larger standard deviation SD(' + XB + ') of the sample means?', big === 'A' ? 'B' : 'A', 'SD(X̄) = σ/√n is larger for the smaller n.'), H.AB('Which histogram is centered at the larger mean?', 'Equal', 'Both are centered at μ: E(X̄) = μ for every n.'), H.AB('Which histogram looks closer to a Normal bell curve?', big, 'The CLT: the larger the n, the better the Normal approximation.')],
+          parts: [H.AB('Which histogram is more spread out, that is, has the larger standard deviation SD(' + XB + ') of the sample means?', big === 'A' ? 'B' : 'A', 'SD(<span class="xbar">X</span>) = σ/√n is larger for the smaller n.'), H.AB('Which histogram is centered at the larger mean?', 'Equal', 'Both are centered at μ: E(<span class="xbar">X</span>) = μ for every n.'), H.AB('Which histogram looks closer to a Normal bell curve?', big, 'The CLT: the larger the n, the better the Normal approximation.')],
           sol: steps(['A has <i>n</i> = ' + nA + ' and B has <i>n</i> = ' + nB + '. The wider histogram is the one with the <b>smaller</b> <i>n</i>: ' + (big === 'A' ? 'B' : 'A') + ' has the larger SD(' + XB + ').', 'Both are centered at μ = 1, so they are <b>Equal</b>.', 'The histogram with the larger <i>n</i> (<b>' + big + '</b>) is narrower and closer to the bell shape.']) };
       } else {
         var st, g = 0; do { st = H.sample(STATEMENTS, 3); } while (g++ < 60 && (st.every(function (x) { return x.t; }) || st.every(function (x) { return !x.t; })));
@@ -193,7 +193,7 @@
   P.reg('pxbar', {
     title: 'Probability for a sample mean', section: 3, est: 170, table: true,
     topic: 'Probabilities about a sample mean, using the CLT and the standard Normal table.',
-    variants: ['Above a value', 'Find the cutoff for X̄', 'Between two values', 'Close to μ'],
+    variants: ['Above a value', 'Find the cutoff for <span class="xbar">X</span>', 'Between two values', 'Close to μ'],
     gen: function (v) {
       var o = drawSE(), c = o.c, mu = o.mu, se = o.se, seS = fx(se), chk = [], parts, sol, kind = 'chk';
       var stmt = sampTxt(o, H.ZDEF + p('Use the standard Normal table. Give SD to 2 decimals, z-scores to 2 decimals and probabilities to 4 decimals.'));
@@ -204,22 +204,22 @@
       var zq = function (x) { return 'Find the z-score of ' + XB + ' = ' + fx(x) + '.'; };
       if (v === 0) {
         var z = pickX(o, .2, 2.8, 2), x = xe(o, z), pv = 10000 - T(z);
-        parts = [meanPart, sdPart, dn(zq(x), z, 2, 'Distance from μ in standard deviations of X̄.'), pn('Find P(' + XB + ' > ' + fx(x) + ').', pv, 'A right tail.')];
+        parts = [meanPart, sdPart, dn(zq(x), z, 2, 'Distance from μ in standard deviations of <span class="xbar">X</span>.'), pn('Find P(' + XB + ' > ' + fx(x) + ').', pv, 'A right tail.')];
         sol = steps([sdStep, 'z = (' + fx(x) + ' − ' + fx(mu) + ') / ' + seS + ' = <b>' + zs(z) + '</b>.', 'P(' + XB + ' > ' + fx(x) + ') = 1 − Φ(' + zs(z) + ') = 1 − ' + f4(T(z)) + ' = <b>' + f4(pv) + '</b>.']);
         ck(chk, pv, 1 - Phi(z));
       } else if (v === 1) {
         var z1 = pickX(o, .2, 2.55, 2), pc = 10000 - T(z1), cx = xe(o, z1); kind = 'chkInv';
-        parts = [meanPart, sdPart, dn('The standardized sample mean is a standard Normal variable <i>Z</i>. Find the z-score <i>z</i> that cuts off the upper ' + (pc / 100).toFixed(2) + '% of its distribution, i.e. P(<i>Z</i> > <i>z</i>) = ' + f4(pc) + '.', z1, 2, 'Right tail: look up 1 − p.'), dn('Find the value <i>c</i> such that P(' + XB + ' > <i>c</i>) = ' + f4(pc) + ' (only ' + (pc / 100).toFixed(2) + '% of sample means are above <i>c</i>).', cx, 2, 'Convert the z-score back to a value of X̄.', { trim: true })];
+        parts = [meanPart, sdPart, dn('The standardized sample mean is a standard Normal variable <i>Z</i>. Find the z-score <i>z</i> that cuts off the upper ' + (pc / 100).toFixed(2) + '% of its distribution, i.e. P(<i>Z</i> > <i>z</i>) = ' + f4(pc) + '.', z1, 2, 'Right tail: look up 1 − p.'), dn('Find the value <i>c</i> such that P(' + XB + ' > <i>c</i>) = ' + f4(pc) + ' (only ' + (pc / 100).toFixed(2) + '% of sample means are above <i>c</i>).', cx, 2, 'Convert the z-score back to a value of <span class="xbar">X</span>.', { trim: true })];
         sol = steps([sdStep, 'Φ(<i>z</i>) = 1 − ' + f4(pc) + ' = ' + f4(T(z1)) + ', found at ' + loc(z1) + ': <i>z</i> = <b>' + zs(z1) + '</b>.', 'Convert back: <i>c</i> = μ + <i>z</i> · SD(' + XB + ') = ' + fx(mu) + ' + ' + zs(z1) + ' × ' + seS + ' = <b>' + fx(cx) + '</b>.']);
         chk.push([T(z1) / 1e4, Phi(z1)]);
       } else if (v === 2) {
         var za = pickX(o, .2, 2.5, 2), zb = pickX(o, .2, 2.5, 2), lo = xe(o, -za), hi = xe(o, zb), zl = zOf(lo), zh = zOf(hi), ans = PHI(zh) - PHI(zl);
-        parts = [meanPart, sdPart, dn(zq(hi), zh, 2, 'Distance from μ in standard deviations of X̄.'), pn('Find P(' + fx(lo) + ' < ' + XB + ' < ' + fx(hi) + ').', ans, 'Difference of two Φ values.')];
+        parts = [meanPart, sdPart, dn(zq(hi), zh, 2, 'Distance from μ in standard deviations of <span class="xbar">X</span>.'), pn('Find P(' + fx(lo) + ' < ' + XB + ' < ' + fx(hi) + ').', ans, 'Difference of two Φ values.')];
         sol = steps([sdStep, 'z for ' + fx(lo) + ' is (' + fx(lo) + ' − ' + fx(mu) + ') / ' + seS + ' = ' + zs(zl) + '; z for ' + fx(hi) + ' is (' + fx(hi) + ' − ' + fx(mu) + ') / ' + seS + ' = <b>' + zs(zh) + '</b>.', 'P = Φ(' + zs(zh) + ') − Φ(' + zs(zl) + '). ' + phiTxt(zh) + '; ' + phiTxt(zl) + '. Difference: <b>' + f4(ans) + '</b>.']);
         ck(chk, ans, Phi(zh) - Phi(zl));
       } else {
         var z4 = pickX(o, .3, 2.8, 2), d = Math.round(z4 * se * 100) / 100, zq4 = Math.round(d / se * 100) / 100, ans4 = 2 * T(zq4) - 10000;
-        parts = [meanPart, sdPart, dn(zq(mu + d), zq4, 2, 'Distance from μ in standard deviations of X̄.'), pn('Find P(|' + XB + ' − ' + fx(mu) + '| < ' + fx(d) + '), the probability that the sample mean is within ' + fx(d) + ' of μ.', ans4, 'The area between −z and z.')];
+        parts = [meanPart, sdPart, dn(zq(mu + d), zq4, 2, 'Distance from μ in standard deviations of <span class="xbar">X</span>.'), pn('Find P(|' + XB + ' − ' + fx(mu) + '| < ' + fx(d) + '), the probability that the sample mean is within ' + fx(d) + ' of μ.', ans4, 'The area between −z and z.')];
         sol = steps([sdStep, 'z = (' + fx(mu + d) + ' − ' + fx(mu) + ') / ' + seS + ' = <b>' + zs(zq4) + '</b>.', 'P(−' + zs(zq4) + ' < <i>Z</i> < ' + zs(zq4) + ') = 2Φ(' + zs(zq4) + ') − 1 = 2(' + f4(T(zq4)) + ') − 1 = <b>' + f4(ans4) + '</b>.']);
         ck(chk, ans4, 2 * Phi(zq4) - 1);
       }
@@ -245,7 +245,7 @@
         var up = v === 0, x = Math.round((mu + (up ? 1 : -1) * z1 * sd) * 100) / 100, s = up ? 1 : -1, op = up ? '>' : '<';
         var p1 = 10000 - T(z1), p2 = 10000 - T(z2);
         parts = [pn('Find P(<i>X</i> ' + op + ' ' + fx(x) + '): the probability for one randomly chosen individual.', p1, up ? 'A right tail.' : 'A left tail below the mean: use symmetry.'),
-          dn('Find the z-score of ' + XB + ' = ' + fx(x) + ' for the sample mean of <i>n</i> = ' + n + '.', s * z2, 2, 'Distance from μ in standard deviations of X̄.'),
+          dn('Find the z-score of ' + XB + ' = ' + fx(x) + ' for the sample mean of <i>n</i> = ' + n + '.', s * z2, 2, 'Distance from μ in standard deviations of <span class="xbar">X</span>.'),
           pn('Find P(' + XB + ' ' + op + ' ' + fx(x) + '): the probability for the mean of the sample of <i>n</i> = ' + n + '.', p2, up ? 'A right tail.' : 'A left tail below the mean: use symmetry.'),
           mc('Without computing: which event is more likely?', ['The single value, <i>X</i> ' + op + ' ' + fx(x), 'The sample mean, ' + XB + ' ' + op + ' ' + fx(x), 'Equally likely'], 0, 'Think about which one varies more.', false)];
         parts[3].noquiz = true; parts.unshift(parts.pop());
@@ -257,7 +257,7 @@
       } else {
         var d = Math.round(z1 * sd * 100) / 100, a1 = 2 * T(z1) - 10000, a2 = 2 * T(z2) - 10000;
         parts = [pn('Find P(|<i>X</i> − ' + fx(mu) + '| < ' + fx(d) + '): one randomly chosen individual is within ' + fx(d) + ' of μ.', a1, 'The area between −z and z.'),
-          dn('Find the z-score of ' + XB + ' = ' + fx(mu + d) + ', the upper end of the interval from ' + fx(mu - d) + ' to ' + fx(mu + d) + ', for the sample mean of <i>n</i> = ' + n + '.', z2, 2, 'Distance from μ in standard deviations of X̄.'),
+          dn('Find the z-score of ' + XB + ' = ' + fx(mu + d) + ', the upper end of the interval from ' + fx(mu - d) + ' to ' + fx(mu + d) + ', for the sample mean of <i>n</i> = ' + n + '.', z2, 2, 'Distance from μ in standard deviations of <span class="xbar">X</span>.'),
           pn('Find P(|' + XB + ' − ' + fx(mu) + '| < ' + fx(d) + '): the sample mean of <i>n</i> = ' + n + ' is within ' + fx(d) + ' of μ.', a2, 'The area between −z and z.'),
           mc('Without computing: which is more likely to land within ' + fx(d) + ' of μ?', ['One individual, <i>X</i>', 'The sample mean, ' + XB, 'Equally likely'], 1, 'Think about which one varies more.', false)];
         parts[3].noquiz = true; parts.unshift(parts.pop());
@@ -309,7 +309,7 @@
         if (!isDp(se, 2) || !isDp(cz3 * se, 3)) { k = 4; sd = 8; se = 2; cz3 = 1.96; }
         pr3 = 2 * T(cz3) - 10000; dd = Math.round(cz3 * se * 1000) / 1000;
         stmt = p(who(sd).replace('random sample of <i>n</i> observations', 'random sample of <i>n</i> = <b>' + (k * k) + '</b> observations')) + p('We want the margin <i>d</i> for which P(|' + XB + ' − μ| < <i>d</i>) = <b>' + f4(pr3) + '</b>. Use the standard Normal table. Give <i>d</i> to 3 decimals.');
-        parts = [dn('Find SD(' + XB + ').', se, 2, 'How much does the sample mean vary from sample to sample?', { trim: true }), dn('To standardize ' + XB + ' you need the z-score <i>z</i> for which P(−<i>z</i> ≤ <i>Z</i> ≤ <i>z</i>) = ' + f4(pr3) + ', where <i>Z</i> is a standard Normal variable. Find <i>z</i>.', cz3, 2, 'Each tail has (1 − p)/2.'), dn('Find the margin <i>d</i> such that P(|' + XB + ' − μ| < <i>d</i>) = ' + f4(pr3) + '.', dd, 3, 'The margin is a number of standard deviations of X̄.', { trim: true })];
+        parts = [dn('Find SD(' + XB + ').', se, 2, 'How much does the sample mean vary from sample to sample?', { trim: true }), dn('To standardize ' + XB + ' you need the z-score <i>z</i> for which P(−<i>z</i> ≤ <i>Z</i> ≤ <i>z</i>) = ' + f4(pr3) + ', where <i>Z</i> is a standard Normal variable. Find <i>z</i>.', cz3, 2, 'Each tail has (1 − p)/2.'), dn('Find the margin <i>d</i> such that P(|' + XB + ' − μ| < <i>d</i>) = ' + f4(pr3) + '.', dd, 3, 'The margin is a number of standard deviations of <span class="xbar">X</span>.', { trim: true })];
         sol = steps(['SD(' + XB + ') = σ/√<i>n</i> = ' + fx(sd) + ' / ' + k + ' = <b>' + fx(se) + '</b>.', 'Each tail has ' + f4((10000 - pr3) / 2) + ', so Φ(<i>z</i>) = ' + f4(T(cz3)) + ', at ' + loc(cz3) + ': <i>z</i> = <b>' + zs(cz3) + '</b>.', '<i>d</i> = <i>z</i> · SD(' + XB + ') = ' + zs(cz3) + ' × ' + fx(se) + ' = <b>' + fx(dd) + '</b>' + (c.unit === '$' ? ' dollars' : ' ' + c.unit) + '.']);
         chk.push([T(cz3) / 1e4, Phi(cz3)]);
       }

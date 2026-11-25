@@ -1,0 +1,90 @@
+{
+ "name": "blockH_slides",
+ "title": "Final Prep: Hypothesis Testing",
+ "subtitle": "ECON211 · Probability & Statistics · practice for Lecture 12 (Hypothesis Testing)",
+ "css": "final_prep.css",
+ "problem_files": [
+  "prob_choose.js",
+  "prob_setup.js",
+  "prob_decide.js",
+  "prob_ideas.js"
+ ],
+ "slides": [
+  [
+   "goal",
+   "Estimation or testing?"
+  ],
+  [
+   "zort",
+   "z or t?"
+  ],
+  [
+   "hyp",
+   "State the hypotheses"
+  ],
+  [
+   "stat",
+   "Compute the test statistic"
+  ],
+  [
+   "pval",
+   "Find the p-value"
+  ],
+  [
+   "crit",
+   "Critical values and the t-table"
+  ],
+  [
+   "full",
+   "A full test, start to finish"
+  ],
+  [
+   "dual",
+   "Confidence interval and test"
+  ],
+  [
+   "meaning",
+   "What does the result mean?"
+  ],
+  [
+   "errors",
+   "Type I and Type II errors"
+  ],
+  [
+   "change",
+   "What changes the result?"
+  ],
+  [
+   "tf",
+   "Concept checks"
+  ]
+ ],
+ "toc": [
+  [
+   "goal",
+   "1 · Choosing the method",
+   "Estimation or testing? z or t?"
+  ],
+  [
+   "hyp",
+   "2 · Setting up the test",
+   "Hypotheses and test statistic."
+  ],
+  [
+   "pval",
+   "3 · Reaching a decision",
+   "p-values, critical values, full tests, confidence intervals."
+  ],
+  [
+   "meaning",
+   "4 · Understanding the ideas",
+   "Interpretation, errors, what changes the result, concept checks."
+  ],
+  [
+   "quiz",
+   "5 · Timed quiz",
+   "Five random questions, a timer, answers at the end."
+  ]
+ ],
+ "howto": true
+}

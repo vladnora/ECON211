@@ -1,0 +1,117 @@
+---
+title: "Final Prep: Hypothesis Testing"
+subtitle: "ECON211 · Probability & Statistics · practice for Lecture 12 (Hypothesis Testing)"
+format:
+  revealjs:
+    theme: simple
+    css: final_prep.css
+    center: false
+    slide-number: true
+    embed-resources: true
+    width: 1050
+    height: 700
+    margin: 0.05
+    transition: fade
+    transition-speed: fast
+    chalkboard: false
+    include-after-body: scripts.html
+---
+
+## How to use this deck {#howto}
+
+::: {.cards .stack}
+::: {.box}
+<span class="tag">Practice slides</span>
+Each slide is **one type of problem**. Press **New variant** to get a different version: not just new numbers, but a different structure (the pills show which one you have, and you can click them). Work it out on paper first.
+:::
+::: {.box .good}
+<span class="tag">Solutions</span>
+Press **Show solution** for the answers and a worked solution. It stays hidden until you ask.
+:::
+::: {.box .key}
+<span class="tag">Quiz</span>
+The last slide is a **timed quiz** of five random questions from these topics. Answers appear only after the last question, together with your time compared to a target.
+:::
+:::
+
+## Contents {#contents}
+
+::: {.cards .stack .toc}
+::: {.box}
+<a class="toc-hit" href="#/goal" title="Go to section"></a>
+<span class="tag">1 · Choosing the method</span>
+Estimation or testing? z or t?
+:::
+::: {.box}
+<a class="toc-hit" href="#/hyp" title="Go to section"></a>
+<span class="tag">2 · Setting up the test</span>
+Hypotheses and test statistic.
+:::
+::: {.box}
+<a class="toc-hit" href="#/pval" title="Go to section"></a>
+<span class="tag">3 · Reaching a decision</span>
+p-values, critical values, full tests, confidence intervals.
+:::
+::: {.box}
+<a class="toc-hit" href="#/meaning" title="Go to section"></a>
+<span class="tag">4 · Understanding the ideas</span>
+Interpretation, errors, what changes the result, concept checks.
+:::
+::: {.box}
+<a class="toc-hit" href="#/quiz" title="Go to section"></a>
+<span class="tag">5 · Timed quiz</span>
+Five random questions, a timer, answers at the end.
+:::
+:::
+
+## Estimation or testing? {#goal}
+
+<div class="prob" data-id="goal"></div>
+
+## z or t? {#zort}
+
+<div class="prob" data-id="zort"></div>
+
+## State the hypotheses {#hyp}
+
+<div class="prob" data-id="hyp"></div>
+
+## Compute the test statistic {#stat}
+
+<div class="prob" data-id="stat"></div>
+
+## Find the p-value {#pval}
+
+<div class="prob" data-id="pval"></div>
+
+## Critical values and the t-table {#crit}
+
+<div class="prob" data-id="crit"></div>
+
+## A full test, start to finish {#full}
+
+<div class="prob" data-id="full"></div>
+
+## Confidence interval and test {#dual}
+
+<div class="prob" data-id="dual"></div>
+
+## What does the result mean? {#meaning}
+
+<div class="prob" data-id="meaning"></div>
+
+## Type I and Type II errors {#errors}
+
+<div class="prob" data-id="errors"></div>
+
+## What changes the result? {#change}
+
+<div class="prob" data-id="change"></div>
+
+## Concept checks {#tf}
+
+<div class="prob" data-id="tf"></div>
+
+## Timed quiz {#quiz}
+
+<div class="quiz"></div>

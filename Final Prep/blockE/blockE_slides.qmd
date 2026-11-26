@@ -1,0 +1,104 @@
+---
+title: "Final Prep: Estimation"
+subtitle: "ECON211 · Probability & Statistics · practice for Lecture 11 (Estimation)"
+format:
+  revealjs:
+    theme: simple
+    css: final_prep.css
+    center: false
+    slide-number: true
+    embed-resources: true
+    width: 1050
+    height: 700
+    margin: 0.05
+    transition: fade
+    transition-speed: fast
+    chalkboard: false
+    include-after-body: scripts.html
+---
+
+## How to use this deck {#howto}
+
+::: {.cards .stack}
+::: {.box}
+<span class="tag">Practice slides</span>
+Each slide is **one type of problem**. Press **New variant** to get a different version: not just new numbers, but a different structure (the pills show which one you have, and you can click them). Work it out on paper first.
+:::
+::: {.box .good}
+<span class="tag">Solutions</span>
+Press **Show solution** for the answers and a worked solution. It stays hidden until you ask.
+:::
+::: {.box .key}
+<span class="tag">Quiz</span>
+The last slide is a **timed quiz** of five random questions from these topics. Answers appear only after the last question, together with your time compared to a target.
+:::
+:::
+
+## Contents {#contents}
+
+::: {.cards .stack .toc}
+::: {.box}
+<a class="toc-hit" href="#/unbiased" title="Go to section"></a>
+<span class="tag">1 · Point estimation</span>
+Bias of simple estimators, randomized response, efficiency.
+:::
+::: {.box}
+<a class="toc-hit" href="#/ci" title="Go to section"></a>
+<span class="tag">2 · Confidence intervals for μ</span>
+Build the interval (σ known), level, width, sample size.
+:::
+::: {.box}
+<a class="toc-hit" href="#/ci_mc" title="Go to section"></a>
+<span class="tag">3 · Interpretation</span>
+Meaning of a confidence interval, plausible values, true or false.
+:::
+::: {.box}
+<a class="toc-hit" href="#/quiz" title="Go to section"></a>
+<span class="tag">4 · Timed quiz</span>
+Five random questions, a timer, answers at the end.
+:::
+:::
+
+## Is the estimator unbiased? {#unbiased}
+
+<div class="prob" data-id="unbiased"></div>
+
+## Randomized response {#randresp}
+
+<div class="prob" data-id="randresp"></div>
+
+## Efficiency: comparing estimators {#efficiency}
+
+<div class="prob" data-id="efficiency"></div>
+
+## Confidence interval for μ {#ci}
+
+<div class="prob" data-id="ci"></div>
+
+## Confidence level and the interval {#level}
+
+<div class="prob" data-id="level"></div>
+
+## What makes the interval wider? {#width}
+
+<div class="prob" data-id="width"></div>
+
+## How large a sample do we need? {#nsize}
+
+<div class="prob" data-id="nsize"></div>
+
+## What does the interval mean? {#ci_mc}
+
+<div class="prob" data-id="ci_mc"></div>
+
+## Which values of μ are plausible? {#plaus}
+
+<div class="prob" data-id="plaus"></div>
+
+## Concept checks {#tf}
+
+<div class="prob" data-id="tf"></div>
+
+## Timed quiz {#quiz}
+
+<div class="quiz"></div>

@@ -1,8 +1,30 @@
+# ALLOWLIST for the PUBLIC slides repo: everything is ignored unless listed here.
+# Files already tracked stay tracked; this only stops new files from being added by accident.
+*
+!*/
+!.gitignore
+!_quarto.yml
+!*.qmd
+!*.md
+!*.js
+!*.css
+!*.py
+!*.json
+!*.png
+!*.jpg
+!*.jpeg
+!*.gif
+!*.webp
+!*.svg
+# published output
+!docs/**
+# never, even if matched above
 .quarto/
 *_files/
 .DS_Store
+/.claude/
+*.quarto_ipynb
+_sources/
 
 /.quarto/
 **/*.quarto_ipynb
-_sources/
-.DS_Store

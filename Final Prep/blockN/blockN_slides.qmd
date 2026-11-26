@@ -1,0 +1,131 @@
+---
+title: "Final Prep: Sampling distributions"
+subtitle: "ECON211 · Probability & Statistics · practice for Lecture 10 (Sampling distribution of the sample mean)"
+format:
+  revealjs:
+    theme: simple
+    css: final_prep.css
+    center: false
+    slide-number: true
+    embed-resources: true
+    width: 1050
+    height: 700
+    margin: 0.05
+    transition: fade
+    transition-speed: fast
+    chalkboard: false
+    include-after-body: scripts.html
+---
+
+## How to use this deck {#howto}
+
+::: {.cards .stack}
+::: {.box}
+<span class="tag">Practice slides</span>
+Each slide is **one type of problem**. Press **New variant** to get a different version: not just new numbers, but a different structure (the pills show which one you have, and you can click them). Work it out on paper first.
+:::
+::: {.box .good}
+<span class="tag">Solutions</span>
+Press **Show solution** for the answers and a worked solution. It stays hidden until you ask.
+:::
+::: {.box .key}
+<span class="tag">Quiz</span>
+The last slide is a **timed quiz** of five random questions from these topics. Answers appear only after the last question, together with your time compared to a target.
+:::
+:::
+
+
+::: {.box .warn}
+<span class="tag">The Φ table</span>
+Slides that need the standard Normal table have a **Φ table** button that opens the table in a **new browser tab**, with a short note on how to read it. The table lists Φ(z) = P(Z ≤ z) for **z ≥ 0 only**, so for negative z or left tails you need **symmetry**.
+:::
+
+## Contents {#contents}
+
+::: {.cards .stack .toc}
+::: {.box}
+<a class="toc-hit" href="#/ztable" title="Go to section"></a>
+<span class="tag">1 · The Normal and its table</span>
+Standard Normal table, probabilities for any Normal, finding z from a probability, cutoffs.
+:::
+::: {.box}
+<a class="toc-hit" href="#/xbarexact" title="Go to section"></a>
+<span class="tag">2 · Sampling distribution of <span class="xbar">X</span></span>
+Exact pmf for small n, E(<span class="xbar">X</span>) and SD(<span class="xbar">X</span>), the effect of n, and the CLT shape.
+:::
+::: {.box}
+<a class="toc-hit" href="#/pxbar" title="Go to section"></a>
+<span class="tag">3 · Probabilities for a sample mean</span>
+Standardize <span class="xbar">X</span>, compare one observation with a mean, choose n.
+:::
+::: {.box}
+<a class="toc-hit" href="#/phat" title="Go to section"></a>
+<span class="tag">4 · Normal approximation</span>
+Proportions, counts and totals.
+:::
+::: {.box}
+<a class="toc-hit" href="#/quiz" title="Go to section"></a>
+<span class="tag">5 · Timed quiz</span>
+Five random computational questions, a timer, answers at the end.
+:::
+:::
+
+## Reading the Φ table {#ztable}
+
+<div class="prob" data-id="ztable"></div>
+
+## Probabilities for a Normal {#normprob}
+
+<div class="prob" data-id="normprob"></div>
+
+## Finding z from a probability {#zfind}
+
+<div class="prob" data-id="zfind"></div>
+
+## Cutoffs for a Normal variable {#cutoff}
+
+<div class="prob" data-id="cutoff"></div>
+
+## Exact distribution of <span class="xbar">X</span> {#xbarexact data-menu-title="Exact distribution of the sample mean"}
+
+<div class="prob" data-id="xbarexact"></div>
+
+## Mean and SD of <span class="xbar">X</span> {#xbarmom data-menu-title="Mean and SD of the sample mean"}
+
+<div class="prob" data-id="xbarmom"></div>
+
+## How n changes the spread {#xbarn}
+
+<div class="prob" data-id="xbarn"></div>
+
+## Shape of <span class="xbar">X</span>: reading histograms {#cltshape data-menu-title="Shape of the sample mean: reading histograms"}
+
+<div class="prob" data-id="cltshape"></div>
+
+## Probability for a sample mean {#pxbar}
+
+<div class="prob" data-id="pxbar"></div>
+
+## One observation vs. a sample mean {#onevsmean}
+
+<div class="prob" data-id="onevsmean"></div>
+
+## Sample size for a given margin {#nneeded}
+
+<div class="prob" data-id="nneeded"></div>
+
+## Approximation: a proportion {#phat}
+
+<div class="prob" data-id="phat"></div>
+
+## Approximation: a count {#binom}
+
+<div class="prob" data-id="binom"></div>
+
+## Approximation: a total {#total}
+
+<div class="prob" data-id="total"></div>
+
+## Timed quiz {#quiz}
+
+<div class="quiz"></div>

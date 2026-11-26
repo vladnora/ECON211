@@ -1,0 +1,961 @@
+---
+title: "Problems in Statistics"
+subtitle: "ECON211 · Probability & Statistics"
+format:
+  revealjs:
+    theme: simple
+    css: ../12_hypothesis/hypothesis_slides.css
+    html-math-method: katex
+    center: false
+    slide-number: true
+    embed-resources: true
+    width: 1050
+    height: 700
+    margin: 0.05
+    transition: fade
+    transition-speed: fast
+    chalkboard: false
+---
+
+# Problem 1: YouTube vs. lectures {.section-slide}
+
+Confidence intervals and the t-test.
+
+## Problem 1: the question
+
+::: {.box}
+We want to understand how students use social media. Today: **how much time do students spend on YouTube per day?**
+:::
+
+. . .
+
+::: {.cards}
+::: {.box .c}
+<span class="tag">What we know</span>
+A student attends on average **2 lectures a day**, 75 minutes each:
+$$2\times 75=150 \text{ minutes}$$
+:::
+::: {.box .c}
+<span class="tag">What we suspect</span>
+Students spend **more** time on YouTube than in lectures.
+:::
+:::
+
+. . .
+
+::: {.box .key}
+<span class="tag">Question</span>
+Is the average daily YouTube time of students **more than 150 minutes**?
+:::
+
+. . .
+
+::: {.box}
+We cannot ask every student. We have to learn about all of them from a few.
+:::
+
+## The setup
+
+| Object | In our problem |
+|:--|:--|
+| **Population** | All students at the university |
+| **Variable** $X$ | A student's average daily YouTube time over the last week (minutes) |
+| **Parameter** $\mu=E[X]$ | The mean of $X$ in the population: **unknown** |
+| $\sigma=SD(X)$ | The standard deviation in the population: **also unknown** |
+| **Benchmark** $\mu_0$ | $150$ minutes of lectures per day: a known number |
+
+. . .
+
+::: {.box .key}
+We compare the unknown $\mu$ with the known benchmark $\mu_0=150$.
+:::
+
+## Our random sample
+
+::: {.box}
+We pick $n=16$ students **at random** from the list of all students. Each one opens the screen-time report on their phone and gives the daily YouTube average for last week. All 16 answer.
+:::
+
+<svg id="p1a-svg" viewBox="0 0 900 390" class="famplot" style="max-height:390px"></svg>
+
+::: {.cap}
+Classroom simulation: computer-generated data, not a real survey.
+:::
+
+<script>
+(function () {
+  var X = [235,199,211,155,210,147,88,91,167,176,169,175,141,172,197,187];
+  var UP = "#2b6cb0", DN = "#dd6b20";
+  function py(v) { return 335 - v * 1.25; }
+  function cx(i) { return 78 + i * 47; }
+  function text(x, y, s, col, anc, size) { return '<text x="' + x + '" y="' + y + '" text-anchor="' + (anc || "middle") + '" font-size="' + (size || 16) + '" font-weight="700" fill="' + col + '" stroke="#fff" stroke-width="4" paint-order="stroke">' + s + '</text>'; }
+  function dot(i, x, col) { return '<circle cx="' + cx(i) + '" cy="' + py(x) + '" r="7" fill="' + col + '"/>'; }
+  function devs() {
+    var d = "";
+    X.forEach(function (x, i) {
+      var c = x > 170 ? UP : DN;
+      d += '<line x1="' + cx(i) + '" y1="' + py(170) + '" x2="' + cx(i) + '" y2="' + py(x) + '" stroke="' + c + '" stroke-width="5"/>' + dot(i, x, c);
+    });
+    return d;
+  }
+  function hline(v, col, dash) { return '<line x1="50" y1="' + py(v) + '" x2="812" y2="' + py(v) + '" stroke="' + col + '" stroke-width="3"' + (dash ? ' stroke-dasharray="8 5"' : '') + '/>'; }
+  function frag(k, inner) { return '<g class="fragment" data-fragment-index="' + k + '">' + inner + '</g>'; }
+  // one chart, two views: "data" and "mean"
+  window.p1Chart = function (id, mode) {
+    var g = "", v, top = "";
+    for (v = 0; v <= 250; v += 50) g += '<line x1="50" y1="' + py(v) + '" x2="812" y2="' + py(v) + '" stroke="#e4e7eb"/><text x="42" y="' + (py(v) + 5) + '" text-anchor="end" font-size="14" fill="#7b8794">' + v + '</text>';
+    g += text(8, 12, "minutes per day", "#7b8794", "start", 14);
+    X.forEach(function (x, i) {
+      g += '<line x1="' + cx(i) + '" y1="' + py(0) + '" x2="' + cx(i) + '" y2="' + py(x) + '" stroke="#d3d9e0" stroke-width="2"/>' + dot(i, x, "#2b6cb0");
+      g += text(cx(i), 355, i + 1, "#7b8794", "middle", 14);
+      top += text(cx(i), mode !== "data" && x < 170 ? py(x) + 24 : py(x) - 12, x, "#1f2933");
+    });
+    g += '<line x1="50" y1="' + py(0) + '" x2="812" y2="' + py(0) + '" stroke="#52606d" stroke-width="2"/>' + text(431, 380, "student", "#7b8794", "middle", 14);
+    if (mode === "data") g += hline(150, "#c53030", true) + text(818, py(150) + 5, "lectures 150", "#c53030", "start", 15);
+    if (mode === "mean") {
+      g += frag(0, hline(170, "#1f2933") + text(818, py(170) + 6, "X̄ = 170", "#1f2933", "start", 18));
+      g += frag(1, devs());
+    }
+    document.getElementById(id).innerHTML = g + top;
+  };
+  window.p1Chart("p1a-svg", "data");
+})();
+</script>
+
+## What do we compute from the sample?
+
+::: {.box}
+Two numbers carry the information we need.
+:::
+
+::: {.cards}
+::: {.box .key .c}
+<span class="tag">Sample mean: the center</span>
+$$\bar{X}=\frac1n\sum_{i=1}^{n}X_i$$
+:::
+::: {.box .c}
+<span class="tag">Sample SD: the spread</span>
+$$s=\sqrt{\frac{1}{n-1}\sum_{i=1}^{n}\left(X_i-\bar{X}\right)^2}$$
+:::
+:::
+
+. . .
+
+::: {.box .good}
+<span class="tag">The sample mean</span>
+$$\bar{X}=\frac{235+199+\dots+187}{16}=\frac{2720}{16}=170 \text{ minutes}$$
+:::
+
+## The sample mean, visually
+
+<svg id="p1m-svg" viewBox="0 0 900 390" class="famplot" style="max-height:445px"></svg>
+
+<script>window.p1Chart("p1m-svg", "mean");</script>
+
+::: {.fragment data-fragment-index="2"}
+::: {.box .key}
+$\bar{X}$ is the **balancing level**. The blue segments above it add up to 232 minutes, and so do the orange segments below it. So $\sum (X_i-\bar{X})=0$.
+:::
+:::
+
+## The sample standard deviation
+
+Deviations from $\bar{X}=170$ and their squares:
+
+| $i$ | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
+|:--|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| $X_i-170$ | $65$ | $29$ | $41$ | $-15$ | $40$ | $-23$ | $-82$ | $-79$ |
+| squared | 4225 | 841 | 1681 | 225 | 1600 | 529 | 6724 | 6241 |
+
+| $i$ | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 |
+|:--|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| $X_i-170$ | $-3$ | $6$ | $-1$ | $5$ | $-29$ | $2$ | $27$ | $17$ |
+| squared | 9 | 36 | 1 | 25 | 841 | 4 | 729 | 289 |
+
+. . .
+
+::: {.box .good}
+$$s^2=\frac{24000}{15}=1600,\qquad s=\sqrt{1600}=40 \text{ minutes}$$
+:::
+
+## The standard deviation, visually
+
+<svg id="p1s-svg" viewBox="0 0 900 390" class="famplot" style="max-height:410px"></svg>
+
+<div class="readout" id="p1s-out" style="font-size:0.9em;color:#1f2933;min-height:2.7em"></div>
+
+<div class="ctl" style="justify-content:center"><span class="seg" id="p1s-seg"><button>data</button><button>1 · deviations</button><button>2 · flip</button><button>3 · square</button><button>4 · average</button><button>5 · root</button></span></div>
+
+[]{.fragment data-fragment-index="0"} []{.fragment data-fragment-index="1"} []{.fragment data-fragment-index="2"} []{.fragment data-fragment-index="3"} []{.fragment data-fragment-index="4"}
+
+<script>
+(function () {
+  var X = [235,199,211,155,210,147,88,91,167,176,169,175,141,172,197,187];
+  var UP = "#2b6cb0", DN = "#dd6b20", GR = "#2f855a";
+  var svg = document.getElementById("p1s-svg"), out = document.getElementById("p1s-out");
+  var btns = document.querySelectorAll("#p1s-seg button");
+  function py(v) { return 335 - v * 1.25; }
+  function cx(i) { return 78 + i * 47; }
+  var SA = 3, SQ = 0.04;   // pixels per minute (flip view) and per squared minute (square view)
+  function ends(step, x) {  // [start, tip] of student's segment, in pixels
+    var d = x - 170;
+    if (step === 0) return [py(x), py(x)];
+    if (step === 1 || step === 5) return [py(170), py(x)];
+    if (step === 2) return [335, 335 - Math.abs(d) * SA];
+    return [335, 335 - d * d * SQ];
+  }
+  function lab(step, x) {
+    var d = x - 170;
+    if (step === 1) return (d > 0 ? "+" : "−") + Math.abs(d);
+    if (step === 2) return Math.abs(d);
+    if (step === 3 || step === 4) return d * d;
+    return x;
+  }
+  var TXT = [
+    "Our 16 observations and their mean, X̄ = 170.",
+    "<b>Deviations</b> X<sub>i</sub> − X̄: <b style='color:#2b6cb0'>positive</b> above, <b style='color:#dd6b20'>negative</b> below. They add up to <b>0</b>, so their plain average tells us nothing.",
+    "We care about the <b>size</b> of a deviation, not its sign: <b>flip</b> the negative ones up.",
+    "<b>Square</b> each one: (X<sub>i</sub> − X̄)². Signs disappear, and <b>large deviations grow the most</b>: 82 → 6724, but 5 → 25.",
+    "<b>Average</b> the squares, dividing by n − 1:&#160; s² = 24000 / 15 = <b style='color:#2f855a'>1600</b> minutes².<br><span style='color:#7b8794'>(Dividing by 16 would give 1500.)</span>",
+    "<b>Square root</b>, to return to minutes: s = √1600 = <b style='color:#2f855a'>40</b>. It measures the spread around X̄ and estimates σ.<br>Here 12 of the 16 students are within X̄ ± s."
+  ];
+  function T(x, y, str, col, anc, size) { return '<text x="' + x + '" y="' + y + '" text-anchor="' + (anc || "middle") + '" font-size="' + (size || 16) + '" font-weight="700" fill="' + col + '" stroke="#fff" stroke-width="4" paint-order="stroke">' + str + '</text>'; }
+  function L(y, col, dash, w) { return '<line x1="50" y1="' + y + '" x2="812" y2="' + y + '" stroke="' + col + '" stroke-width="' + (w || 3) + '"' + (dash ? ' stroke-dasharray="8 5"' : '') + '/>'; }
+  var cur = 0, raf = null, guard = null;
+  function frame(from, to, k) {
+    var g = "", top = "", done = k >= 1, v;
+    var mode = to === 2 ? "abs" : (to === 3 || to === 4) ? "sq" : "min";
+    var ticks = mode === "min" ? [0, 50, 100, 150, 200, 250] : mode === "abs" ? [0, 20, 40, 60, 80] : [0, 1000, 2000, 3000, 4000, 5000, 6000, 7000];
+    ticks.forEach(function (t) {
+      var y = mode === "min" ? py(t) : 335 - t * (mode === "abs" ? SA : SQ);
+      g += L(y, "#e4e7eb", false, 1) + '<text x="42" y="' + (y + 5) + '" text-anchor="end" font-size="14" fill="#7b8794">' + t + '</text>';
+    });
+    g += T(8, 14, mode === "min" ? "minutes per day" : mode === "abs" ? "size of deviation (minutes)" : "squared deviation (minutes²)", "#7b8794", "start", 14);
+    if (to === 5) g += '<rect x="50" y="' + py(210) + '" width="762" height="' + (py(130) - py(210)) + '" fill="' + GR + '" fill-opacity="' + (0.16 * k) + '"/>';
+    var base0 = from < 2 || from === 5 ? py(170) : 335, base1 = to < 2 || to === 5 ? py(170) : 335, base = base0 + (base1 - base0) * k;
+    X.forEach(function (x, i) {
+      var A = ends(from, x), B = ends(to, x), y0 = A[0] + (B[0] - A[0]) * k, y1 = A[1] + (B[1] - A[1]) * k;
+      var col = to === 0 ? UP : x > 170 ? UP : DN;
+      if (to === 0 || to === 1 || to === 5) g += '<line x1="' + cx(i) + '" y1="335" x2="' + cx(i) + '" y2="' + py(x) + '" stroke="#d3d9e0" stroke-width="2"/>';
+      g += '<line x1="' + cx(i) + '" y1="' + y0 + '" x2="' + cx(i) + '" y2="' + y1 + '" stroke="' + col + '" stroke-width="5"/><circle cx="' + cx(i) + '" cy="' + y1 + '" r="7" fill="' + col + '"/>';
+      g += '<text x="' + cx(i) + '" y="355" text-anchor="middle" font-size="14" fill="#7b8794">' + (i + 1) + '</text>';
+      if (done) top += T(cx(i), B[1] > B[0] + 0.5 ? y1 + 24 : y1 - 12, lab(to, x), "#1f2933");
+    });
+    g += L(335, "#52606d", false, 2) + T(431, 382, "student", "#7b8794", "middle", 14);
+    if (to <= 1 || to === 5) g += L(py(170), "#1f2933") + T(818, py(170) + 6, "X̄ = 170", "#1f2933", "start", 18);
+    else if (!done) g += L(base, "#1f2933");
+    if (to === 4) {
+      g += '<g opacity="' + k + '">' + L(335 - 1600 * SQ, GR) + L(335 - 1500 * SQ, "#7b8794", true, 1.5) + '</g>';
+      if (done) top += T(818, 335 - 1600 * SQ - 2, "÷15: 1600", GR, "start", 17) + T(818, 335 - 1500 * SQ + 18, "÷16: 1500", "#7b8794", "start", 14);
+    }
+    if (to === 5 && done) {
+      g += L(py(210), GR, true) + L(py(130), GR, true);
+      top += T(818, py(210) + 5, "X̄ + s = 210", GR, "start", 15) + T(818, py(130) + 5, "X̄ − s = 130", GR, "start", 15);
+    }
+    svg.innerHTML = g + top;
+  }
+  function show(step) {
+    var from = cur; cur = step;
+    out.innerHTML = TXT[step];
+    btns.forEach(function (b, i) { b.classList.toggle("on", i === step); });
+    if (raf) cancelAnimationFrame(raf); clearTimeout(guard);
+    if (from === step) { frame(step, step, 1); return; }
+    var t0 = null;
+    raf = requestAnimationFrame(function tick(t) {
+      if (t0 === null) t0 = t;
+      var u = Math.min(1, (t - t0) / 1100), k = u * u * (3 - 2 * u);
+      frame(from, step, u >= 1 ? 1 : k);
+      if (u < 1) raf = requestAnimationFrame(tick);
+    });
+    guard = setTimeout(function () { cancelAnimationFrame(raf); frame(step, step, 1); }, 1400);   // if the tab is throttled
+  }
+  function setup() {
+    var sec = svg.closest("section");
+    function sync() { var k = sec.querySelectorAll("span.fragment.visible").length; if (k !== cur) show(k); }
+    Reveal.on("fragmentshown", sync); Reveal.on("fragmenthidden", sync); Reveal.on("slidechanged", sync);
+    btns.forEach(function (b, i) { b.addEventListener("click", function () { Reveal.navigateFragment(i - 1); show(i); b.blur(); }); });
+    sync();
+  }
+  show(0);
+  if (window.Reveal && Reveal.isReady && Reveal.isReady()) setup(); else document.addEventListener("DOMContentLoaded", function () { Reveal.on("ready", setup); });
+})();
+</script>
+
+## Step 1: What is our best guess for $\mu$?
+
+::: {.box}
+<span class="tag">Theory</span>
+We estimate the population mean by the sample mean: $\hat\mu=\bar{X}$.
+
+- **Unbiased:** $E[\bar{X}]=\mu$.
+- **Consistent:** $\bar{X}$ gets close to $\mu$ as $n$ grows.
+:::
+
+. . .
+
+::: {.box .key}
+<span class="tag">Our data</span>
+$$\hat\mu=\bar{X}=170 \text{ minutes}$$
+:::
+
+. . .
+
+::: {.box .warn}
+170 is more than 150. But another 16 students would give another $\bar{X}$. **Could the gap of 20 minutes be just luck?**
+:::
+
+## Step 2: How precise is this guess?
+
+::: {.box}
+<span class="tag">Theory</span>
+$\bar{X}$ varies from sample to sample, and $SD(\bar{X})=\dfrac{\sigma}{\sqrt n}$.
+
+We do not know $\sigma$, so we replace it with $s$. This gives the **estimated standard error**:
+$$SE=\frac{s}{\sqrt n}$$
+:::
+
+. . .
+
+::: {.box .key}
+<span class="tag">Our data</span>
+$$SE=\frac{40}{\sqrt{16}}=10 \text{ minutes}$$
+:::
+
+. . .
+
+::: {.box .good}
+Roughly, 10 minutes is the typical size of the distance between $\bar{X}$ and $\mu$.
+:::
+
+## Step 3: Confidence interval (theory)
+
+::: {.box}
+If the population is **normal** and the sample is random, then
+$$\frac{\bar{X}-\mu}{s/\sqrt n}\;\sim\; t_{n-1}$$
+:::
+
+. . .
+
+::: {.box .key}
+<span class="tag">$(1-\alpha)$ confidence interval for $\mu$</span>
+$$\bar{X}\;\pm\; t_{\alpha/2,\,n-1}\,\frac{s}{\sqrt n}$$
+:::
+
+. . .
+
+::: {.box .warn}
+<span class="tag">What we assume</span>
+**Random sample:** students chosen at random, and they all answer. **Normality:** with $n=16$ this matters. Real screen time is often skewed, so always look at the data first. Here we assume a normal population.
+:::
+
+## Step 3: How to read the t-table
+
+<div class="p1t-row">
+<div class="p1t-left">
+<svg id="p1t-pic" viewBox="0 0 400 200" class="famplot"></svg>
+<div class="p1t-txt" id="p1t-out"></div>
+<div class="ctl" style="justify-content:center"><span>CI: <span class="seg" id="p1t-seg"><button data-c="2">90%</button><button data-c="3" class="on">95%</button><button data-c="5">99%</button></span></span></div>
+</div>
+<div class="p1t-right"><table id="p1t-tab"></table></div>
+</div>
+
+[]{.fragment data-fragment-index="0"} []{.fragment data-fragment-index="1"} []{.fragment data-fragment-index="2"}
+
+<style>
+.reveal .p1t-row { display:flex; gap:18px; align-items:flex-start; }
+.reveal .p1t-left { flex:0 0 400px; }
+.reveal .p1t-right { flex:1 1 0; }
+.reveal .p1t-txt { font-size:0.74em; min-height:11.2em; background:#eef4fb; border-left:8px solid #2b6cb0; border-radius:8px; padding:8px 14px; margin:6px 0 10px; }
+.reveal #p1t-tab { font-size:17px; line-height:1.15; margin:0; width:100%; font-variant-numeric:tabular-nums; }
+.reveal #p1t-tab th, .reveal #p1t-tab td { padding:2.5px 6px; text-align:center; border-bottom:1px solid #d9e2ec; }
+.reveal #p1t-tab th { background:#1b3a5c; color:#fff; }
+.reveal #p1t-tab th.sel { background:#dd6b20; }
+.reveal #p1t-tab td.df { font-weight:700; background:#f0f2f5; }
+.reveal #p1t-tab td.hi { background:#ffe8c7; }
+.reveal #p1t-tab td.hit { background:#dd6b20; color:#fff; font-weight:800; }
+.reveal #p1t-tab td.v { cursor:pointer; }
+</style>
+
+<script>
+(function () {
+  var A = ["0.10", "0.05", "0.025", "0.01", "0.005"];
+  var ROWS = [["1", "3.078", "6.314", "12.706", "31.821", "63.657"], ["2", "1.886", "2.920", "4.303", "6.965", "9.925"], ["3", "1.638", "2.353", "3.182", "4.541", "5.841"], ["4", "1.533", "2.132", "2.776", "3.747", "4.604"], ["5", "1.476", "2.015", "2.571", "3.365", "4.032"], ["10", "1.372", "1.812", "2.228", "2.764", "3.169"], ["11", "1.363", "1.796", "2.201", "2.718", "3.106"], ["12", "1.356", "1.782", "2.179", "2.681", "3.055"], ["13", "1.350", "1.771", "2.160", "2.650", "3.012"], ["14", "1.345", "1.761", "2.145", "2.624", "2.977"], ["15", "1.341", "1.753", "2.131", "2.602", "2.947"], ["16", "1.337", "1.746", "2.120", "2.583", "2.921"], ["17", "1.333", "1.740", "2.110", "2.567", "2.898"], ["18", "1.330", "1.734", "2.101", "2.552", "2.878"], ["19", "1.328", "1.729", "2.093", "2.539", "2.861"], ["20", "1.325", "1.725", "2.086", "2.528", "2.845"], ["25", "1.316", "1.708", "2.060", "2.485", "2.787"], ["30", "1.310", "1.697", "2.042", "2.457", "2.750"], ["60", "1.296", "1.671", "2.000", "2.390", "2.660"], ["∞", "1.282", "1.645", "1.960", "2.326", "2.576"]];
+  var tab = document.getElementById("p1t-tab"), out = document.getElementById("p1t-out"), pic = document.getElementById("p1t-pic");
+  var btns = document.querySelectorAll("#p1t-seg button");
+  var R15 = ROWS.findIndex(function (r) { return r[0] === "15"; });
+  var col = 3, picked = null, step = 0;      // col: 1..5, picked: [row, col] after a click on a cell
+  var h = '<tr><th rowspan="2">df</th><th colspan="5">area in the upper tail</th></tr><tr>' + A.map(function (a, j) { return '<th data-c="' + (j + 1) + '">' + a + '</th>'; }).join("") + '</tr>';
+  ROWS.forEach(function (r, i) { h += '<tr>' + r.map(function (v, j) { return '<td class="' + (j ? 'v' : 'df') + '" data-r="' + i + '" data-c="' + j + '">' + v + '</td>'; }).join("") + '</tr>'; });
+  tab.innerHTML = h;
+  function curve(tval, alpha, show) {
+    function px(x) { return 200 + x * 48; }
+    function py(x) { return 170 - 150 * Math.pow(1 + x * x / 15, -8); }
+    function area(lo, hi) { var d = "M" + px(lo) + ",170"; for (var x = lo; x <= hi + 1e-9; x += 0.05) d += " L" + px(x).toFixed(1) + "," + py(x).toFixed(1); return d + " L" + px(hi) + ",170 Z"; }
+    var g = "", d = "", x, t = Math.min(tval, 3.9);
+    for (x = -4; x <= 4.001; x += 0.05) d += (d ? " L" : "M") + px(x).toFixed(1) + "," + py(x).toFixed(1);
+    if (show) {
+      g += '<path d="' + area(t, 4) + '" fill="#c53030" fill-opacity="0.55"/><path d="' + area(-4, -t) + '" fill="#c53030" fill-opacity="0.22"/>';
+      [[t, "t"], [-t, "−t"]].forEach(function (q) { g += '<line x1="' + px(q[0]) + '" y1="' + py(q[0]) + '" x2="' + px(q[0]) + '" y2="170" stroke="#c53030" stroke-width="2"/>'; });
+      g += '<text x="' + px(t) + '" y="189" text-anchor="middle" font-size="15" font-weight="700" fill="#c53030">' + tval.toFixed(3) + '</text>';
+      g += '<text x="' + px(-t) + '" y="189" text-anchor="middle" font-size="15" font-weight="700" fill="#c53030">−' + tval.toFixed(3) + '</text>';
+      g += '<text x="' + px(2.9) + '" y="112" text-anchor="middle" font-size="16" font-weight="700" fill="#c53030">area ' + alpha + '</text>';
+      g += '<text x="200" y="120" text-anchor="middle" font-size="16" font-weight="700" fill="#1b3a5c">middle: ' + Math.round(100 - 200 * alpha) + '%</text>';
+    }
+    g += '<path d="' + d + '" fill="none" stroke="#1b3a5c" stroke-width="2.5"/><line x1="8" y1="170" x2="392" y2="170" stroke="#52606d" stroke-width="1.5"/>';
+    pic.innerHTML = g;
+  }
+  function draw() {
+    var r = picked ? picked[0] : R15, c = picked ? picked[1] : col, s = picked ? 3 : step;
+    tab.querySelectorAll("td.v, td.df").forEach(function (td) {
+      var i = +td.dataset.r, j = +td.dataset.c;
+      td.classList.toggle("hi", (s >= 1 && i === r) || (s >= 2 && j === c));
+      td.classList.toggle("hit", s >= 3 && i === r && j === c);
+    });
+    tab.querySelectorAll("th[data-c]").forEach(function (th) { th.classList.toggle("sel", s >= 2 && +th.dataset.c === c); });
+    var a = A[c - 1], conf = Math.round(100 - 200 * a), df = ROWS[r][0], val = ROWS[r][c];
+    var t = '<b>We need</b> t with area α/2 to its right.';
+    if (s >= 1) t += '<br><b>1. Row:</b> degrees of freedom' + (df === "15" ? ', n − 1 = 16 − 1 = <b>15</b>.' : ' = <b>' + df + '</b>.');
+    if (s >= 2) t += '<br><b>2. Column:</b> a ' + conf + '% interval leaves ' + (100 - conf) + '% outside, split in two tails: α/2 = <b>' + a + '</b>.';
+    if (s >= 3) t += '<br><b>3. Where they cross:</b> t<sub>' + a + ', ' + df + '</sub> = <b style="color:#dd6b20">' + val + '</b>';
+    out.innerHTML = t;
+    curve(+val, +a, s >= 3);
+    btns.forEach(function (b) { b.classList.toggle("on", !picked && +b.dataset.c === col || !!picked && +b.dataset.c === picked[1] && picked[0] === R15); });
+  }
+  btns.forEach(function (b) { b.addEventListener("click", function () { col = +b.dataset.c; picked = null; step = 3; Reveal.navigateFragment(2); b.blur(); draw(); }); });
+  tab.addEventListener("click", function (e) { var td = e.target.closest("td.v"); if (!td) return; picked = [+td.dataset.r, +td.dataset.c]; draw(); });
+  function setup() {
+    var sec = tab.closest("section");
+    function sync() { var k = sec.querySelectorAll("span.fragment.visible").length; if (k !== step) { step = k; picked = null; draw(); } }
+    Reveal.on("fragmentshown", sync); Reveal.on("fragmenthidden", sync); Reveal.on("slidechanged", sync); sync();
+  }
+  draw();
+  if (window.Reveal && Reveal.isReady && Reveal.isReady()) setup(); else document.addEventListener("DOMContentLoaded", function () { Reveal.on("ready", setup); });
+})();
+</script>
+
+## Step 3: Our 95% confidence interval
+
+::: {.box}
+$\bar{X}=170,\quad SE=10,\quad df=15,\quad t_{0.025,\,15}=2.131$
+:::
+
+. . .
+
+::: {.box .key .c}
+$$170\pm 2.131\times 10 = 170\pm 21.31$$
+$$[148.69,\ 191.31]$$
+:::
+
+. . .
+
+::: {.box .good}
+We are **95% confident** that the mean daily YouTube time is between about 149 and 191 minutes.
+:::
+
+. . .
+
+::: {.box}
+<span class="tag">What "95% confident" means</span>
+The **method** produces an interval containing $\mu$ in 95% of random samples. It is not a 95% probability that $\mu$ is inside this particular interval.
+:::
+
+## Step 3: Other confidence levels
+
+| Confidence | $t_{\alpha/2,\,15}$ | Margin $t\times SE$ | Interval | Contains 150? |
+|:-:|:-:|:-:|:-:|:-:|
+| 90% | $1.753$ | $17.53$ | $[152.47,\ 187.53]$ | no |
+| 95% | $2.131$ | $21.31$ | $[148.69,\ 191.31]$ | yes |
+| 99% | $2.947$ | $29.47$ | $[140.53,\ 199.47]$ | yes |
+
+. . .
+
+::: {.box .key}
+More confidence requires a **wider** interval.
+:::
+
+## Step 4: A two-sided test (theory)
+
+::: {.box}
+<span class="tag">Question</span>
+Is YouTube time **different** from lecture time?
+$$H_0:\ \mu=\mu_0 \qquad H_1:\ \mu\mathrel{\rlap{\,/}{=}}\mu_0$$
+:::
+
+. . .
+
+::: {.box}
+<span class="tag">Test statistic: how many SEs is $\bar{X}$ from $\mu_0$?</span>
+$$t=\frac{\bar{X}-\mu_0}{s/\sqrt n}\;\sim\;t_{n-1}\quad\text{if }H_0\text{ is true}$$
+:::
+
+. . .
+
+::: {.box .key}
+<span class="tag">Decision at level $\alpha$</span>
+Reject $H_0$ if $|t|>t_{\alpha/2,\,n-1}$. Equivalently, if the p-value $2\,P(T_{n-1}>|t|)$ is below $\alpha$.
+:::
+
+## Step 4: The two-sided test, our data
+
+::: {.box}
+$$H_0:\ \mu=150 \qquad H_1:\ \mu\mathrel{\rlap{\,/}{=}}150 \qquad \alpha=0.05$$
+:::
+
+. . .
+
+::: {.box style="padding-top:0;padding-bottom:0"}
+$$t=\frac{170-150}{40/\sqrt{16}}=2$$
+:::
+
+. . .
+
+::: {.cards}
+::: {.box .c}
+<span class="tag">Critical value</span>
+$|t|=2<2.131$
+:::
+::: {.box .c}
+<span class="tag">P-value</span>
+$p=2\,P(T_{15}\ge 2)=2\times 0.032=0.064>0.05$
+:::
+:::
+
+. . .
+
+::: {.box .warn}
+**Fail to reject** $H_0$ at 5% (this does **not** show that $\mu=150$). Same answer as the interval: 150 is **inside** $[148.69,\ 191.31]$.
+:::
+
+## Step 4: The p-value
+
+::: {.box}
+**P-value:** the probability, **if $H_0$ is true**, of a statistic at least as far from $0$ as ours, in **either** direction.
+$$p=P\big(|T_{n-1}|\ge |t|\big)=2\,P\big(T_{n-1}\ge |t|\big)$$
+:::
+
+<svg id="p1pv2-svg" viewBox="0 0 900 222" class="famplot" style="max-height:170px"></svg>
+
+<script>
+(function () {
+  // picture of the p-value for t = 2, df = 15
+  window.p1Pval = function (id, two) {
+    function px(x) { return 450 + x * 95; }
+    function py(x) { return 190 - 170 * Math.pow(1 + x * x / 15, -8); }
+    function path(lo, hi) { var d = ""; for (var x = lo; x <= hi + 1e-9; x += 0.04) d += (d ? " L" : "M") + px(x).toFixed(1) + "," + py(x).toFixed(1); return d; }
+    function area(lo, hi) { return path(lo, hi) + " L" + px(hi) + ",190 L" + px(lo) + ",190 Z"; }
+    function T(x, y, str, col) { return '<text x="' + x + '" y="' + y + '" text-anchor="middle" font-size="18" font-weight="700" fill="' + col + '">' + str + '</text>'; }
+    var g = '<path d="' + area(2, 4) + '" fill="#c53030" fill-opacity="0.55"/>' + T(px(2.85), 140, "area 0.032", "#c53030") + T(px(2), 213, "t = 2", "#c53030");
+    if (two) g += '<path d="' + area(-4, -2) + '" fill="#c53030" fill-opacity="0.55"/>' + T(px(-2.85), 140, "area 0.032", "#c53030") + T(px(-2), 213, "−2", "#c53030");
+    g += '<path d="' + path(-4, 4) + '" fill="none" stroke="#1b3a5c" stroke-width="2.5"/><line x1="60" y1="190" x2="840" y2="190" stroke="#52606d" stroke-width="1.5"/>';
+    g += T(450, 213, "0", "#52606d") + T(450, 120, "t₁₅ if H₀ is true", "#1b3a5c");
+    document.getElementById(id).innerHTML = g;
+  };
+})();
+</script>
+
+<script>window.p1Pval("p1pv2-svg", true);</script>
+
+. . .
+
+::: {.box}
+**Table, df = 15:** $1.753<2<2.131$, so $\;0.05<p<0.10$ (two tails)
+:::
+
+. . .
+
+::: {.box .key}
+**With software:** $p=2\times 0.0320=0.064$. Reject at $\alpha=0.10$, **not** at $\alpha=0.05$ or $0.01$.
+:::
+
+## Step 5: Our real hypothesis (theory)
+
+::: {.box}
+Our suspicion was not "different". It was **more**. We stated it **before** seeing the data.
+$$H_0:\ \mu=\mu_0 \qquad H_1:\ \mu>\mu_0$$
+:::
+
+. . .
+
+::: {.box}
+<span class="tag">Same test statistic</span>
+$$t=\frac{\bar{X}-\mu_0}{s/\sqrt n}$$
+:::
+
+. . .
+
+::: {.box .key}
+<span class="tag">Decision at level $\alpha$</span>
+Only **large** $t$ counts against $H_0$. Reject if $t>t_{\alpha,\,n-1}$, or if the p-value $P(T_{n-1}>t)$ is below $\alpha$. All of $\alpha$ is in **one** tail.
+:::
+
+## Step 5: The one-sided test, our data
+
+::: {.box}
+$$H_0:\ \mu=150 \qquad H_1:\ \mu>150 \qquad \alpha=0.05$$
+:::
+
+. . .
+
+::: {.box}
+$$t=\frac{170-150}{10}=2,\qquad t_{0.05,\,15}=1.753$$
+:::
+
+. . .
+
+::: {.cards}
+::: {.box .c}
+<span class="tag">Critical value</span>
+$t=2>1.753$
+:::
+::: {.box .c}
+<span class="tag">P-value</span>
+$p=P(T_{15}\ge 2)=0.032<0.05$
+:::
+:::
+
+. . .
+
+::: {.box .good}
+**Reject** $H_0$: at the 5% level there is sufficient evidence that students spend on average **more than 150 minutes** a day on YouTube.
+:::
+
+. . .
+
+::: {.box}
+At $\alpha=0.01$ we would **not** reject, since $0.032>0.01$.
+:::
+
+## Step 5: The p-value
+
+::: {.box}
+For $H_1:\mu>\mu_0$ only **large** values count against $H_0$, so we take **one** tail.
+$$p=P\big(T_{n-1}\ge t\big)$$
+:::
+
+<svg id="p1pv1-svg" viewBox="0 0 900 222" class="famplot" style="max-height:170px"></svg>
+
+<script>window.p1Pval("p1pv1-svg", false);</script>
+
+. . .
+
+::: {.box}
+**Table, df = 15:** $1.753<2<2.131$, so $\;0.025<p<0.05$
+:::
+
+. . .
+
+::: {.box .key}
+**With software:** $p=0.032$. Reject at $\alpha=0.10$ and $0.05$, **not** at $\alpha=0.01$.
+:::
+
+## Summary: the estimate and its intervals
+
+<svg id="p1b-svg" viewBox="0 0 900 380" class="famplot"></svg>
+
+::: {.fragment .fade-in data-fragment-index="5"}
+::: {.box .key}
+A **two-sided** test at level $\alpha$ rejects $\mu_0=150$ exactly when 150 is **outside** the $(1-\alpha)$ interval. Here: reject at 10%, not at 5% or 1%.
+:::
+:::
+
+<script>
+(function () {
+  function px(v) { return 80 + (v - 130) / 80 * 790; }
+  var g = '<line x1="40" y1="330" x2="880" y2="330" stroke="#52606d" stroke-width="2"/>';
+  for (var t = 130; t <= 210; t += 10) g += '<line x1="' + px(t) + '" y1="330" x2="' + px(t) + '" y2="337" stroke="#52606d" stroke-width="2"/><text x="' + px(t) + '" y="357" text-anchor="middle" font-size="17" fill="#52606d">' + t + '</text>';
+  g += '<text x="880" y="376" text-anchor="end" font-size="15" fill="#52606d">minutes per day</text>';
+  g += '<g class="fragment" data-fragment-index="0"><line x1="' + px(170) + '" y1="40" x2="' + px(170) + '" y2="330" stroke="#1f2933" stroke-width="2"/><circle cx="' + px(170) + '" cy="330" r="7" fill="#1f2933"/><text x="' + px(170) + '" y="30" text-anchor="middle" font-size="19" font-weight="700" fill="#1f2933">best guess: X̄ = 170</text></g>';
+  [["90%", 152.47, 187.53, "#440154", 95, 1], ["95%", 148.69, 191.31, "#21918c", 170, 2], ["99%", 140.53, 199.47, "#b7791f", 245, 3]].forEach(function (c) {
+    var y = c[4];
+    g += '<g class="fragment" data-fragment-index="' + c[5] + '"><line x1="' + px(c[1]) + '" y1="' + y + '" x2="' + px(c[2]) + '" y2="' + y + '" stroke="' + c[3] + '" stroke-width="9"/>';
+    [c[1], c[2]].forEach(function (e) { g += '<line x1="' + px(e) + '" y1="' + (y - 13) + '" x2="' + px(e) + '" y2="' + (y + 13) + '" stroke="' + c[3] + '" stroke-width="4"/>'; });
+    g += '<circle cx="' + px(170) + '" cy="' + y + '" r="7" fill="#fff" stroke="#1f2933" stroke-width="3"/>';
+    g += '<text x="' + px(c[1]) + '" y="' + (y + 35) + '" text-anchor="middle" font-size="17" fill="' + c[3] + '">' + c[1].toFixed(2) + '</text><text x="' + px(c[2]) + '" y="' + (y + 35) + '" text-anchor="middle" font-size="17" fill="' + c[3] + '">' + c[2].toFixed(2) + '</text>';
+    g += '<text x="' + (px(c[2]) + 16) + '" y="' + (y + 6) + '" font-size="19" font-weight="700" fill="' + c[3] + '">' + c[0] + ' CI</text></g>';
+  });
+  g += '<g class="fragment" data-fragment-index="4"><line x1="' + px(150) + '" y1="50" x2="' + px(150) + '" y2="330" stroke="#c53030" stroke-width="3" stroke-dasharray="7 5"/><text x="' + (px(150) - 8) + '" y="64" text-anchor="end" font-size="19" font-weight="700" fill="#c53030">μ₀ = 150</text></g>';
+  document.getElementById("p1b-svg").innerHTML = g;
+})();
+</script>
+
+## Summary: the two tests
+
+For testing, center the picture at $\mu_0$: **which values of $\bar{X}$ make us reject $H_0$?** ($\alpha=0.05$)
+
+<svg id="p1c-svg" viewBox="0 0 900 330" class="famplot"></svg>
+
+<div class="readout" id="p1c-out"></div>
+
+<div class="ctl" style="justify-content:center">
+  <label>Hypothesized $\mu_0$: <input type="range" id="p1c-mu" min="135" max="205" step="0.5" value="150" style="width:420px"> <b id="p1c-val">150.0</b></label>
+</div>
+
+<script>
+(function () {
+  var svg = document.getElementById("p1c-svg"), sl = document.getElementById("p1c-mu"), lab = document.getElementById("p1c-val"), out = document.getElementById("p1c-out");
+  var C1 = 17.53, C2 = 21.31, XB = 170, A = 100, B = 240;
+  function px(v) { return 40 + (v - A) / (B - A) * 840; }
+  function bar(y, lo, hi, col) { return '<rect x="' + px(lo) + '" y="' + y + '" width="' + Math.max(0, px(hi) - px(lo)) + '" height="34" fill="' + col + '"/>'; }
+  function txt(x, y, s, col, anc, size) { return '<text x="' + x + '" y="' + y + '" text-anchor="' + (anc || "middle") + '" font-size="' + (size || 17) + '" font-weight="700" fill="' + col + '">' + s + '</text>'; }
+  function tail(t) {   // P(T_15 > t), Simpson's rule
+    var c = 0.392353, f = function (u) { return c * Math.pow(1 + u * u / 15, -8); }, a = Math.abs(t), n = 400, h = a / n, s = f(0) + f(a);
+    for (var i = 1; i < n; i++) s += (i % 2 ? 4 : 2) * f(i * h);
+    var q = Math.max(0, 0.5 - s * h / 3);
+    return t >= 0 ? q : 1 - q;
+  }
+  function draw() {
+    var m = +sl.value, g = "";
+    lab.textContent = m.toFixed(1);
+    g += txt(40, 62, "Two-sided: H₁: μ ≠ μ₀", "#1b3a5c", "start", 19);
+    g += bar(74, A, m - C2, "#f4b4b4") + bar(74, m - C2, m + C2, "#cdeeda") + bar(74, m + C2, B, "#f4b4b4");
+    g += txt(px(m - C2), 128, (m - C2).toFixed(2), "#c53030") + txt(px(m + C2) + 6, 128, (m + C2).toFixed(2), "#c53030", "start");
+    g += txt(40, 176, "One-sided: H₁: μ > μ₀", "#1b3a5c", "start", 19);
+    g += bar(188, A, m + C1, "#cdeeda") + bar(188, m + C1, B, "#f4b4b4");
+    g += txt(px(m + C1) - 6, 242, (m + C1).toFixed(2), "#c53030", "end");
+    g += '<line x1="40" y1="272" x2="880" y2="272" stroke="#52606d" stroke-width="2"/>';
+    for (var t = 100; t <= 240; t += 20) g += '<text x="' + px(t) + '" y="292" text-anchor="middle" font-size="16" fill="#52606d">' + t + '</text>';
+    g += '<line x1="' + px(m) + '" y1="68" x2="' + px(m) + '" y2="272" stroke="#2b6cb0" stroke-width="2.5" stroke-dasharray="6 5"/>' + txt(px(m), 318, "μ₀ = " + m.toFixed(1), "#2b6cb0");
+    g += '<line x1="' + px(XB) + '" y1="34" x2="' + px(XB) + '" y2="272" stroke="#1f2933" stroke-width="3.5"/>' + txt(px(XB), 24, "our X̄ = 170", "#1f2933", "middle", 19);
+    svg.innerHTML = g;
+    var r2 = Math.abs(XB - m) > C2, r1 = XB - m > C1;
+    var t = (XB - m) / 10, p1 = tail(t), p2 = 2 * tail(Math.abs(t));
+    function pf(p) { return p < 0.0005 ? "p < 0.001" : p > 0.9995 ? "p > 0.999" : "p = " + p.toFixed(3); }
+    out.innerHTML = 't = <b>' + t.toFixed(2) + '</b> &nbsp;·&nbsp; two-sided: <b>' + pf(p2) + '</b>, ' + (r2 ? "reject" : "fail to reject") + ' &nbsp;·&nbsp; one-sided: <b>' + pf(p1) + '</b>, ' + (r1 ? "reject" : "fail to reject") + '<br><span style="color:#2f855a;font-weight:700">green: fail to reject</span> &nbsp; <span style="color:#c53030;font-weight:700">red: reject</span> ';
+  }
+  sl.addEventListener("input", draw); draw();
+})();
+</script>
+
+## The reveal: the population
+
+The data were generated by a computer from this population: $X\sim N(\mu=165,\ \sigma=45)$.
+
+<svg id="p1d-svg" viewBox="0 0 900 380" class="famplot"></svg>
+
+::: {.fragment data-fragment-index="1"}
+::: {.cap}
+The dots are our 16 students. The computer draw was then adjusted by a few minutes per student (at most about 4) to make $\bar{X}=170$ and $s=40$ exact.
+:::
+:::
+
+<script>
+(function () {
+  var X = [235,199,211,155,210,147,88,91,167,176,169,175,141,172,197,187];
+  function px(v) { return 40 + (v - 30) / 270 * 840; }
+  function py(v) { return 300 - 250 * Math.exp(-0.5 * Math.pow((v - 165) / 45, 2)); }
+  var d = "M" + px(30) + ",300";
+  for (var v = 30; v <= 300; v += 1) d += " L" + px(v).toFixed(1) + "," + py(v).toFixed(1);
+  var g = '<path d="' + d + ' L' + px(300) + ',300 Z" fill="#2b6cb0" fill-opacity="0.12" stroke="#2b6cb0" stroke-width="3"/>';
+  g += '<line x1="40" y1="300" x2="880" y2="300" stroke="#52606d" stroke-width="2"/>';
+  [30, 75, 120, 165, 210, 255, 300].forEach(function (t) { g += '<text x="' + px(t) + '" y="352" text-anchor="middle" font-size="17" fill="#52606d">' + t + '</text>'; });
+  g += '<line x1="' + px(165) + '" y1="40" x2="' + px(165) + '" y2="300" stroke="#dd6b20" stroke-width="3.5"/><text x="' + px(165) + '" y="28" text-anchor="middle" font-size="20" font-weight="700" fill="#dd6b20">true mean μ = 165</text>';
+  g += '<line x1="' + px(165) + '" y1="' + py(210) + '" x2="' + px(210) + '" y2="' + py(210) + '" stroke="#1b3a5c" stroke-width="3"/><text x="' + (px(210) + 14) + '" y="' + (py(210) + 4) + '" font-size="19" font-weight="700" fill="#1b3a5c">σ = 45</text>';
+  g += '<g class="fragment" data-fragment-index="1">';
+  X.forEach(function (v, i) { g += '<circle cx="' + px(v) + '" cy="' + (314 + (i % 2) * 12) + '" r="5.5" fill="#1f2933" fill-opacity="0.75"/>'; });
+  g += '</g>';
+  document.getElementById("p1d-svg").innerHTML = g;
+})();
+</script>
+
+## Sample vs. population
+
+| | Population (truth) | Our sample (estimate) | Difference |
+|:--|:-:|:-:|:-:|
+| Mean | $\mu=165$ | $\bar{X}=170$ | $+5$ |
+| Standard deviation | $\sigma=45$ | $s=40$ | $-5$ |
+| Standard error of the mean | $\sigma/\sqrt{16}=11.25$ | $s/\sqrt{16}=10$ | $-1.25$ |
+
+. . .
+
+::: {.box}
+<span class="tag">They differ, as expected. Were we lucky?</span>
+$$\text{our miss in true standard errors:}\quad\frac{\bar{X}-\mu}{\sigma/\sqrt n}=\frac{170-165}{11.25}\approx 0.44$$
+:::
+
+. . .
+
+::: {.box .good}
+$P\big(|\bar{X}-\mu|>5\big)=P(|Z|>0.44)\approx 0.66$: about **two samples in three** miss $\mu$ by more than ours did. A rather good draw, not an unusual one.
+:::
+
+## Were we right?
+
+::: {style="font-size:0.92em"}
+| Our conclusion | Truth: $\mu=165$ | Verdict |
+|:--|:--|:--|
+| Best guess $170$ | $165$ | off by 5 minutes |
+| 90% CI $[152.47,\ 187.53]$ | contains $165$ | correct |
+| 95% CI $[148.69,\ 191.31]$ | contains $165$ | correct |
+| 99% CI $[140.53,\ 199.47]$ | contains $165$ | correct |
+| Two-sided test, 5%: $p=0.064$, fail to reject | $H_0:\mu=150$ is **false** | missed it |
+| One-sided test, 5%: $p=0.032$, reject | $H_0:\mu=150$ is **false** | correct |
+:::
+
+. . .
+
+::: {.box .key}
+The two-sided test missed a difference that **really exists**. In real research $\mu$ is never revealed: we only know how reliable the **method** is.
+:::
+
+## Many samples, many analyses
+
+<div class="ctl" style="justify-content:center">
+  <span>True mean: <span class="seg" id="p1e-mu"><button data-v="165" class="on">μ = 165</button><button data-v="150">μ = 150</button></span></span>
+  <span>CI: <span class="seg" id="p1e-ci"><button data-v="0">90%</button><button data-v="1" class="on">95%</button><button data-v="2">99%</button></span></span>
+  <span>Test (5%): <span class="seg" id="p1e-test"><button data-v="1" class="on">one-sided</button><button data-v="2">two-sided</button></span></span>
+</div>
+
+<svg id="p1e-svg" viewBox="0 0 900 360" class="famplot" style="max-height:370px"></svg>
+
+<div class="readout" id="p1e-out" style="min-height:3.2em"></div>
+
+<div class="ctl" style="justify-content:center">
+  <button class="act" id="p1e-one">+1 sample</button>
+  <button class="act" id="p1e-all">Run to 100</button>
+  <button class="act" id="p1e-more">+10,000 (totals only)</button>
+  <button class="act ghost" id="p1e-reset">Reset</button>
+</div>
+
+<script>
+(function () {
+  var N = 16, M = 100, MU0 = 150, SIG = 45, SEED = 2026;
+  var T = [1.753, 2.131, 2.947], LEV = [90, 95, 99];
+  var S = { mu: 165, ci: 1, test: 1 }, shown, all, rnd, timer = null;
+  var svg = document.getElementById("p1e-svg"), out = document.getElementById("p1e-out");
+  function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; var t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  function gauss() { var u = 1 - rnd(), v = rnd(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
+  function one() {
+    var x = [], m = 0, q = 0, i;
+    for (i = 0; i < N; i++) { x.push(S.mu + SIG * gauss()); m += x[i]; }
+    m /= N; for (i = 0; i < N; i++) q += (x[i] - m) * (x[i] - m);
+    return { m: m, se: Math.sqrt(q / (N - 1) / N) };
+  }
+  function hit(o) { return Math.abs(o.m - S.mu) <= T[S.ci] * o.se; }
+  function rej(o) { var t = (o.m - MU0) / o.se; return S.test === 1 ? t > 1.753 : Math.abs(t) > 2.131; }
+  function add(k, keep) { for (var i = 0; i < k; i++) { var o = one(); all.push(o); if (keep && shown.length < M) shown.push(o); } }
+  function stop() { if (timer) clearInterval(timer); timer = null; }
+  function reset() { stop(); rnd = mulberry32(SEED + S.mu); shown = []; all = []; draw(); }
+  function py(v) { return 12 + (245 - v) / 150 * 270; }
+  function px(i) { return 62 + i * 8.25; }
+  function draw() {
+    var g = '<rect x="52" y="8" width="840" height="278" rx="8" fill="#f5f7fa"/>';
+    for (var v = 100; v <= 240; v += 20) g += '<text x="46" y="' + (py(v) + 5) + '" text-anchor="end" font-size="14" fill="#7b8794">' + v + '</text>';
+    shown.forEach(function (o, i) {
+      var c = hit(o) ? "#2b6cb0" : "#c53030", lo = Math.max(95, o.m - T[S.ci] * o.se), hi = Math.min(245, o.m + T[S.ci] * o.se);
+      g += '<line x1="' + px(i) + '" y1="' + py(hi) + '" x2="' + px(i) + '" y2="' + py(lo) + '" stroke="' + c + '" stroke-width="' + (hit(o) ? 3 : 4.5) + '"/><circle cx="' + px(i) + '" cy="' + py(o.m) + '" r="2.6" fill="#1f2933"/>';
+      g += '<rect x="' + (px(i) - 3.2) + '" y="306" width="6.4" height="20" fill="' + (rej(o) ? "#1f2933" : "#d9e2ec") + '"/>';
+    });
+    g += '<line x1="52" y1="' + py(S.mu) + '" x2="892" y2="' + py(S.mu) + '" stroke="#dd6b20" stroke-width="3"/>';
+    if (S.mu !== MU0) g += '<line x1="52" y1="' + py(MU0) + '" x2="892" y2="' + py(MU0) + '" stroke="#52606d" stroke-width="2" stroke-dasharray="7 5"/>';
+    g += '<text x="888" y="' + (py(S.mu) - 6) + '" text-anchor="end" font-size="16" font-weight="700" fill="#dd6b20" stroke="#f5f7fa" stroke-width="4" paint-order="stroke">true μ = ' + S.mu + '</text>';
+    if (S.mu !== MU0) g += '<text x="888" y="' + (py(MU0) + 18) + '" text-anchor="end" font-size="16" font-weight="700" fill="#52606d" stroke="#f5f7fa" stroke-width="4" paint-order="stroke">μ₀ = 150</text>';
+    g += '<text x="46" y="321" text-anchor="end" font-size="13" font-weight="700" fill="#1f2933">reject?</text>';
+    g += '<text x="62" y="350" font-size="15" fill="#52606d">each column is one new sample of 16 students → &#160;&#160; bottom row: dark = reject H₀: μ = 150, light = fail to reject</text>';
+    svg.innerHTML = g;
+    var n = all.length;
+    if (!n) { out.innerHTML = "Press a button to draw samples."; return; }
+    var h = all.filter(hit).length, r = all.filter(rej).length, h0 = S.mu === MU0;
+    function pc(k) { return (100 * k / n).toFixed(n > 100 ? 1 : 0) + "%"; }
+    out.innerHTML = '<b>' + n.toLocaleString("en-US") + ' samples</b> &nbsp;·&nbsp; ' + LEV[S.ci] + '% CI contains μ: <b style="color:#2b6cb0">' + h.toLocaleString("en-US") + ' (' + pc(h) + ')</b>, misses: <b style="color:#c53030">' + (n - h).toLocaleString("en-US") + '</b><br>' +
+      'H₀: μ = 150 is <b>' + (h0 ? "true" : "false") + '</b> (true μ = ' + S.mu + ') &nbsp;·&nbsp; rejected: <b>' + pc(r) + '</b> (' + (h0 ? "wrong" : "correct") + ') &nbsp;·&nbsp; not rejected: <b>' + pc(n - r) + '</b> (' + (h0 ? "correct" : "wrong") + ')';
+  }
+  function seg(id, key) {
+    var box = document.getElementById(id);
+    box.querySelectorAll("button").forEach(function (b) {
+      b.addEventListener("click", function () {
+        box.querySelectorAll("button").forEach(function (c) { c.classList.toggle("on", c === b); });
+        S[key] = +b.getAttribute("data-v"); if (key === "mu") reset(); else draw();
+      });
+    });
+  }
+  seg("p1e-mu", "mu"); seg("p1e-ci", "ci"); seg("p1e-test", "test");
+  document.getElementById("p1e-one").addEventListener("click", function () { stop(); add(1, true); draw(); });
+  document.getElementById("p1e-all").addEventListener("click", function () {
+    stop(); if (shown.length >= M) return;
+    timer = setInterval(function () { add(Math.min(2, M - shown.length), true); draw(); if (shown.length >= M) stop(); }, 60);
+  });
+  document.getElementById("p1e-more").addEventListener("click", function () { stop(); add(10000, true); draw(); });
+  document.getElementById("p1e-reset").addEventListener("click", reset);
+  reset();
+})();
+</script>
+
+## Why do we miss so often?
+
+If $\sigma=45$ were **known**, we would reject when $\bar{X}>150+1.645\cdot 45/\sqrt n$.
+
+<svg id="p1w-svg" viewBox="0 0 900 300" class="famplot" style="max-height:270px"></svg>
+
+<div class="readout" id="p1w-out" style="color:#1f2933;min-height:1.4em"></div>
+
+<div class="ctl" style="justify-content:center">
+  <label>Sample size $n$: <input type="range" id="p1w-n" min="16" max="100" step="1" value="16" style="width:380px"> <b id="p1w-val">16</b></label>
+</div>
+
+. . .
+
+::: {.box .key style="font-size:0.85em"}
+With $n=16$ we need $\bar{X}>168.5$, **above the true mean 165**, so most samples fall short. A larger $n$ makes both curves narrower and moves the cutoff down.
+:::
+
+<script>
+(function () {
+  var svg = document.getElementById("p1w-svg"), sl = document.getElementById("p1w-n"), lab = document.getElementById("p1w-val"), out = document.getElementById("p1w-out");
+  function Phi(z) { var x = Math.abs(z) / Math.SQRT2, t = 1 / (1 + 0.3275911 * x);
+    var e = 1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x);
+    return z < 0 ? (1 - e) / 2 : (1 + e) / 2; }
+  var A = 110, B = 205;
+  function px(v) { return 40 + (v - A) / (B - A) * 840; }
+  function draw() {
+    var n = +sl.value, se = 45 / Math.sqrt(n), c = 150 + 1.6449 * se, pow = 1 - Phi((c - 165) / se);
+    lab.textContent = n;
+    var peak = 195 * Math.sqrt(n) / 10;                      // curve height grows as the curves narrow
+    function py(v, m) { return 250 - Math.max(peak, 78 + peak * 0.6) * Math.exp(-0.5 * Math.pow((v - m) / se, 2)); }
+    function path(m, lo, hi) { var d = "", v; for (v = lo; v < hi; v += 0.25) d += (d ? " L" : "M") + px(v).toFixed(1) + "," + py(v, m).toFixed(1); return d + " L" + px(hi).toFixed(1) + "," + py(hi, m).toFixed(1); }
+    function area(m, lo, hi) { return path(m, lo, hi) + " L" + px(hi) + ",250 L" + px(lo) + ",250 Z"; }
+    function T(x, y, str, col, anc, size) { return '<text x="' + x + '" y="' + y + '" text-anchor="' + (anc || "middle") + '" font-size="' + (size || 17) + '" font-weight="700" fill="' + col + '" stroke="#fff" stroke-width="4" paint-order="stroke">' + str + '</text>'; }
+    var g = '<path d="' + area(165, c, B) + '" fill="#dd6b20" fill-opacity="0.35"/><path d="' + area(150, c, B) + '" fill="#52606d" fill-opacity="0.55"/>';
+    g += '<path d="' + path(150, A, B) + '" fill="none" stroke="#52606d" stroke-width="2.5" stroke-dasharray="7 5"/><path d="' + path(165, A, B) + '" fill="none" stroke="#dd6b20" stroke-width="3"/>';
+    g += '<line x1="40" y1="250" x2="880" y2="250" stroke="#52606d" stroke-width="1.5"/>';
+    for (var t = 120; t <= 200; t += 10) g += '<text x="' + px(t) + '" y="270" text-anchor="middle" font-size="15" fill="#52606d">' + t + '</text>';
+    g += T(880, 293, "sample mean X̄", "#52606d", "end", 15);
+    g += '<line x1="' + px(c) + '" y1="22" x2="' + px(c) + '" y2="250" stroke="#c53030" stroke-width="3"/>' + T(px(c) + 8, 34, "reject if X̄ > " + c.toFixed(1), "#c53030", "start");
+    g += '<line x1="' + px(165) + '" y1="250" x2="' + px(165) + '" y2="' + py(165, 165) + '" stroke="#dd6b20" stroke-width="1.5"/>';
+    g += T(40, 34, "dashed: where X̄ falls if μ = 150 (H₀)", "#52606d", "start", 16);
+    g += T(40, 58, "orange: where X̄ falls in truth, μ = 165", "#dd6b20", "start", 16);
+    svg.innerHTML = g;
+    out.innerHTML = '<b style="color:#dd6b20">Reject, correctly: ' + Math.round(100 * pow) + '%</b> &nbsp;·&nbsp; miss: ' + (100 - Math.round(100 * pow)) + '% &nbsp;·&nbsp; <span style="color:#52606d">false rejection if μ = 150 (dark area): 5%</span>';
+  }
+  sl.addEventListener("input", draw); draw();
+})();
+</script>
+
+::: {.cap}
+Our t-test must also estimate $\sigma$, so at $n=16$ it rejects a bit less often: about 36% instead of 38%.
+:::
+
+## What did we learn?
+
+| In the long run, with $n=16$ | One-sided test, 5% | Two-sided test, 5% |
+|:--|:-:|:-:|
+| $\mu=150$ ($H_0$ true): rejects, **wrongly** | 5% | 5% |
+| $\mu=165$ ($H_0$ false): rejects, **correctly** | about 36% | about 24% |
+
+. . .
+
+::: {.box .good}
+The 95% confidence interval contains the true $\mu$ in 95% of samples, whatever $\mu$ is.
+:::
+
+. . .
+
+::: {.box .warn}
+<span class="tag">A small sample can easily miss a real difference</span>
+The true gap is 15 minutes, yet the one-sided test misses it about **2 times in 3**. We rejected partly because our $\bar{X}$ landed above $\mu$.
+:::
+
+. . .
+
+::: {.box .key}
+Choose $H_1$ **before** seeing the data. "Fail to reject" is not "no difference".
+:::

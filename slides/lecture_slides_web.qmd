@@ -8,4 +8,4 @@ format:
     height: 700
 ---
 
-{{< include ../08_applications/applications.qmd >}}
+{{< include ../10_sampling/sampling.qmd >}}
